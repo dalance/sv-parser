@@ -1,0 +1,14 @@
+[package]
+name = "sv-parser"
+version = "0.1.0"
+authors = ["dalance@gmail.com"]
+repository = "https://github.com/dalance/sv-parser"
+keywords = []
+categories = []
+license = "MIT"
+readme = "README.md"
+description = ""
+edition = "2018"
+
+[dependencies]
+nom = "5.0.0"

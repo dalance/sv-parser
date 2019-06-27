@@ -1,4 +1,3 @@
-use crate::ast::*;
 use nom::branch::*;
 use nom::bytes::complete::*;
 use nom::character::complete::*;
@@ -7,8 +6,76 @@ use nom::multi::*;
 use nom::sequence::*;
 use nom::IResult;
 
+// -----------------------------------------------------------------------------
+
+#[derive(Debug)]
+pub enum Number<'a> {
+    IntegralNumber(IntegralNumber<'a>),
+    RealNumber(RealNumber<'a>),
+}
+
+#[derive(Debug)]
+pub enum IntegralNumber<'a> {
+    DecimalNumber(DecimalNumber<'a>),
+    OctalNumber(OctalNumber<'a>),
+    BinaryNumber(BinaryNumber<'a>),
+    HexNumber(HexNumber<'a>),
+    UnsignedNumber(Vec<&'a str>),
+}
+
+#[derive(Debug)]
+pub enum RealNumber<'a> {
+    FixedPointNumber(FixedPointNumber<'a>),
+    FloatingPointNumber(FloatingPointNumber<'a>),
+}
+
+#[derive(Debug)]
+pub struct DecimalNumber<'a> {
+    pub size: Option<Vec<&'a str>>,
+    pub decimal_base: &'a str,
+    pub decimal_value: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct BinaryNumber<'a> {
+    pub size: Option<Vec<&'a str>>,
+    pub binary_base: &'a str,
+    pub binary_value: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct OctalNumber<'a> {
+    pub size: Option<Vec<&'a str>>,
+    pub octal_base: &'a str,
+    pub octal_value: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct HexNumber<'a> {
+    pub size: Option<Vec<&'a str>>,
+    pub hex_base: &'a str,
+    pub hex_value: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct FixedPointNumber<'a> {
+    pub integer_value: Vec<&'a str>,
+    pub fraction_value: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct FloatingPointNumber<'a> {
+    pub integer_value: Vec<&'a str>,
+    pub fraction_value: Option<Vec<&'a str>>,
+    pub exponent: &'a str,
+    pub sign: Option<&'a str>,
+    pub exponent_value: Vec<&'a str>,
+}
+
+// -----------------------------------------------------------------------------
+
 pub fn number(s: &str) -> IResult<&str, Number> {
-    alt((integral_number, real_number))(s)
+    alt((real_number, integral_number))(s)
 }
 
 pub fn integral_number(s: &str) -> IResult<&str, Number> {
@@ -23,7 +90,7 @@ pub fn integral_number(s: &str) -> IResult<&str, Number> {
 }
 
 pub fn decimal_number(s: &str) -> IResult<&str, IntegralNumber> {
-    let (s, (size, _, decimal_base, _, decimal_number)) = tuple((
+    let (s, (size, _, decimal_base, _, decimal_value)) = tuple((
         opt(size),
         space0,
         decimal_base,
@@ -35,7 +102,7 @@ pub fn decimal_number(s: &str) -> IResult<&str, IntegralNumber> {
         IntegralNumber::DecimalNumber(DecimalNumber {
             size,
             decimal_base,
-            decimal_number,
+            decimal_value,
         }),
     ))
 }
@@ -84,8 +151,6 @@ pub fn hex_number(s: &str) -> IResult<&str, IntegralNumber> {
     ))
 }
 
-// sign
-
 pub fn size(s: &str) -> IResult<&str, Vec<&str>> {
     let (s, x) = is_a("123456789")(s)?;
     let (s, x) = fold_many0(alt((tag("_"), digit1)), vec![x], |mut acc: Vec<_>, item| {
@@ -96,19 +161,42 @@ pub fn size(s: &str) -> IResult<&str, Vec<&str>> {
 }
 
 pub fn real_number(s: &str) -> IResult<&str, Number> {
-    let (s, x) = alt((fixed_point_number, floating_point_number))(s)?;
+    let (s, x) = alt((floating_point_number, fixed_point_number))(s)?;
     Ok((s, Number::RealNumber(x)))
 }
 
 pub fn fixed_point_number(s: &str) -> IResult<&str, RealNumber> {
-    Ok((s, RealNumber::FixedPointNumber))
+    let (s, (integer_value, _, fraction_value)) =
+        tuple((unsigned_number, tag("."), unsigned_number))(s)?;
+    Ok((
+        s,
+        RealNumber::FixedPointNumber(FixedPointNumber {
+            integer_value,
+            fraction_value,
+        }),
+    ))
 }
 
 pub fn floating_point_number(s: &str) -> IResult<&str, RealNumber> {
-    Ok((s, RealNumber::FloatingPointNumber))
-}
+    let (s, integer_value) = unsigned_number(s)?;
+    let (s, fraction_value) = opt(tuple((tag("."), unsigned_number)))(s)?;
+    let (s, exponent) = alt((tag("e"), tag("E")))(s)?;
+    let (s, sign) = opt(alt((tag("+"), tag("-"))))(s)?;
+    let (s, exponent_value) = unsigned_number(s)?;
 
-// exp
+    let fraction_value = fraction_value.and_then(|(_, y)| Some(y));
+
+    Ok((
+        s,
+        RealNumber::FloatingPointNumber(FloatingPointNumber {
+            integer_value,
+            fraction_value,
+            exponent,
+            sign,
+            exponent_value,
+        }),
+    ))
+}
 
 pub fn unsigned_number(s: &str) -> IResult<&str, Vec<&str>> {
     let (s, x) = digit1(s)?;
@@ -222,6 +310,8 @@ pub fn z_number(s: &str) -> IResult<&str, Vec<&str>> {
     )(s)
 }
 
+// -----------------------------------------------------------------------------
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -250,7 +340,7 @@ mod tests {
         );
         assert_eq!(
             format!("{:?}", all_consuming(number)("5 'D 3")),
-            "Ok((\"\", IntegralNumber(DecimalNumber(DecimalNumber { size: Some([\"5\"]), decimal_base: \"\\\'D\", decimal_number: [\"3\"] }))))"
+            "Ok((\"\", IntegralNumber(DecimalNumber(DecimalNumber { size: Some([\"5\"]), decimal_base: \"\\\'D\", decimal_value: [\"3\"] }))))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(number)("3'b01x")),
@@ -274,7 +364,7 @@ mod tests {
         );
         assert_eq!(
             format!("{:?}", all_consuming(number)("16'sd?")),
-            "Ok((\"\", IntegralNumber(DecimalNumber(DecimalNumber { size: Some([\"16\"]), decimal_base: \"\\\'sd\", decimal_number: [\"?\"] }))))"
+            "Ok((\"\", IntegralNumber(DecimalNumber(DecimalNumber { size: Some([\"16\"]), decimal_base: \"\\\'sd\", decimal_value: [\"?\"] }))))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(number)("27_195_000")),
@@ -287,6 +377,58 @@ mod tests {
         assert_eq!(
             format!("{:?}", all_consuming(number)("32 'h 12ab_f001")),
             "Ok((\"\", IntegralNumber(HexNumber(HexNumber { size: Some([\"32\"]), hex_base: \"\\\'h\", hex_value: [\"12ab\", \"_\", \"f001\"] }))))"
+        );
+        assert_eq!(
+            format!("{:?}", all_consuming(number)("1.2")),
+            "Ok((\"\", RealNumber(FixedPointNumber(FixedPointNumber { integer_value: [\"1\"], fraction_value: [\"2\"] }))))"
+        );
+        assert_eq!(
+            format!("{:?}", all_consuming(number)("0.1")),
+            "Ok((\"\", RealNumber(FixedPointNumber(FixedPointNumber { integer_value: [\"0\"], fraction_value: [\"1\"] }))))"
+        );
+        assert_eq!(
+            format!("{:?}", all_consuming(number)("2394.26331")),
+            "Ok((\"\", RealNumber(FixedPointNumber(FixedPointNumber { integer_value: [\"2394\"], fraction_value: [\"26331\"] }))))"
+        );
+        assert_eq!(
+            format!("{:?}", all_consuming(number)("1.2E12")),
+            "Ok((\"\", RealNumber(FloatingPointNumber(FloatingPointNumber { integer_value: [\"1\"], fraction_value: Some([\"2\"]), exponent: \"E\", sign: None, exponent_value: [\"12\"] }))))"
+        );
+        assert_eq!(
+            format!("{:?}", all_consuming(number)("1.30e-2")),
+            "Ok((\"\", RealNumber(FloatingPointNumber(FloatingPointNumber { integer_value: [\"1\"], fraction_value: Some([\"30\"]), exponent: \"e\", sign: Some(\"-\"), exponent_value: [\"2\"] }))))"
+        );
+        assert_eq!(
+            format!("{:?}", all_consuming(number)("0.1e-0")),
+            "Ok((\"\", RealNumber(FloatingPointNumber(FloatingPointNumber { integer_value: [\"0\"], fraction_value: Some([\"1\"]), exponent: \"e\", sign: Some(\"-\"), exponent_value: [\"0\"] }))))"
+        );
+        assert_eq!(
+            format!("{:?}", all_consuming(number)("23E10")),
+            "Ok((\"\", RealNumber(FloatingPointNumber(FloatingPointNumber { integer_value: [\"23\"], fraction_value: None, exponent: \"E\", sign: None, exponent_value: [\"10\"] }))))"
+        );
+        assert_eq!(
+            format!("{:?}", all_consuming(number)("29E-2")),
+            "Ok((\"\", RealNumber(FloatingPointNumber(FloatingPointNumber { integer_value: [\"29\"], fraction_value: None, exponent: \"E\", sign: Some(\"-\"), exponent_value: [\"2\"] }))))"
+        );
+        assert_eq!(
+            format!("{:?}", all_consuming(number)("236.123_763_e-12")),
+            "Ok((\"\", RealNumber(FloatingPointNumber(FloatingPointNumber { integer_value: [\"236\"], fraction_value: Some([\"123\", \"_\", \"763\", \"_\"]), exponent: \"e\", sign: Some(\"-\"), exponent_value: [\"12\"] }))))"
+        );
+        assert_eq!(
+            format!("{:?}", all_consuming(number)(".12")),
+            "Err(Error((\".12\", Digit)))"
+        );
+        assert_eq!(
+            format!("{:?}", all_consuming(number)("9.")),
+            "Err(Error((\".\", Eof)))"
+        );
+        assert_eq!(
+            format!("{:?}", all_consuming(number)("4.E3")),
+            "Err(Error((\".E3\", Eof)))"
+        );
+        assert_eq!(
+            format!("{:?}", all_consuming(number)(".2e-7")),
+            "Err(Error((\".2e-7\", Digit)))"
         );
     }
 }

@@ -1,3 +1,4 @@
+use crate::util::*;
 use nom::branch::*;
 use nom::bytes::complete::*;
 use nom::character::complete::*;
@@ -90,12 +91,10 @@ pub fn integral_number(s: &str) -> IResult<&str, Number> {
 }
 
 pub fn decimal_number(s: &str) -> IResult<&str, IntegralNumber> {
-    let (s, (size, _, decimal_base, _, decimal_value)) = tuple((
+    let (s, (size, decimal_base, decimal_value)) = tuple((
         opt(size),
-        space0,
-        decimal_base,
-        space0,
-        alt((unsigned_number, x_number, z_number)),
+        sp(decimal_base),
+        sp(alt((unsigned_number, x_number, z_number))),
     ))(s)?;
     Ok((
         s,
@@ -113,8 +112,8 @@ pub fn integral_unsigned_number(s: &str) -> IResult<&str, IntegralNumber> {
 }
 
 pub fn binary_number(s: &str) -> IResult<&str, IntegralNumber> {
-    let (s, (size, _, binary_base, _, binary_value)) =
-        tuple((opt(size), space0, binary_base, space0, binary_value))(s)?;
+    let (s, (size, binary_base, binary_value)) =
+        tuple((opt(size), sp(binary_base), sp(binary_value)))(s)?;
     Ok((
         s,
         IntegralNumber::BinaryNumber(BinaryNumber {
@@ -126,8 +125,8 @@ pub fn binary_number(s: &str) -> IResult<&str, IntegralNumber> {
 }
 
 pub fn octal_number(s: &str) -> IResult<&str, IntegralNumber> {
-    let (s, (size, _, octal_base, _, octal_value)) =
-        tuple((opt(size), space0, octal_base, space0, octal_value))(s)?;
+    let (s, (size, octal_base, octal_value)) =
+        tuple((opt(size), sp(octal_base), sp(octal_value)))(s)?;
     Ok((
         s,
         IntegralNumber::OctalNumber(OctalNumber {
@@ -139,8 +138,7 @@ pub fn octal_number(s: &str) -> IResult<&str, IntegralNumber> {
 }
 
 pub fn hex_number(s: &str) -> IResult<&str, IntegralNumber> {
-    let (s, (size, _, hex_base, _, hex_value)) =
-        tuple((opt(size), space0, hex_base, space0, hex_value))(s)?;
+    let (s, (size, hex_base, hex_value)) = tuple((opt(size), sp(hex_base), sp(hex_value)))(s)?;
     Ok((
         s,
         IntegralNumber::HexNumber(HexNumber {
@@ -243,51 +241,23 @@ pub fn hex_value(s: &str) -> IResult<&str, Vec<&str>> {
 }
 
 pub fn decimal_base(s: &str) -> IResult<&str, &str> {
-    alt((
-        tag("'d"),
-        tag("'sd"),
-        tag("'Sd"),
-        tag("'D"),
-        tag("'sD"),
-        tag("'SD"),
-    ))(s)
+    alt((tag_no_case("'d"), tag_no_case("'sd")))(s)
 }
 
 pub fn binary_base(s: &str) -> IResult<&str, &str> {
-    alt((
-        tag("'b"),
-        tag("'sb"),
-        tag("'Sb"),
-        tag("'B"),
-        tag("'sB"),
-        tag("'SB"),
-    ))(s)
+    alt((tag_no_case("'b"), tag_no_case("'sb")))(s)
 }
 
 pub fn octal_base(s: &str) -> IResult<&str, &str> {
-    alt((
-        tag("'o"),
-        tag("'so"),
-        tag("'So"),
-        tag("'O"),
-        tag("'sO"),
-        tag("'SO"),
-    ))(s)
+    alt((tag_no_case("'o"), tag_no_case("'so")))(s)
 }
 
 pub fn hex_base(s: &str) -> IResult<&str, &str> {
-    alt((
-        tag("'h"),
-        tag("'sh"),
-        tag("'Sh"),
-        tag("'H"),
-        tag("'sH"),
-        tag("'SH"),
-    ))(s)
+    alt((tag_no_case("'h"), tag_no_case("'sh")))(s)
 }
 
 pub fn x_number(s: &str) -> IResult<&str, Vec<&str>> {
-    let (s, x) = alt((tag("x"), tag("X")))(s)?;
+    let (s, x) = tag_no_case("x")(s)?;
     fold_many0(
         alt((tag("_"), is_a("_"))),
         vec![x],
@@ -299,7 +269,7 @@ pub fn x_number(s: &str) -> IResult<&str, Vec<&str>> {
 }
 
 pub fn z_number(s: &str) -> IResult<&str, Vec<&str>> {
-    let (s, x) = alt((tag("z"), tag("Z"), tag("?")))(s)?;
+    let (s, x) = alt((tag_no_case("z"), tag("?")))(s)?;
     fold_many0(
         alt((tag("_"), is_a("_"))),
         vec![x],

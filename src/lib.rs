@@ -1,4 +1,4 @@
-pub mod comment;
-pub mod identifier;
-pub mod number;
+pub mod comments;
+pub mod identifiers;
+pub mod numbers;
 pub mod util;

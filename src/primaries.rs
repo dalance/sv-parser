@@ -526,7 +526,7 @@ pub fn select(s: &str) -> IResult<&str, Select> {
     ))
 }
 
-pub fn norange_select(s: &str) -> IResult<&str, Select> {
+pub fn nonrange_select(s: &str) -> IResult<&str, Select> {
     let (s, member) = opt(pair(
         many0(preceded(
             sp(tag(".")),

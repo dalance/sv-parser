@@ -1,6 +1,7 @@
 pub mod attributes;
 pub mod comments;
 pub mod identifiers;
+pub mod lvalues;
 pub mod numbers;
 pub mod operators;
 pub mod primaries;

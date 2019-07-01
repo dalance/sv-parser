@@ -132,6 +132,21 @@ pub struct SequenceMethodCall<'a> {
     pub raw: Vec<&'a str>,
 }
 
+#[derive(Debug)]
+pub struct AssignmentPatternExpressionType<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct AssignmentPatternNetLvalue<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct AssignmentPatternVariableLvalue<'a> {
+    pub raw: Vec<&'a str>,
+}
+
 pub fn class_scope(s: &str) -> IResult<&str, Scope> {
     Ok((s, Scope::ClassScope))
 }
@@ -240,4 +255,20 @@ pub fn streaming_concatenation(s: &str) -> IResult<&str, StreamingConcatenation>
 
 pub fn sequence_method_call(s: &str) -> IResult<&str, SequenceMethodCall> {
     Ok((s, SequenceMethodCall { raw: vec![] }))
+}
+
+pub fn assignment_pattern_expression_type(
+    s: &str,
+) -> IResult<&str, AssignmentPatternExpressionType> {
+    Ok((s, AssignmentPatternExpressionType { raw: vec![] }))
+}
+
+pub fn assignment_pattern_net_lvalue(s: &str) -> IResult<&str, AssignmentPatternNetLvalue> {
+    Ok((s, AssignmentPatternNetLvalue { raw: vec![] }))
+}
+
+pub fn assignment_pattern_variable_lvalue(
+    s: &str,
+) -> IResult<&str, AssignmentPatternVariableLvalue> {
+    Ok((s, AssignmentPatternVariableLvalue { raw: vec![] }))
 }

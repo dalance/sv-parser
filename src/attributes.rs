@@ -12,6 +12,7 @@ use nom::IResult;
 pub struct AttributeInstance<'a> {
     pub attr_spec: Vec<AttrSpec<'a>>,
 }
+
 #[derive(Debug)]
 pub struct AttrSpec<'a> {
     pub attr_name: Identifier<'a>,

@@ -280,6 +280,10 @@ pub fn z_number(s: &str) -> IResult<&str, Vec<&str>> {
     )(s)
 }
 
+pub fn unbased_unsized_literal(s: &str) -> IResult<&str, &str> {
+    alt((tag("'0"), tag("'1"), tag("'z"), tag("'x")))(s)
+}
+
 // -----------------------------------------------------------------------------
 
 #[cfg(test)]
@@ -399,6 +403,10 @@ mod tests {
         assert_eq!(
             format!("{:?}", all_consuming(number)(".2e-7")),
             "Err(Error((\".2e-7\", Digit)))"
+        );
+        assert_eq!(
+            format!("{:?}", all_consuming(unbased_unsized_literal)("'0")),
+            "Ok((\"\", \"\\\'0\"))"
         );
     }
 }

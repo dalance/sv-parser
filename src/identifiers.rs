@@ -1,3 +1,4 @@
+use crate::primaries::*;
 use crate::util::*;
 use nom::branch::*;
 use nom::bytes::complete::*;
@@ -28,7 +29,7 @@ pub enum Scope<'a> {
     LocalScope,
     PackageScope(Identifier<'a>),
     ClassScope,
-    ImplicitClassHandle,
+    ImplicitClassHandle(ImplicitClassHandle),
     GenerateBlockScope(Vec<GenerateBlockScope<'a>>),
 }
 
@@ -56,7 +57,7 @@ impl<'a> From<Identifier<'a>> for HierarchicalIdentifier<'a> {
 #[derive(Debug)]
 pub struct Hierarchy<'a> {
     pub identifier: Identifier<'a>,
-    pub constant_bit_select: Option<ConstantBitSelect<'a>>,
+    pub constant_bit_select: Option<ConstantExpression<'a>>,
 }
 
 // -----------------------------------------------------------------------------

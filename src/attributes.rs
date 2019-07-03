@@ -1,3 +1,4 @@
+use crate::expressions::*;
 use crate::identifiers::*;
 use crate::util::*;
 use nom::bytes::complete::*;
@@ -49,13 +50,19 @@ mod tests {
             ),
             "Ok((\"\", AttributeInstance { attr_spec: [AttrSpec { attr_name: Identifier { raw: [\"full_case\"] }, rvalue: None }, AttrSpec { attr_name: Identifier { raw: [\"parallel_case\"] }, rvalue: None }] }))"
         );
-        // TODO after constant_expression
-        //assert_eq!(
-        //    format!(
-        //        "{:?}",
-        //        all_consuming(attribute_instance)("(* full_case=1 *)")
-        //    ),
-        //    ""
-        //);
+        assert_eq!(
+            format!(
+                "{:?}",
+                all_consuming(attribute_instance)("(* full_case=1 *)")
+            ),
+            "Ok((\"\", AttributeInstance { attr_spec: [AttrSpec { attr_name: Identifier { raw: [\"full_case\"] }, rvalue: Some(Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber([\"1\"])))))) }] }))"
+        );
+        assert_eq!(
+            format!(
+                "{:?}",
+                all_consuming(attribute_instance)("(* full_case=1, parallel_case = 0 *)")
+            ),
+            "Ok((\"\", AttributeInstance { attr_spec: [AttrSpec { attr_name: Identifier { raw: [\"full_case\"] }, rvalue: Some(Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber([\"1\"])))))) }, AttrSpec { attr_name: Identifier { raw: [\"parallel_case\"] }, rvalue: Some(Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber([\"0\"])))))) }] }))"
+        );
     }
 }

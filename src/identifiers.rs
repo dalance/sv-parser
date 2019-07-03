@@ -1,3 +1,4 @@
+use crate::expressions::*;
 use crate::primaries::*;
 use crate::util::*;
 use nom::branch::*;
@@ -57,7 +58,7 @@ impl<'a> From<Identifier<'a>> for HierarchicalIdentifier<'a> {
 #[derive(Debug)]
 pub struct Hierarchy<'a> {
     pub identifier: Identifier<'a>,
-    pub constant_bit_select: Option<ConstantExpression<'a>>,
+    pub constant_bit_select: Option<Vec<ConstantExpression<'a>>>,
 }
 
 // -----------------------------------------------------------------------------

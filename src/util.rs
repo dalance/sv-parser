@@ -18,16 +18,6 @@ where
 // -----------------------------------------------------------------------------
 
 #[derive(Debug)]
-pub struct ConstantExpression<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct ConstantRangeExpression<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
 pub struct Concatenation<'a> {
     pub raw: Vec<&'a str>,
 }
@@ -38,22 +28,7 @@ pub struct MultipleConcatenation<'a> {
 }
 
 #[derive(Debug)]
-pub struct ConstantFunctionCall<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
 pub struct ConstantLetExpression<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct ConstantMintypmaxExpression<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct Expression<'a> {
     pub raw: Vec<&'a str>,
 }
 
@@ -88,32 +63,7 @@ pub struct ModulePathMultipleConcatenation<'a> {
 }
 
 #[derive(Debug)]
-pub struct FunctionSubroutineCall<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct ModulePathMintypmaxExpression<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct PartSelectRange<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct ConstantPartSelectRange<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
 pub struct EmptyUnpackedArrayConcatenation<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct MintypmaxExpression<'a> {
     pub raw: Vec<&'a str>,
 }
 
@@ -147,16 +97,38 @@ pub struct AssignmentPatternVariableLvalue<'a> {
     pub raw: Vec<&'a str>,
 }
 
+#[derive(Debug)]
+pub struct CondPredicate<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct DataType<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct OperatorAssignment<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct OpenRangeList<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct ClockingEvent<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct ConstraintBlock<'a> {
+    pub raw: Vec<&'a str>,
+}
+
 pub fn class_scope(s: &str) -> IResult<&str, Scope> {
     Ok((s, Scope::ClassScope))
-}
-
-pub fn constant_expression(s: &str) -> IResult<&str, ConstantExpression> {
-    Ok((s, ConstantExpression { raw: vec![] }))
-}
-
-pub fn constant_range_expression(s: &str) -> IResult<&str, ConstantRangeExpression> {
-    Ok((s, ConstantRangeExpression { raw: vec![] }))
 }
 
 pub fn constant_concatenation(s: &str) -> IResult<&str, Concatenation> {
@@ -167,20 +139,8 @@ pub fn constant_multiple_concatenation(s: &str) -> IResult<&str, MultipleConcate
     Ok((s, MultipleConcatenation { raw: vec![] }))
 }
 
-pub fn constant_function_call(s: &str) -> IResult<&str, ConstantFunctionCall> {
-    Ok((s, ConstantFunctionCall { raw: vec![] }))
-}
-
 pub fn constant_let_expression(s: &str) -> IResult<&str, ConstantLetExpression> {
     Ok((s, ConstantLetExpression { raw: vec![] }))
-}
-
-pub fn constant_mintypmax_expression(s: &str) -> IResult<&str, ConstantMintypmaxExpression> {
-    Ok((s, ConstantMintypmaxExpression { raw: vec![] }))
-}
-
-pub fn expression(s: &str) -> IResult<&str, Expression> {
-    Ok((s, Expression { raw: vec![] }))
 }
 
 pub fn casting_type(s: &str) -> IResult<&str, CastingType> {
@@ -211,22 +171,6 @@ pub fn module_path_multiple_concatenation(
     Ok((s, ModulePathMultipleConcatenation { raw: vec![] }))
 }
 
-pub fn function_subroutine_call(s: &str) -> IResult<&str, FunctionSubroutineCall> {
-    Ok((s, FunctionSubroutineCall { raw: vec![] }))
-}
-
-pub fn module_path_mintypmax_expression(s: &str) -> IResult<&str, ModulePathMintypmaxExpression> {
-    Ok((s, ModulePathMintypmaxExpression { raw: vec![] }))
-}
-
-pub fn part_select_range(s: &str) -> IResult<&str, PartSelectRange> {
-    Ok((s, PartSelectRange { raw: vec![] }))
-}
-
-pub fn constant_part_select_range(s: &str) -> IResult<&str, ConstantPartSelectRange> {
-    Ok((s, ConstantPartSelectRange { raw: vec![] }))
-}
-
 pub fn empty_unpacked_array_concatenation(
     s: &str,
 ) -> IResult<&str, EmptyUnpackedArrayConcatenation> {
@@ -239,10 +183,6 @@ pub fn concatenation(s: &str) -> IResult<&str, Concatenation> {
 
 pub fn multiple_concatenation(s: &str) -> IResult<&str, MultipleConcatenation> {
     Ok((s, MultipleConcatenation { raw: vec![] }))
-}
-
-pub fn mintypmax_expression(s: &str) -> IResult<&str, MintypmaxExpression> {
-    Ok((s, MintypmaxExpression { raw: vec![] }))
 }
 
 pub fn assignment_pattern_expression(s: &str) -> IResult<&str, AssignmentPatternExpression> {
@@ -271,4 +211,36 @@ pub fn assignment_pattern_variable_lvalue(
     s: &str,
 ) -> IResult<&str, AssignmentPatternVariableLvalue> {
     Ok((s, AssignmentPatternVariableLvalue { raw: vec![] }))
+}
+
+pub fn cond_predicate(s: &str) -> IResult<&str, CondPredicate> {
+    Ok((s, CondPredicate { raw: vec![] }))
+}
+
+pub fn data_type(s: &str) -> IResult<&str, DataType> {
+    Ok((s, DataType { raw: vec![] }))
+}
+
+pub fn operator_assignment(s: &str) -> IResult<&str, OperatorAssignment> {
+    Ok((s, OperatorAssignment { raw: vec![] }))
+}
+
+pub fn open_range_list(s: &str) -> IResult<&str, OpenRangeList> {
+    Ok((s, OpenRangeList { raw: vec![] }))
+}
+
+pub fn clocking_event(s: &str) -> IResult<&str, ClockingEvent> {
+    Ok((s, ClockingEvent { raw: vec![] }))
+}
+
+pub fn constraint_block(s: &str) -> IResult<&str, ConstraintBlock> {
+    Ok((s, ConstraintBlock { raw: vec![] }))
+}
+
+pub fn variable_identifier_list(s: &str) -> IResult<&str, Vec<Identifier>> {
+    Ok((s, vec![]))
+}
+
+pub fn identifier_list(s: &str) -> IResult<&str, Vec<Identifier>> {
+    Ok((s, vec![]))
 }

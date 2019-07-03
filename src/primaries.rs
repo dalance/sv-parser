@@ -1,3 +1,4 @@
+use crate::concatenations::*;
 use crate::expressions::*;
 use crate::identifiers::*;
 use crate::numbers::*;
@@ -58,13 +59,13 @@ pub struct ConstantPrimaryEnum<'a> {
 
 #[derive(Debug)]
 pub struct ConstantPrimaryConcatenation<'a> {
-    concatenation: Concatenation<'a>,
+    concatenation: ConstantConcatenation<'a>,
     range: Option<ConstantRangeExpression<'a>>,
 }
 
 #[derive(Debug)]
 pub struct ConstantPrimaryMultipleConcatenation<'a> {
-    concatenation: MultipleConcatenation<'a>,
+    concatenation: ConstantMultipleConcatenation<'a>,
     range: Option<ConstantRangeExpression<'a>>,
 }
 
@@ -82,7 +83,7 @@ pub enum ModulePathPrimary<'a> {
 pub enum Primary<'a> {
     PrimaryLiteral(PrimaryLiteral<'a>),
     Hierarchical(PrimaryHierarchical<'a>),
-    EmptyUnpackedArrayConcatenation(EmptyUnpackedArrayConcatenation<'a>),
+    EmptyUnpackedArrayConcatenation,
     Concatenation(PrimaryConcatenation<'a>),
     MultipleConcatenation(PrimaryMultipleConcatenation<'a>),
     FunctionSubroutineCall(SubroutineCall<'a>),
@@ -339,8 +340,8 @@ pub fn primary(s: &str) -> IResult<&str, Primary> {
     alt((
         map(primary_literal, |x| Primary::PrimaryLiteral(x)),
         primary_hierarchical,
-        map(empty_unpacked_array_concatenation, |x| {
-            Primary::EmptyUnpackedArrayConcatenation(x)
+        map(empty_unpacked_array_concatenation, |_| {
+            Primary::EmptyUnpackedArrayConcatenation
         }),
         primary_concatenation,
         map(function_subroutine_call, |x| {

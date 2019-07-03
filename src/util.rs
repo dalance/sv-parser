@@ -18,21 +18,6 @@ where
 // -----------------------------------------------------------------------------
 
 #[derive(Debug)]
-pub struct Concatenation<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct MultipleConcatenation<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct ConstantLetExpression<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
 pub struct CastingType<'a> {
     pub raw: Vec<&'a str>,
 }
@@ -53,27 +38,7 @@ pub struct TypeReference<'a> {
 }
 
 #[derive(Debug)]
-pub struct ModulePathConcatenation<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct ModulePathMultipleConcatenation<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct EmptyUnpackedArrayConcatenation<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
 pub struct AssignmentPatternExpression<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct StreamingConcatenation<'a> {
     pub raw: Vec<&'a str>,
 }
 
@@ -127,20 +92,13 @@ pub struct ConstraintBlock<'a> {
     pub raw: Vec<&'a str>,
 }
 
+#[derive(Debug)]
+pub struct SimpleType<'a> {
+    pub raw: Vec<&'a str>,
+}
+
 pub fn class_scope(s: &str) -> IResult<&str, Scope> {
     Ok((s, Scope::ClassScope))
-}
-
-pub fn constant_concatenation(s: &str) -> IResult<&str, Concatenation> {
-    Ok((s, Concatenation { raw: vec![] }))
-}
-
-pub fn constant_multiple_concatenation(s: &str) -> IResult<&str, MultipleConcatenation> {
-    Ok((s, MultipleConcatenation { raw: vec![] }))
-}
-
-pub fn constant_let_expression(s: &str) -> IResult<&str, ConstantLetExpression> {
-    Ok((s, ConstantLetExpression { raw: vec![] }))
 }
 
 pub fn casting_type(s: &str) -> IResult<&str, CastingType> {
@@ -161,36 +119,8 @@ pub fn type_reference(s: &str) -> IResult<&str, TypeReference> {
     Ok((s, TypeReference { raw: vec![] }))
 }
 
-pub fn module_path_concatenation(s: &str) -> IResult<&str, ModulePathConcatenation> {
-    Ok((s, ModulePathConcatenation { raw: vec![] }))
-}
-
-pub fn module_path_multiple_concatenation(
-    s: &str,
-) -> IResult<&str, ModulePathMultipleConcatenation> {
-    Ok((s, ModulePathMultipleConcatenation { raw: vec![] }))
-}
-
-pub fn empty_unpacked_array_concatenation(
-    s: &str,
-) -> IResult<&str, EmptyUnpackedArrayConcatenation> {
-    Ok((s, EmptyUnpackedArrayConcatenation { raw: vec![] }))
-}
-
-pub fn concatenation(s: &str) -> IResult<&str, Concatenation> {
-    Ok((s, Concatenation { raw: vec![] }))
-}
-
-pub fn multiple_concatenation(s: &str) -> IResult<&str, MultipleConcatenation> {
-    Ok((s, MultipleConcatenation { raw: vec![] }))
-}
-
 pub fn assignment_pattern_expression(s: &str) -> IResult<&str, AssignmentPatternExpression> {
     Ok((s, AssignmentPatternExpression { raw: vec![] }))
-}
-
-pub fn streaming_concatenation(s: &str) -> IResult<&str, StreamingConcatenation> {
-    Ok((s, StreamingConcatenation { raw: vec![] }))
 }
 
 pub fn sequence_method_call(s: &str) -> IResult<&str, SequenceMethodCall> {
@@ -243,4 +173,8 @@ pub fn variable_identifier_list(s: &str) -> IResult<&str, Vec<Identifier>> {
 
 pub fn identifier_list(s: &str) -> IResult<&str, Vec<Identifier>> {
     Ok((s, vec![]))
+}
+
+pub fn simple_type(s: &str) -> IResult<&str, SimpleType> {
+    Ok((s, SimpleType { raw: vec![] }))
 }

@@ -1,5 +1,6 @@
 pub mod attributes;
 pub mod comments;
+pub mod concatenations;
 pub mod expressions;
 pub mod identifiers;
 pub mod lvalues;

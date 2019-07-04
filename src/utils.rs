@@ -79,11 +79,6 @@ pub struct DataType<'a> {
 }
 
 #[derive(Debug)]
-pub struct OperatorAssignment<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
 pub struct OpenRangeList<'a> {
     pub raw: Vec<&'a str>,
 }
@@ -100,6 +95,56 @@ pub struct ConstraintBlock<'a> {
 
 #[derive(Debug)]
 pub struct SimpleType<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct DriveStrength<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct Delay3<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct DelayControl<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct StatementOrNull<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct Statement<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct FunctionStatement<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct DelayOrEventControl<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct DynamicArrayNew<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct ClassNew<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct BlockItemDeclaration<'a> {
     pub raw: Vec<&'a str>,
 }
 
@@ -157,10 +202,6 @@ pub fn data_type(s: &str) -> IResult<&str, DataType> {
     Ok((s, DataType { raw: vec![] }))
 }
 
-pub fn operator_assignment(s: &str) -> IResult<&str, OperatorAssignment> {
-    Ok((s, OperatorAssignment { raw: vec![] }))
-}
-
 pub fn open_range_list(s: &str) -> IResult<&str, OpenRangeList> {
     Ok((s, OpenRangeList { raw: vec![] }))
 }
@@ -183,4 +224,44 @@ pub fn identifier_list(s: &str) -> IResult<&str, Vec<Identifier>> {
 
 pub fn simple_type(s: &str) -> IResult<&str, SimpleType> {
     Ok((s, SimpleType { raw: vec![] }))
+}
+
+pub fn drive_strength(s: &str) -> IResult<&str, DriveStrength> {
+    Ok((s, DriveStrength { raw: vec![] }))
+}
+
+pub fn delay3(s: &str) -> IResult<&str, Delay3> {
+    Ok((s, Delay3 { raw: vec![] }))
+}
+
+pub fn delay_control(s: &str) -> IResult<&str, DelayControl> {
+    Ok((s, DelayControl { raw: vec![] }))
+}
+
+pub fn statement_or_null(s: &str) -> IResult<&str, StatementOrNull> {
+    Ok((s, StatementOrNull { raw: vec![] }))
+}
+
+pub fn statement(s: &str) -> IResult<&str, Statement> {
+    Ok((s, Statement { raw: vec![] }))
+}
+
+pub fn function_statement(s: &str) -> IResult<&str, FunctionStatement> {
+    Ok((s, FunctionStatement { raw: vec![] }))
+}
+
+pub fn delay_or_event_control(s: &str) -> IResult<&str, DelayOrEventControl> {
+    Ok((s, DelayOrEventControl { raw: vec![] }))
+}
+
+pub fn dynamic_array_new(s: &str) -> IResult<&str, DynamicArrayNew> {
+    Ok((s, DynamicArrayNew { raw: vec![] }))
+}
+
+pub fn class_new(s: &str) -> IResult<&str, ClassNew> {
+    Ok((s, ClassNew { raw: vec![] }))
+}
+
+pub fn block_item_declaration(s: &str) -> IResult<&str, BlockItemDeclaration> {
+    Ok((s, BlockItemDeclaration { raw: vec![] }))
 }

@@ -3,6 +3,7 @@ use crate::identifiers::*;
 use crate::lvalues::*;
 use crate::operators::*;
 use crate::primaries::*;
+use crate::proceduals::*;
 use crate::utils::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -604,7 +605,6 @@ pub fn genvar_expression(s: &str) -> IResult<&str, ConstantExpression> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
 
     #[test]
     fn test() {

@@ -177,15 +177,15 @@ mod tests {
         );
         assert_eq!(
             format!("{:?}", all_consuming(net_lvalue)("a[1][2]")),
-            "Ok((\"\", Identifier(NetLvalueIdentifier { identifier: ScopedIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"a\"] } } }, select: ConstantSelect { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber([\"1\"]))))), Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber([\"2\"])))))], part_select_range: None } })))"
+            "Ok((\"\", Identifier(NetLvalueIdentifier { identifier: ScopedIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"a\"] } } }, select: ConstantSelect { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\"))))), Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"2\")))))], part_select_range: None } })))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(net_lvalue)("a[1][10:5]")),
-            "Ok((\"\", Identifier(NetLvalueIdentifier { identifier: ScopedIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"a\"] } } }, select: ConstantSelect { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber([\"1\"])))))], part_select_range: Some(Range((Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber([\"10\"]))))), Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber([\"5\"])))))))) } })))"
+            "Ok((\"\", Identifier(NetLvalueIdentifier { identifier: ScopedIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"a\"] } } }, select: ConstantSelect { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\")))))], part_select_range: Some(Range((Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"10\"))))), Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"5\")))))))) } })))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(net_lvalue)("{a, b[1], c}")),
-            "Ok((\"\", Lvalue([Identifier(NetLvalueIdentifier { identifier: ScopedIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"a\"] } } }, select: ConstantSelect { member: None, bit_select: [], part_select_range: None } }), Identifier(NetLvalueIdentifier { identifier: ScopedIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"b\"] } } }, select: ConstantSelect { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber([\"1\"])))))], part_select_range: None } }), Identifier(NetLvalueIdentifier { identifier: ScopedIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"c\"] } } }, select: ConstantSelect { member: None, bit_select: [], part_select_range: None } })])))"
+            "Ok((\"\", Lvalue([Identifier(NetLvalueIdentifier { identifier: ScopedIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"a\"] } } }, select: ConstantSelect { member: None, bit_select: [], part_select_range: None } }), Identifier(NetLvalueIdentifier { identifier: ScopedIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"b\"] } } }, select: ConstantSelect { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\")))))], part_select_range: None } }), Identifier(NetLvalueIdentifier { identifier: ScopedIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"c\"] } } }, select: ConstantSelect { member: None, bit_select: [], part_select_range: None } })])))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(variable_lvalue)("a")),
@@ -193,15 +193,15 @@ mod tests {
         );
         assert_eq!(
             format!("{:?}", all_consuming(variable_lvalue)("a[1][2]")),
-            "Ok((\"\", Identifier(VariableLvalueIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"a\"] } }, select: Select { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber([\"1\"]))))), Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber([\"2\"])))))], part_select_range: None } })))"
+            "Ok((\"\", Identifier(VariableLvalueIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"a\"] } }, select: Select { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\"))))), Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"2\")))))], part_select_range: None } })))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(variable_lvalue)("a[1][10:5]")),
-            "Ok((\"\", Identifier(VariableLvalueIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"a\"] } }, select: Select { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber([\"1\"])))))], part_select_range: Some(Range((Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber([\"10\"]))))), Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber([\"5\"])))))))) } })))"
+            "Ok((\"\", Identifier(VariableLvalueIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"a\"] } }, select: Select { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\")))))], part_select_range: Some(Range((Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"10\"))))), Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"5\")))))))) } })))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(variable_lvalue)("{a, b[1], c}")),
-            "Ok((\"\", Lvalue([Identifier(VariableLvalueIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"a\"] } }, select: Select { member: None, bit_select: [], part_select_range: None } }), Identifier(VariableLvalueIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"b\"] } }, select: Select { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber([\"1\"])))))], part_select_range: None } }), Identifier(VariableLvalueIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"c\"] } }, select: Select { member: None, bit_select: [], part_select_range: None } })])))"
+            "Ok((\"\", Lvalue([Identifier(VariableLvalueIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"a\"] } }, select: Select { member: None, bit_select: [], part_select_range: None } }), Identifier(VariableLvalueIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"b\"] } }, select: Select { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\")))))], part_select_range: None } }), Identifier(VariableLvalueIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"c\"] } }, select: Select { member: None, bit_select: [], part_select_range: None } })])))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(nonrange_variable_lvalue)("a")),
@@ -209,7 +209,7 @@ mod tests {
         );
         assert_eq!(
             format!("{:?}", all_consuming(nonrange_variable_lvalue)("a[1][2]")),
-            "Ok((\"\", NonrangeVariableLvalue { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"a\"] } }, select: Select { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber([\"1\"]))))), Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber([\"2\"])))))], part_select_range: None } }))"
+            "Ok((\"\", NonrangeVariableLvalue { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"a\"] } }, select: Select { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\"))))), Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"2\")))))], part_select_range: None } }))"
         );
     }
 }

@@ -168,7 +168,7 @@ pub enum ImplicitClassHandle {
 
 #[derive(Debug)]
 pub struct UnsignedTimeLiteral<'a> {
-    number: Vec<&'a str>,
+    number: &'a str,
     unit: TimeUnit,
 }
 
@@ -627,11 +627,11 @@ mod tests {
     fn test() {
         assert_eq!(
             format!("{:?}", all_consuming(primary)("2.1ns")),
-            "Ok((\"\", PrimaryLiteral(TimeLiteral(FixedPointTimeLiteral(FixedPointTimeLiteral { number: FixedPointNumber(FixedPointNumber { integer_value: [\"2\"], fraction_value: [\"1\"] }), unit: NS })))))"
+            "Ok((\"\", PrimaryLiteral(TimeLiteral(FixedPointTimeLiteral(FixedPointTimeLiteral { number: FixedPointNumber(FixedPointNumber { integer_value: \"2\", fraction_value: \"1\" }), unit: NS })))))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(primary)("40 ps")),
-            "Ok((\"\", PrimaryLiteral(TimeLiteral(UnsignedTimeLiteral(UnsignedTimeLiteral { number: [\"40\"], unit: PS })))))"
+            "Ok((\"\", PrimaryLiteral(TimeLiteral(UnsignedTimeLiteral(UnsignedTimeLiteral { number: \"40\", unit: PS })))))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(primary)("'0")),
@@ -639,7 +639,7 @@ mod tests {
         );
         assert_eq!(
             format!("{:?}", all_consuming(primary)("10")),
-            "Ok((\"\", PrimaryLiteral(Number(IntegralNumber(UnsignedNumber([\"10\"]))))))"
+            "Ok((\"\", PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"10\"))))))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(primary)("\"aaa\"")),
@@ -663,7 +663,7 @@ mod tests {
         );
         assert_eq!(
             format!("{:?}", all_consuming(module_path_primary)("10")),
-            "Ok((\"\", Number(IntegralNumber(UnsignedNumber([\"10\"])))))"
+            "Ok((\"\", Number(IntegralNumber(UnsignedNumber(\"10\")))))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(constant_primary)("null")),

@@ -1,18 +1,24 @@
 use crate::identifiers::*;
+use nom::bytes::complete::*;
 use nom::character::complete::*;
 use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-pub fn sp<'a, O, F>(f: F) -> impl Fn(&'a str) -> IResult<&'a str, O>
+pub fn ws<'a, O, F>(f: F) -> impl Fn(&'a str) -> IResult<&'a str, O>
 where
     F: Fn(&'a str) -> IResult<&'a str, O>,
 {
     move |s: &'a str| {
         let (s, _) = space0(s)?;
         let (s, x) = f(s)?;
+        let (s, _) = space0(s)?;
         Ok((s, x))
     }
+}
+
+pub fn symbol<'a>(t: &'a str) -> impl Fn(&'a str) -> IResult<&'a str, &'a str> {
+    move |s: &'a str| ws(tag(t.clone()))(s)
 }
 
 // -----------------------------------------------------------------------------

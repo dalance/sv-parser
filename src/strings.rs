@@ -1,3 +1,4 @@
+use crate::util::*;
 use nom::bytes::complete::*;
 use nom::combinator::*;
 use nom::multi::*;
@@ -14,6 +15,10 @@ pub struct StringLiteral<'a> {
 // -----------------------------------------------------------------------------
 
 pub fn string_literal(s: &str) -> IResult<&str, StringLiteral> {
+    ws(string_literal_impl)(s)
+}
+
+pub fn string_literal_impl(s: &str) -> IResult<&str, StringLiteral> {
     let (s, _) = tag("\"")(s)?;
     let (s, x) = many1(pair(is_not("\\\""), opt(pair(tag("\\"), take(1usize)))))(s)?;
     let (s, _) = tag("\"")(s)?;

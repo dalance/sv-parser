@@ -1,7 +1,6 @@
 use crate::expressions::*;
 use crate::util::*;
 use nom::branch::*;
-use nom::bytes::complete::*;
 use nom::combinator::*;
 use nom::multi::*;
 use nom::sequence::*;
@@ -76,24 +75,24 @@ pub struct ArrayRangeExpression<'a> {
 // -----------------------------------------------------------------------------
 
 pub fn concatenation(s: &str) -> IResult<&str, Concatenation> {
-    let (s, _) = tag("{")(s)?;
-    let (s, expression) = separated_nonempty_list(sp(tag(",")), sp(expression))(s)?;
-    let (s, _) = sp(tag("}"))(s)?;
+    let (s, _) = symbol("{")(s)?;
+    let (s, expression) = separated_nonempty_list(symbol(","), expression)(s)?;
+    let (s, _) = symbol("}")(s)?;
     Ok((s, Concatenation { expression }))
 }
 
 pub fn constant_concatenation(s: &str) -> IResult<&str, ConstantConcatenation> {
-    let (s, _) = tag("{")(s)?;
-    let (s, expression) = separated_nonempty_list(sp(tag(",")), sp(constant_expression))(s)?;
-    let (s, _) = sp(tag("}"))(s)?;
+    let (s, _) = symbol("{")(s)?;
+    let (s, expression) = separated_nonempty_list(symbol(","), constant_expression)(s)?;
+    let (s, _) = symbol("}")(s)?;
     Ok((s, ConstantConcatenation { expression }))
 }
 
 pub fn constant_multiple_concatenation(s: &str) -> IResult<&str, ConstantMultipleConcatenation> {
-    let (s, _) = tag("{")(s)?;
-    let (s, expression) = sp(constant_expression)(s)?;
-    let (s, concatenation) = sp(constant_concatenation)(s)?;
-    let (s, _) = sp(tag("}"))(s)?;
+    let (s, _) = symbol("{")(s)?;
+    let (s, expression) = constant_expression(s)?;
+    let (s, concatenation) = constant_concatenation(s)?;
+    let (s, _) = symbol("}")(s)?;
     Ok((
         s,
         ConstantMultipleConcatenation {
@@ -104,19 +103,19 @@ pub fn constant_multiple_concatenation(s: &str) -> IResult<&str, ConstantMultipl
 }
 
 pub fn module_path_concatenation(s: &str) -> IResult<&str, ModulePathConcatenation> {
-    let (s, _) = tag("{")(s)?;
-    let (s, expression) = separated_nonempty_list(sp(tag(",")), sp(module_path_expression))(s)?;
-    let (s, _) = sp(tag("}"))(s)?;
+    let (s, _) = symbol("{")(s)?;
+    let (s, expression) = separated_nonempty_list(symbol(","), module_path_expression)(s)?;
+    let (s, _) = symbol("}")(s)?;
     Ok((s, ModulePathConcatenation { expression }))
 }
 
 pub fn module_path_multiple_concatenation(
     s: &str,
 ) -> IResult<&str, ModulePathMultipleConcatenation> {
-    let (s, _) = tag("{")(s)?;
-    let (s, expression) = sp(constant_expression)(s)?;
-    let (s, concatenation) = sp(module_path_concatenation)(s)?;
-    let (s, _) = sp(tag("}"))(s)?;
+    let (s, _) = symbol("{")(s)?;
+    let (s, expression) = constant_expression(s)?;
+    let (s, concatenation) = module_path_concatenation(s)?;
+    let (s, _) = symbol("}")(s)?;
     Ok((
         s,
         ModulePathMultipleConcatenation {
@@ -127,10 +126,10 @@ pub fn module_path_multiple_concatenation(
 }
 
 pub fn multiple_concatenation(s: &str) -> IResult<&str, MultipleConcatenation> {
-    let (s, _) = tag("{")(s)?;
-    let (s, expression) = sp(expression)(s)?;
-    let (s, concatenation) = sp(concatenation)(s)?;
-    let (s, _) = sp(tag("}"))(s)?;
+    let (s, _) = symbol("{")(s)?;
+    let (s, expression) = expression(s)?;
+    let (s, concatenation) = concatenation(s)?;
+    let (s, _) = symbol("}")(s)?;
     Ok((
         s,
         MultipleConcatenation {
@@ -141,11 +140,11 @@ pub fn multiple_concatenation(s: &str) -> IResult<&str, MultipleConcatenation> {
 }
 
 pub fn streaming_concatenation(s: &str) -> IResult<&str, StreamingConcatenation> {
-    let (s, _) = tag("{")(s)?;
-    let (s, operator) = sp(stream_operator)(s)?;
-    let (s, size) = opt(sp(slice_size))(s)?;
-    let (s, concatenation) = sp(stream_concatenation)(s)?;
-    let (s, _) = sp(tag("}"))(s)?;
+    let (s, _) = symbol("{")(s)?;
+    let (s, operator) = stream_operator(s)?;
+    let (s, size) = opt(slice_size)(s)?;
+    let (s, concatenation) = stream_concatenation(s)?;
+    let (s, _) = symbol("}")(s)?;
     Ok((
         s,
         StreamingConcatenation {
@@ -157,7 +156,7 @@ pub fn streaming_concatenation(s: &str) -> IResult<&str, StreamingConcatenation>
 }
 
 pub fn stream_operator(s: &str) -> IResult<&str, &str> {
-    alt((tag(">>"), tag("<<")))(s)
+    alt((symbol(">>"), symbol("<<")))(s)
 }
 
 pub fn slice_size(s: &str) -> IResult<&str, SliceSize> {
@@ -168,17 +167,17 @@ pub fn slice_size(s: &str) -> IResult<&str, SliceSize> {
 }
 
 pub fn stream_concatenation(s: &str) -> IResult<&str, StreamConcatenation> {
-    let (s, _) = tag("{")(s)?;
-    let (s, expression) = separated_nonempty_list(sp(tag(",")), sp(stream_expression))(s)?;
-    let (s, _) = sp(tag("}"))(s)?;
+    let (s, _) = symbol("{")(s)?;
+    let (s, expression) = separated_nonempty_list(symbol(","), stream_expression)(s)?;
+    let (s, _) = symbol("}")(s)?;
     Ok((s, StreamConcatenation { expression }))
 }
 
 pub fn stream_expression(s: &str) -> IResult<&str, StreamExpression> {
     let (s, expression) = expression(s)?;
     let (s, with) = opt(preceded(
-        sp(tag("with")),
-        delimited(sp(tag("[")), array_range_expression, sp(tag("]"))),
+        symbol("with"),
+        delimited(symbol("["), array_range_expression, symbol("]")),
     ))(s)?;
     Ok((s, StreamExpression { expression, with }))
 }
@@ -186,8 +185,8 @@ pub fn stream_expression(s: &str) -> IResult<&str, StreamExpression> {
 pub fn array_range_expression(s: &str) -> IResult<&str, ArrayRangeExpression> {
     let (s, arg0) = expression(s)?;
     let (s, x) = opt(pair(
-        alt((sp(tag(":")), sp(tag("+:")), sp(tag("-:")))),
-        sp(expression),
+        alt((symbol(":"), symbol("+:"), symbol("-:"))),
+        expression,
     ))(s)?;
     let (operator, arg1) = if let Some((x, y)) = x {
         (Some(x), Some(y))
@@ -205,8 +204,8 @@ pub fn array_range_expression(s: &str) -> IResult<&str, ArrayRangeExpression> {
 }
 
 pub fn empty_unpacked_array_concatenation(s: &str) -> IResult<&str, ()> {
-    let (s, _) = tag("{")(s)?;
-    let (s, _) = sp(tag("}"))(s)?;
+    let (s, _) = symbol("{")(s)?;
+    let (s, _) = symbol("}")(s)?;
     Ok((s, ()))
 }
 

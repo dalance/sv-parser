@@ -1,7 +1,6 @@
 use crate::expressions::*;
 use crate::identifiers::*;
 use crate::util::*;
-use nom::bytes::complete::*;
 use nom::combinator::*;
 use nom::multi::*;
 use nom::sequence::*;
@@ -23,15 +22,15 @@ pub struct AttrSpec<'a> {
 // -----------------------------------------------------------------------------
 
 pub fn attribute_instance(s: &str) -> IResult<&str, AttributeInstance> {
-    let (s, _) = tag("(*")(s)?;
-    let (s, attr_spec) = separated_nonempty_list(sp(tag(",")), sp(attr_spec))(s)?;
-    let (s, _) = sp(tag("*)"))(s)?;
+    let (s, _) = symbol("(*")(s)?;
+    let (s, attr_spec) = separated_nonempty_list(symbol(","), attr_spec)(s)?;
+    let (s, _) = symbol("*)")(s)?;
     Ok((s, AttributeInstance { attr_spec }))
 }
 
 pub fn attr_spec(s: &str) -> IResult<&str, AttrSpec> {
     let (s, attr_name) = identifier(s)?;
-    let (s, rvalue) = opt(preceded(sp(tag("=")), sp(constant_expression)))(s)?;
+    let (s, rvalue) = opt(preceded(symbol("="), constant_expression))(s)?;
     Ok((s, AttrSpec { attr_name, rvalue }))
 }
 

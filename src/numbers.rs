@@ -93,8 +93,8 @@ pub fn integral_number(s: &str) -> IResult<&str, Number> {
 pub fn decimal_number(s: &str) -> IResult<&str, IntegralNumber> {
     let (s, (size, decimal_base, decimal_value)) = tuple((
         opt(size),
-        sp(decimal_base),
-        sp(alt((unsigned_number, x_number, z_number))),
+        decimal_base,
+        alt((unsigned_number, x_number, z_number)),
     ))(s)?;
     Ok((
         s,
@@ -112,8 +112,7 @@ pub fn integral_unsigned_number(s: &str) -> IResult<&str, IntegralNumber> {
 }
 
 pub fn binary_number(s: &str) -> IResult<&str, IntegralNumber> {
-    let (s, (size, binary_base, binary_value)) =
-        tuple((opt(size), sp(binary_base), sp(binary_value)))(s)?;
+    let (s, (size, binary_base, binary_value)) = tuple((opt(size), binary_base, binary_value))(s)?;
     Ok((
         s,
         IntegralNumber::BinaryNumber(BinaryNumber {
@@ -125,8 +124,7 @@ pub fn binary_number(s: &str) -> IResult<&str, IntegralNumber> {
 }
 
 pub fn octal_number(s: &str) -> IResult<&str, IntegralNumber> {
-    let (s, (size, octal_base, octal_value)) =
-        tuple((opt(size), sp(octal_base), sp(octal_value)))(s)?;
+    let (s, (size, octal_base, octal_value)) = tuple((opt(size), octal_base, octal_value))(s)?;
     Ok((
         s,
         IntegralNumber::OctalNumber(OctalNumber {
@@ -138,7 +136,7 @@ pub fn octal_number(s: &str) -> IResult<&str, IntegralNumber> {
 }
 
 pub fn hex_number(s: &str) -> IResult<&str, IntegralNumber> {
-    let (s, (size, hex_base, hex_value)) = tuple((opt(size), sp(hex_base), sp(hex_value)))(s)?;
+    let (s, (size, hex_base, hex_value)) = tuple((opt(size), hex_base, hex_value))(s)?;
     Ok((
         s,
         IntegralNumber::HexNumber(HexNumber {
@@ -150,6 +148,10 @@ pub fn hex_number(s: &str) -> IResult<&str, IntegralNumber> {
 }
 
 pub fn size(s: &str) -> IResult<&str, &str> {
+    ws(size_impl)(s)
+}
+
+pub fn size_impl(s: &str) -> IResult<&str, &str> {
     let (s, x) = is_a("123456789")(s)?;
     fold_many0(alt((tag("_"), digit1)), x, |acc, item| {
         str_concat::concat(acc, item).unwrap()
@@ -163,7 +165,7 @@ pub fn real_number(s: &str) -> IResult<&str, Number> {
 
 pub fn fixed_point_number(s: &str) -> IResult<&str, RealNumber> {
     let (s, (integer_value, _, fraction_value)) =
-        tuple((unsigned_number, tag("."), unsigned_number))(s)?;
+        tuple((unsigned_number, symbol("."), unsigned_number))(s)?;
     Ok((
         s,
         RealNumber::FixedPointNumber(FixedPointNumber {
@@ -175,9 +177,9 @@ pub fn fixed_point_number(s: &str) -> IResult<&str, RealNumber> {
 
 pub fn floating_point_number(s: &str) -> IResult<&str, RealNumber> {
     let (s, integer_value) = unsigned_number(s)?;
-    let (s, fraction_value) = opt(tuple((tag("."), unsigned_number)))(s)?;
-    let (s, exponent) = alt((tag("e"), tag("E")))(s)?;
-    let (s, sign) = opt(alt((tag("+"), tag("-"))))(s)?;
+    let (s, fraction_value) = opt(tuple((symbol("."), unsigned_number)))(s)?;
+    let (s, exponent) = alt((symbol("e"), symbol("E")))(s)?;
+    let (s, sign) = opt(alt((symbol("+"), symbol("-"))))(s)?;
     let (s, exponent_value) = unsigned_number(s)?;
 
     let fraction_value = fraction_value.and_then(|(_, y)| Some(y));
@@ -195,6 +197,10 @@ pub fn floating_point_number(s: &str) -> IResult<&str, RealNumber> {
 }
 
 pub fn unsigned_number(s: &str) -> IResult<&str, &str> {
+    ws(unsigned_number_impl)(s)
+}
+
+pub fn unsigned_number_impl(s: &str) -> IResult<&str, &str> {
     let (s, x) = digit1(s)?;
     fold_many0(alt((tag("_"), digit1)), x, |acc, item| {
         str_concat::concat(acc, item).unwrap()
@@ -202,6 +208,10 @@ pub fn unsigned_number(s: &str) -> IResult<&str, &str> {
 }
 
 pub fn binary_value(s: &str) -> IResult<&str, &str> {
+    ws(binary_value_impl)(s)
+}
+
+pub fn binary_value_impl(s: &str) -> IResult<&str, &str> {
     let (s, x) = is_a("01xXzZ?")(s)?;
     fold_many0(alt((tag("_"), is_a("01xXzZ?"))), x, |acc, item| {
         str_concat::concat(acc, item).unwrap()
@@ -209,6 +219,10 @@ pub fn binary_value(s: &str) -> IResult<&str, &str> {
 }
 
 pub fn octal_value(s: &str) -> IResult<&str, &str> {
+    ws(octal_value_impl)(s)
+}
+
+pub fn octal_value_impl(s: &str) -> IResult<&str, &str> {
     let (s, x) = is_a("01234567xXzZ?")(s)?;
     fold_many0(alt((tag("_"), is_a("01234567xXzZ?"))), x, |acc, item| {
         str_concat::concat(acc, item).unwrap()
@@ -216,6 +230,10 @@ pub fn octal_value(s: &str) -> IResult<&str, &str> {
 }
 
 pub fn hex_value(s: &str) -> IResult<&str, &str> {
+    ws(hex_value_impl)(s)
+}
+
+pub fn hex_value_impl(s: &str) -> IResult<&str, &str> {
     let (s, x) = is_a("0123456789abcdefABCDEFxXzZ?")(s)?;
     fold_many0(
         alt((tag("_"), is_a("0123456789abcdefABCDEFxXzZ?"))),
@@ -225,22 +243,42 @@ pub fn hex_value(s: &str) -> IResult<&str, &str> {
 }
 
 pub fn decimal_base(s: &str) -> IResult<&str, &str> {
+    ws(decimal_base_impl)(s)
+}
+
+pub fn decimal_base_impl(s: &str) -> IResult<&str, &str> {
     alt((tag_no_case("'d"), tag_no_case("'sd")))(s)
 }
 
 pub fn binary_base(s: &str) -> IResult<&str, &str> {
+    ws(binary_base_impl)(s)
+}
+
+pub fn binary_base_impl(s: &str) -> IResult<&str, &str> {
     alt((tag_no_case("'b"), tag_no_case("'sb")))(s)
 }
 
 pub fn octal_base(s: &str) -> IResult<&str, &str> {
+    ws(octal_base_impl)(s)
+}
+
+pub fn octal_base_impl(s: &str) -> IResult<&str, &str> {
     alt((tag_no_case("'o"), tag_no_case("'so")))(s)
 }
 
 pub fn hex_base(s: &str) -> IResult<&str, &str> {
+    ws(hex_base_impl)(s)
+}
+
+pub fn hex_base_impl(s: &str) -> IResult<&str, &str> {
     alt((tag_no_case("'h"), tag_no_case("'sh")))(s)
 }
 
 pub fn x_number(s: &str) -> IResult<&str, &str> {
+    ws(x_number_impl)(s)
+}
+
+pub fn x_number_impl(s: &str) -> IResult<&str, &str> {
     let (s, x) = tag_no_case("x")(s)?;
     fold_many0(alt((tag("_"), is_a("_"))), x, |acc, item| {
         str_concat::concat(acc, item).unwrap()
@@ -248,6 +286,10 @@ pub fn x_number(s: &str) -> IResult<&str, &str> {
 }
 
 pub fn z_number(s: &str) -> IResult<&str, &str> {
+    ws(z_number_impl)(s)
+}
+
+pub fn z_number_impl(s: &str) -> IResult<&str, &str> {
     let (s, x) = alt((tag_no_case("z"), tag("?")))(s)?;
     fold_many0(alt((tag("_"), is_a("_"))), x, |acc, item| {
         str_concat::concat(acc, item).unwrap()
@@ -255,7 +297,7 @@ pub fn z_number(s: &str) -> IResult<&str, &str> {
 }
 
 pub fn unbased_unsized_literal(s: &str) -> IResult<&str, &str> {
-    alt((tag("'0"), tag("'1"), tag("'z"), tag("'x")))(s)
+    alt((symbol("'0"), symbol("'1"), symbol("'z"), symbol("'x")))(s)
 }
 
 // -----------------------------------------------------------------------------
@@ -304,7 +346,7 @@ mod tests {
         );
         assert_eq!(
             format!("{:?}", all_consuming(number)("8 'd -6")),
-            "Err(Error((\" \\\'d -6\", Eof)))"
+            "Err(Error((\"\\\'d -6\", Eof)))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(number)("4 'shf")),

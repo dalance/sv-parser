@@ -4,7 +4,6 @@ use crate::identifiers::*;
 use crate::primaries::*;
 use crate::util::*;
 use nom::branch::*;
-use nom::bytes::complete::*;
 use nom::combinator::*;
 use nom::multi::*;
 use nom::sequence::*;
@@ -102,8 +101,8 @@ pub fn constant_function_call(s: &str) -> IResult<&str, SubroutineCall> {
 
 pub fn tf_call(s: &str) -> IResult<&str, TfCall> {
     let (s, identifier) = ps_or_hierarchical_tf_identifier(s)?;
-    let (s, attribute) = many0(sp(attribute_instance))(s)?;
-    let (s, argument) = opt(delimited(sp(tag("(")), sp(list_of_arguments), sp(tag(")"))))(s)?;
+    let (s, attribute) = many0(attribute_instance)(s)?;
+    let (s, argument) = opt(delimited(symbol("("), list_of_arguments, symbol(")")))(s)?;
     Ok((
         s,
         TfCall {
@@ -124,7 +123,7 @@ pub fn system_tf_call(s: &str) -> IResult<&str, SystemTfCall> {
 
 pub fn system_tf_call_list_of_arguments(s: &str) -> IResult<&str, SystemTfCall> {
     let (s, identifier) = system_tf_identifier(s)?;
-    let (s, argument) = opt(delimited(sp(tag("(")), sp(list_of_arguments), sp(tag(")"))))(s)?;
+    let (s, argument) = opt(delimited(symbol("("), list_of_arguments, symbol(")")))(s)?;
     Ok((
         s,
         SystemTfCall {
@@ -139,10 +138,10 @@ pub fn system_tf_call_list_of_arguments(s: &str) -> IResult<&str, SystemTfCall> 
 
 pub fn system_tf_call_data_type(s: &str) -> IResult<&str, SystemTfCall> {
     let (s, identifier) = system_tf_identifier(s)?;
-    let (s, _) = sp(tag("("))(s)?;
-    let (s, data_type) = sp(data_type)(s)?;
-    let (s, expression) = sp(preceded(sp(tag(",")), expression))(s)?;
-    let (s, _) = sp(tag(")"))(s)?;
+    let (s, _) = symbol("(")(s)?;
+    let (s, data_type) = data_type(s)?;
+    let (s, expression) = preceded(symbol(","), expression)(s)?;
+    let (s, _) = symbol(")")(s)?;
     let data_type = Some(data_type);
     let expression = Some(vec![expression]);
     Ok((
@@ -159,10 +158,10 @@ pub fn system_tf_call_data_type(s: &str) -> IResult<&str, SystemTfCall> {
 
 pub fn system_tf_call_clocking_event(s: &str) -> IResult<&str, SystemTfCall> {
     let (s, identifier) = system_tf_identifier(s)?;
-    let (s, _) = sp(tag("("))(s)?;
-    let (s, expression) = separated_nonempty_list(sp(tag(",")), sp(expression))(s)?;
-    let (s, clocking_event) = opt(preceded(sp(tag(",")), opt(sp(clocking_event))))(s)?;
-    let (s, _) = sp(tag(")"))(s)?;
+    let (s, _) = symbol("(")(s)?;
+    let (s, expression) = separated_nonempty_list(symbol(","), expression)(s)?;
+    let (s, clocking_event) = opt(preceded(symbol(","), opt(clocking_event)))(s)?;
+    let (s, _) = symbol(")")(s)?;
     let expression = Some(expression);
     let clocking_event = if let Some(Some(x)) = clocking_event {
         Some(x)
@@ -187,7 +186,7 @@ pub fn subroutine_call(s: &str) -> IResult<&str, SubroutineCall> {
         map(system_tf_call, |x| SubroutineCall::SystemTf(Box::new(x))),
         map(method_call, |x| SubroutineCall::Method(Box::new(x))),
         map(
-            tuple((tag("std"), sp(tag("::")), randomize_call)),
+            tuple((symbol("std"), symbol("::"), randomize_call)),
             |(_, _, x)| SubroutineCall::StdRandomize(Box::new(x)),
         ),
         map(randomize_call, |x| SubroutineCall::Randomize(Box::new(x))),
@@ -199,12 +198,12 @@ pub fn function_subroutine_call(s: &str) -> IResult<&str, SubroutineCall> {
 }
 
 pub fn list_of_arguments(s: &str) -> IResult<&str, ListOfArguments> {
-    let (s, unnamed) = separated_list(sp(tag(",")), sp(expression))(s)?;
+    let (s, unnamed) = separated_list(symbol(","), expression)(s)?;
     let (s, named) = separated_list(
-        sp(tag(",")),
+        symbol(","),
         pair(
-            preceded(tag("."), identifier),
-            delimited(sp(tag("(")), opt(sp(expression)), sp(tag(")"))),
+            preceded(symbol("."), identifier),
+            delimited(symbol("("), opt(expression), symbol(")")),
         ),
     )(s)?;
     Ok((s, ListOfArguments { unnamed, named }))
@@ -212,7 +211,7 @@ pub fn list_of_arguments(s: &str) -> IResult<&str, ListOfArguments> {
 
 pub fn method_call(s: &str) -> IResult<&str, MethodCall> {
     let (s, root) = method_call_root(s)?;
-    let (s, _) = sp(tag("."))(s)?;
+    let (s, _) = symbol(".")(s)?;
     let (s, body) = method_call_body(s)?;
 
     Ok((s, MethodCall { root, body }))
@@ -224,8 +223,8 @@ pub fn method_call_body(s: &str) -> IResult<&str, MethodCallBody> {
 
 pub fn method_call_body_user(s: &str) -> IResult<&str, MethodCallBody> {
     let (s, identifier) = method_identifier(s)?;
-    let (s, attribute) = many0(sp(attribute_instance))(s)?;
-    let (s, argument) = opt(delimited(sp(tag("(")), sp(list_of_arguments), sp(tag(")"))))(s)?;
+    let (s, attribute) = many0(attribute_instance)(s)?;
+    let (s, argument) = opt(delimited(symbol("("), list_of_arguments, symbol(")")))(s)?;
     Ok((
         s,
         MethodCallBody::User(MethodCallBodyUser {
@@ -245,11 +244,11 @@ pub fn built_in_method_call(s: &str) -> IResult<&str, MethodCallBody> {
 
 pub fn array_manipulation_call(s: &str) -> IResult<&str, ArrayManipulationCall> {
     let (s, name) = array_method_name(s)?;
-    let (s, attribute) = many0(sp(attribute_instance))(s)?;
-    let (s, argument) = opt(delimited(sp(tag("(")), sp(list_of_arguments), sp(tag(")"))))(s)?;
+    let (s, attribute) = many0(attribute_instance)(s)?;
+    let (s, argument) = opt(delimited(symbol("("), list_of_arguments, symbol(")")))(s)?;
     let (s, with) = opt(preceded(
-        sp(tag("with")),
-        delimited(sp(tag("(")), sp(expression), sp(tag(")"))),
+        symbol("with"),
+        delimited(symbol("("), expression, symbol(")")),
     ))(s)?;
     Ok((
         s,
@@ -263,23 +262,19 @@ pub fn array_manipulation_call(s: &str) -> IResult<&str, ArrayManipulationCall> 
 }
 
 pub fn randomize_call(s: &str) -> IResult<&str, RandomizeCall> {
-    let (s, _) = tag("randomize")(s)?;
-    let (s, attribute) = many0(sp(attribute_instance))(s)?;
+    let (s, _) = symbol("randomize")(s)?;
+    let (s, attribute) = many0(attribute_instance)(s)?;
     let (s, argument) = opt(delimited(
-        sp(tag("(")),
+        symbol("("),
         opt(alt((
-            sp(variable_identifier_list),
-            map(sp(tag("null")), |_| vec![]),
+            variable_identifier_list,
+            map(symbol("null"), |_| vec![]),
         ))),
-        sp(tag(")")),
+        symbol(")"),
     ))(s)?;
     let (s, with) = opt(tuple((
-        sp(tag("with")),
-        opt(delimited(
-            sp(tag("(")),
-            opt(sp(identifier_list)),
-            sp(tag(")")),
-        )),
+        symbol("with"),
+        opt(delimited(symbol("("), opt(identifier_list), symbol(")"))),
         constraint_block,
     )))(s)?;
     let argument = if let Some(Some(x)) = argument {
@@ -314,10 +309,10 @@ pub fn method_call_root(s: &str) -> IResult<&str, MethodCallRoot> {
 
 pub fn array_method_name(s: &str) -> IResult<&str, ArrayMethodName> {
     alt((
-        map(tag("unique"), |_| ArrayMethodName::Unique),
-        map(tag("and"), |_| ArrayMethodName::And),
-        map(tag("or"), |_| ArrayMethodName::Or),
-        map(tag("xor"), |_| ArrayMethodName::Xor),
+        map(symbol("unique"), |_| ArrayMethodName::Unique),
+        map(symbol("and"), |_| ArrayMethodName::And),
+        map(symbol("or"), |_| ArrayMethodName::Or),
+        map(symbol("xor"), |_| ArrayMethodName::Xor),
         map(method_identifier, |x| ArrayMethodName::Identifier(x)),
     ))(s)
 }

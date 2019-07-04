@@ -5,7 +5,6 @@ use crate::operators::*;
 use crate::primaries::*;
 use crate::util::*;
 use nom::branch::*;
-use nom::bytes::complete::*;
 use nom::combinator::*;
 use nom::multi::*;
 use nom::sequence::*;
@@ -218,8 +217,8 @@ pub fn inc_or_dec_expression(s: &str) -> IResult<&str, IncOrDecExpression> {
 
 pub fn inc_or_dec_expression_prefix(s: &str) -> IResult<&str, IncOrDecExpression> {
     let (s, operator) = inc_or_dec_operator(s)?;
-    let (s, attribute) = many0(sp(attribute_instance))(s)?;
-    let (s, lvalue) = sp(variable_lvalue)(s)?;
+    let (s, attribute) = many0(attribute_instance)(s)?;
+    let (s, lvalue) = variable_lvalue(s)?;
     Ok((
         s,
         IncOrDecExpression::Prefix(IncOrDecExpressionPrefix {
@@ -232,8 +231,8 @@ pub fn inc_or_dec_expression_prefix(s: &str) -> IResult<&str, IncOrDecExpression
 
 pub fn inc_or_dec_expression_suffix(s: &str) -> IResult<&str, IncOrDecExpression> {
     let (s, lvalue) = variable_lvalue(s)?;
-    let (s, attribute) = many0(sp(attribute_instance))(s)?;
-    let (s, operator) = sp(inc_or_dec_operator)(s)?;
+    let (s, attribute) = many0(attribute_instance)(s)?;
+    let (s, operator) = inc_or_dec_operator(s)?;
     Ok((
         s,
         IncOrDecExpression::Suffix(IncOrDecExpressionSuffix {
@@ -246,11 +245,11 @@ pub fn inc_or_dec_expression_suffix(s: &str) -> IResult<&str, IncOrDecExpression
 
 pub fn conditional_expression(s: &str) -> IResult<&str, ConditionalExpression> {
     let (s, predicate) = cond_predicate(s)?;
-    let (s, _) = sp(tag("?"))(s)?;
-    let (s, attribute) = many0(sp(attribute_instance))(s)?;
-    let (s, arg0) = sp(expression)(s)?;
-    let (s, _) = sp(tag(":"))(s)?;
-    let (s, arg1) = sp(expression)(s)?;
+    let (s, _) = symbol("?")(s)?;
+    let (s, attribute) = many0(attribute_instance)(s)?;
+    let (s, arg0) = expression(s)?;
+    let (s, _) = symbol(":")(s)?;
+    let (s, arg1) = expression(s)?;
     Ok((
         s,
         ConditionalExpression {
@@ -275,8 +274,8 @@ pub fn constant_expression(s: &str) -> IResult<&str, ConstantExpression> {
 
 pub fn constant_expression_unary(s: &str) -> IResult<&str, ConstantExpression> {
     let (s, operator) = unary_operator(s)?;
-    let (s, attribute) = many0(sp(attribute_instance))(s)?;
-    let (s, arg0) = sp(constant_primary)(s)?;
+    let (s, attribute) = many0(attribute_instance)(s)?;
+    let (s, arg0) = constant_primary(s)?;
     Ok((
         s,
         ConstantExpression::Unary(Box::new(ConstantExpressionUnary {
@@ -289,9 +288,9 @@ pub fn constant_expression_unary(s: &str) -> IResult<&str, ConstantExpression> {
 
 pub fn constant_expression_binary(s: &str) -> IResult<&str, ConstantExpression> {
     let (s, arg0) = constant_expression(s)?;
-    let (s, operator) = sp(binary_operator)(s)?;
-    let (s, attribute) = many0(sp(attribute_instance))(s)?;
-    let (s, arg1) = sp(constant_expression)(s)?;
+    let (s, operator) = binary_operator(s)?;
+    let (s, attribute) = many0(attribute_instance)(s)?;
+    let (s, arg1) = constant_expression(s)?;
     Ok((
         s,
         ConstantExpression::Binary(Box::new(ConstantExpressionBinary {
@@ -305,11 +304,11 @@ pub fn constant_expression_binary(s: &str) -> IResult<&str, ConstantExpression> 
 
 pub fn constant_expression_ternary(s: &str) -> IResult<&str, ConstantExpression> {
     let (s, predicate) = constant_expression(s)?;
-    let (s, _) = sp(tag("?"))(s)?;
-    let (s, attribute) = many0(sp(attribute_instance))(s)?;
+    let (s, _) = symbol("?")(s)?;
+    let (s, attribute) = many0(attribute_instance)(s)?;
     let (s, arg0) = constant_expression(s)?;
-    let (s, _) = sp(tag(":"))(s)?;
-    let (s, arg1) = sp(constant_expression)(s)?;
+    let (s, _) = symbol(":")(s)?;
+    let (s, arg1) = constant_expression(s)?;
     Ok((
         s,
         ConstantExpression::Ternary(Box::new(ConstantExpressionTernary {
@@ -334,16 +333,16 @@ pub fn constant_mintypmax_expression_ternary(
     s: &str,
 ) -> IResult<&str, ConstantMintypmaxExpression> {
     let (s, x) = constant_expression(s)?;
-    let (s, _) = sp(tag(":"))(s)?;
-    let (s, y) = sp(constant_expression)(s)?;
-    let (s, _) = sp(tag(":"))(s)?;
-    let (s, z) = sp(constant_expression)(s)?;
+    let (s, _) = symbol(":")(s)?;
+    let (s, y) = constant_expression(s)?;
+    let (s, _) = symbol(":")(s)?;
+    let (s, z) = constant_expression(s)?;
     Ok((s, ConstantMintypmaxExpression::Ternary((x, y, z))))
 }
 
 pub fn constant_param_expression(s: &str) -> IResult<&str, ConstantParamExpression> {
     alt((
-        map(tag("$"), |_| ConstantParamExpression::Dollar),
+        map(symbol("$"), |_| ConstantParamExpression::Dollar),
         map(constant_mintypmax_expression, |x| {
             ConstantParamExpression::Mintypmax(x)
         }),
@@ -353,7 +352,7 @@ pub fn constant_param_expression(s: &str) -> IResult<&str, ConstantParamExpressi
 
 pub fn param_expression(s: &str) -> IResult<&str, ParamExpression> {
     alt((
-        map(tag("$"), |_| ParamExpression::Dollar),
+        map(symbol("$"), |_| ParamExpression::Dollar),
         map(mintypmax_expression, |x| ParamExpression::Mintypmax(x)),
         map(data_type, |x| ParamExpression::DataType(x)),
     ))(s)
@@ -376,15 +375,15 @@ pub fn constant_part_select_range(s: &str) -> IResult<&str, ConstantPartSelectRa
 
 pub fn constant_range(s: &str) -> IResult<&str, ConstantPartSelectRange> {
     let (s, x) = constant_expression(s)?;
-    let (s, _) = sp(tag(":"))(s)?;
-    let (s, y) = sp(constant_expression)(s)?;
+    let (s, _) = symbol(":")(s)?;
+    let (s, y) = constant_expression(s)?;
     Ok((s, ConstantPartSelectRange::Range((x, y))))
 }
 
 pub fn constant_indexed_range(s: &str) -> IResult<&str, ConstantPartSelectRange> {
     let (s, x) = constant_expression(s)?;
-    let (s, y) = sp(alt((tag("+:"), tag("-:"))))(s)?;
-    let (s, z) = sp(constant_expression)(s)?;
+    let (s, y) = alt((symbol("+:"), symbol("-:")))(s)?;
+    let (s, z) = constant_expression(s)?;
     Ok((s, ConstantPartSelectRange::IndexedRange((x, y, z))))
 }
 
@@ -394,7 +393,7 @@ pub fn expression(s: &str) -> IResult<&str, Expression> {
         expression_unary,
         map(inc_or_dec_expression, |x| Expression::IncOrDec(Box::new(x))),
         map(
-            delimited(tag("("), sp(operator_assignment), sp(tag(")"))),
+            delimited(symbol("("), operator_assignment, symbol(")")),
             |x| Expression::Assignment(Box::new(x)),
         ),
         expression_binary,
@@ -410,8 +409,8 @@ pub fn expression(s: &str) -> IResult<&str, Expression> {
 
 pub fn expression_unary(s: &str) -> IResult<&str, Expression> {
     let (s, operator) = unary_operator(s)?;
-    let (s, attribute) = many0(sp(attribute_instance))(s)?;
-    let (s, arg0) = sp(primary)(s)?;
+    let (s, attribute) = many0(attribute_instance)(s)?;
+    let (s, arg0) = primary(s)?;
     Ok((
         s,
         Expression::Unary(Box::new(ExpressionUnary {
@@ -424,9 +423,9 @@ pub fn expression_unary(s: &str) -> IResult<&str, Expression> {
 
 pub fn expression_binary(s: &str) -> IResult<&str, Expression> {
     let (s, arg0) = expression(s)?;
-    let (s, operator) = sp(binary_operator)(s)?;
-    let (s, attribute) = many0(sp(attribute_instance))(s)?;
-    let (s, arg1) = sp(expression)(s)?;
+    let (s, operator) = binary_operator(s)?;
+    let (s, attribute) = many0(attribute_instance)(s)?;
+    let (s, arg1) = expression(s)?;
     Ok((
         s,
         Expression::Binary(Box::new(ExpressionBinary {
@@ -439,9 +438,9 @@ pub fn expression_binary(s: &str) -> IResult<&str, Expression> {
 }
 
 pub fn tagged_union_expression(s: &str) -> IResult<&str, TaggedUnionExpression> {
-    let (s, _) = tag("tagged")(s)?;
-    let (s, identifier) = sp(member_identifier)(s)?;
-    let (s, expression) = opt(sp(expression))(s)?;
+    let (s, _) = symbol("tagged")(s)?;
+    let (s, identifier) = member_identifier(s)?;
+    let (s, expression) = opt(expression)(s)?;
     Ok((
         s,
         TaggedUnionExpression {
@@ -453,8 +452,8 @@ pub fn tagged_union_expression(s: &str) -> IResult<&str, TaggedUnionExpression> 
 
 pub fn inside_expression(s: &str) -> IResult<&str, InsideExpression> {
     let (s, expression) = expression(s)?;
-    let (s, _) = sp(tag("inside"))(s)?;
-    let (s, open_range_list) = delimited(sp(tag("{")), sp(open_range_list), sp(tag("}")))(s)?;
+    let (s, _) = symbol("inside")(s)?;
+    let (s, open_range_list) = delimited(symbol("{"), open_range_list, symbol("}"))(s)?;
     Ok((
         s,
         InsideExpression {
@@ -472,11 +471,11 @@ pub fn value_range(s: &str) -> IResult<&str, ValueRange> {
 }
 
 pub fn value_range_binary(s: &str) -> IResult<&str, ValueRange> {
-    let (s, _) = tag("[")(s)?;
-    let (s, x) = sp(expression)(s)?;
-    let (s, _) = sp(tag(":"))(s)?;
-    let (s, y) = sp(expression)(s)?;
-    let (s, _) = sp(tag("]"))(s)?;
+    let (s, _) = symbol("[")(s)?;
+    let (s, x) = expression(s)?;
+    let (s, _) = symbol(":")(s)?;
+    let (s, y) = expression(s)?;
+    let (s, _) = symbol("]")(s)?;
     Ok((s, ValueRange::Binary((x, y))))
 }
 
@@ -489,10 +488,10 @@ pub fn mintypmax_expression(s: &str) -> IResult<&str, MintypmaxExpression> {
 
 pub fn mintypmax_expression_ternary(s: &str) -> IResult<&str, MintypmaxExpression> {
     let (s, x) = expression(s)?;
-    let (s, _) = sp(tag(":"))(s)?;
-    let (s, y) = sp(expression)(s)?;
-    let (s, _) = sp(tag(":"))(s)?;
-    let (s, z) = sp(expression)(s)?;
+    let (s, _) = symbol(":")(s)?;
+    let (s, y) = expression(s)?;
+    let (s, _) = symbol(":")(s)?;
+    let (s, z) = expression(s)?;
     Ok((s, MintypmaxExpression::Ternary((x, y, z))))
 }
 
@@ -500,11 +499,11 @@ pub fn module_path_conditional_expression(
     s: &str,
 ) -> IResult<&str, ModulePathConditionalExpression> {
     let (s, predicate) = module_path_expression(s)?;
-    let (s, _) = sp(tag("?"))(s)?;
-    let (s, attribute) = many0(sp(attribute_instance))(s)?;
-    let (s, arg0) = sp(module_path_expression)(s)?;
-    let (s, _) = sp(tag(":"))(s)?;
-    let (s, arg1) = sp(module_path_expression)(s)?;
+    let (s, _) = symbol("?")(s)?;
+    let (s, attribute) = many0(attribute_instance)(s)?;
+    let (s, arg0) = module_path_expression(s)?;
+    let (s, _) = symbol(":")(s)?;
+    let (s, arg1) = module_path_expression(s)?;
     Ok((
         s,
         ModulePathConditionalExpression {
@@ -531,8 +530,8 @@ pub fn module_path_expression(s: &str) -> IResult<&str, ModulePathExpression> {
 
 pub fn module_path_expression_unary(s: &str) -> IResult<&str, ModulePathExpression> {
     let (s, operator) = unary_module_path_operator(s)?;
-    let (s, attribute) = many0(sp(attribute_instance))(s)?;
-    let (s, arg0) = sp(module_path_primary)(s)?;
+    let (s, attribute) = many0(attribute_instance)(s)?;
+    let (s, arg0) = module_path_primary(s)?;
     Ok((
         s,
         ModulePathExpression::Unary(Box::new(ModulePathExpressionUnary {
@@ -545,9 +544,9 @@ pub fn module_path_expression_unary(s: &str) -> IResult<&str, ModulePathExpressi
 
 pub fn module_path_expression_binary(s: &str) -> IResult<&str, ModulePathExpression> {
     let (s, arg0) = module_path_expression(s)?;
-    let (s, operator) = sp(binary_module_path_operator)(s)?;
-    let (s, attribute) = many0(sp(attribute_instance))(s)?;
-    let (s, arg1) = sp(module_path_expression)(s)?;
+    let (s, operator) = binary_module_path_operator(s)?;
+    let (s, attribute) = many0(attribute_instance)(s)?;
+    let (s, arg1) = module_path_expression(s)?;
     Ok((
         s,
         ModulePathExpression::Binary(Box::new(ModulePathExpressionBinary {
@@ -572,10 +571,10 @@ pub fn module_path_mintypmax_expression_ternary(
     s: &str,
 ) -> IResult<&str, ModulePathMintypmaxExpression> {
     let (s, x) = module_path_expression(s)?;
-    let (s, _) = sp(tag(":"))(s)?;
-    let (s, y) = sp(module_path_expression)(s)?;
-    let (s, _) = sp(tag(":"))(s)?;
-    let (s, z) = sp(module_path_expression)(s)?;
+    let (s, _) = symbol(":")(s)?;
+    let (s, y) = module_path_expression(s)?;
+    let (s, _) = symbol(":")(s)?;
+    let (s, z) = module_path_expression(s)?;
     Ok((s, ModulePathMintypmaxExpression::Ternary((x, y, z))))
 }
 
@@ -585,15 +584,15 @@ pub fn part_select_range(s: &str) -> IResult<&str, PartSelectRange> {
 
 pub fn range(s: &str) -> IResult<&str, PartSelectRange> {
     let (s, x) = constant_expression(s)?;
-    let (s, _) = sp(tag(":"))(s)?;
-    let (s, y) = sp(constant_expression)(s)?;
+    let (s, _) = symbol(":")(s)?;
+    let (s, y) = constant_expression(s)?;
     Ok((s, PartSelectRange::Range((x, y))))
 }
 
 pub fn indexed_range(s: &str) -> IResult<&str, PartSelectRange> {
     let (s, x) = expression(s)?;
-    let (s, y) = sp(alt((tag("+:"), tag("-:"))))(s)?;
-    let (s, z) = sp(constant_expression)(s)?;
+    let (s, y) = alt((symbol("+:"), symbol("-:")))(s)?;
+    let (s, z) = constant_expression(s)?;
     Ok((s, PartSelectRange::IndexedRange((x, y, z))))
 }
 

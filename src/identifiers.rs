@@ -76,6 +76,10 @@ pub fn bin_identifier(s: &str) -> IResult<&str, Identifier> {
 }
 
 pub fn c_identifier(s: &str) -> IResult<&str, Identifier> {
+    ws(c_identifier_impl)(s)
+}
+
+pub fn c_identifier_impl(s: &str) -> IResult<&str, Identifier> {
     let (s, x) = is_a(AZ_)(s)?;
     let (s, y) = opt(is_a(AZ09_))(s)?;
     let raw = if let Some(y) = y {
@@ -143,6 +147,10 @@ pub fn enum_identifier(s: &str) -> IResult<&str, Identifier> {
 }
 
 pub fn escaped_identifier(s: &str) -> IResult<&str, Identifier> {
+    ws(escaped_identifier_impl)(s)
+}
+
+pub fn escaped_identifier_impl(s: &str) -> IResult<&str, Identifier> {
     let (s, x) = tag("\\")(s)?;
     let (s, y) = is_not(" \t\r\n")(s)?;
     Ok((
@@ -187,8 +195,8 @@ pub fn hierarchical_event_identifier(s: &str) -> IResult<&str, HierarchicalIdent
 
 pub fn hierarchy(s: &str) -> IResult<&str, Hierarchy> {
     let (s, identifier) = identifier(s)?;
-    let (s, constant_bit_select) = sp(constant_bit_select)(s)?;
-    let (s, _) = sp(tag("."))(s)?;
+    let (s, constant_bit_select) = constant_bit_select(s)?;
+    let (s, _) = symbol(".")(s)?;
 
     let constant_bit_select = Some(constant_bit_select);
 
@@ -202,9 +210,9 @@ pub fn hierarchy(s: &str) -> IResult<&str, Hierarchy> {
 }
 
 pub fn hierarchical_identifier(s: &str) -> IResult<&str, HierarchicalIdentifier> {
-    let (s, x) = opt(terminated(tag("$root"), sp(tag("."))))(s)?;
+    let (s, x) = opt(terminated(symbol("$root"), symbol(".")))(s)?;
     let (s, mut hierarchy) = many0(hierarchy)(s)?;
-    let (s, identifier) = sp(identifier)(s)?;
+    let (s, identifier) = identifier(s)?;
 
     if let Some(x) = x {
         hierarchy.insert(
@@ -315,8 +323,11 @@ pub fn package_identifier(s: &str) -> IResult<&str, Identifier> {
 
 pub fn package_scope(s: &str) -> IResult<&str, Scope> {
     let (s, x) = alt((
-        terminated(package_identifier, sp(tag("::"))),
-        terminated(map(tag("$unit"), |x| Identifier { raw: x }), sp(tag("::"))),
+        terminated(package_identifier, symbol("::")),
+        terminated(
+            map(symbol("$unit"), |x| Identifier { raw: x }),
+            symbol("::"),
+        ),
     ))(s)?;
     Ok((s, Scope::PackageScope(x)))
 }
@@ -343,47 +354,47 @@ pub fn property_identifier(s: &str) -> IResult<&str, Identifier> {
 
 pub fn ps_class_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
     let (s, scope) = opt(package_scope)(s)?;
-    let (s, identifier) = sp(class_identifier)(s)?;
+    let (s, identifier) = class_identifier(s)?;
     let identifier = identifier.into();
     Ok((s, ScopedIdentifier { scope, identifier }))
 }
 
 pub fn ps_covergroup_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
     let (s, scope) = opt(package_scope)(s)?;
-    let (s, identifier) = sp(covergroup_identifier)(s)?;
+    let (s, identifier) = covergroup_identifier(s)?;
     let identifier = identifier.into();
     Ok((s, ScopedIdentifier { scope, identifier }))
 }
 
 pub fn ps_checker_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
     let (s, scope) = opt(package_scope)(s)?;
-    let (s, identifier) = sp(checker_identifier)(s)?;
+    let (s, identifier) = checker_identifier(s)?;
     let identifier = identifier.into();
     Ok((s, ScopedIdentifier { scope, identifier }))
 }
 
 pub fn ps_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
     let (s, scope) = opt(package_scope)(s)?;
-    let (s, identifier) = sp(identifier)(s)?;
+    let (s, identifier) = identifier(s)?;
     let identifier = identifier.into();
     Ok((s, ScopedIdentifier { scope, identifier }))
 }
 
 pub fn ps_or_hierarchical_array_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
     let (s, scope) = opt(alt((
-        terminated(implicit_class_handle, sp(tag("."))),
+        terminated(implicit_class_handle, symbol(".")),
         class_scope,
         package_scope,
     )))(s)?;
-    let (s, identifier) = sp(hierarchical_array_identifier)(s)?;
+    let (s, identifier) = hierarchical_array_identifier(s)?;
     Ok((s, ScopedIdentifier { scope, identifier }))
 }
 
 pub fn ps_or_hierarchical_net_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
     let (s, scope) = opt(package_scope)(s)?;
     let (s, identifier) = alt((
-        map(sp(net_identifier), |x| x.into()),
-        sp(hierarchical_net_identifier),
+        map(net_identifier, |x| x.into()),
+        hierarchical_net_identifier,
     ))(s)?;
     Ok((s, ScopedIdentifier { scope, identifier }))
 }
@@ -391,8 +402,8 @@ pub fn ps_or_hierarchical_net_identifier(s: &str) -> IResult<&str, ScopedIdentif
 pub fn ps_or_hierarchical_property_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
     let (s, scope) = opt(package_scope)(s)?;
     let (s, identifier) = alt((
-        map(sp(property_identifier), |x| x.into()),
-        sp(hierarchical_property_identifier),
+        map(property_identifier, |x| x.into()),
+        hierarchical_property_identifier,
     ))(s)?;
     Ok((s, ScopedIdentifier { scope, identifier }))
 }
@@ -400,37 +411,30 @@ pub fn ps_or_hierarchical_property_identifier(s: &str) -> IResult<&str, ScopedId
 pub fn ps_or_hierarchical_sequence_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
     let (s, scope) = opt(package_scope)(s)?;
     let (s, identifier) = alt((
-        map(sp(sequence_identifier), |x| x.into()),
-        sp(hierarchical_sequence_identifier),
+        map(sequence_identifier, |x| x.into()),
+        hierarchical_sequence_identifier,
     ))(s)?;
     Ok((s, ScopedIdentifier { scope, identifier }))
 }
 
 pub fn ps_or_hierarchical_tf_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
     let (s, scope) = opt(package_scope)(s)?;
-    let (s, identifier) = alt((
-        map(sp(tf_identifier), |x| x.into()),
-        sp(hierarchical_tf_identifier),
-    ))(s)?;
+    let (s, identifier) = alt((map(tf_identifier, |x| x.into()), hierarchical_tf_identifier))(s)?;
     Ok((s, ScopedIdentifier { scope, identifier }))
 }
 
 pub fn ps_parameter_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
     let (s, scope) = opt(alt((package_scope, class_scope, generate_block_scope)))(s)?;
-    let (s, identifier) = sp(parameter_identifier)(s)?;
+    let (s, identifier) = parameter_identifier(s)?;
     let identifier = identifier.into();
     Ok((s, ScopedIdentifier { scope, identifier }))
 }
 
 pub fn generate_block_scope(s: &str) -> IResult<&str, Scope> {
     let (s, x) = many0(tuple((
-        sp(generate_block_identifier),
-        opt(delimited(
-            sp(tag("[")),
-            sp(constant_expression),
-            sp(tag("]")),
-        )),
-        sp(tag(".")),
+        generate_block_identifier,
+        opt(delimited(symbol("["), constant_expression, symbol("]"))),
+        symbol("."),
     )))(s)?;
 
     let mut ret = Vec::new();
@@ -446,13 +450,13 @@ pub fn generate_block_scope(s: &str) -> IResult<&str, Scope> {
 
 pub fn ps_type_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
     let (s, scope) = opt(alt((
-        map(terminated(tag("local"), sp(tag("::"))), |_| {
+        map(terminated(symbol("local"), symbol("::")), |_| {
             Scope::LocalScope
         }),
         package_scope,
         class_scope,
     )))(s)?;
-    let (s, identifier) = sp(type_identifier)(s)?;
+    let (s, identifier) = type_identifier(s)?;
     let identifier = identifier.into();
     Ok((s, ScopedIdentifier { scope, identifier }))
 }
@@ -466,6 +470,10 @@ pub fn signal_identifier(s: &str) -> IResult<&str, Identifier> {
 }
 
 pub fn simple_identifier(s: &str) -> IResult<&str, Identifier> {
+    ws(simple_identifier_impl)(s)
+}
+
+pub fn simple_identifier_impl(s: &str) -> IResult<&str, Identifier> {
     let (s, x) = is_a(AZ_)(s)?;
     let (s, y) = opt(is_a(AZ09_DOLLAR))(s)?;
     let raw = if let Some(y) = y {
@@ -481,6 +489,10 @@ pub fn specparam_identifier(s: &str) -> IResult<&str, Identifier> {
 }
 
 pub fn system_tf_identifier(s: &str) -> IResult<&str, Identifier> {
+    ws(system_tf_identifier_impl)(s)
+}
+
+pub fn system_tf_identifier_impl(s: &str) -> IResult<&str, Identifier> {
     let (s, x) = tag("$")(s)?;
     let (s, y) = is_a(AZ09_DOLLAR)(s)?;
     Ok((

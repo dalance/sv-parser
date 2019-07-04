@@ -1,5 +1,5 @@
+use crate::util::*;
 use nom::branch::*;
-use nom::bytes::complete::*;
 use nom::IResult;
 
 // -----------------------------------------------------------------------------
@@ -13,17 +13,17 @@ pub struct Operator<'a> {
 
 pub fn unary_operator(s: &str) -> IResult<&str, Operator> {
     let (s, raw) = alt((
-        tag("+"),
-        tag("-"),
-        tag("!"),
-        tag("&"),
-        tag("|"),
-        tag("~&"),
-        tag("~|"),
-        tag("~^"),
-        tag("^~"),
-        tag("^"),
-        tag("~"),
+        symbol("+"),
+        symbol("-"),
+        symbol("!"),
+        symbol("&"),
+        symbol("|"),
+        symbol("~&"),
+        symbol("~|"),
+        symbol("~^"),
+        symbol("^~"),
+        symbol("^"),
+        symbol("~"),
     ))(s)?;
     Ok((s, Operator { raw }))
 }
@@ -31,73 +31,73 @@ pub fn unary_operator(s: &str) -> IResult<&str, Operator> {
 pub fn binary_operator(s: &str) -> IResult<&str, Operator> {
     let (s, raw) = alt((
         alt((
-            tag("+"),
-            tag("-"),
-            tag("**"),
-            tag("*"),
-            tag("/"),
-            tag("%"),
-            tag("==="),
-            tag("==?"),
-            tag("=="),
-            tag("!=="),
-            tag("!=?"),
-            tag("!="),
-            tag("&&"),
-            tag("||"),
+            symbol("+"),
+            symbol("-"),
+            symbol("**"),
+            symbol("*"),
+            symbol("/"),
+            symbol("%"),
+            symbol("==="),
+            symbol("==?"),
+            symbol("=="),
+            symbol("!=="),
+            symbol("!=?"),
+            symbol("!="),
+            symbol("&&"),
+            symbol("||"),
         )),
         alt((
-            tag("&"),
-            tag("|"),
-            tag("^~"),
-            tag("^"),
-            tag("~^"),
-            tag(">>>"),
-            tag(">>"),
-            tag("<<<"),
-            tag("<<"),
-            tag("->"),
-            tag("<->"),
-            tag("<="),
-            tag("<"),
-            tag(">="),
-            tag(">"),
+            symbol("&"),
+            symbol("|"),
+            symbol("^~"),
+            symbol("^"),
+            symbol("~^"),
+            symbol(">>>"),
+            symbol(">>"),
+            symbol("<<<"),
+            symbol("<<"),
+            symbol("->"),
+            symbol("<->"),
+            symbol("<="),
+            symbol("<"),
+            symbol(">="),
+            symbol(">"),
         )),
     ))(s)?;
     Ok((s, Operator { raw }))
 }
 
 pub fn inc_or_dec_operator(s: &str) -> IResult<&str, Operator> {
-    let (s, raw) = alt((tag("++"), tag("--")))(s)?;
+    let (s, raw) = alt((symbol("++"), symbol("--")))(s)?;
     Ok((s, Operator { raw }))
 }
 
 pub fn unary_module_path_operator(s: &str) -> IResult<&str, Operator> {
     let (s, raw) = alt((
-        tag("!"),
-        tag("&"),
-        tag("|"),
-        tag("~&"),
-        tag("~|"),
-        tag("~^"),
-        tag("^~"),
-        tag("^"),
-        tag("~"),
+        symbol("!"),
+        symbol("&"),
+        symbol("|"),
+        symbol("~&"),
+        symbol("~|"),
+        symbol("~^"),
+        symbol("^~"),
+        symbol("^"),
+        symbol("~"),
     ))(s)?;
     Ok((s, Operator { raw }))
 }
 
 pub fn binary_module_path_operator(s: &str) -> IResult<&str, Operator> {
     let (s, raw) = alt((
-        tag("=="),
-        tag("!="),
-        tag("&&"),
-        tag("||"),
-        tag("&"),
-        tag("|"),
-        tag("^~"),
-        tag("^"),
-        tag("~^"),
+        symbol("=="),
+        symbol("!="),
+        symbol("&&"),
+        symbol("||"),
+        symbol("&"),
+        symbol("|"),
+        symbol("^~"),
+        symbol("^"),
+        symbol("~^"),
     ))(s)?;
     Ok((s, Operator { raw }))
 }

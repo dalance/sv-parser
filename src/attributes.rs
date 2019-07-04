@@ -48,21 +48,21 @@ mod tests {
                 "{:?}",
                 all_consuming(attribute_instance)("(* full_case, parallel_case *)")
             ),
-            "Ok((\"\", AttributeInstance { attr_spec: [AttrSpec { attr_name: Identifier { raw: [\"full_case\"] }, rvalue: None }, AttrSpec { attr_name: Identifier { raw: [\"parallel_case\"] }, rvalue: None }] }))"
+            "Ok((\"\", AttributeInstance { attr_spec: [AttrSpec { attr_name: Identifier { raw: \"full_case\" }, rvalue: None }, AttrSpec { attr_name: Identifier { raw: \"parallel_case\" }, rvalue: None }] }))"
         );
         assert_eq!(
             format!(
                 "{:?}",
                 all_consuming(attribute_instance)("(* full_case=1 *)")
             ),
-            "Ok((\"\", AttributeInstance { attr_spec: [AttrSpec { attr_name: Identifier { raw: [\"full_case\"] }, rvalue: Some(Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\")))))) }] }))"
+            "Ok((\"\", AttributeInstance { attr_spec: [AttrSpec { attr_name: Identifier { raw: \"full_case\" }, rvalue: Some(Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\")))))) }] }))"
         );
         assert_eq!(
             format!(
                 "{:?}",
                 all_consuming(attribute_instance)("(* full_case=1, parallel_case = 0 *)")
             ),
-            "Ok((\"\", AttributeInstance { attr_spec: [AttrSpec { attr_name: Identifier { raw: [\"full_case\"] }, rvalue: Some(Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\")))))) }, AttrSpec { attr_name: Identifier { raw: [\"parallel_case\"] }, rvalue: Some(Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"0\")))))) }] }))"
+            "Ok((\"\", AttributeInstance { attr_spec: [AttrSpec { attr_name: Identifier { raw: \"full_case\" }, rvalue: Some(Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\")))))) }, AttrSpec { attr_name: Identifier { raw: \"parallel_case\" }, rvalue: Some(Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"0\")))))) }] }))"
         );
     }
 }

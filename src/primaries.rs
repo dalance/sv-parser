@@ -643,7 +643,7 @@ mod tests {
         );
         assert_eq!(
             format!("{:?}", all_consuming(primary)("\"aaa\"")),
-            "Ok((\"\", PrimaryLiteral(StringLiteral(StringLiteral { raw: [\"aaa\"] }))))"
+            "Ok((\"\", PrimaryLiteral(StringLiteral(StringLiteral { raw: \"aaa\" }))))"
         );
         //assert_eq!(
         //    format!("{:?}", all_consuming(primary)("this")),
@@ -659,7 +659,7 @@ mod tests {
         //);
         assert_eq!(
             format!("{:?}", all_consuming(primary)("this . super.a")),
-            "Ok((\"\", Hierarchical(PrimaryHierarchical { qualifier: Some(ClassQualifier(ClassQualifier { local: false, scope: Some(ImplicitClassHandle(ThisSuper)) })), identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: [\"a\"] } }, select: Select { member: None, bit_select: [], part_select_range: None } })))"
+            "Ok((\"\", Hierarchical(PrimaryHierarchical { qualifier: Some(ClassQualifier(ClassQualifier { local: false, scope: Some(ImplicitClassHandle(ThisSuper)) })), identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: \"a\" } }, select: Select { member: None, bit_select: [], part_select_range: None } })))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(module_path_primary)("10")),

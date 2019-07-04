@@ -16,7 +16,7 @@ const AZ09_DOLLAR: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0
 
 #[derive(Debug)]
 pub struct Identifier<'a> {
-    pub raw: Vec<&'a str>,
+    pub raw: &'a str,
 }
 
 #[derive(Debug)]
@@ -78,7 +78,11 @@ pub fn bin_identifier(s: &str) -> IResult<&str, Identifier> {
 pub fn c_identifier(s: &str) -> IResult<&str, Identifier> {
     let (s, x) = is_a(AZ_)(s)?;
     let (s, y) = opt(is_a(AZ09_))(s)?;
-    let raw = if let Some(y) = y { vec![x, y] } else { vec![x] };
+    let raw = if let Some(y) = y {
+        str_concat::concat(x, y).unwrap()
+    } else {
+        x
+    };
     Ok((s, Identifier { raw }))
 }
 
@@ -141,7 +145,12 @@ pub fn enum_identifier(s: &str) -> IResult<&str, Identifier> {
 pub fn escaped_identifier(s: &str) -> IResult<&str, Identifier> {
     let (s, x) = tag("\\")(s)?;
     let (s, y) = is_not(" \t\r\n")(s)?;
-    Ok((s, Identifier { raw: vec![x, y] }))
+    Ok((
+        s,
+        Identifier {
+            raw: str_concat::concat(x, y).unwrap(),
+        },
+    ))
 }
 
 pub fn formal_identifier(s: &str) -> IResult<&str, Identifier> {
@@ -201,7 +210,7 @@ pub fn hierarchical_identifier(s: &str) -> IResult<&str, HierarchicalIdentifier>
         hierarchy.insert(
             0,
             Hierarchy {
-                identifier: Identifier { raw: vec![x] },
+                identifier: Identifier { raw: x },
                 constant_bit_select: None,
             },
         );
@@ -307,10 +316,7 @@ pub fn package_identifier(s: &str) -> IResult<&str, Identifier> {
 pub fn package_scope(s: &str) -> IResult<&str, Scope> {
     let (s, x) = alt((
         terminated(package_identifier, sp(tag("::"))),
-        terminated(
-            map(tag("$unit"), |x| Identifier { raw: vec![x] }),
-            sp(tag("::")),
-        ),
+        terminated(map(tag("$unit"), |x| Identifier { raw: x }), sp(tag("::"))),
     ))(s)?;
     Ok((s, Scope::PackageScope(x)))
 }
@@ -462,7 +468,11 @@ pub fn signal_identifier(s: &str) -> IResult<&str, Identifier> {
 pub fn simple_identifier(s: &str) -> IResult<&str, Identifier> {
     let (s, x) = is_a(AZ_)(s)?;
     let (s, y) = opt(is_a(AZ09_DOLLAR))(s)?;
-    let raw = if let Some(y) = y { vec![x, y] } else { vec![x] };
+    let raw = if let Some(y) = y {
+        str_concat::concat(x, y).unwrap()
+    } else {
+        x
+    };
     Ok((s, Identifier { raw }))
 }
 
@@ -473,7 +483,12 @@ pub fn specparam_identifier(s: &str) -> IResult<&str, Identifier> {
 pub fn system_tf_identifier(s: &str) -> IResult<&str, Identifier> {
     let (s, x) = tag("$")(s)?;
     let (s, y) = is_a(AZ09_DOLLAR)(s)?;
-    Ok((s, Identifier { raw: vec![x, y] }))
+    Ok((
+        s,
+        Identifier {
+            raw: str_concat::concat(x, y).unwrap(),
+        },
+    ))
 }
 
 pub fn task_identifier(s: &str) -> IResult<&str, Identifier> {
@@ -514,27 +529,27 @@ mod tests {
     fn test() {
         assert_eq!(
             format!("{:?}", all_consuming(identifier)("shiftreg_a")),
-            "Ok((\"\", Identifier { raw: [\"shiftreg_a\"] }))"
+            "Ok((\"\", Identifier { raw: \"shiftreg_a\" }))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(identifier)("_bus3")),
-            "Ok((\"\", Identifier { raw: [\"_bus\", \"3\"] }))"
+            "Ok((\"\", Identifier { raw: \"_bus3\" }))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(identifier)("n$657")),
-            "Ok((\"\", Identifier { raw: [\"n\", \"$657\"] }))"
+            "Ok((\"\", Identifier { raw: \"n$657\" }))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(identifier)("\\busa+index")),
-            "Ok((\"\", Identifier { raw: [\"\\\\\", \"busa+index\"] }))"
+            "Ok((\"\", Identifier { raw: \"\\\\busa+index\" }))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(identifier)("\\-clock")),
-            "Ok((\"\", Identifier { raw: [\"\\\\\", \"-clock\"] }))"
+            "Ok((\"\", Identifier { raw: \"\\\\-clock\" }))"
         );
         assert_eq!(
             format!("{:?}", all_consuming(system_tf_identifier)("$display")),
-            "Ok((\"\", Identifier { raw: [\"$\", \"display\"] }))"
+            "Ok((\"\", Identifier { raw: \"$display\" }))"
         );
     }
 }

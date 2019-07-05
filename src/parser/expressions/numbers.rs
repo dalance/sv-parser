@@ -91,7 +91,7 @@ pub fn integral_number(s: &str) -> IResult<&str, Number> {
 }
 
 pub fn decimal_number(s: &str) -> IResult<&str, IntegralNumber> {
-    let (s, (size, decimal_base, decimal_value)) = tuple((
+    let (s, (x, y, z)) = tuple((
         opt(size),
         decimal_base,
         alt((unsigned_number, x_number, z_number)),
@@ -99,9 +99,9 @@ pub fn decimal_number(s: &str) -> IResult<&str, IntegralNumber> {
     Ok((
         s,
         IntegralNumber::DecimalNumber(DecimalNumber {
-            size,
-            decimal_base,
-            decimal_value,
+            size: x,
+            decimal_base: y,
+            decimal_value: z,
         }),
     ))
 }
@@ -112,37 +112,37 @@ pub fn integral_unsigned_number(s: &str) -> IResult<&str, IntegralNumber> {
 }
 
 pub fn binary_number(s: &str) -> IResult<&str, IntegralNumber> {
-    let (s, (size, binary_base, binary_value)) = tuple((opt(size), binary_base, binary_value))(s)?;
+    let (s, (x, y, z)) = tuple((opt(size), binary_base, binary_value))(s)?;
     Ok((
         s,
         IntegralNumber::BinaryNumber(BinaryNumber {
-            size,
-            binary_base,
-            binary_value,
+            size: x,
+            binary_base: y,
+            binary_value: z,
         }),
     ))
 }
 
 pub fn octal_number(s: &str) -> IResult<&str, IntegralNumber> {
-    let (s, (size, octal_base, octal_value)) = tuple((opt(size), octal_base, octal_value))(s)?;
+    let (s, (x, y, z)) = tuple((opt(size), octal_base, octal_value))(s)?;
     Ok((
         s,
         IntegralNumber::OctalNumber(OctalNumber {
-            size,
-            octal_base,
-            octal_value,
+            size: x,
+            octal_base: y,
+            octal_value: z,
         }),
     ))
 }
 
 pub fn hex_number(s: &str) -> IResult<&str, IntegralNumber> {
-    let (s, (size, hex_base, hex_value)) = tuple((opt(size), hex_base, hex_value))(s)?;
+    let (s, (x, y, z)) = tuple((opt(size), hex_base, hex_value))(s)?;
     Ok((
         s,
         IntegralNumber::HexNumber(HexNumber {
-            size,
-            hex_base,
-            hex_value,
+            size: x,
+            hex_base: y,
+            hex_value: z,
         }),
     ))
 }
@@ -164,34 +164,31 @@ pub fn real_number(s: &str) -> IResult<&str, Number> {
 }
 
 pub fn fixed_point_number(s: &str) -> IResult<&str, RealNumber> {
-    let (s, (integer_value, _, fraction_value)) =
-        tuple((unsigned_number, symbol("."), unsigned_number))(s)?;
+    let (s, (x, _, y)) = tuple((unsigned_number, symbol("."), unsigned_number))(s)?;
     Ok((
         s,
         RealNumber::FixedPointNumber(FixedPointNumber {
-            integer_value,
-            fraction_value,
+            integer_value: x,
+            fraction_value: y,
         }),
     ))
 }
 
 pub fn floating_point_number(s: &str) -> IResult<&str, RealNumber> {
-    let (s, integer_value) = unsigned_number(s)?;
-    let (s, fraction_value) = opt(tuple((symbol("."), unsigned_number)))(s)?;
-    let (s, exponent) = alt((symbol("e"), symbol("E")))(s)?;
-    let (s, sign) = opt(alt((symbol("+"), symbol("-"))))(s)?;
-    let (s, exponent_value) = unsigned_number(s)?;
-
-    let fraction_value = fraction_value.and_then(|(_, y)| Some(y));
+    let (s, x) = unsigned_number(s)?;
+    let (s, y) = opt(preceded(symbol("."), unsigned_number))(s)?;
+    let (s, z) = alt((symbol("e"), symbol("E")))(s)?;
+    let (s, v) = opt(alt((symbol("+"), symbol("-"))))(s)?;
+    let (s, w) = unsigned_number(s)?;
 
     Ok((
         s,
         RealNumber::FloatingPointNumber(FloatingPointNumber {
-            integer_value,
-            fraction_value,
-            exponent,
-            sign,
-            exponent_value,
+            integer_value: x,
+            fraction_value: y,
+            exponent: z,
+            sign: v,
+            exponent_value: w,
         }),
     ))
 }

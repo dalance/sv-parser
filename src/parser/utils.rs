@@ -34,17 +34,7 @@ pub struct LetExpression<'a> {
 }
 
 #[derive(Debug)]
-pub struct ConstantAssignmentPatternExpression<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
 pub struct TypeReference<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct AssignmentPatternExpression<'a> {
     pub raw: Vec<&'a str>,
 }
 
@@ -54,32 +44,7 @@ pub struct SequenceMethodCall<'a> {
 }
 
 #[derive(Debug)]
-pub struct AssignmentPatternExpressionType<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct AssignmentPatternNetLvalue<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct AssignmentPatternVariableLvalue<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct CondPredicate<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
 pub struct DataType<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct OpenRangeList<'a> {
     pub raw: Vec<&'a str>,
 }
 
@@ -109,31 +74,6 @@ pub struct Delay3<'a> {
 }
 
 #[derive(Debug)]
-pub struct DelayControl<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct StatementOrNull<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct Statement<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct FunctionStatement<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct DelayOrEventControl<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
 pub struct DynamicArrayNew<'a> {
     pub raw: Vec<&'a str>,
 }
@@ -145,6 +85,61 @@ pub struct ClassNew<'a> {
 
 #[derive(Debug)]
 pub struct BlockItemDeclaration<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct SubroutineCallStatement<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct LoopStatement<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct ProceduralAssertionStatement<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct ClockingDrive<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct RandsequenceStatement<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct ExpectPropertyStatement<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct SequenceInstance<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct DelayValue<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct CycleDelay<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct EdgeIdentifier<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct IntegerAtomType<'a> {
     pub raw: Vec<&'a str>,
 }
 
@@ -160,50 +155,16 @@ pub fn let_expression(s: &str) -> IResult<&str, LetExpression> {
     Ok((s, LetExpression { raw: vec![] }))
 }
 
-pub fn constant_assignment_pattern_expression(
-    s: &str,
-) -> IResult<&str, ConstantAssignmentPatternExpression> {
-    Ok((s, ConstantAssignmentPatternExpression { raw: vec![] }))
-}
-
 pub fn type_reference(s: &str) -> IResult<&str, TypeReference> {
     Ok((s, TypeReference { raw: vec![] }))
-}
-
-pub fn assignment_pattern_expression(s: &str) -> IResult<&str, AssignmentPatternExpression> {
-    Ok((s, AssignmentPatternExpression { raw: vec![] }))
 }
 
 pub fn sequence_method_call(s: &str) -> IResult<&str, SequenceMethodCall> {
     Ok((s, SequenceMethodCall { raw: vec![] }))
 }
 
-pub fn assignment_pattern_expression_type(
-    s: &str,
-) -> IResult<&str, AssignmentPatternExpressionType> {
-    Ok((s, AssignmentPatternExpressionType { raw: vec![] }))
-}
-
-pub fn assignment_pattern_net_lvalue(s: &str) -> IResult<&str, AssignmentPatternNetLvalue> {
-    Ok((s, AssignmentPatternNetLvalue { raw: vec![] }))
-}
-
-pub fn assignment_pattern_variable_lvalue(
-    s: &str,
-) -> IResult<&str, AssignmentPatternVariableLvalue> {
-    Ok((s, AssignmentPatternVariableLvalue { raw: vec![] }))
-}
-
-pub fn cond_predicate(s: &str) -> IResult<&str, CondPredicate> {
-    Ok((s, CondPredicate { raw: vec![] }))
-}
-
 pub fn data_type(s: &str) -> IResult<&str, DataType> {
     Ok((s, DataType { raw: vec![] }))
-}
-
-pub fn open_range_list(s: &str) -> IResult<&str, OpenRangeList> {
-    Ok((s, OpenRangeList { raw: vec![] }))
 }
 
 pub fn clocking_event(s: &str) -> IResult<&str, ClockingEvent> {
@@ -212,10 +173,6 @@ pub fn clocking_event(s: &str) -> IResult<&str, ClockingEvent> {
 
 pub fn constraint_block(s: &str) -> IResult<&str, ConstraintBlock> {
     Ok((s, ConstraintBlock { raw: vec![] }))
-}
-
-pub fn variable_identifier_list(s: &str) -> IResult<&str, Vec<Identifier>> {
-    Ok((s, vec![]))
 }
 
 pub fn identifier_list(s: &str) -> IResult<&str, Vec<Identifier>> {
@@ -234,26 +191,6 @@ pub fn delay3(s: &str) -> IResult<&str, Delay3> {
     Ok((s, Delay3 { raw: vec![] }))
 }
 
-pub fn delay_control(s: &str) -> IResult<&str, DelayControl> {
-    Ok((s, DelayControl { raw: vec![] }))
-}
-
-pub fn statement_or_null(s: &str) -> IResult<&str, StatementOrNull> {
-    Ok((s, StatementOrNull { raw: vec![] }))
-}
-
-pub fn statement(s: &str) -> IResult<&str, Statement> {
-    Ok((s, Statement { raw: vec![] }))
-}
-
-pub fn function_statement(s: &str) -> IResult<&str, FunctionStatement> {
-    Ok((s, FunctionStatement { raw: vec![] }))
-}
-
-pub fn delay_or_event_control(s: &str) -> IResult<&str, DelayOrEventControl> {
-    Ok((s, DelayOrEventControl { raw: vec![] }))
-}
-
 pub fn dynamic_array_new(s: &str) -> IResult<&str, DynamicArrayNew> {
     Ok((s, DynamicArrayNew { raw: vec![] }))
 }
@@ -264,4 +201,48 @@ pub fn class_new(s: &str) -> IResult<&str, ClassNew> {
 
 pub fn block_item_declaration(s: &str) -> IResult<&str, BlockItemDeclaration> {
     Ok((s, BlockItemDeclaration { raw: vec![] }))
+}
+
+pub fn subroutine_call_statement(s: &str) -> IResult<&str, SubroutineCallStatement> {
+    Ok((s, SubroutineCallStatement { raw: vec![] }))
+}
+
+pub fn loop_statement(s: &str) -> IResult<&str, LoopStatement> {
+    Ok((s, LoopStatement { raw: vec![] }))
+}
+
+pub fn procedural_assertion_statement(s: &str) -> IResult<&str, ProceduralAssertionStatement> {
+    Ok((s, ProceduralAssertionStatement { raw: vec![] }))
+}
+
+pub fn clocking_drive(s: &str) -> IResult<&str, ClockingDrive> {
+    Ok((s, ClockingDrive { raw: vec![] }))
+}
+
+pub fn randsequence_statement(s: &str) -> IResult<&str, RandsequenceStatement> {
+    Ok((s, RandsequenceStatement { raw: vec![] }))
+}
+
+pub fn expect_property_statement(s: &str) -> IResult<&str, ExpectPropertyStatement> {
+    Ok((s, ExpectPropertyStatement { raw: vec![] }))
+}
+
+pub fn sequence_instance(s: &str) -> IResult<&str, SequenceInstance> {
+    Ok((s, SequenceInstance { raw: vec![] }))
+}
+
+pub fn delay_value(s: &str) -> IResult<&str, DelayValue> {
+    Ok((s, DelayValue { raw: vec![] }))
+}
+
+pub fn cycle_delay(s: &str) -> IResult<&str, CycleDelay> {
+    Ok((s, CycleDelay { raw: vec![] }))
+}
+
+pub fn edge_identifier(s: &str) -> IResult<&str, EdgeIdentifier> {
+    Ok((s, EdgeIdentifier { raw: vec![] }))
+}
+
+pub fn integer_atom_type(s: &str) -> IResult<&str, IntegerAtomType> {
+    Ok((s, IntegerAtomType { raw: vec![] }))
 }

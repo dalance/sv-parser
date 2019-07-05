@@ -140,7 +140,7 @@ pub struct TaggedUnionExpression<'a> {
 #[derive(Debug)]
 pub struct InsideExpression<'a> {
     pub expression: Expression<'a>,
-    pub open_range_list: OpenRangeList<'a>,
+    pub open_range_list: Vec<ValueRange<'a>>,
 }
 
 #[derive(Debug)]
@@ -211,47 +211,47 @@ pub fn inc_or_dec_expression(s: &str) -> IResult<&str, IncOrDecExpression> {
 }
 
 pub fn inc_or_dec_expression_prefix(s: &str) -> IResult<&str, IncOrDecExpression> {
-    let (s, operator) = inc_or_dec_operator(s)?;
-    let (s, attribute) = many0(attribute_instance)(s)?;
-    let (s, lvalue) = variable_lvalue(s)?;
+    let (s, x) = inc_or_dec_operator(s)?;
+    let (s, y) = many0(attribute_instance)(s)?;
+    let (s, z) = variable_lvalue(s)?;
     Ok((
         s,
         IncOrDecExpression::Prefix(IncOrDecExpressionPrefix {
-            operator,
-            attribute,
-            lvalue,
+            operator: x,
+            attribute: y,
+            lvalue: z,
         }),
     ))
 }
 
 pub fn inc_or_dec_expression_suffix(s: &str) -> IResult<&str, IncOrDecExpression> {
-    let (s, lvalue) = variable_lvalue(s)?;
-    let (s, attribute) = many0(attribute_instance)(s)?;
-    let (s, operator) = inc_or_dec_operator(s)?;
+    let (s, x) = variable_lvalue(s)?;
+    let (s, y) = many0(attribute_instance)(s)?;
+    let (s, z) = inc_or_dec_operator(s)?;
     Ok((
         s,
         IncOrDecExpression::Suffix(IncOrDecExpressionSuffix {
-            lvalue,
-            attribute,
-            operator,
+            lvalue: x,
+            attribute: y,
+            operator: z,
         }),
     ))
 }
 
 pub fn conditional_expression(s: &str) -> IResult<&str, ConditionalExpression> {
-    let (s, predicate) = cond_predicate(s)?;
+    let (s, x) = cond_predicate(s)?;
     let (s, _) = symbol("?")(s)?;
-    let (s, attribute) = many0(attribute_instance)(s)?;
-    let (s, arg0) = expression(s)?;
+    let (s, y) = many0(attribute_instance)(s)?;
+    let (s, z) = expression(s)?;
     let (s, _) = symbol(":")(s)?;
-    let (s, arg1) = expression(s)?;
+    let (s, v) = expression(s)?;
     Ok((
         s,
         ConditionalExpression {
-            predicate,
-            attribute,
-            arg0,
-            arg1,
+            predicate: x,
+            attribute: y,
+            arg0: z,
+            arg1: v,
         },
     ))
 }
@@ -268,49 +268,49 @@ pub fn constant_expression(s: &str) -> IResult<&str, ConstantExpression> {
 }
 
 pub fn constant_expression_unary(s: &str) -> IResult<&str, ConstantExpression> {
-    let (s, operator) = unary_operator(s)?;
-    let (s, attribute) = many0(attribute_instance)(s)?;
-    let (s, arg0) = constant_primary(s)?;
+    let (s, x) = unary_operator(s)?;
+    let (s, y) = many0(attribute_instance)(s)?;
+    let (s, z) = constant_primary(s)?;
     Ok((
         s,
         ConstantExpression::Unary(Box::new(ConstantExpressionUnary {
-            operator,
-            attribute,
-            arg0,
+            operator: x,
+            attribute: y,
+            arg0: z,
         })),
     ))
 }
 
 pub fn constant_expression_binary(s: &str) -> IResult<&str, ConstantExpression> {
-    let (s, arg0) = constant_expression(s)?;
-    let (s, operator) = binary_operator(s)?;
-    let (s, attribute) = many0(attribute_instance)(s)?;
-    let (s, arg1) = constant_expression(s)?;
+    let (s, x) = constant_expression(s)?;
+    let (s, y) = binary_operator(s)?;
+    let (s, z) = many0(attribute_instance)(s)?;
+    let (s, v) = constant_expression(s)?;
     Ok((
         s,
         ConstantExpression::Binary(Box::new(ConstantExpressionBinary {
-            arg0,
-            operator,
-            attribute,
-            arg1,
+            arg0: x,
+            operator: y,
+            attribute: z,
+            arg1: v,
         })),
     ))
 }
 
 pub fn constant_expression_ternary(s: &str) -> IResult<&str, ConstantExpression> {
-    let (s, predicate) = constant_expression(s)?;
+    let (s, x) = constant_expression(s)?;
     let (s, _) = symbol("?")(s)?;
-    let (s, attribute) = many0(attribute_instance)(s)?;
-    let (s, arg0) = constant_expression(s)?;
+    let (s, y) = many0(attribute_instance)(s)?;
+    let (s, z) = constant_expression(s)?;
     let (s, _) = symbol(":")(s)?;
-    let (s, arg1) = constant_expression(s)?;
+    let (s, v) = constant_expression(s)?;
     Ok((
         s,
         ConstantExpression::Ternary(Box::new(ConstantExpressionTernary {
-            predicate,
-            attribute,
-            arg0,
-            arg1,
+            predicate: x,
+            attribute: y,
+            arg0: z,
+            arg1: v,
         })),
     ))
 }
@@ -403,57 +403,57 @@ pub fn expression(s: &str) -> IResult<&str, Expression> {
 }
 
 pub fn expression_unary(s: &str) -> IResult<&str, Expression> {
-    let (s, operator) = unary_operator(s)?;
-    let (s, attribute) = many0(attribute_instance)(s)?;
-    let (s, arg0) = primary(s)?;
+    let (s, x) = unary_operator(s)?;
+    let (s, y) = many0(attribute_instance)(s)?;
+    let (s, z) = primary(s)?;
     Ok((
         s,
         Expression::Unary(Box::new(ExpressionUnary {
-            operator,
-            attribute,
-            arg0,
+            operator: x,
+            attribute: y,
+            arg0: z,
         })),
     ))
 }
 
 pub fn expression_binary(s: &str) -> IResult<&str, Expression> {
-    let (s, arg0) = expression(s)?;
-    let (s, operator) = binary_operator(s)?;
-    let (s, attribute) = many0(attribute_instance)(s)?;
-    let (s, arg1) = expression(s)?;
+    let (s, x) = expression(s)?;
+    let (s, y) = binary_operator(s)?;
+    let (s, z) = many0(attribute_instance)(s)?;
+    let (s, v) = expression(s)?;
     Ok((
         s,
         Expression::Binary(Box::new(ExpressionBinary {
-            arg0,
-            operator,
-            attribute,
-            arg1,
+            arg0: x,
+            operator: y,
+            attribute: z,
+            arg1: v,
         })),
     ))
 }
 
 pub fn tagged_union_expression(s: &str) -> IResult<&str, TaggedUnionExpression> {
     let (s, _) = symbol("tagged")(s)?;
-    let (s, identifier) = member_identifier(s)?;
-    let (s, expression) = opt(expression)(s)?;
+    let (s, x) = member_identifier(s)?;
+    let (s, y) = opt(expression)(s)?;
     Ok((
         s,
         TaggedUnionExpression {
-            identifier,
-            expression,
+            identifier: x,
+            expression: y,
         },
     ))
 }
 
 pub fn inside_expression(s: &str) -> IResult<&str, InsideExpression> {
-    let (s, expression) = expression(s)?;
+    let (s, x) = expression(s)?;
     let (s, _) = symbol("inside")(s)?;
-    let (s, open_range_list) = delimited(symbol("{"), open_range_list, symbol("}"))(s)?;
+    let (s, y) = delimited(symbol("{"), open_range_list, symbol("}"))(s)?;
     Ok((
         s,
         InsideExpression {
-            expression,
-            open_range_list,
+            expression: x,
+            open_range_list: y,
         },
     ))
 }
@@ -493,19 +493,19 @@ pub fn mintypmax_expression_ternary(s: &str) -> IResult<&str, MintypmaxExpressio
 pub fn module_path_conditional_expression(
     s: &str,
 ) -> IResult<&str, ModulePathConditionalExpression> {
-    let (s, predicate) = module_path_expression(s)?;
+    let (s, x) = module_path_expression(s)?;
     let (s, _) = symbol("?")(s)?;
-    let (s, attribute) = many0(attribute_instance)(s)?;
-    let (s, arg0) = module_path_expression(s)?;
+    let (s, y) = many0(attribute_instance)(s)?;
+    let (s, z) = module_path_expression(s)?;
     let (s, _) = symbol(":")(s)?;
-    let (s, arg1) = module_path_expression(s)?;
+    let (s, v) = module_path_expression(s)?;
     Ok((
         s,
         ModulePathConditionalExpression {
-            predicate,
-            attribute,
-            arg0,
-            arg1,
+            predicate: x,
+            attribute: y,
+            arg0: z,
+            arg1: v,
         },
     ))
 }
@@ -524,31 +524,31 @@ pub fn module_path_expression(s: &str) -> IResult<&str, ModulePathExpression> {
 }
 
 pub fn module_path_expression_unary(s: &str) -> IResult<&str, ModulePathExpression> {
-    let (s, operator) = unary_module_path_operator(s)?;
-    let (s, attribute) = many0(attribute_instance)(s)?;
-    let (s, arg0) = module_path_primary(s)?;
+    let (s, x) = unary_module_path_operator(s)?;
+    let (s, y) = many0(attribute_instance)(s)?;
+    let (s, z) = module_path_primary(s)?;
     Ok((
         s,
         ModulePathExpression::Unary(Box::new(ModulePathExpressionUnary {
-            operator,
-            attribute,
-            arg0,
+            operator: x,
+            attribute: y,
+            arg0: z,
         })),
     ))
 }
 
 pub fn module_path_expression_binary(s: &str) -> IResult<&str, ModulePathExpression> {
-    let (s, arg0) = module_path_expression(s)?;
-    let (s, operator) = binary_module_path_operator(s)?;
-    let (s, attribute) = many0(attribute_instance)(s)?;
-    let (s, arg1) = module_path_expression(s)?;
+    let (s, x) = module_path_expression(s)?;
+    let (s, y) = binary_module_path_operator(s)?;
+    let (s, z) = many0(attribute_instance)(s)?;
+    let (s, v) = module_path_expression(s)?;
     Ok((
         s,
         ModulePathExpression::Binary(Box::new(ModulePathExpressionBinary {
-            arg0,
-            operator,
-            attribute,
-            arg1,
+            arg0: x,
+            operator: y,
+            attribute: z,
+            arg1: v,
         })),
     ))
 }

@@ -9,9 +9,9 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub enum NetLvalue<'a> {
-    Identifier(NetLvalueIdentifier<'a>),
-    Lvalue(Vec<NetLvalue<'a>>),
-    Pattern(NetLvaluePattern<'a>),
+    Identifier(Box<NetLvalueIdentifier<'a>>),
+    Lvalue(Box<Vec<NetLvalue<'a>>>),
+    Pattern(Box<NetLvaluePattern<'a>>),
 }
 
 #[derive(Debug)]
@@ -28,10 +28,10 @@ pub struct NetLvaluePattern<'a> {
 
 #[derive(Debug)]
 pub enum VariableLvalue<'a> {
-    Identifier(VariableLvalueIdentifier<'a>),
-    Lvalue(Vec<VariableLvalue<'a>>),
-    Pattern(VariableLvaluePattern<'a>),
-    Concatenation(StreamingConcatenation<'a>),
+    Identifier(Box<VariableLvalueIdentifier<'a>>),
+    Lvalue(Box<Vec<VariableLvalue<'a>>>),
+    Pattern(Box<VariableLvaluePattern<'a>>),
+    Concatenation(Box<StreamingConcatenation<'a>>),
 }
 
 #[derive(Debug)]
@@ -61,18 +61,27 @@ pub fn net_lvalue(s: &str) -> IResult<&str, NetLvalue> {
 }
 
 pub fn net_lvalue_identifier(s: &str) -> IResult<&str, NetLvalue> {
-    let (s, identifier) = ps_or_hierarchical_net_identifier(s)?;
-    let (s, select) = constant_select(s)?;
+    let (s, x) = ps_or_hierarchical_net_identifier(s)?;
+    let (s, y) = constant_select(s)?;
     Ok((
         s,
-        NetLvalue::Identifier(NetLvalueIdentifier { identifier, select }),
+        NetLvalue::Identifier(Box::new(NetLvalueIdentifier {
+            identifier: x,
+            select: y,
+        })),
     ))
 }
 
 pub fn net_lvalue_pattern(s: &str) -> IResult<&str, NetLvalue> {
-    let (s, r#type) = opt(assignment_pattern_expression_type)(s)?;
-    let (s, lvalue) = assignment_pattern_net_lvalue(s)?;
-    Ok((s, NetLvalue::Pattern(NetLvaluePattern { r#type, lvalue })))
+    let (s, x) = opt(assignment_pattern_expression_type)(s)?;
+    let (s, y) = assignment_pattern_net_lvalue(s)?;
+    Ok((
+        s,
+        NetLvalue::Pattern(Box::new(NetLvaluePattern {
+            r#type: x,
+            lvalue: y,
+        })),
+    ))
 }
 
 pub fn net_lvalue_lvalue(s: &str) -> IResult<&str, NetLvalue> {
@@ -87,7 +96,7 @@ pub fn net_lvalue_lvalue(s: &str) -> IResult<&str, NetLvalue> {
         ret.push(y);
     }
 
-    Ok((s, NetLvalue::Lvalue(ret)))
+    Ok((s, NetLvalue::Lvalue(Box::new(ret))))
 }
 
 pub fn variable_lvalue(s: &str) -> IResult<&str, VariableLvalue> {
@@ -96,34 +105,37 @@ pub fn variable_lvalue(s: &str) -> IResult<&str, VariableLvalue> {
         variable_lvalue_lvalue,
         variable_lvalue_pattern,
         map(streaming_concatenation, |x| {
-            VariableLvalue::Concatenation(x)
+            VariableLvalue::Concatenation(Box::new(x))
         }),
     ))(s)
 }
 
 pub fn variable_lvalue_identifier(s: &str) -> IResult<&str, VariableLvalue> {
-    let (s, scope) = opt(alt((
+    let (s, x) = opt(alt((
         terminated(implicit_class_handle, symbol(".")),
         package_scope,
     )))(s)?;
-    let (s, identifier) = hierarchical_variable_identifier(s)?;
-    let (s, select) = select(s)?;
+    let (s, y) = hierarchical_variable_identifier(s)?;
+    let (s, z) = select(s)?;
     Ok((
         s,
-        VariableLvalue::Identifier(VariableLvalueIdentifier {
-            scope,
-            identifier,
-            select,
-        }),
+        VariableLvalue::Identifier(Box::new(VariableLvalueIdentifier {
+            scope: x,
+            identifier: y,
+            select: z,
+        })),
     ))
 }
 
 pub fn variable_lvalue_pattern(s: &str) -> IResult<&str, VariableLvalue> {
-    let (s, r#type) = opt(assignment_pattern_expression_type)(s)?;
-    let (s, lvalue) = assignment_pattern_variable_lvalue(s)?;
+    let (s, x) = opt(assignment_pattern_expression_type)(s)?;
+    let (s, y) = assignment_pattern_variable_lvalue(s)?;
     Ok((
         s,
-        VariableLvalue::Pattern(VariableLvaluePattern { r#type, lvalue }),
+        VariableLvalue::Pattern(Box::new(VariableLvaluePattern {
+            r#type: x,
+            lvalue: y,
+        })),
     ))
 }
 
@@ -139,22 +151,22 @@ pub fn variable_lvalue_lvalue(s: &str) -> IResult<&str, VariableLvalue> {
         ret.push(y);
     }
 
-    Ok((s, VariableLvalue::Lvalue(ret)))
+    Ok((s, VariableLvalue::Lvalue(Box::new(ret))))
 }
 
 pub fn nonrange_variable_lvalue(s: &str) -> IResult<&str, NonrangeVariableLvalue> {
-    let (s, scope) = opt(alt((
+    let (s, x) = opt(alt((
         terminated(implicit_class_handle, symbol(".")),
         package_scope,
     )))(s)?;
-    let (s, identifier) = hierarchical_variable_identifier(s)?;
-    let (s, select) = nonrange_select(s)?;
+    let (s, y) = hierarchical_variable_identifier(s)?;
+    let (s, z) = nonrange_select(s)?;
     Ok((
         s,
         NonrangeVariableLvalue {
-            scope,
-            identifier,
-            select,
+            scope: x,
+            identifier: y,
+            select: z,
         },
     ))
 }

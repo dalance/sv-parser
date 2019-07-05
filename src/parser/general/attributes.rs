@@ -21,15 +21,21 @@ pub struct AttrSpec<'a> {
 
 pub fn attribute_instance(s: &str) -> IResult<&str, AttributeInstance> {
     let (s, _) = symbol("(*")(s)?;
-    let (s, attr_spec) = separated_nonempty_list(symbol(","), attr_spec)(s)?;
+    let (s, x) = separated_nonempty_list(symbol(","), attr_spec)(s)?;
     let (s, _) = symbol("*)")(s)?;
-    Ok((s, AttributeInstance { attr_spec }))
+    Ok((s, AttributeInstance { attr_spec: x }))
 }
 
 pub fn attr_spec(s: &str) -> IResult<&str, AttrSpec> {
-    let (s, attr_name) = identifier(s)?;
-    let (s, rvalue) = opt(preceded(symbol("="), constant_expression))(s)?;
-    Ok((s, AttrSpec { attr_name, rvalue }))
+    let (s, x) = identifier(s)?;
+    let (s, y) = opt(preceded(symbol("="), constant_expression))(s)?;
+    Ok((
+        s,
+        AttrSpec {
+            attr_name: x,
+            rvalue: y,
+        },
+    ))
 }
 
 // -----------------------------------------------------------------------------

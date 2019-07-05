@@ -27,7 +27,7 @@ pub enum AlwaysKeyword {
 
 #[derive(Debug)]
 pub struct FinalConstruct<'a> {
-    pub statement: FunctionStatement<'a>,
+    pub statement: Statement<'a>,
 }
 
 #[derive(Debug)]
@@ -74,7 +74,7 @@ pub struct NonblockingAssignment<'a> {
 }
 
 #[derive(Debug)]
-pub enum ProcedualContinuousAssignment<'a> {
+pub enum ProceduralContinuousAssignment<'a> {
     Assign(VariableAssignment<'a>),
     Deassign(VariableLvalue<'a>),
     ForceVariable(VariableAssignment<'a>),
@@ -93,14 +93,20 @@ pub struct VariableAssignment<'a> {
 
 pub fn initial_construct(s: &str) -> IResult<&str, InitialConstruct> {
     let (s, _) = symbol("initial")(s)?;
-    let (s, statement) = statement_or_null(s)?;
-    Ok((s, InitialConstruct { statement }))
+    let (s, x) = statement_or_null(s)?;
+    Ok((s, InitialConstruct { statement: x }))
 }
 
 pub fn always_construct(s: &str) -> IResult<&str, AlwaysConstruct> {
-    let (s, keyword) = always_keyword(s)?;
-    let (s, statement) = statement(s)?;
-    Ok((s, AlwaysConstruct { keyword, statement }))
+    let (s, x) = always_keyword(s)?;
+    let (s, y) = statement(s)?;
+    Ok((
+        s,
+        AlwaysConstruct {
+            keyword: x,
+            statement: y,
+        },
+    ))
 }
 
 pub fn always_keyword(s: &str) -> IResult<&str, AlwaysKeyword> {
@@ -114,8 +120,8 @@ pub fn always_keyword(s: &str) -> IResult<&str, AlwaysKeyword> {
 
 pub fn final_construct(s: &str) -> IResult<&str, FinalConstruct> {
     let (s, _) = symbol("final")(s)?;
-    let (s, statement) = function_statement(s)?;
-    Ok((s, FinalConstruct { statement }))
+    let (s, x) = function_statement(s)?;
+    Ok((s, FinalConstruct { statement: x }))
 }
 
 pub fn blocking_assignment(s: &str) -> IResult<&str, BlockingAssignment> {
@@ -128,61 +134,64 @@ pub fn blocking_assignment(s: &str) -> IResult<&str, BlockingAssignment> {
 }
 
 pub fn blocking_assignment_variable(s: &str) -> IResult<&str, BlockingAssignment> {
-    let (s, lvalue) = variable_lvalue(s)?;
+    let (s, x) = variable_lvalue(s)?;
     let (s, _) = symbol("=")(s)?;
-    let (s, control) = delay_or_event_control(s)?;
-    let (s, rvalue) = expression(s)?;
+    let (s, y) = delay_or_event_control(s)?;
+    let (s, z) = expression(s)?;
     Ok((
         s,
         BlockingAssignment::Variable(BlockingAssignmentVariable {
-            lvalue,
-            control,
-            rvalue,
+            lvalue: x,
+            control: y,
+            rvalue: z,
         }),
     ))
 }
 
 pub fn blocking_assignment_nonrange_variable(s: &str) -> IResult<&str, BlockingAssignment> {
-    let (s, lvalue) = nonrange_variable_lvalue(s)?;
+    let (s, x) = nonrange_variable_lvalue(s)?;
     let (s, _) = symbol("=")(s)?;
-    let (s, rvalue) = dynamic_array_new(s)?;
+    let (s, y) = dynamic_array_new(s)?;
     Ok((
         s,
-        BlockingAssignment::NonrangeVariable(BlockingAssignmentNonrangeVariable { lvalue, rvalue }),
+        BlockingAssignment::NonrangeVariable(BlockingAssignmentNonrangeVariable {
+            lvalue: x,
+            rvalue: y,
+        }),
     ))
 }
 
 pub fn blocking_assignment_hierarchical_variable(s: &str) -> IResult<&str, BlockingAssignment> {
-    let (s, scope) = opt(alt((
+    let (s, x) = opt(alt((
         terminated(implicit_class_handle, symbol(".")),
         class_scope,
         package_scope,
     )))(s)?;
-    let (s, lvalue) = hierarchical_variable_identifier(s)?;
-    let (s, select) = select(s)?;
+    let (s, y) = hierarchical_variable_identifier(s)?;
+    let (s, z) = select(s)?;
     let (s, _) = symbol("=")(s)?;
-    let (s, rvalue) = class_new(s)?;
+    let (s, v) = class_new(s)?;
     Ok((
         s,
         BlockingAssignment::HierarchicalVariable(BlockingAssignmentHierarchicalVariable {
-            scope,
-            lvalue,
-            select,
-            rvalue,
+            scope: x,
+            lvalue: y,
+            select: z,
+            rvalue: v,
         }),
     ))
 }
 
 pub fn operator_assignment(s: &str) -> IResult<&str, OperatorAssignment> {
-    let (s, lvalue) = variable_lvalue(s)?;
-    let (s, operator) = assignment_operator(s)?;
-    let (s, rvalue) = expression(s)?;
+    let (s, x) = variable_lvalue(s)?;
+    let (s, y) = assignment_operator(s)?;
+    let (s, z) = expression(s)?;
     Ok((
         s,
         OperatorAssignment {
-            lvalue,
-            operator,
-            rvalue,
+            lvalue: x,
+            operator: y,
+            rvalue: z,
         },
     ))
 }
@@ -206,46 +215,52 @@ pub fn assignment_operator(s: &str) -> IResult<&str, Operator> {
 }
 
 pub fn nonblocking_assignment(s: &str) -> IResult<&str, NonblockingAssignment> {
-    let (s, lvalue) = variable_lvalue(s)?;
+    let (s, x) = variable_lvalue(s)?;
     let (s, _) = symbol("<=")(s)?;
-    let (s, control) = opt(delay_or_event_control)(s)?;
-    let (s, rvalue) = expression(s)?;
+    let (s, y) = opt(delay_or_event_control)(s)?;
+    let (s, z) = expression(s)?;
     Ok((
         s,
         NonblockingAssignment {
-            lvalue,
-            control,
-            rvalue,
+            lvalue: x,
+            control: y,
+            rvalue: z,
         },
     ))
 }
 
-pub fn procedual_continuous_assignment(s: &str) -> IResult<&str, ProcedualContinuousAssignment> {
+pub fn procedural_continuous_assignment(s: &str) -> IResult<&str, ProceduralContinuousAssignment> {
     alt((
         map(preceded(symbol("assign"), variable_assignment), |x| {
-            ProcedualContinuousAssignment::Assign(x)
+            ProceduralContinuousAssignment::Assign(x)
         }),
         map(preceded(symbol("deassign"), variable_lvalue), |x| {
-            ProcedualContinuousAssignment::Deassign(x)
+            ProceduralContinuousAssignment::Deassign(x)
         }),
         map(preceded(symbol("force"), variable_assignment), |x| {
-            ProcedualContinuousAssignment::ForceVariable(x)
+            ProceduralContinuousAssignment::ForceVariable(x)
         }),
         map(preceded(symbol("force"), net_assignment), |x| {
-            ProcedualContinuousAssignment::ForceNet(x)
+            ProceduralContinuousAssignment::ForceNet(x)
         }),
         map(preceded(symbol("release"), variable_lvalue), |x| {
-            ProcedualContinuousAssignment::ReleaseVariable(x)
+            ProceduralContinuousAssignment::ReleaseVariable(x)
         }),
         map(preceded(symbol("release"), net_lvalue), |x| {
-            ProcedualContinuousAssignment::ReleaseNet(x)
+            ProceduralContinuousAssignment::ReleaseNet(x)
         }),
     ))(s)
 }
 
 pub fn variable_assignment(s: &str) -> IResult<&str, VariableAssignment> {
-    let (s, lvalue) = variable_lvalue(s)?;
+    let (s, x) = variable_lvalue(s)?;
     let (s, _) = symbol("=")(s)?;
-    let (s, rvalue) = expression(s)?;
-    Ok((s, VariableAssignment { lvalue, rvalue }))
+    let (s, y) = expression(s)?;
+    Ok((
+        s,
+        VariableAssignment {
+            lvalue: x,
+            rvalue: y,
+        },
+    ))
 }

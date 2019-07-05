@@ -21,7 +21,7 @@ pub enum ConstantPrimary<'a> {
     LetExpression(LetExpression<'a>),
     MintypmaxExpression(ConstantMintypmaxExpression<'a>),
     Cast(ConstantCast<'a>),
-    AssignmentPatternExpression(ConstantAssignmentPatternExpression<'a>),
+    AssignmentPatternExpression(AssignmentPatternExpression<'a>),
     TypeReference(TypeReference<'a>),
     Null,
 }
@@ -233,48 +233,60 @@ pub fn constant_primary(s: &str) -> IResult<&str, ConstantPrimary> {
 }
 
 pub fn constant_primary_ps_parameter(s: &str) -> IResult<&str, ConstantPrimary> {
-    let (s, identifier) = ps_parameter_identifier(s)?;
-    let (s, select) = constant_select(s)?;
+    let (s, x) = ps_parameter_identifier(s)?;
+    let (s, y) = constant_select(s)?;
     Ok((
         s,
-        ConstantPrimary::PsParameter(ConstantPrimaryPsParameter { identifier, select }),
+        ConstantPrimary::PsParameter(ConstantPrimaryPsParameter {
+            identifier: x,
+            select: y,
+        }),
     ))
 }
 
 pub fn constant_primary_specparam(s: &str) -> IResult<&str, ConstantPrimary> {
-    let (s, identifier) = specparam_identifier(s)?;
-    let (s, range) = opt(delimited(
+    let (s, x) = specparam_identifier(s)?;
+    let (s, y) = opt(delimited(
         symbol("["),
         constant_range_expression,
         symbol("]"),
     ))(s)?;
     Ok((
         s,
-        ConstantPrimary::Specparam(ConstantPrimarySpecparam { identifier, range }),
+        ConstantPrimary::Specparam(ConstantPrimarySpecparam {
+            identifier: x,
+            range: y,
+        }),
     ))
 }
 
 pub fn constant_primary_formal_port(s: &str) -> IResult<&str, ConstantPrimary> {
-    let (s, identifier) = formal_port_identifier(s)?;
-    let (s, select) = constant_select(s)?;
+    let (s, x) = formal_port_identifier(s)?;
+    let (s, y) = constant_select(s)?;
     Ok((
         s,
-        ConstantPrimary::FormalPort(ConstantPrimaryFormalPort { identifier, select }),
+        ConstantPrimary::FormalPort(ConstantPrimaryFormalPort {
+            identifier: x,
+            select: y,
+        }),
     ))
 }
 
 pub fn constant_primary_enum(s: &str) -> IResult<&str, ConstantPrimary> {
-    let (s, scope) = alt((package_scope, class_scope))(s)?;
-    let (s, identifier) = enum_identifier(s)?;
+    let (s, x) = alt((package_scope, class_scope))(s)?;
+    let (s, y) = enum_identifier(s)?;
     Ok((
         s,
-        ConstantPrimary::Enum(ConstantPrimaryEnum { scope, identifier }),
+        ConstantPrimary::Enum(ConstantPrimaryEnum {
+            scope: x,
+            identifier: y,
+        }),
     ))
 }
 
 pub fn constant_primary_concatenation(s: &str) -> IResult<&str, ConstantPrimary> {
-    let (s, concatenation) = constant_concatenation(s)?;
-    let (s, range) = opt(delimited(
+    let (s, x) = constant_concatenation(s)?;
+    let (s, y) = opt(delimited(
         symbol("["),
         constant_range_expression,
         symbol("]"),
@@ -282,15 +294,15 @@ pub fn constant_primary_concatenation(s: &str) -> IResult<&str, ConstantPrimary>
     Ok((
         s,
         ConstantPrimary::Concatenation(ConstantPrimaryConcatenation {
-            concatenation,
-            range,
+            concatenation: x,
+            range: y,
         }),
     ))
 }
 
 pub fn constant_primary_multiple_concatenation(s: &str) -> IResult<&str, ConstantPrimary> {
-    let (s, concatenation) = constant_multiple_concatenation(s)?;
-    let (s, range) = opt(delimited(
+    let (s, x) = constant_multiple_concatenation(s)?;
+    let (s, y) = opt(delimited(
         symbol("["),
         constant_range_expression,
         symbol("]"),
@@ -298,8 +310,8 @@ pub fn constant_primary_multiple_concatenation(s: &str) -> IResult<&str, Constan
     Ok((
         s,
         ConstantPrimary::MultipleConcatenation(ConstantPrimaryMultipleConcatenation {
-            concatenation,
-            range,
+            concatenation: x,
+            range: y,
         }),
     ))
 }
@@ -360,39 +372,39 @@ pub fn primary(s: &str) -> IResult<&str, Primary> {
 }
 
 pub fn primary_hierarchical(s: &str) -> IResult<&str, Primary> {
-    let (s, qualifier) = opt(primary_hierarchical_qualifier)(s)?;
-    let (s, identifier) = hierarchical_identifier(s)?;
-    let (s, select) = select(s)?;
+    let (s, x) = opt(primary_hierarchical_qualifier)(s)?;
+    let (s, y) = hierarchical_identifier(s)?;
+    let (s, z) = select(s)?;
     Ok((
         s,
         Primary::Hierarchical(PrimaryHierarchical {
-            qualifier,
-            identifier,
-            select,
+            qualifier: x,
+            identifier: y,
+            select: z,
         }),
     ))
 }
 
 pub fn primary_concatenation(s: &str) -> IResult<&str, Primary> {
-    let (s, concatenation) = concatenation(s)?;
-    let (s, range) = opt(range_expression)(s)?;
+    let (s, x) = concatenation(s)?;
+    let (s, y) = opt(range_expression)(s)?;
     Ok((
         s,
         Primary::Concatenation(PrimaryConcatenation {
-            concatenation,
-            range,
+            concatenation: x,
+            range: y,
         }),
     ))
 }
 
 pub fn primary_multiple_concatenation(s: &str) -> IResult<&str, Primary> {
-    let (s, concatenation) = multiple_concatenation(s)?;
-    let (s, range) = opt(range_expression)(s)?;
+    let (s, x) = multiple_concatenation(s)?;
+    let (s, y) = opt(range_expression)(s)?;
     Ok((
         s,
         Primary::MultipleConcatenation(PrimaryMultipleConcatenation {
-            concatenation,
-            range,
+            concatenation: x,
+            range: y,
         }),
     ))
 }
@@ -409,16 +421,16 @@ pub fn primary_hierarchical_qualifier(s: &str) -> IResult<&str, PrimaryHierarchi
 }
 
 pub fn class_qualifier(s: &str) -> IResult<&str, ClassQualifier> {
-    let (s, local) = opt(symbol("local::"))(s)?;
-    let (s, scope) = opt(alt((
+    let (s, x) = opt(symbol("local::"))(s)?;
+    let (s, y) = opt(alt((
         terminated(implicit_class_handle, symbol(".")),
         class_scope,
     )))(s)?;
     Ok((
         s,
         ClassQualifier {
-            local: local.is_some(),
-            scope,
+            local: x.is_some(),
+            scope: y,
         },
     ))
 }
@@ -446,20 +458,20 @@ pub fn time_literal(s: &str) -> IResult<&str, TimeLiteral> {
 }
 
 pub fn unsigned_time_literal(s: &str) -> IResult<&str, TimeLiteral> {
-    let (s, number) = unsigned_number(s)?;
-    let (s, unit) = time_unit(s)?;
+    let (s, x) = unsigned_number(s)?;
+    let (s, y) = time_unit(s)?;
     Ok((
         s,
-        TimeLiteral::UnsignedTimeLiteral(UnsignedTimeLiteral { number, unit }),
+        TimeLiteral::UnsignedTimeLiteral(UnsignedTimeLiteral { number: x, unit: y }),
     ))
 }
 
 pub fn fixed_point_time_literal(s: &str) -> IResult<&str, TimeLiteral> {
-    let (s, number) = fixed_point_number(s)?;
-    let (s, unit) = time_unit(s)?;
+    let (s, x) = fixed_point_number(s)?;
+    let (s, y) = time_unit(s)?;
     Ok((
         s,
-        TimeLiteral::FixedPointTimeLiteral(FixedPointTimeLiteral { number, unit }),
+        TimeLiteral::FixedPointTimeLiteral(FixedPointTimeLiteral { number: x, unit: y }),
     ))
 }
 
@@ -501,15 +513,18 @@ pub fn bit_select(s: &str) -> IResult<&str, Vec<Expression>> {
 }
 
 pub fn select(s: &str) -> IResult<&str, Select> {
-    let (s, member) = opt(pair(
+    let (s, x) = opt(pair(
         many0(preceded(symbol("."), pair(member_identifier, bit_select))),
         preceded(symbol("."), member_identifier),
     ))(s)?;
-    let (s, bit_select) = bit_select(s)?;
-    let (s, part_select_range) = opt(delimited(symbol("["), part_select_range, symbol("]")))(s)?;
+    let (s, y) = bit_select(s)?;
+    let (s, z) = opt(delimited(symbol("["), part_select_range, symbol("]")))(s)?;
 
-    let member = if let Some((upper, identifier)) = member {
-        Some(SelectMember { upper, identifier })
+    let x = if let Some((x, y)) = x {
+        Some(SelectMember {
+            upper: x,
+            identifier: y,
+        })
     } else {
         None
     };
@@ -517,22 +532,25 @@ pub fn select(s: &str) -> IResult<&str, Select> {
     Ok((
         s,
         Select {
-            member,
-            bit_select,
-            part_select_range,
+            member: x,
+            bit_select: y,
+            part_select_range: z,
         },
     ))
 }
 
 pub fn nonrange_select(s: &str) -> IResult<&str, Select> {
-    let (s, member) = opt(pair(
+    let (s, x) = opt(pair(
         many0(preceded(symbol("."), pair(member_identifier, bit_select))),
         preceded(symbol("."), member_identifier),
     ))(s)?;
-    let (s, bit_select) = bit_select(s)?;
+    let (s, y) = bit_select(s)?;
 
-    let member = if let Some((upper, identifier)) = member {
-        Some(SelectMember { upper, identifier })
+    let x = if let Some((x, y)) = x {
+        Some(SelectMember {
+            upper: x,
+            identifier: y,
+        })
     } else {
         None
     };
@@ -540,8 +558,8 @@ pub fn nonrange_select(s: &str) -> IResult<&str, Select> {
     Ok((
         s,
         Select {
-            member,
-            bit_select,
+            member: x,
+            bit_select: y,
             part_select_range: None,
         },
     ))
@@ -552,19 +570,22 @@ pub fn constant_bit_select(s: &str) -> IResult<&str, Vec<ConstantExpression>> {
 }
 
 pub fn constant_select(s: &str) -> IResult<&str, ConstantSelect> {
-    let (s, member) = opt(pair(
+    let (s, x) = opt(pair(
         many0(preceded(symbol("."), pair(member_identifier, bit_select))),
         preceded(symbol("."), member_identifier),
     ))(s)?;
-    let (s, bit_select) = constant_bit_select(s)?;
-    let (s, part_select_range) = opt(delimited(
+    let (s, y) = constant_bit_select(s)?;
+    let (s, z) = opt(delimited(
         symbol("["),
         constant_part_select_range,
         symbol("]"),
     ))(s)?;
 
-    let member = if let Some((upper, identifier)) = member {
-        Some(SelectMember { upper, identifier })
+    let x = if let Some((x, y)) = x {
+        Some(SelectMember {
+            upper: x,
+            identifier: y,
+        })
     } else {
         None
     };
@@ -572,18 +593,24 @@ pub fn constant_select(s: &str) -> IResult<&str, ConstantSelect> {
     Ok((
         s,
         ConstantSelect {
-            member,
-            bit_select,
-            part_select_range,
+            member: x,
+            bit_select: y,
+            part_select_range: z,
         },
     ))
 }
 
 pub fn constant_cast(s: &str) -> IResult<&str, ConstantCast> {
-    let (s, r#type) = casting_type(s)?;
+    let (s, x) = casting_type(s)?;
     let (s, _) = symbol("'")(s)?;
-    let (s, expression) = delimited(symbol("("), constant_expression, symbol(")"))(s)?;
-    Ok((s, ConstantCast { r#type, expression }))
+    let (s, y) = delimited(symbol("("), constant_expression, symbol(")"))(s)?;
+    Ok((
+        s,
+        ConstantCast {
+            r#type: x,
+            expression: y,
+        },
+    ))
 }
 
 pub fn constant_let_expression(s: &str) -> IResult<&str, LetExpression> {
@@ -591,10 +618,16 @@ pub fn constant_let_expression(s: &str) -> IResult<&str, LetExpression> {
 }
 
 pub fn cast(s: &str) -> IResult<&str, Cast> {
-    let (s, r#type) = casting_type(s)?;
+    let (s, x) = casting_type(s)?;
     let (s, _) = symbol("'")(s)?;
-    let (s, expression) = delimited(symbol("("), expression, symbol(")"))(s)?;
-    Ok((s, Cast { r#type, expression }))
+    let (s, y) = delimited(symbol("("), expression, symbol(")"))(s)?;
+    Ok((
+        s,
+        Cast {
+            r#type: x,
+            expression: y,
+        },
+    ))
 }
 
 // -----------------------------------------------------------------------------

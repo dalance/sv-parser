@@ -192,28 +192,26 @@ pub fn hierarchical_event_identifier(s: &str) -> IResult<&str, HierarchicalIdent
 }
 
 pub fn hierarchy(s: &str) -> IResult<&str, Hierarchy> {
-    let (s, identifier) = identifier(s)?;
-    let (s, constant_bit_select) = constant_bit_select(s)?;
+    let (s, x) = identifier(s)?;
+    let (s, y) = constant_bit_select(s)?;
     let (s, _) = symbol(".")(s)?;
-
-    let constant_bit_select = Some(constant_bit_select);
 
     Ok((
         s,
         Hierarchy {
-            identifier,
-            constant_bit_select,
+            identifier: x,
+            constant_bit_select: Some(y),
         },
     ))
 }
 
 pub fn hierarchical_identifier(s: &str) -> IResult<&str, HierarchicalIdentifier> {
     let (s, x) = opt(terminated(symbol("$root"), symbol(".")))(s)?;
-    let (s, mut hierarchy) = many0(hierarchy)(s)?;
-    let (s, identifier) = identifier(s)?;
+    let (s, mut y) = many0(hierarchy)(s)?;
+    let (s, z) = identifier(s)?;
 
     if let Some(x) = x {
-        hierarchy.insert(
+        y.insert(
             0,
             Hierarchy {
                 identifier: Identifier { raw: x },
@@ -225,8 +223,8 @@ pub fn hierarchical_identifier(s: &str) -> IResult<&str, HierarchicalIdentifier>
     Ok((
         s,
         HierarchicalIdentifier {
-            hierarchy,
-            identifier,
+            hierarchy: y,
+            identifier: z,
         },
     ))
 }
@@ -351,81 +349,136 @@ pub fn property_identifier(s: &str) -> IResult<&str, Identifier> {
 }
 
 pub fn ps_class_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
-    let (s, scope) = opt(package_scope)(s)?;
-    let (s, identifier) = class_identifier(s)?;
-    let identifier = identifier.into();
-    Ok((s, ScopedIdentifier { scope, identifier }))
+    let (s, x) = opt(package_scope)(s)?;
+    let (s, y) = class_identifier(s)?;
+    Ok((
+        s,
+        ScopedIdentifier {
+            scope: x,
+            identifier: y.into(),
+        },
+    ))
 }
 
 pub fn ps_covergroup_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
-    let (s, scope) = opt(package_scope)(s)?;
-    let (s, identifier) = covergroup_identifier(s)?;
-    let identifier = identifier.into();
-    Ok((s, ScopedIdentifier { scope, identifier }))
+    let (s, x) = opt(package_scope)(s)?;
+    let (s, y) = covergroup_identifier(s)?;
+    Ok((
+        s,
+        ScopedIdentifier {
+            scope: x,
+            identifier: y.into(),
+        },
+    ))
 }
 
 pub fn ps_checker_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
-    let (s, scope) = opt(package_scope)(s)?;
-    let (s, identifier) = checker_identifier(s)?;
-    let identifier = identifier.into();
-    Ok((s, ScopedIdentifier { scope, identifier }))
+    let (s, x) = opt(package_scope)(s)?;
+    let (s, y) = checker_identifier(s)?;
+    Ok((
+        s,
+        ScopedIdentifier {
+            scope: x,
+            identifier: y.into(),
+        },
+    ))
 }
 
 pub fn ps_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
-    let (s, scope) = opt(package_scope)(s)?;
-    let (s, identifier) = identifier(s)?;
-    let identifier = identifier.into();
-    Ok((s, ScopedIdentifier { scope, identifier }))
+    let (s, x) = opt(package_scope)(s)?;
+    let (s, y) = identifier(s)?;
+    Ok((
+        s,
+        ScopedIdentifier {
+            scope: x,
+            identifier: y.into(),
+        },
+    ))
 }
 
 pub fn ps_or_hierarchical_array_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
-    let (s, scope) = opt(alt((
+    let (s, x) = opt(alt((
         terminated(implicit_class_handle, symbol(".")),
         class_scope,
         package_scope,
     )))(s)?;
-    let (s, identifier) = hierarchical_array_identifier(s)?;
-    Ok((s, ScopedIdentifier { scope, identifier }))
+    let (s, y) = hierarchical_array_identifier(s)?;
+    Ok((
+        s,
+        ScopedIdentifier {
+            scope: x,
+            identifier: y,
+        },
+    ))
 }
 
 pub fn ps_or_hierarchical_net_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
-    let (s, scope) = opt(package_scope)(s)?;
-    let (s, identifier) = alt((
+    let (s, x) = opt(package_scope)(s)?;
+    let (s, y) = alt((
         map(net_identifier, |x| x.into()),
         hierarchical_net_identifier,
     ))(s)?;
-    Ok((s, ScopedIdentifier { scope, identifier }))
+    Ok((
+        s,
+        ScopedIdentifier {
+            scope: x,
+            identifier: y,
+        },
+    ))
 }
 
 pub fn ps_or_hierarchical_property_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
-    let (s, scope) = opt(package_scope)(s)?;
-    let (s, identifier) = alt((
+    let (s, x) = opt(package_scope)(s)?;
+    let (s, y) = alt((
         map(property_identifier, |x| x.into()),
         hierarchical_property_identifier,
     ))(s)?;
-    Ok((s, ScopedIdentifier { scope, identifier }))
+    Ok((
+        s,
+        ScopedIdentifier {
+            scope: x,
+            identifier: y,
+        },
+    ))
 }
 
 pub fn ps_or_hierarchical_sequence_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
-    let (s, scope) = opt(package_scope)(s)?;
-    let (s, identifier) = alt((
+    let (s, x) = opt(package_scope)(s)?;
+    let (s, y) = alt((
         map(sequence_identifier, |x| x.into()),
         hierarchical_sequence_identifier,
     ))(s)?;
-    Ok((s, ScopedIdentifier { scope, identifier }))
+    Ok((
+        s,
+        ScopedIdentifier {
+            scope: x,
+            identifier: y,
+        },
+    ))
 }
 
 pub fn ps_or_hierarchical_tf_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
-    let (s, scope) = opt(package_scope)(s)?;
-    let (s, identifier) = alt((map(tf_identifier, |x| x.into()), hierarchical_tf_identifier))(s)?;
-    Ok((s, ScopedIdentifier { scope, identifier }))
+    let (s, x) = opt(package_scope)(s)?;
+    let (s, y) = alt((map(tf_identifier, |x| x.into()), hierarchical_tf_identifier))(s)?;
+    Ok((
+        s,
+        ScopedIdentifier {
+            scope: x,
+            identifier: y,
+        },
+    ))
 }
 
 pub fn ps_parameter_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
-    let (s, scope) = opt(alt((package_scope, class_scope, generate_block_scope)))(s)?;
-    let (s, identifier) = parameter_identifier(s)?;
-    let identifier = identifier.into();
-    Ok((s, ScopedIdentifier { scope, identifier }))
+    let (s, x) = opt(alt((package_scope, class_scope, generate_block_scope)))(s)?;
+    let (s, y) = parameter_identifier(s)?;
+    Ok((
+        s,
+        ScopedIdentifier {
+            scope: x,
+            identifier: y.into(),
+        },
+    ))
 }
 
 pub fn generate_block_scope(s: &str) -> IResult<&str, Scope> {
@@ -436,10 +489,10 @@ pub fn generate_block_scope(s: &str) -> IResult<&str, Scope> {
     )))(s)?;
 
     let mut ret = Vec::new();
-    for (identifier, constant_expression, _) in x {
+    for (x, y, _) in x {
         ret.push(GenerateBlockScope {
-            identifier,
-            constant_expression,
+            identifier: x,
+            constant_expression: y,
         });
     }
 
@@ -447,16 +500,21 @@ pub fn generate_block_scope(s: &str) -> IResult<&str, Scope> {
 }
 
 pub fn ps_type_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
-    let (s, scope) = opt(alt((
+    let (s, x) = opt(alt((
         map(terminated(symbol("local"), symbol("::")), |_| {
             Scope::LocalScope
         }),
         package_scope,
         class_scope,
     )))(s)?;
-    let (s, identifier) = type_identifier(s)?;
-    let identifier = identifier.into();
-    Ok((s, ScopedIdentifier { scope, identifier }))
+    let (s, y) = type_identifier(s)?;
+    Ok((
+        s,
+        ScopedIdentifier {
+            scope: x,
+            identifier: y.into(),
+        },
+    ))
 }
 
 pub fn sequence_identifier(s: &str) -> IResult<&str, Identifier> {

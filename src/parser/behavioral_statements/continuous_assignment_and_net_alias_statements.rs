@@ -45,45 +45,57 @@ pub fn continuous_assign(s: &str) -> IResult<&str, ContinuousAssign> {
 }
 
 pub fn continuous_assign_net(s: &str) -> IResult<&str, ContinuousAssign> {
-    let (s, drive_strength) = opt(drive_strength)(s)?;
-    let (s, delay3) = opt(delay3)(s)?;
-    let (s, list) = many1(net_assignment)(s)?;
+    let (s, x) = opt(drive_strength)(s)?;
+    let (s, y) = opt(delay3)(s)?;
+    let (s, z) = many1(net_assignment)(s)?;
 
     Ok((
         s,
         ContinuousAssign::Net(ContinuousAssignNet {
-            drive_strength,
-            delay3,
-            list,
+            drive_strength: x,
+            delay3: y,
+            list: z,
         }),
     ))
 }
 
 pub fn continuous_assign_variable(s: &str) -> IResult<&str, ContinuousAssign> {
-    let (s, delay_control) = opt(delay_control)(s)?;
-    let (s, list) = many1(variable_assignment)(s)?;
+    let (s, x) = opt(delay_control)(s)?;
+    let (s, y) = many1(variable_assignment)(s)?;
 
     Ok((
         s,
         ContinuousAssign::Variable(ContinuousAssignVariable {
-            delay_control,
-            list,
+            delay_control: x,
+            list: y,
         }),
     ))
 }
 
 pub fn net_alias(s: &str) -> IResult<&str, NetAlias> {
     let (s, _) = symbol("alias")(s)?;
-    let (s, lvalue) = net_lvalue(s)?;
-    let (s, rvalue) = many1(preceded(symbol("="), net_lvalue))(s)?;
+    let (s, x) = net_lvalue(s)?;
+    let (s, y) = many1(preceded(symbol("="), net_lvalue))(s)?;
 
-    Ok((s, NetAlias { lvalue, rvalue }))
+    Ok((
+        s,
+        NetAlias {
+            lvalue: x,
+            rvalue: y,
+        },
+    ))
 }
 
 pub fn net_assignment(s: &str) -> IResult<&str, NetAssignment> {
-    let (s, lvalue) = net_lvalue(s)?;
+    let (s, x) = net_lvalue(s)?;
     let (s, _) = symbol("=")(s)?;
-    let (s, rvalue) = expression(s)?;
+    let (s, y) = expression(s)?;
 
-    Ok((s, NetAssignment { lvalue, rvalue }))
+    Ok((
+        s,
+        NetAssignment {
+            lvalue: x,
+            rvalue: y,
+        },
+    ))
 }

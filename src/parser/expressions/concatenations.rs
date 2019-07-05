@@ -75,81 +75,81 @@ pub struct ArrayRangeExpression<'a> {
 
 pub fn concatenation(s: &str) -> IResult<&str, Concatenation> {
     let (s, _) = symbol("{")(s)?;
-    let (s, expression) = separated_nonempty_list(symbol(","), expression)(s)?;
+    let (s, x) = separated_nonempty_list(symbol(","), expression)(s)?;
     let (s, _) = symbol("}")(s)?;
-    Ok((s, Concatenation { expression }))
+    Ok((s, Concatenation { expression: x }))
 }
 
 pub fn constant_concatenation(s: &str) -> IResult<&str, ConstantConcatenation> {
     let (s, _) = symbol("{")(s)?;
-    let (s, expression) = separated_nonempty_list(symbol(","), constant_expression)(s)?;
+    let (s, x) = separated_nonempty_list(symbol(","), constant_expression)(s)?;
     let (s, _) = symbol("}")(s)?;
-    Ok((s, ConstantConcatenation { expression }))
+    Ok((s, ConstantConcatenation { expression: x }))
 }
 
 pub fn constant_multiple_concatenation(s: &str) -> IResult<&str, ConstantMultipleConcatenation> {
     let (s, _) = symbol("{")(s)?;
-    let (s, expression) = constant_expression(s)?;
-    let (s, concatenation) = constant_concatenation(s)?;
+    let (s, x) = constant_expression(s)?;
+    let (s, y) = constant_concatenation(s)?;
     let (s, _) = symbol("}")(s)?;
     Ok((
         s,
         ConstantMultipleConcatenation {
-            expression,
-            concatenation,
+            expression: x,
+            concatenation: y,
         },
     ))
 }
 
 pub fn module_path_concatenation(s: &str) -> IResult<&str, ModulePathConcatenation> {
     let (s, _) = symbol("{")(s)?;
-    let (s, expression) = separated_nonempty_list(symbol(","), module_path_expression)(s)?;
+    let (s, x) = separated_nonempty_list(symbol(","), module_path_expression)(s)?;
     let (s, _) = symbol("}")(s)?;
-    Ok((s, ModulePathConcatenation { expression }))
+    Ok((s, ModulePathConcatenation { expression: x }))
 }
 
 pub fn module_path_multiple_concatenation(
     s: &str,
 ) -> IResult<&str, ModulePathMultipleConcatenation> {
     let (s, _) = symbol("{")(s)?;
-    let (s, expression) = constant_expression(s)?;
-    let (s, concatenation) = module_path_concatenation(s)?;
+    let (s, x) = constant_expression(s)?;
+    let (s, y) = module_path_concatenation(s)?;
     let (s, _) = symbol("}")(s)?;
     Ok((
         s,
         ModulePathMultipleConcatenation {
-            expression,
-            concatenation,
+            expression: x,
+            concatenation: y,
         },
     ))
 }
 
 pub fn multiple_concatenation(s: &str) -> IResult<&str, MultipleConcatenation> {
     let (s, _) = symbol("{")(s)?;
-    let (s, expression) = expression(s)?;
-    let (s, concatenation) = concatenation(s)?;
+    let (s, x) = expression(s)?;
+    let (s, y) = concatenation(s)?;
     let (s, _) = symbol("}")(s)?;
     Ok((
         s,
         MultipleConcatenation {
-            expression,
-            concatenation,
+            expression: x,
+            concatenation: y,
         },
     ))
 }
 
 pub fn streaming_concatenation(s: &str) -> IResult<&str, StreamingConcatenation> {
     let (s, _) = symbol("{")(s)?;
-    let (s, operator) = stream_operator(s)?;
-    let (s, size) = opt(slice_size)(s)?;
-    let (s, concatenation) = stream_concatenation(s)?;
+    let (s, x) = stream_operator(s)?;
+    let (s, y) = opt(slice_size)(s)?;
+    let (s, z) = stream_concatenation(s)?;
     let (s, _) = symbol("}")(s)?;
     Ok((
         s,
         StreamingConcatenation {
-            operator,
-            size,
-            concatenation,
+            operator: x,
+            size: y,
+            concatenation: z,
         },
     ))
 }
@@ -167,37 +167,43 @@ pub fn slice_size(s: &str) -> IResult<&str, SliceSize> {
 
 pub fn stream_concatenation(s: &str) -> IResult<&str, StreamConcatenation> {
     let (s, _) = symbol("{")(s)?;
-    let (s, expression) = separated_nonempty_list(symbol(","), stream_expression)(s)?;
+    let (s, x) = separated_nonempty_list(symbol(","), stream_expression)(s)?;
     let (s, _) = symbol("}")(s)?;
-    Ok((s, StreamConcatenation { expression }))
+    Ok((s, StreamConcatenation { expression: x }))
 }
 
 pub fn stream_expression(s: &str) -> IResult<&str, StreamExpression> {
-    let (s, expression) = expression(s)?;
-    let (s, with) = opt(preceded(
+    let (s, x) = expression(s)?;
+    let (s, y) = opt(preceded(
         symbol("with"),
         delimited(symbol("["), array_range_expression, symbol("]")),
     ))(s)?;
-    Ok((s, StreamExpression { expression, with }))
+    Ok((
+        s,
+        StreamExpression {
+            expression: x,
+            with: y,
+        },
+    ))
 }
 
 pub fn array_range_expression(s: &str) -> IResult<&str, ArrayRangeExpression> {
-    let (s, arg0) = expression(s)?;
-    let (s, x) = opt(pair(
+    let (s, x) = expression(s)?;
+    let (s, y) = opt(pair(
         alt((symbol(":"), symbol("+:"), symbol("-:"))),
         expression,
     ))(s)?;
-    let (operator, arg1) = if let Some((x, y)) = x {
-        (Some(x), Some(y))
+    let (y, z) = if let Some((y, z)) = y {
+        (Some(y), Some(z))
     } else {
         (None, None)
     };
     Ok((
         s,
         ArrayRangeExpression {
-            arg0,
-            operator,
-            arg1,
+            arg0: x,
+            operator: y,
+            arg1: z,
         },
     ))
 }

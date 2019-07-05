@@ -96,15 +96,15 @@ pub fn constant_function_call(s: &str) -> IResult<&str, SubroutineCall> {
 }
 
 pub fn tf_call(s: &str) -> IResult<&str, TfCall> {
-    let (s, identifier) = ps_or_hierarchical_tf_identifier(s)?;
-    let (s, attribute) = many0(attribute_instance)(s)?;
-    let (s, argument) = opt(delimited(symbol("("), list_of_arguments, symbol(")")))(s)?;
+    let (s, x) = ps_or_hierarchical_tf_identifier(s)?;
+    let (s, y) = many0(attribute_instance)(s)?;
+    let (s, z) = opt(delimited(symbol("("), list_of_arguments, symbol(")")))(s)?;
     Ok((
         s,
         TfCall {
-            identifier,
-            attribute,
-            argument,
+            identifier: x,
+            attribute: y,
+            argument: z,
         },
     ))
 }
@@ -118,13 +118,13 @@ pub fn system_tf_call(s: &str) -> IResult<&str, SystemTfCall> {
 }
 
 pub fn system_tf_call_list_of_arguments(s: &str) -> IResult<&str, SystemTfCall> {
-    let (s, identifier) = system_tf_identifier(s)?;
-    let (s, argument) = opt(delimited(symbol("("), list_of_arguments, symbol(")")))(s)?;
+    let (s, x) = system_tf_identifier(s)?;
+    let (s, y) = opt(delimited(symbol("("), list_of_arguments, symbol(")")))(s)?;
     Ok((
         s,
         SystemTfCall {
-            identifier,
-            argument,
+            identifier: x,
+            argument: y,
             data_type: None,
             expression: None,
             clocking_event: None,
@@ -133,45 +133,38 @@ pub fn system_tf_call_list_of_arguments(s: &str) -> IResult<&str, SystemTfCall> 
 }
 
 pub fn system_tf_call_data_type(s: &str) -> IResult<&str, SystemTfCall> {
-    let (s, identifier) = system_tf_identifier(s)?;
+    let (s, x) = system_tf_identifier(s)?;
     let (s, _) = symbol("(")(s)?;
-    let (s, data_type) = data_type(s)?;
-    let (s, expression) = preceded(symbol(","), expression)(s)?;
+    let (s, y) = data_type(s)?;
+    let (s, z) = preceded(symbol(","), expression)(s)?;
     let (s, _) = symbol(")")(s)?;
-    let data_type = Some(data_type);
-    let expression = Some(vec![expression]);
     Ok((
         s,
         SystemTfCall {
-            identifier,
+            identifier: x,
             argument: None,
-            data_type,
-            expression,
+            data_type: Some(y),
+            expression: Some(vec![z]),
             clocking_event: None,
         },
     ))
 }
 
 pub fn system_tf_call_clocking_event(s: &str) -> IResult<&str, SystemTfCall> {
-    let (s, identifier) = system_tf_identifier(s)?;
+    let (s, x) = system_tf_identifier(s)?;
     let (s, _) = symbol("(")(s)?;
-    let (s, expression) = separated_nonempty_list(symbol(","), expression)(s)?;
-    let (s, clocking_event) = opt(preceded(symbol(","), opt(clocking_event)))(s)?;
+    let (s, y) = separated_nonempty_list(symbol(","), expression)(s)?;
+    let (s, z) = opt(preceded(symbol(","), opt(clocking_event)))(s)?;
     let (s, _) = symbol(")")(s)?;
-    let expression = Some(expression);
-    let clocking_event = if let Some(Some(x)) = clocking_event {
-        Some(x)
-    } else {
-        None
-    };
+    let z = if let Some(Some(z)) = z { Some(z) } else { None };
     Ok((
         s,
         SystemTfCall {
-            identifier,
+            identifier: x,
             argument: None,
             data_type: None,
-            expression,
-            clocking_event,
+            expression: Some(y),
+            clocking_event: z,
         },
     ))
 }
@@ -194,23 +187,29 @@ pub fn function_subroutine_call(s: &str) -> IResult<&str, SubroutineCall> {
 }
 
 pub fn list_of_arguments(s: &str) -> IResult<&str, ListOfArguments> {
-    let (s, unnamed) = separated_list(symbol(","), expression)(s)?;
-    let (s, named) = separated_list(
+    let (s, x) = separated_list(symbol(","), expression)(s)?;
+    let (s, y) = separated_list(
         symbol(","),
         pair(
             preceded(symbol("."), identifier),
             delimited(symbol("("), opt(expression), symbol(")")),
         ),
     )(s)?;
-    Ok((s, ListOfArguments { unnamed, named }))
+    Ok((
+        s,
+        ListOfArguments {
+            unnamed: x,
+            named: y,
+        },
+    ))
 }
 
 pub fn method_call(s: &str) -> IResult<&str, MethodCall> {
-    let (s, root) = method_call_root(s)?;
+    let (s, x) = method_call_root(s)?;
     let (s, _) = symbol(".")(s)?;
-    let (s, body) = method_call_body(s)?;
+    let (s, y) = method_call_body(s)?;
 
-    Ok((s, MethodCall { root, body }))
+    Ok((s, MethodCall { root: x, body: y }))
 }
 
 pub fn method_call_body(s: &str) -> IResult<&str, MethodCallBody> {
@@ -218,15 +217,15 @@ pub fn method_call_body(s: &str) -> IResult<&str, MethodCallBody> {
 }
 
 pub fn method_call_body_user(s: &str) -> IResult<&str, MethodCallBody> {
-    let (s, identifier) = method_identifier(s)?;
-    let (s, attribute) = many0(attribute_instance)(s)?;
-    let (s, argument) = opt(delimited(symbol("("), list_of_arguments, symbol(")")))(s)?;
+    let (s, x) = method_identifier(s)?;
+    let (s, y) = many0(attribute_instance)(s)?;
+    let (s, z) = opt(delimited(symbol("("), list_of_arguments, symbol(")")))(s)?;
     Ok((
         s,
         MethodCallBody::User(MethodCallBodyUser {
-            identifier,
-            attribute,
-            argument,
+            identifier: x,
+            attribute: y,
+            argument: z,
         }),
     ))
 }
@@ -239,28 +238,28 @@ pub fn built_in_method_call(s: &str) -> IResult<&str, MethodCallBody> {
 }
 
 pub fn array_manipulation_call(s: &str) -> IResult<&str, ArrayManipulationCall> {
-    let (s, name) = array_method_name(s)?;
-    let (s, attribute) = many0(attribute_instance)(s)?;
-    let (s, argument) = opt(delimited(symbol("("), list_of_arguments, symbol(")")))(s)?;
-    let (s, with) = opt(preceded(
+    let (s, x) = array_method_name(s)?;
+    let (s, y) = many0(attribute_instance)(s)?;
+    let (s, z) = opt(delimited(symbol("("), list_of_arguments, symbol(")")))(s)?;
+    let (s, w) = opt(preceded(
         symbol("with"),
         delimited(symbol("("), expression, symbol(")")),
     ))(s)?;
     Ok((
         s,
         ArrayManipulationCall {
-            name,
-            attribute,
-            argument,
-            with,
+            name: x,
+            attribute: y,
+            argument: z,
+            with: w,
         },
     ))
 }
 
 pub fn randomize_call(s: &str) -> IResult<&str, RandomizeCall> {
     let (s, _) = symbol("randomize")(s)?;
-    let (s, attribute) = many0(attribute_instance)(s)?;
-    let (s, argument) = opt(delimited(
+    let (s, x) = many0(attribute_instance)(s)?;
+    let (s, y) = opt(delimited(
         symbol("("),
         opt(alt((
             variable_identifier_list,
@@ -268,28 +267,24 @@ pub fn randomize_call(s: &str) -> IResult<&str, RandomizeCall> {
         ))),
         symbol(")"),
     ))(s)?;
-    let (s, with) = opt(tuple((
+    let (s, z) = opt(tuple((
         symbol("with"),
         opt(delimited(symbol("("), opt(identifier_list), symbol(")"))),
         constraint_block,
     )))(s)?;
-    let argument = if let Some(Some(x)) = argument {
-        x
-    } else {
-        vec![]
-    };
-    let (with, constraint_block) = if let Some((_, Some(Some(x)), y)) = with {
-        (x, Some(y))
+    let y = if let Some(Some(y)) = y { y } else { vec![] };
+    let (z, w) = if let Some((_, Some(Some(z)), w)) = z {
+        (z, Some(w))
     } else {
         (vec![], None)
     };
     Ok((
         s,
         RandomizeCall {
-            attribute,
-            argument,
-            with,
-            constraint_block,
+            attribute: x,
+            argument: y,
+            with: z,
+            constraint_block: w,
         },
     ))
 }

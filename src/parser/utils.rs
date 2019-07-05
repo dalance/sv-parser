@@ -49,11 +49,6 @@ pub struct DataType<'a> {
 }
 
 #[derive(Debug)]
-pub struct ClockingEvent<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
 pub struct ConstraintBlock<'a> {
     pub raw: Vec<&'a str>,
 }
@@ -89,31 +84,6 @@ pub struct BlockItemDeclaration<'a> {
 }
 
 #[derive(Debug)]
-pub struct SubroutineCallStatement<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct LoopStatement<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct ProceduralAssertionStatement<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct ClockingDrive<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
-pub struct RandsequenceStatement<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
 pub struct ExpectPropertyStatement<'a> {
     pub raw: Vec<&'a str>,
 }
@@ -129,17 +99,52 @@ pub struct DelayValue<'a> {
 }
 
 #[derive(Debug)]
-pub struct CycleDelay<'a> {
-    pub raw: Vec<&'a str>,
-}
-
-#[derive(Debug)]
 pub struct EdgeIdentifier<'a> {
     pub raw: Vec<&'a str>,
 }
 
 #[derive(Debug)]
 pub struct IntegerAtomType<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct IncOrDecDeclaration<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct ConcurrentAssertionItem<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct ConcurrentAssertionStatement<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct CheckerInstantiation<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct AssertionItemDeclaration<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct DataTypeOrVoid<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct TfPortList<'a> {
+    pub raw: Vec<&'a str>,
+}
+
+#[derive(Debug)]
+pub struct DataDeclaration<'a> {
     pub raw: Vec<&'a str>,
 }
 
@@ -165,10 +170,6 @@ pub fn sequence_method_call(s: &str) -> IResult<&str, SequenceMethodCall> {
 
 pub fn data_type(s: &str) -> IResult<&str, DataType> {
     Ok((s, DataType { raw: vec![] }))
-}
-
-pub fn clocking_event(s: &str) -> IResult<&str, ClockingEvent> {
-    Ok((s, ClockingEvent { raw: vec![] }))
 }
 
 pub fn constraint_block(s: &str) -> IResult<&str, ConstraintBlock> {
@@ -203,26 +204,6 @@ pub fn block_item_declaration(s: &str) -> IResult<&str, BlockItemDeclaration> {
     Ok((s, BlockItemDeclaration { raw: vec![] }))
 }
 
-pub fn subroutine_call_statement(s: &str) -> IResult<&str, SubroutineCallStatement> {
-    Ok((s, SubroutineCallStatement { raw: vec![] }))
-}
-
-pub fn loop_statement(s: &str) -> IResult<&str, LoopStatement> {
-    Ok((s, LoopStatement { raw: vec![] }))
-}
-
-pub fn procedural_assertion_statement(s: &str) -> IResult<&str, ProceduralAssertionStatement> {
-    Ok((s, ProceduralAssertionStatement { raw: vec![] }))
-}
-
-pub fn clocking_drive(s: &str) -> IResult<&str, ClockingDrive> {
-    Ok((s, ClockingDrive { raw: vec![] }))
-}
-
-pub fn randsequence_statement(s: &str) -> IResult<&str, RandsequenceStatement> {
-    Ok((s, RandsequenceStatement { raw: vec![] }))
-}
-
 pub fn expect_property_statement(s: &str) -> IResult<&str, ExpectPropertyStatement> {
     Ok((s, ExpectPropertyStatement { raw: vec![] }))
 }
@@ -235,14 +216,42 @@ pub fn delay_value(s: &str) -> IResult<&str, DelayValue> {
     Ok((s, DelayValue { raw: vec![] }))
 }
 
-pub fn cycle_delay(s: &str) -> IResult<&str, CycleDelay> {
-    Ok((s, CycleDelay { raw: vec![] }))
-}
-
 pub fn edge_identifier(s: &str) -> IResult<&str, EdgeIdentifier> {
     Ok((s, EdgeIdentifier { raw: vec![] }))
 }
 
 pub fn integer_atom_type(s: &str) -> IResult<&str, IntegerAtomType> {
     Ok((s, IntegerAtomType { raw: vec![] }))
+}
+
+pub fn inc_or_dec_declaration(s: &str) -> IResult<&str, IncOrDecDeclaration> {
+    Ok((s, IncOrDecDeclaration { raw: vec![] }))
+}
+
+pub fn concurrent_assertion_item(s: &str) -> IResult<&str, ConcurrentAssertionItem> {
+    Ok((s, ConcurrentAssertionItem { raw: vec![] }))
+}
+
+pub fn concurrent_assertion_statement(s: &str) -> IResult<&str, ConcurrentAssertionStatement> {
+    Ok((s, ConcurrentAssertionStatement { raw: vec![] }))
+}
+
+pub fn checker_instantiation(s: &str) -> IResult<&str, CheckerInstantiation> {
+    Ok((s, CheckerInstantiation { raw: vec![] }))
+}
+
+pub fn assertion_item_declaration(s: &str) -> IResult<&str, AssertionItemDeclaration> {
+    Ok((s, AssertionItemDeclaration { raw: vec![] }))
+}
+
+pub fn data_type_or_void(s: &str) -> IResult<&str, DataTypeOrVoid> {
+    Ok((s, DataTypeOrVoid { raw: vec![] }))
+}
+
+pub fn tf_port_list(s: &str) -> IResult<&str, TfPortList> {
+    Ok((s, TfPortList { raw: vec![] }))
+}
+
+pub fn data_declaration(s: &str) -> IResult<&str, DataDeclaration> {
+    Ok((s, DataDeclaration { raw: vec![] }))
 }

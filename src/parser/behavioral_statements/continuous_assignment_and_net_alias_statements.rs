@@ -45,9 +45,11 @@ pub fn continuous_assign(s: &str) -> IResult<&str, ContinuousAssign> {
 }
 
 pub fn continuous_assign_net(s: &str) -> IResult<&str, ContinuousAssign> {
+    let (s, _) = symbol("assign")(s)?;
     let (s, x) = opt(drive_strength)(s)?;
     let (s, y) = opt(delay3)(s)?;
-    let (s, z) = many1(net_assignment)(s)?;
+    let (s, z) = list_of_net_assignments(s)?;
+    let (s, _) = symbol(";")(s)?;
 
     Ok((
         s,
@@ -60,8 +62,10 @@ pub fn continuous_assign_net(s: &str) -> IResult<&str, ContinuousAssign> {
 }
 
 pub fn continuous_assign_variable(s: &str) -> IResult<&str, ContinuousAssign> {
+    let (s, _) = symbol("assign")(s)?;
     let (s, x) = opt(delay_control)(s)?;
-    let (s, y) = many1(variable_assignment)(s)?;
+    let (s, y) = list_of_variable_assignments(s)?;
+    let (s, _) = symbol(";")(s)?;
 
     Ok((
         s,
@@ -70,6 +74,14 @@ pub fn continuous_assign_variable(s: &str) -> IResult<&str, ContinuousAssign> {
             list: y,
         }),
     ))
+}
+
+pub fn list_of_net_assignments(s: &str) -> IResult<&str, Vec<NetAssignment>> {
+    separated_nonempty_list(symbol(","), net_assignment)(s)
+}
+
+pub fn list_of_variable_assignments(s: &str) -> IResult<&str, Vec<VariableAssignment>> {
+    separated_nonempty_list(symbol(","), variable_assignment)(s)
 }
 
 pub fn net_alias(s: &str) -> IResult<&str, NetAlias> {

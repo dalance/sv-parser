@@ -1,10 +1,4 @@
-use crate::continuous_assignments::*;
-use crate::expressions::*;
-use crate::identifiers::*;
-use crate::lvalues::*;
-use crate::operators::*;
-use crate::primaries::*;
-use crate::utils::*;
+use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
 use nom::sequence::*;

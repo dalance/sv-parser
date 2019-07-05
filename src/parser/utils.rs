@@ -1,4 +1,4 @@
-use crate::identifiers::*;
+use crate::parser::*;
 use nom::bytes::complete::*;
 use nom::character::complete::*;
 use nom::IResult;

@@ -1,8 +1,4 @@
-use crate::attributes::*;
-use crate::expressions::*;
-use crate::identifiers::*;
-use crate::primaries::*;
-use crate::utils::*;
+use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
 use nom::multi::*;

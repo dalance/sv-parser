@@ -1,15 +1,1 @@
-pub mod attributes;
-pub mod blocks;
-pub mod comments;
-pub mod concatenations;
-pub mod continuous_assignments;
-pub mod expressions;
-pub mod identifiers;
-pub mod lvalues;
-pub mod numbers;
-pub mod operators;
-pub mod primaries;
-pub mod proceduals;
-pub mod strings;
-pub mod subroutine_calls;
-pub mod utils;
+pub mod parser;

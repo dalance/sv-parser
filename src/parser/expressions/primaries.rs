@@ -1,10 +1,4 @@
-use crate::concatenations::*;
-use crate::expressions::*;
-use crate::identifiers::*;
-use crate::numbers::*;
-use crate::strings::*;
-use crate::subroutine_calls::*;
-use crate::utils::*;
+use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
 use nom::multi::*;

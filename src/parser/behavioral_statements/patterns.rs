@@ -83,22 +83,14 @@ pub fn pattern(s: &str) -> IResult<&str, Pattern> {
             |x| Pattern::Tagged(Box::new(x)),
         ),
         map(
-            delimited(
-                symbol("'{"),
-                separated_nonempty_list(symbol(","), pattern),
-                symbol("}"),
-            ),
+            apostrophe_brace(separated_nonempty_list(symbol(","), pattern)),
             |x| Pattern::Pattern(Box::new(x)),
         ),
         map(
-            delimited(
-                symbol("'{"),
-                separated_nonempty_list(
-                    symbol(","),
-                    pair(member_identifier, preceded(symbol(":"), pattern)),
-                ),
-                symbol("}"),
-            ),
+            apostrophe_brace(separated_nonempty_list(
+                symbol(","),
+                pair(member_identifier, preceded(symbol(":"), pattern)),
+            )),
             |x| Pattern::MemberPattern(Box::new(x)),
         ),
     ))(s)
@@ -107,48 +99,28 @@ pub fn pattern(s: &str) -> IResult<&str, Pattern> {
 pub fn assignment_pattern(s: &str) -> IResult<&str, AssignmentPattern> {
     alt((
         map(
-            delimited(
-                symbol("'{"),
-                separated_nonempty_list(symbol(","), expression),
-                symbol("}"),
-            ),
+            apostrophe_brace(separated_nonempty_list(symbol(","), expression)),
             |x| AssignmentPattern::Expression(x),
         ),
         map(
-            delimited(
-                symbol("'{"),
-                separated_nonempty_list(
-                    symbol(","),
-                    pair(structure_pattern_key, preceded(symbol(":"), expression)),
-                ),
-                symbol("}"),
-            ),
+            apostrophe_brace(separated_nonempty_list(
+                symbol(","),
+                pair(structure_pattern_key, preceded(symbol(":"), expression)),
+            )),
             |x| AssignmentPattern::StructurePatternKey(x),
         ),
         map(
-            delimited(
-                symbol("'{"),
-                separated_nonempty_list(
-                    symbol(","),
-                    pair(array_pattern_key, preceded(symbol(":"), expression)),
-                ),
-                symbol("}"),
-            ),
+            apostrophe_brace(separated_nonempty_list(
+                symbol(","),
+                pair(array_pattern_key, preceded(symbol(":"), expression)),
+            )),
             |x| AssignmentPattern::ArrayPatternKey(x),
         ),
         map(
-            delimited(
-                symbol("'{"),
-                pair(
-                    constant_expression,
-                    delimited(
-                        symbol("{"),
-                        separated_nonempty_list(symbol(","), expression),
-                        symbol("}"),
-                    ),
-                ),
-                symbol("}"),
-            ),
+            apostrophe_brace(pair(
+                constant_expression,
+                brace(separated_nonempty_list(symbol(","), expression)),
+            )),
             |x| AssignmentPattern::ConstantExpression(x),
         ),
     ))(s)
@@ -215,22 +187,14 @@ pub fn constant_assignment_pattern_expression(
 }
 
 pub fn assignment_pattern_net_lvalue(s: &str) -> IResult<&str, AssignmentPatternNetLvalue> {
-    let (s, x) = delimited(
-        symbol("'{"),
-        separated_nonempty_list(symbol(","), net_lvalue),
-        symbol("}"),
-    )(s)?;
+    let (s, x) = apostrophe_brace(separated_nonempty_list(symbol(","), net_lvalue))(s)?;
     Ok((s, AssignmentPatternNetLvalue { lvalue: x }))
 }
 
 pub fn assignment_pattern_variable_lvalue(
     s: &str,
 ) -> IResult<&str, AssignmentPatternVariableLvalue> {
-    let (s, x) = delimited(
-        symbol("'{"),
-        separated_nonempty_list(symbol(","), variable_lvalue),
-        symbol("}"),
-    )(s)?;
+    let (s, x) = apostrophe_brace(separated_nonempty_list(symbol(","), variable_lvalue))(s)?;
     Ok((s, AssignmentPatternVariableLvalue { lvalue: x }))
 }
 

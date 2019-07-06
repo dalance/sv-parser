@@ -74,16 +74,12 @@ pub struct ArrayRangeExpression<'a> {
 // -----------------------------------------------------------------------------
 
 pub fn concatenation(s: &str) -> IResult<&str, Concatenation> {
-    let (s, _) = symbol("{")(s)?;
-    let (s, x) = separated_nonempty_list(symbol(","), expression)(s)?;
-    let (s, _) = symbol("}")(s)?;
+    let (s, x) = brace(separated_nonempty_list(symbol(","), expression))(s)?;
     Ok((s, Concatenation { expression: x }))
 }
 
 pub fn constant_concatenation(s: &str) -> IResult<&str, ConstantConcatenation> {
-    let (s, _) = symbol("{")(s)?;
-    let (s, x) = separated_nonempty_list(symbol(","), constant_expression)(s)?;
-    let (s, _) = symbol("}")(s)?;
+    let (s, x) = brace(separated_nonempty_list(symbol(","), constant_expression))(s)?;
     Ok((s, ConstantConcatenation { expression: x }))
 }
 
@@ -102,9 +98,7 @@ pub fn constant_multiple_concatenation(s: &str) -> IResult<&str, ConstantMultipl
 }
 
 pub fn module_path_concatenation(s: &str) -> IResult<&str, ModulePathConcatenation> {
-    let (s, _) = symbol("{")(s)?;
-    let (s, x) = separated_nonempty_list(symbol(","), module_path_expression)(s)?;
-    let (s, _) = symbol("}")(s)?;
+    let (s, x) = brace(separated_nonempty_list(symbol(","), module_path_expression))(s)?;
     Ok((s, ModulePathConcatenation { expression: x }))
 }
 
@@ -166,18 +160,13 @@ pub fn slice_size(s: &str) -> IResult<&str, SliceSize> {
 }
 
 pub fn stream_concatenation(s: &str) -> IResult<&str, StreamConcatenation> {
-    let (s, _) = symbol("{")(s)?;
-    let (s, x) = separated_nonempty_list(symbol(","), stream_expression)(s)?;
-    let (s, _) = symbol("}")(s)?;
+    let (s, x) = brace(separated_nonempty_list(symbol(","), stream_expression))(s)?;
     Ok((s, StreamConcatenation { expression: x }))
 }
 
 pub fn stream_expression(s: &str) -> IResult<&str, StreamExpression> {
     let (s, x) = expression(s)?;
-    let (s, y) = opt(preceded(
-        symbol("with"),
-        delimited(symbol("["), array_range_expression, symbol("]")),
-    ))(s)?;
+    let (s, y) = opt(preceded(symbol("with"), bracket(array_range_expression)))(s)?;
     Ok((
         s,
         StreamExpression {

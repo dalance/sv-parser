@@ -220,10 +220,9 @@ pub fn constant_primary(s: &str) -> IResult<&str, ConstantPrimary> {
         map(constant_let_expression, |x| {
             ConstantPrimary::LetExpression(x)
         }),
-        map(
-            delimited(symbol("("), constant_mintypmax_expression, symbol(")")),
-            |x| ConstantPrimary::MintypmaxExpression(x),
-        ),
+        map(paren(constant_mintypmax_expression), |x| {
+            ConstantPrimary::MintypmaxExpression(x)
+        }),
         map(constant_cast, |x| ConstantPrimary::Cast(x)),
         map(constant_assignment_pattern_expression, |x| {
             ConstantPrimary::AssignmentPatternExpression(x)
@@ -246,11 +245,7 @@ pub fn constant_primary_ps_parameter(s: &str) -> IResult<&str, ConstantPrimary> 
 
 pub fn constant_primary_specparam(s: &str) -> IResult<&str, ConstantPrimary> {
     let (s, x) = specparam_identifier(s)?;
-    let (s, y) = opt(delimited(
-        symbol("["),
-        constant_range_expression,
-        symbol("]"),
-    ))(s)?;
+    let (s, y) = opt(bracket(constant_range_expression))(s)?;
     Ok((
         s,
         ConstantPrimary::Specparam(ConstantPrimarySpecparam {
@@ -286,11 +281,7 @@ pub fn constant_primary_enum(s: &str) -> IResult<&str, ConstantPrimary> {
 
 pub fn constant_primary_concatenation(s: &str) -> IResult<&str, ConstantPrimary> {
     let (s, x) = constant_concatenation(s)?;
-    let (s, y) = opt(delimited(
-        symbol("["),
-        constant_range_expression,
-        symbol("]"),
-    ))(s)?;
+    let (s, y) = opt(bracket(constant_range_expression))(s)?;
     Ok((
         s,
         ConstantPrimary::Concatenation(ConstantPrimaryConcatenation {
@@ -302,11 +293,7 @@ pub fn constant_primary_concatenation(s: &str) -> IResult<&str, ConstantPrimary>
 
 pub fn constant_primary_multiple_concatenation(s: &str) -> IResult<&str, ConstantPrimary> {
     let (s, x) = constant_multiple_concatenation(s)?;
-    let (s, y) = opt(delimited(
-        symbol("["),
-        constant_range_expression,
-        symbol("]"),
-    ))(s)?;
+    let (s, y) = opt(bracket(constant_range_expression))(s)?;
     Ok((
         s,
         ConstantPrimary::MultipleConcatenation(ConstantPrimaryMultipleConcatenation {
@@ -317,7 +304,7 @@ pub fn constant_primary_multiple_concatenation(s: &str) -> IResult<&str, Constan
 }
 
 pub fn constant_primary_mintypmax_expression(s: &str) -> IResult<&str, ConstantPrimary> {
-    let (s, x) = delimited(symbol("("), constant_mintypmax_expression, symbol(")"))(s)?;
+    let (s, x) = paren(constant_mintypmax_expression)(s)?;
     Ok((s, ConstantPrimary::MintypmaxExpression(x)))
 }
 
@@ -334,10 +321,9 @@ pub fn module_path_primary(s: &str) -> IResult<&str, ModulePathPrimary> {
         map(function_subroutine_call, |x| {
             ModulePathPrimary::FunctionSubroutineCall(x)
         }),
-        map(
-            delimited(symbol("("), module_path_mintypmax_expression, symbol(")")),
-            |x| ModulePathPrimary::ModulePathMintypmaxExpression(x),
-        ),
+        map(paren(module_path_mintypmax_expression), |x| {
+            ModulePathPrimary::ModulePathMintypmaxExpression(x)
+        }),
     ))(s)
 }
 
@@ -353,10 +339,9 @@ pub fn primary(s: &str) -> IResult<&str, Primary> {
             Primary::FunctionSubroutineCall(x)
         }),
         map(let_expression, |x| Primary::LetExpression(x)),
-        map(
-            delimited(symbol("("), mintypmax_expression, symbol(")")),
-            |x| Primary::MintypmaxExpression(x),
-        ),
+        map(paren(mintypmax_expression), |x| {
+            Primary::MintypmaxExpression(x)
+        }),
         map(cast, |x| Primary::Cast(x)),
         map(assignment_pattern_expression, |x| {
             Primary::AssignmentPatternExpression(x)
@@ -509,7 +494,7 @@ pub fn implicit_class_handle(s: &str) -> IResult<&str, Scope> {
 }
 
 pub fn bit_select(s: &str) -> IResult<&str, Vec<Expression>> {
-    many0(delimited(symbol("["), expression, symbol("]")))(s)
+    many0(bracket(expression))(s)
 }
 
 pub fn select(s: &str) -> IResult<&str, Select> {
@@ -518,7 +503,7 @@ pub fn select(s: &str) -> IResult<&str, Select> {
         preceded(symbol("."), member_identifier),
     ))(s)?;
     let (s, y) = bit_select(s)?;
-    let (s, z) = opt(delimited(symbol("["), part_select_range, symbol("]")))(s)?;
+    let (s, z) = opt(bracket(part_select_range))(s)?;
 
     let x = if let Some((x, y)) = x {
         Some(SelectMember {
@@ -566,7 +551,7 @@ pub fn nonrange_select(s: &str) -> IResult<&str, Select> {
 }
 
 pub fn constant_bit_select(s: &str) -> IResult<&str, Vec<ConstantExpression>> {
-    many0(delimited(symbol("["), constant_expression, symbol("]")))(s)
+    many0(bracket(constant_expression))(s)
 }
 
 pub fn constant_select(s: &str) -> IResult<&str, ConstantSelect> {
@@ -575,11 +560,7 @@ pub fn constant_select(s: &str) -> IResult<&str, ConstantSelect> {
         preceded(symbol("."), member_identifier),
     ))(s)?;
     let (s, y) = constant_bit_select(s)?;
-    let (s, z) = opt(delimited(
-        symbol("["),
-        constant_part_select_range,
-        symbol("]"),
-    ))(s)?;
+    let (s, z) = opt(bracket(constant_part_select_range))(s)?;
 
     let x = if let Some((x, y)) = x {
         Some(SelectMember {
@@ -603,7 +584,7 @@ pub fn constant_select(s: &str) -> IResult<&str, ConstantSelect> {
 pub fn constant_cast(s: &str) -> IResult<&str, ConstantCast> {
     let (s, x) = casting_type(s)?;
     let (s, _) = symbol("'")(s)?;
-    let (s, y) = delimited(symbol("("), constant_expression, symbol(")"))(s)?;
+    let (s, y) = paren(constant_expression)(s)?;
     Ok((
         s,
         ConstantCast {
@@ -620,7 +601,7 @@ pub fn constant_let_expression(s: &str) -> IResult<&str, LetExpression> {
 pub fn cast(s: &str) -> IResult<&str, Cast> {
     let (s, x) = casting_type(s)?;
     let (s, _) = symbol("'")(s)?;
-    let (s, y) = delimited(symbol("("), expression, symbol(")"))(s)?;
+    let (s, y) = paren(expression)(s)?;
     Ok((
         s,
         Cast {

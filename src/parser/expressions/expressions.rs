@@ -2,7 +2,6 @@ use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
 use nom::multi::*;
-use nom::sequence::*;
 use nom::IResult;
 
 // -----------------------------------------------------------------------------
@@ -387,10 +386,9 @@ pub fn expression(s: &str) -> IResult<&str, Expression> {
         map(primary, |x| Expression::Nullary(Box::new(x))),
         expression_unary,
         map(inc_or_dec_expression, |x| Expression::IncOrDec(Box::new(x))),
-        map(
-            delimited(symbol("("), operator_assignment, symbol(")")),
-            |x| Expression::Assignment(Box::new(x)),
-        ),
+        map(paren(operator_assignment), |x| {
+            Expression::Assignment(Box::new(x))
+        }),
         expression_binary,
         map(conditional_expression, |x| {
             Expression::Conditional(Box::new(x))
@@ -448,7 +446,7 @@ pub fn tagged_union_expression(s: &str) -> IResult<&str, TaggedUnionExpression> 
 pub fn inside_expression(s: &str) -> IResult<&str, InsideExpression> {
     let (s, x) = expression(s)?;
     let (s, _) = symbol("inside")(s)?;
-    let (s, y) = delimited(symbol("{"), open_range_list, symbol("}"))(s)?;
+    let (s, y) = brace(open_range_list)(s)?;
     Ok((
         s,
         InsideExpression {

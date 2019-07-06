@@ -98,7 +98,7 @@ pub fn constant_function_call(s: &str) -> IResult<&str, SubroutineCall> {
 pub fn tf_call(s: &str) -> IResult<&str, TfCall> {
     let (s, x) = ps_or_hierarchical_tf_identifier(s)?;
     let (s, y) = many0(attribute_instance)(s)?;
-    let (s, z) = opt(delimited(symbol("("), list_of_arguments, symbol(")")))(s)?;
+    let (s, z) = opt(paren(list_of_arguments))(s)?;
     Ok((
         s,
         TfCall {
@@ -119,7 +119,7 @@ pub fn system_tf_call(s: &str) -> IResult<&str, SystemTfCall> {
 
 pub fn system_tf_call_list_of_arguments(s: &str) -> IResult<&str, SystemTfCall> {
     let (s, x) = system_tf_identifier(s)?;
-    let (s, y) = opt(delimited(symbol("("), list_of_arguments, symbol(")")))(s)?;
+    let (s, y) = opt(paren(list_of_arguments))(s)?;
     Ok((
         s,
         SystemTfCall {
@@ -190,10 +190,7 @@ pub fn list_of_arguments(s: &str) -> IResult<&str, ListOfArguments> {
     let (s, x) = separated_list(symbol(","), expression)(s)?;
     let (s, y) = separated_list(
         symbol(","),
-        pair(
-            preceded(symbol("."), identifier),
-            delimited(symbol("("), opt(expression), symbol(")")),
-        ),
+        pair(preceded(symbol("."), identifier), paren(opt(expression))),
     )(s)?;
     Ok((
         s,
@@ -219,7 +216,7 @@ pub fn method_call_body(s: &str) -> IResult<&str, MethodCallBody> {
 pub fn method_call_body_user(s: &str) -> IResult<&str, MethodCallBody> {
     let (s, x) = method_identifier(s)?;
     let (s, y) = many0(attribute_instance)(s)?;
-    let (s, z) = opt(delimited(symbol("("), list_of_arguments, symbol(")")))(s)?;
+    let (s, z) = opt(paren(list_of_arguments))(s)?;
     Ok((
         s,
         MethodCallBody::User(MethodCallBodyUser {
@@ -240,11 +237,8 @@ pub fn built_in_method_call(s: &str) -> IResult<&str, MethodCallBody> {
 pub fn array_manipulation_call(s: &str) -> IResult<&str, ArrayManipulationCall> {
     let (s, x) = array_method_name(s)?;
     let (s, y) = many0(attribute_instance)(s)?;
-    let (s, z) = opt(delimited(symbol("("), list_of_arguments, symbol(")")))(s)?;
-    let (s, w) = opt(preceded(
-        symbol("with"),
-        delimited(symbol("("), expression, symbol(")")),
-    ))(s)?;
+    let (s, z) = opt(paren(list_of_arguments))(s)?;
+    let (s, w) = opt(preceded(symbol("with"), paren(expression)))(s)?;
     Ok((
         s,
         ArrayManipulationCall {
@@ -259,17 +253,13 @@ pub fn array_manipulation_call(s: &str) -> IResult<&str, ArrayManipulationCall> 
 pub fn randomize_call(s: &str) -> IResult<&str, RandomizeCall> {
     let (s, _) = symbol("randomize")(s)?;
     let (s, x) = many0(attribute_instance)(s)?;
-    let (s, y) = opt(delimited(
-        symbol("("),
-        opt(alt((
-            variable_identifier_list,
-            map(symbol("null"), |_| vec![]),
-        ))),
-        symbol(")"),
-    ))(s)?;
+    let (s, y) = opt(paren(opt(alt((
+        variable_identifier_list,
+        map(symbol("null"), |_| vec![]),
+    )))))(s)?;
     let (s, z) = opt(tuple((
         symbol("with"),
-        opt(delimited(symbol("("), opt(identifier_list), symbol(")"))),
+        opt(paren(opt(identifier_list))),
         constraint_block,
     )))(s)?;
     let y = if let Some(Some(y)) = y { y } else { vec![] };

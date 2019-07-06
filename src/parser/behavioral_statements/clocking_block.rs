@@ -145,13 +145,9 @@ pub fn clocking_event(s: &str) -> IResult<&str, ClockingEvent> {
         map(preceded(symbol("@"), identifier), |x| {
             ClockingEvent::Identifier(x)
         }),
-        map(
-            preceded(
-                symbol("@"),
-                delimited(symbol("("), event_expression, symbol(")")),
-            ),
-            |x| ClockingEvent::Expression(x),
-        ),
+        map(preceded(symbol("@"), paren(event_expression)), |x| {
+            ClockingEvent::Expression(x)
+        }),
     ))(s)
 }
 
@@ -310,13 +306,9 @@ pub fn cycle_delay(s: &str) -> IResult<&str, CycleDelay> {
         map(preceded(symbol("##"), identifier), |x| {
             CycleDelay::Identifier(x)
         }),
-        map(
-            preceded(
-                symbol("##"),
-                delimited(symbol("("), expression, symbol(")")),
-            ),
-            |x| CycleDelay::Expression(x),
-        ),
+        map(preceded(symbol("##"), paren(expression)), |x| {
+            CycleDelay::Expression(x)
+        }),
     ))(s)
 }
 

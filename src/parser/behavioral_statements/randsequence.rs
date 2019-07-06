@@ -119,7 +119,7 @@ pub fn randsequence_statement(s: &str) -> IResult<&str, RandsequenceStatement> {
 pub fn production(s: &str) -> IResult<&str, Production> {
     let (s, x) = opt(data_type_or_void)(s)?;
     let (s, y) = production_identifier(s)?;
-    let (s, z) = opt(delimited(symbol("("), tf_port_list, symbol(")")))(s)?;
+    let (s, z) = opt(paren(tf_port_list))(s)?;
     let (s, _) = symbol(":")(s)?;
     let (s, v) = separated_nonempty_list(symbol("|"), rs_rule)(s)?;
     let (s, _) = symbol(";")(s)?;
@@ -168,7 +168,7 @@ pub fn rs_production_list_prod(s: &str) -> IResult<&str, RsProductionList> {
 pub fn rs_production_list_join(s: &str) -> IResult<&str, RsProductionList> {
     let (s, _) = symbol("rand")(s)?;
     let (s, _) = symbol("join")(s)?;
-    let (s, x) = opt(delimited(symbol("("), expression, symbol(")")))(s)?;
+    let (s, x) = opt(paren(expression))(s)?;
     let (s, y) = production_item(s)?;
     let (s, z) = many1(production_item)(s)?;
 
@@ -183,9 +183,7 @@ pub fn weight_specification(s: &str) -> IResult<&str, WeightSpecification> {
     alt((
         map(integral_number, |x| WeightSpecification::Number(x)),
         map(ps_identifier, |x| WeightSpecification::Identifier(x)),
-        map(delimited(symbol("("), expression, symbol(")")), |x| {
-            WeightSpecification::Expression(x)
-        }),
+        map(paren(expression), |x| WeightSpecification::Expression(x)),
     ))(s)
 }
 
@@ -215,7 +213,7 @@ pub fn rs_prod(s: &str) -> IResult<&str, RsProd> {
 
 pub fn production_item(s: &str) -> IResult<&str, ProductionItem> {
     let (s, x) = production_identifier(s)?;
-    let (s, y) = opt(delimited(symbol("("), list_of_arguments, symbol(")")))(s)?;
+    let (s, y) = opt(paren(list_of_arguments))(s)?;
     Ok((
         s,
         ProductionItem {
@@ -227,7 +225,7 @@ pub fn production_item(s: &str) -> IResult<&str, ProductionItem> {
 
 pub fn rs_if_else(s: &str) -> IResult<&str, RsIfElse> {
     let (s, _) = symbol("if")(s)?;
-    let (s, x) = delimited(symbol("("), expression, symbol(")"))(s)?;
+    let (s, x) = paren(expression)(s)?;
     let (s, y) = production_item(s)?;
     let (s, z) = opt(preceded(symbol("else"), production_item))(s)?;
     Ok((
@@ -242,7 +240,7 @@ pub fn rs_if_else(s: &str) -> IResult<&str, RsIfElse> {
 
 pub fn rs_repeat(s: &str) -> IResult<&str, RsRepeat> {
     let (s, _) = symbol("repeat")(s)?;
-    let (s, x) = delimited(symbol("("), expression, symbol(")"))(s)?;
+    let (s, x) = paren(expression)(s)?;
     let (s, y) = production_item(s)?;
     Ok((
         s,
@@ -255,7 +253,7 @@ pub fn rs_repeat(s: &str) -> IResult<&str, RsRepeat> {
 
 pub fn rs_case(s: &str) -> IResult<&str, RsCase> {
     let (s, _) = symbol("case")(s)?;
-    let (s, x) = delimited(symbol("("), case_expression, symbol(")"))(s)?;
+    let (s, x) = paren(case_expression)(s)?;
     let (s, y) = many1(rs_case_item)(s)?;
     Ok((
         s,

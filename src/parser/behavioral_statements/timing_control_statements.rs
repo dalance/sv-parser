@@ -320,7 +320,7 @@ pub fn wait_statement(s: &str) -> IResult<&str, WaitStatement> {
 
 pub fn wait_statement_wait(s: &str) -> IResult<&str, WaitStatement> {
     let (s, _) = symbol("wait")(s)?;
-    let (s, x) = delimited(symbol("("), expression, symbol(")"))(s)?;
+    let (s, x) = paren(expression)(s)?;
     let (s, y) = statement_or_null(s)?;
     Ok((
         s,
@@ -340,11 +340,10 @@ pub fn wait_statement_fork(s: &str) -> IResult<&str, WaitStatement> {
 
 pub fn wait_statement_order(s: &str) -> IResult<&str, WaitStatement> {
     let (s, _) = symbol("wait_order")(s)?;
-    let (s, x) = delimited(
-        symbol("("),
-        separated_nonempty_list(symbol(","), hierarchical_identifier),
-        symbol(")"),
-    )(s)?;
+    let (s, x) = paren(separated_nonempty_list(
+        symbol(","),
+        hierarchical_identifier,
+    ))(s)?;
     let (s, y) = action_block(s)?;
     Ok((
         s,

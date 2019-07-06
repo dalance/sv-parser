@@ -484,7 +484,7 @@ pub fn ps_parameter_identifier(s: &str) -> IResult<&str, ScopedIdentifier> {
 pub fn generate_block_scope(s: &str) -> IResult<&str, Scope> {
     let (s, x) = many0(tuple((
         generate_block_identifier,
-        opt(delimited(symbol("["), constant_expression, symbol("]"))),
+        opt(bracket(constant_expression)),
         symbol("."),
     )))(s)?;
 

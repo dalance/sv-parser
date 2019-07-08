@@ -9,23 +9,26 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub struct RandsequenceStatement<'a> {
-    pub identifier: Option<Identifier<'a>>,
-    pub production: Vec<Production<'a>>,
+    pub nodes: (Option<ProductionIdentifier<'a>>, Vec<Production<'a>>),
 }
 
 #[derive(Debug)]
 pub struct Production<'a> {
-    pub r#type: Option<DataTypeOrVoid<'a>>,
-    pub identifier: Identifier<'a>,
-    pub tf_port_list: Option<TfPortList<'a>>,
-    pub rs_rule: Vec<RsRule<'a>>,
+    pub nodes: (
+        Option<DataTypeOrVoid<'a>>,
+        ProductionIdentifier<'a>,
+        Option<TfPortList<'a>>,
+        Vec<RsRule<'a>>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct RsRule<'a> {
-    pub production: RsProductionList<'a>,
-    pub weight: Option<WeightSpecification<'a>>,
-    pub block: Option<RsCodeBlock<'a>>,
+    pub nodes: (
+        RsProductionList<'a>,
+        Option<WeightSpecification<'a>>,
+        Option<RsCodeBlock<'a>>,
+    ),
 }
 
 #[derive(Debug)]
@@ -37,14 +40,13 @@ pub enum RsProductionList<'a> {
 #[derive(Debug)]
 pub enum WeightSpecification<'a> {
     Number(Number<'a>),
-    Identifier(ScopedIdentifier<'a>),
+    Identifier(PsIdentifier<'a>),
     Expression(Expression<'a>),
 }
 
 #[derive(Debug)]
 pub struct RsCodeBlock<'a> {
-    pub declaration: Vec<DataDeclaration<'a>>,
-    pub statement: Vec<StatementOrNull<'a>>,
+    pub nodes: (Vec<DataDeclaration<'a>>, Vec<StatementOrNull<'a>>),
 }
 
 #[derive(Debug)]
@@ -58,27 +60,26 @@ pub enum RsProd<'a> {
 
 #[derive(Debug)]
 pub struct ProductionItem<'a> {
-    pub identifier: Identifier<'a>,
-    pub argument: Option<ListOfArguments<'a>>,
+    pub nodes: (ProductionIdentifier<'a>, Option<ListOfArguments<'a>>),
 }
 
 #[derive(Debug)]
 pub struct RsIfElse<'a> {
-    pub expression: Expression<'a>,
-    pub item: ProductionItem<'a>,
-    pub else_item: Option<ProductionItem<'a>>,
+    pub nodes: (
+        Expression<'a>,
+        ProductionItem<'a>,
+        Option<ProductionItem<'a>>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct RsRepeat<'a> {
-    pub expression: Expression<'a>,
-    pub item: ProductionItem<'a>,
+    pub nodes: (Expression<'a>, ProductionItem<'a>),
 }
 
 #[derive(Debug)]
 pub struct RsCase<'a> {
-    pub expression: Expression<'a>,
-    pub item: Vec<RsCaseItem<'a>>,
+    pub nodes: (Expression<'a>, Vec<RsCaseItem<'a>>),
 }
 
 #[derive(Debug)]
@@ -89,13 +90,12 @@ pub enum RsCaseItem<'a> {
 
 #[derive(Debug)]
 pub struct RsCaseItemDefault<'a> {
-    pub item: ProductionItem<'a>,
+    pub nodes: (ProductionItem<'a>,),
 }
 
 #[derive(Debug)]
 pub struct RsCaseItemNondefault<'a> {
-    pub expression: Vec<Expression<'a>>,
-    pub item: ProductionItem<'a>,
+    pub nodes: (Vec<Expression<'a>>, ProductionItem<'a>),
 }
 
 // -----------------------------------------------------------------------------
@@ -107,13 +107,7 @@ pub fn randsequence_statement(s: &str) -> IResult<&str, RandsequenceStatement> {
     let (s, _) = symbol(")")(s)?;
     let (s, y) = many1(production)(s)?;
     let (s, _) = symbol("endsequence")(s)?;
-    Ok((
-        s,
-        RandsequenceStatement {
-            identifier: x,
-            production: y,
-        },
-    ))
+    Ok((s, RandsequenceStatement { nodes: (x, y) }))
 }
 
 pub fn production(s: &str) -> IResult<&str, Production> {
@@ -126,10 +120,7 @@ pub fn production(s: &str) -> IResult<&str, Production> {
     Ok((
         s,
         Production {
-            r#type: x,
-            identifier: y,
-            tf_port_list: z,
-            rs_rule: v,
+            nodes: (x, y, z, v),
         },
     ))
 }
@@ -146,14 +137,7 @@ pub fn rs_rule(s: &str) -> IResult<&str, RsRule> {
     } else {
         (None, None)
     };
-    Ok((
-        s,
-        RsRule {
-            production: x,
-            weight: y,
-            block: z,
-        },
-    ))
+    Ok((s, RsRule { nodes: (x, y, z) }))
 }
 
 pub fn rs_production_list(s: &str) -> IResult<&str, RsProductionList> {
@@ -192,13 +176,7 @@ pub fn rs_code_block(s: &str) -> IResult<&str, RsCodeBlock> {
     let (s, x) = many0(data_declaration)(s)?;
     let (s, y) = many0(statement_or_null)(s)?;
     let (s, _) = symbol("}")(s)?;
-    Ok((
-        s,
-        RsCodeBlock {
-            declaration: x,
-            statement: y,
-        },
-    ))
+    Ok((s, RsCodeBlock { nodes: (x, y) }))
 }
 
 pub fn rs_prod(s: &str) -> IResult<&str, RsProd> {
@@ -214,13 +192,7 @@ pub fn rs_prod(s: &str) -> IResult<&str, RsProd> {
 pub fn production_item(s: &str) -> IResult<&str, ProductionItem> {
     let (s, x) = production_identifier(s)?;
     let (s, y) = opt(paren(list_of_arguments))(s)?;
-    Ok((
-        s,
-        ProductionItem {
-            identifier: x,
-            argument: y,
-        },
-    ))
+    Ok((s, ProductionItem { nodes: (x, y) }))
 }
 
 pub fn rs_if_else(s: &str) -> IResult<&str, RsIfElse> {
@@ -228,40 +200,21 @@ pub fn rs_if_else(s: &str) -> IResult<&str, RsIfElse> {
     let (s, x) = paren(expression)(s)?;
     let (s, y) = production_item(s)?;
     let (s, z) = opt(preceded(symbol("else"), production_item))(s)?;
-    Ok((
-        s,
-        RsIfElse {
-            expression: x,
-            item: y,
-            else_item: z,
-        },
-    ))
+    Ok((s, RsIfElse { nodes: (x, y, z) }))
 }
 
 pub fn rs_repeat(s: &str) -> IResult<&str, RsRepeat> {
     let (s, _) = symbol("repeat")(s)?;
     let (s, x) = paren(expression)(s)?;
     let (s, y) = production_item(s)?;
-    Ok((
-        s,
-        RsRepeat {
-            expression: x,
-            item: y,
-        },
-    ))
+    Ok((s, RsRepeat { nodes: (x, y) }))
 }
 
 pub fn rs_case(s: &str) -> IResult<&str, RsCase> {
     let (s, _) = symbol("case")(s)?;
     let (s, x) = paren(case_expression)(s)?;
     let (s, y) = many1(rs_case_item)(s)?;
-    Ok((
-        s,
-        RsCase {
-            expression: x,
-            item: y,
-        },
-    ))
+    Ok((s, RsCase { nodes: (x, y) }))
 }
 
 pub fn rs_case_item(s: &str) -> IResult<&str, RsCaseItem> {
@@ -275,10 +228,7 @@ pub fn rs_case_item_nondefault(s: &str) -> IResult<&str, RsCaseItem> {
     let (s, _) = symbol(";")(s)?;
     Ok((
         s,
-        RsCaseItem::NonDefault(RsCaseItemNondefault {
-            expression: x,
-            item: y,
-        }),
+        RsCaseItem::NonDefault(RsCaseItemNondefault { nodes: (x, y) }),
     ))
 }
 
@@ -287,5 +237,5 @@ pub fn rs_case_item_default(s: &str) -> IResult<&str, RsCaseItem> {
     let (s, _) = opt(symbol(":"))(s)?;
     let (s, x) = production_item(s)?;
     let (s, _) = symbol(";")(s)?;
-    Ok((s, RsCaseItem::Default(RsCaseItemDefault { item: x })))
+    Ok((s, RsCaseItem::Default(RsCaseItemDefault { nodes: (x,) })))
 }

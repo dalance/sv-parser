@@ -14,24 +14,22 @@ pub enum IncOrDecExpression<'a> {
 
 #[derive(Debug)]
 pub struct IncOrDecExpressionPrefix<'a> {
-    pub operator: Operator<'a>,
-    pub attribute: Vec<AttributeInstance<'a>>,
-    pub lvalue: VariableLvalue<'a>,
+    pub nodes: (Operator<'a>, Vec<AttributeInstance<'a>>, VariableLvalue<'a>),
 }
 
 #[derive(Debug)]
 pub struct IncOrDecExpressionSuffix<'a> {
-    pub lvalue: VariableLvalue<'a>,
-    pub attribute: Vec<AttributeInstance<'a>>,
-    pub operator: Operator<'a>,
+    pub nodes: (VariableLvalue<'a>, Vec<AttributeInstance<'a>>, Operator<'a>),
 }
 
 #[derive(Debug)]
 pub struct ConditionalExpression<'a> {
-    pub predicate: CondPredicate<'a>,
-    pub attribute: Vec<AttributeInstance<'a>>,
-    pub arg0: Expression<'a>,
-    pub arg1: Expression<'a>,
+    pub nodes: (
+        CondPredicate<'a>,
+        Vec<AttributeInstance<'a>>,
+        Expression<'a>,
+        Expression<'a>,
+    ),
 }
 
 #[derive(Debug)]
@@ -44,25 +42,31 @@ pub enum ConstantExpression<'a> {
 
 #[derive(Debug)]
 pub struct ConstantExpressionUnary<'a> {
-    pub operator: Operator<'a>,
-    pub attribute: Vec<AttributeInstance<'a>>,
-    pub arg0: ConstantPrimary<'a>,
+    pub nodes: (
+        Operator<'a>,
+        Vec<AttributeInstance<'a>>,
+        ConstantPrimary<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct ConstantExpressionBinary<'a> {
-    pub arg0: ConstantExpression<'a>,
-    pub operator: Operator<'a>,
-    pub attribute: Vec<AttributeInstance<'a>>,
-    pub arg1: ConstantExpression<'a>,
+    pub nodes: (
+        ConstantExpression<'a>,
+        Operator<'a>,
+        Vec<AttributeInstance<'a>>,
+        ConstantExpression<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct ConstantExpressionTernary<'a> {
-    pub predicate: ConstantExpression<'a>,
-    pub attribute: Vec<AttributeInstance<'a>>,
-    pub arg0: ConstantExpression<'a>,
-    pub arg1: ConstantExpression<'a>,
+    pub nodes: (
+        ConstantExpression<'a>,
+        Vec<AttributeInstance<'a>>,
+        ConstantExpression<'a>,
+        ConstantExpression<'a>,
+    ),
 }
 
 #[derive(Debug)]
@@ -99,8 +103,18 @@ pub enum ConstantRangeExpression<'a> {
 
 #[derive(Debug)]
 pub enum ConstantPartSelectRange<'a> {
-    Range((ConstantExpression<'a>, ConstantExpression<'a>)),
-    IndexedRange((ConstantExpression<'a>, &'a str, ConstantExpression<'a>)),
+    Range(ConstantRange<'a>),
+    IndexedRange(ConstantIndexedRange<'a>),
+}
+
+#[derive(Debug)]
+pub struct ConstantRange<'a> {
+    pub nodes: (ConstantExpression<'a>, ConstantExpression<'a>),
+}
+
+#[derive(Debug)]
+pub struct ConstantIndexedRange<'a> {
+    pub nodes: (ConstantExpression<'a>, Operator<'a>, ConstantExpression<'a>),
 }
 
 #[derive(Debug)]
@@ -117,29 +131,27 @@ pub enum Expression<'a> {
 
 #[derive(Debug)]
 pub struct ExpressionUnary<'a> {
-    pub operator: Operator<'a>,
-    pub attribute: Vec<AttributeInstance<'a>>,
-    pub arg0: Primary<'a>,
+    pub nodes: (Operator<'a>, Vec<AttributeInstance<'a>>, Primary<'a>),
 }
 
 #[derive(Debug)]
 pub struct ExpressionBinary<'a> {
-    pub arg0: Expression<'a>,
-    pub operator: Operator<'a>,
-    pub attribute: Vec<AttributeInstance<'a>>,
-    pub arg1: Expression<'a>,
+    pub nodes: (
+        Expression<'a>,
+        Operator<'a>,
+        Vec<AttributeInstance<'a>>,
+        Expression<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct TaggedUnionExpression<'a> {
-    pub identifier: Identifier<'a>,
-    pub expression: Option<Expression<'a>>,
+    pub nodes: (MemberIdentifier<'a>, Option<Expression<'a>>),
 }
 
 #[derive(Debug)]
 pub struct InsideExpression<'a> {
-    pub expression: Expression<'a>,
-    pub open_range_list: Vec<ValueRange<'a>>,
+    pub nodes: (Expression<'a>, Vec<ValueRange<'a>>),
 }
 
 #[derive(Debug)]
@@ -156,10 +168,12 @@ pub enum MintypmaxExpression<'a> {
 
 #[derive(Debug)]
 pub struct ModulePathConditionalExpression<'a> {
-    pub predicate: ModulePathExpression<'a>,
-    pub attribute: Vec<AttributeInstance<'a>>,
-    pub arg0: ModulePathExpression<'a>,
-    pub arg1: ModulePathExpression<'a>,
+    pub nodes: (
+        ModulePathExpression<'a>,
+        Vec<AttributeInstance<'a>>,
+        ModulePathExpression<'a>,
+        ModulePathExpression<'a>,
+    ),
 }
 
 #[derive(Debug)]
@@ -172,17 +186,21 @@ pub enum ModulePathExpression<'a> {
 
 #[derive(Debug)]
 pub struct ModulePathExpressionUnary<'a> {
-    pub operator: Operator<'a>,
-    pub attribute: Vec<AttributeInstance<'a>>,
-    pub arg0: ModulePathPrimary<'a>,
+    pub nodes: (
+        Operator<'a>,
+        Vec<AttributeInstance<'a>>,
+        ModulePathPrimary<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct ModulePathExpressionBinary<'a> {
-    pub arg0: ModulePathExpression<'a>,
-    pub operator: Operator<'a>,
-    pub attribute: Vec<AttributeInstance<'a>>,
-    pub arg1: ModulePathExpression<'a>,
+    pub nodes: (
+        ModulePathExpression<'a>,
+        Operator<'a>,
+        Vec<AttributeInstance<'a>>,
+        ModulePathExpression<'a>,
+    ),
 }
 
 #[derive(Debug)]
@@ -215,11 +233,7 @@ pub fn inc_or_dec_expression_prefix(s: &str) -> IResult<&str, IncOrDecExpression
     let (s, z) = variable_lvalue(s)?;
     Ok((
         s,
-        IncOrDecExpression::Prefix(IncOrDecExpressionPrefix {
-            operator: x,
-            attribute: y,
-            lvalue: z,
-        }),
+        IncOrDecExpression::Prefix(IncOrDecExpressionPrefix { nodes: (x, y, z) }),
     ))
 }
 
@@ -229,11 +243,7 @@ pub fn inc_or_dec_expression_suffix(s: &str) -> IResult<&str, IncOrDecExpression
     let (s, z) = inc_or_dec_operator(s)?;
     Ok((
         s,
-        IncOrDecExpression::Suffix(IncOrDecExpressionSuffix {
-            lvalue: x,
-            attribute: y,
-            operator: z,
-        }),
+        IncOrDecExpression::Suffix(IncOrDecExpressionSuffix { nodes: (x, y, z) }),
     ))
 }
 
@@ -247,10 +257,7 @@ pub fn conditional_expression(s: &str) -> IResult<&str, ConditionalExpression> {
     Ok((
         s,
         ConditionalExpression {
-            predicate: x,
-            attribute: y,
-            arg0: z,
-            arg1: v,
+            nodes: (x, y, z, v),
         },
     ))
 }
@@ -272,11 +279,7 @@ pub fn constant_expression_unary(s: &str) -> IResult<&str, ConstantExpression> {
     let (s, z) = constant_primary(s)?;
     Ok((
         s,
-        ConstantExpression::Unary(Box::new(ConstantExpressionUnary {
-            operator: x,
-            attribute: y,
-            arg0: z,
-        })),
+        ConstantExpression::Unary(Box::new(ConstantExpressionUnary { nodes: (x, y, z) })),
     ))
 }
 
@@ -288,10 +291,7 @@ pub fn constant_expression_binary(s: &str) -> IResult<&str, ConstantExpression> 
     Ok((
         s,
         ConstantExpression::Binary(Box::new(ConstantExpressionBinary {
-            arg0: x,
-            operator: y,
-            attribute: z,
-            arg1: v,
+            nodes: (x, y, z, v),
         })),
     ))
 }
@@ -306,10 +306,7 @@ pub fn constant_expression_ternary(s: &str) -> IResult<&str, ConstantExpression>
     Ok((
         s,
         ConstantExpression::Ternary(Box::new(ConstantExpressionTernary {
-            predicate: x,
-            attribute: y,
-            arg0: z,
-            arg1: v,
+            nodes: (x, y, z, v),
         })),
     ))
 }
@@ -364,21 +361,28 @@ pub fn constant_range_expression(s: &str) -> IResult<&str, ConstantRangeExpressi
 }
 
 pub fn constant_part_select_range(s: &str) -> IResult<&str, ConstantPartSelectRange> {
-    alt((constant_range, constant_indexed_range))(s)
+    alt((
+        map(constant_range, |x| ConstantPartSelectRange::Range(x)),
+        map(constant_indexed_range, |x| {
+            ConstantPartSelectRange::IndexedRange(x)
+        }),
+    ))(s)
 }
 
-pub fn constant_range(s: &str) -> IResult<&str, ConstantPartSelectRange> {
+pub fn constant_range(s: &str) -> IResult<&str, ConstantRange> {
     let (s, x) = constant_expression(s)?;
     let (s, _) = symbol(":")(s)?;
     let (s, y) = constant_expression(s)?;
-    Ok((s, ConstantPartSelectRange::Range((x, y))))
+    Ok((s, ConstantRange { nodes: (x, y) }))
 }
 
-pub fn constant_indexed_range(s: &str) -> IResult<&str, ConstantPartSelectRange> {
+pub fn constant_indexed_range(s: &str) -> IResult<&str, ConstantIndexedRange> {
     let (s, x) = constant_expression(s)?;
-    let (s, y) = alt((symbol("+:"), symbol("-:")))(s)?;
+    let (s, y) = map(alt((symbol("+:"), symbol("-:"))), |x| Operator {
+        nodes: (x,),
+    })(s)?;
     let (s, z) = constant_expression(s)?;
-    Ok((s, ConstantPartSelectRange::IndexedRange((x, y, z))))
+    Ok((s, ConstantIndexedRange { nodes: (x, y, z) }))
 }
 
 pub fn expression(s: &str) -> IResult<&str, Expression> {
@@ -406,11 +410,7 @@ pub fn expression_unary(s: &str) -> IResult<&str, Expression> {
     let (s, z) = primary(s)?;
     Ok((
         s,
-        Expression::Unary(Box::new(ExpressionUnary {
-            operator: x,
-            attribute: y,
-            arg0: z,
-        })),
+        Expression::Unary(Box::new(ExpressionUnary { nodes: (x, y, z) })),
     ))
 }
 
@@ -422,10 +422,7 @@ pub fn expression_binary(s: &str) -> IResult<&str, Expression> {
     Ok((
         s,
         Expression::Binary(Box::new(ExpressionBinary {
-            arg0: x,
-            operator: y,
-            attribute: z,
-            arg1: v,
+            nodes: (x, y, z, v),
         })),
     ))
 }
@@ -434,26 +431,14 @@ pub fn tagged_union_expression(s: &str) -> IResult<&str, TaggedUnionExpression> 
     let (s, _) = symbol("tagged")(s)?;
     let (s, x) = member_identifier(s)?;
     let (s, y) = opt(expression)(s)?;
-    Ok((
-        s,
-        TaggedUnionExpression {
-            identifier: x,
-            expression: y,
-        },
-    ))
+    Ok((s, TaggedUnionExpression { nodes: (x, y) }))
 }
 
 pub fn inside_expression(s: &str) -> IResult<&str, InsideExpression> {
     let (s, x) = expression(s)?;
     let (s, _) = symbol("inside")(s)?;
     let (s, y) = brace(open_range_list)(s)?;
-    Ok((
-        s,
-        InsideExpression {
-            expression: x,
-            open_range_list: y,
-        },
-    ))
+    Ok((s, InsideExpression { nodes: (x, y) }))
 }
 
 pub fn value_range(s: &str) -> IResult<&str, ValueRange> {
@@ -500,10 +485,7 @@ pub fn module_path_conditional_expression(
     Ok((
         s,
         ModulePathConditionalExpression {
-            predicate: x,
-            attribute: y,
-            arg0: z,
-            arg1: v,
+            nodes: (x, y, z, v),
         },
     ))
 }
@@ -527,11 +509,7 @@ pub fn module_path_expression_unary(s: &str) -> IResult<&str, ModulePathExpressi
     let (s, z) = module_path_primary(s)?;
     Ok((
         s,
-        ModulePathExpression::Unary(Box::new(ModulePathExpressionUnary {
-            operator: x,
-            attribute: y,
-            arg0: z,
-        })),
+        ModulePathExpression::Unary(Box::new(ModulePathExpressionUnary { nodes: (x, y, z) })),
     ))
 }
 
@@ -543,10 +521,7 @@ pub fn module_path_expression_binary(s: &str) -> IResult<&str, ModulePathExpress
     Ok((
         s,
         ModulePathExpression::Binary(Box::new(ModulePathExpressionBinary {
-            arg0: x,
-            operator: y,
-            attribute: z,
-            arg1: v,
+            nodes: (x, y, z, v),
         })),
     ))
 }

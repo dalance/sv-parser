@@ -16,14 +16,15 @@ pub enum NetLvalue<'a> {
 
 #[derive(Debug)]
 pub struct NetLvalueIdentifier<'a> {
-    identifier: ScopedIdentifier<'a>,
-    select: ConstantSelect<'a>,
+    pub nodes: (PsOrHierarchicalNetIdentifier<'a>, ConstantSelect<'a>),
 }
 
 #[derive(Debug)]
 pub struct NetLvaluePattern<'a> {
-    r#type: Option<AssignmentPatternExpressionType<'a>>,
-    lvalue: AssignmentPatternNetLvalue<'a>,
+    pub nodes: (
+        Option<AssignmentPatternExpressionType<'a>>,
+        AssignmentPatternNetLvalue<'a>,
+    ),
 }
 
 #[derive(Debug)]
@@ -36,22 +37,28 @@ pub enum VariableLvalue<'a> {
 
 #[derive(Debug)]
 pub struct VariableLvalueIdentifier<'a> {
-    scope: Option<Scope<'a>>,
-    identifier: HierarchicalIdentifier<'a>,
-    select: Select<'a>,
+    pub nodes: (
+        Option<ImplicitClassHandleOrPackageScope<'a>>,
+        HierarchicalVariableIdentifier<'a>,
+        Select<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct VariableLvaluePattern<'a> {
-    r#type: Option<AssignmentPatternExpressionType<'a>>,
-    lvalue: AssignmentPatternVariableLvalue<'a>,
+    pub nodes: (
+        Option<AssignmentPatternExpressionType<'a>>,
+        AssignmentPatternVariableLvalue<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct NonrangeVariableLvalue<'a> {
-    scope: Option<Scope<'a>>,
-    identifier: HierarchicalIdentifier<'a>,
-    select: Select<'a>,
+    pub nodes: (
+        Option<ImplicitClassHandleOrPackageScope<'a>>,
+        HierarchicalVariableIdentifier<'a>,
+        Select<'a>,
+    ),
 }
 
 // -----------------------------------------------------------------------------
@@ -65,10 +72,7 @@ pub fn net_lvalue_identifier(s: &str) -> IResult<&str, NetLvalue> {
     let (s, y) = constant_select(s)?;
     Ok((
         s,
-        NetLvalue::Identifier(Box::new(NetLvalueIdentifier {
-            identifier: x,
-            select: y,
-        })),
+        NetLvalue::Identifier(Box::new(NetLvalueIdentifier { nodes: (x, y) })),
     ))
 }
 
@@ -77,10 +81,7 @@ pub fn net_lvalue_pattern(s: &str) -> IResult<&str, NetLvalue> {
     let (s, y) = assignment_pattern_net_lvalue(s)?;
     Ok((
         s,
-        NetLvalue::Pattern(Box::new(NetLvaluePattern {
-            r#type: x,
-            lvalue: y,
-        })),
+        NetLvalue::Pattern(Box::new(NetLvaluePattern { nodes: (x, y) })),
     ))
 }
 
@@ -111,19 +112,12 @@ pub fn variable_lvalue(s: &str) -> IResult<&str, VariableLvalue> {
 }
 
 pub fn variable_lvalue_identifier(s: &str) -> IResult<&str, VariableLvalue> {
-    let (s, x) = opt(alt((
-        terminated(implicit_class_handle, symbol(".")),
-        package_scope,
-    )))(s)?;
+    let (s, x) = opt(implicit_class_handle_or_package_scope)(s)?;
     let (s, y) = hierarchical_variable_identifier(s)?;
     let (s, z) = select(s)?;
     Ok((
         s,
-        VariableLvalue::Identifier(Box::new(VariableLvalueIdentifier {
-            scope: x,
-            identifier: y,
-            select: z,
-        })),
+        VariableLvalue::Identifier(Box::new(VariableLvalueIdentifier { nodes: (x, y, z) })),
     ))
 }
 
@@ -132,10 +126,7 @@ pub fn variable_lvalue_pattern(s: &str) -> IResult<&str, VariableLvalue> {
     let (s, y) = assignment_pattern_variable_lvalue(s)?;
     Ok((
         s,
-        VariableLvalue::Pattern(Box::new(VariableLvaluePattern {
-            r#type: x,
-            lvalue: y,
-        })),
+        VariableLvalue::Pattern(Box::new(VariableLvaluePattern { nodes: (x, y) })),
     ))
 }
 
@@ -155,20 +146,10 @@ pub fn variable_lvalue_lvalue(s: &str) -> IResult<&str, VariableLvalue> {
 }
 
 pub fn nonrange_variable_lvalue(s: &str) -> IResult<&str, NonrangeVariableLvalue> {
-    let (s, x) = opt(alt((
-        terminated(implicit_class_handle, symbol(".")),
-        package_scope,
-    )))(s)?;
+    let (s, x) = opt(implicit_class_handle_or_package_scope)(s)?;
     let (s, y) = hierarchical_variable_identifier(s)?;
     let (s, z) = nonrange_select(s)?;
-    Ok((
-        s,
-        NonrangeVariableLvalue {
-            scope: x,
-            identifier: y,
-            select: z,
-        },
-    ))
+    Ok((s, NonrangeVariableLvalue { nodes: (x, y, z) }))
 }
 
 // -----------------------------------------------------------------------------

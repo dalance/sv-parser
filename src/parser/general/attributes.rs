@@ -8,13 +8,12 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub struct AttributeInstance<'a> {
-    pub attr_spec: Vec<AttrSpec<'a>>,
+    pub nodes: (Vec<AttrSpec<'a>>,),
 }
 
 #[derive(Debug)]
 pub struct AttrSpec<'a> {
-    pub attr_name: Identifier<'a>,
-    pub rvalue: Option<ConstantExpression<'a>>,
+    pub nodes: (Identifier<'a>, Option<ConstantExpression<'a>>),
 }
 
 // -----------------------------------------------------------------------------
@@ -23,19 +22,13 @@ pub fn attribute_instance(s: &str) -> IResult<&str, AttributeInstance> {
     let (s, _) = symbol("(*")(s)?;
     let (s, x) = separated_nonempty_list(symbol(","), attr_spec)(s)?;
     let (s, _) = symbol("*)")(s)?;
-    Ok((s, AttributeInstance { attr_spec: x }))
+    Ok((s, AttributeInstance { nodes: (x,) }))
 }
 
 pub fn attr_spec(s: &str) -> IResult<&str, AttrSpec> {
     let (s, x) = identifier(s)?;
     let (s, y) = opt(preceded(symbol("="), constant_expression))(s)?;
-    Ok((
-        s,
-        AttrSpec {
-            attr_name: x,
-            rvalue: y,
-        },
-    ))
+    Ok((s, AttrSpec { nodes: (x, y) }))
 }
 
 // -----------------------------------------------------------------------------

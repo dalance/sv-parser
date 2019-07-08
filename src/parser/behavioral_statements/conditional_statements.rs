@@ -9,10 +9,12 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub struct ConditionalStatement<'a> {
-    pub unique_priority: Option<UniquePriority>,
-    pub if_statement: ConditionalStatementBody<'a>,
-    pub else_if_statement: Vec<ConditionalStatementBody<'a>>,
-    pub else_statement: Option<StatementOrNull<'a>>,
+    pub nodes: (
+        Option<UniquePriority>,
+        ConditionalStatementBody<'a>,
+        Vec<ConditionalStatementBody<'a>>,
+        Option<StatementOrNull<'a>>,
+    ),
 }
 
 #[derive(Debug)]
@@ -24,13 +26,12 @@ pub enum UniquePriority {
 
 #[derive(Debug)]
 pub struct ConditionalStatementBody<'a> {
-    pub predicate: CondPredicate<'a>,
-    pub statement: StatementOrNull<'a>,
+    pub nodes: (CondPredicate<'a>, StatementOrNull<'a>),
 }
 
 #[derive(Debug)]
 pub struct CondPredicate<'a> {
-    pub pattern: Vec<ExpressionOrCondPattern<'a>>,
+    pub nodes: (Vec<ExpressionOrCondPattern<'a>>,),
 }
 
 #[derive(Debug)]
@@ -41,8 +42,7 @@ pub enum ExpressionOrCondPattern<'a> {
 
 #[derive(Debug)]
 pub struct CondPattern<'a> {
-    pub expression: Expression<'a>,
-    pub pattern: Pattern<'a>,
+    pub nodes: (Expression<'a>, Pattern<'a>),
 }
 
 // -----------------------------------------------------------------------------
@@ -60,10 +60,7 @@ pub fn conditional_statement(s: &str) -> IResult<&str, ConditionalStatement> {
     Ok((
         s,
         ConditionalStatement {
-            unique_priority: x,
-            if_statement: y,
-            else_if_statement: z,
-            else_statement: v,
+            nodes: (x, y, z, v),
         },
     ))
 }
@@ -74,13 +71,7 @@ pub fn conditional_statement_body(s: &str) -> IResult<&str, ConditionalStatement
     let (s, _) = symbol(")")(s)?;
     let (s, y) = statement_or_null(s)?;
 
-    Ok((
-        s,
-        ConditionalStatementBody {
-            predicate: x,
-            statement: y,
-        },
-    ))
+    Ok((s, ConditionalStatementBody { nodes: (x, y) }))
 }
 
 pub fn unique_priority(s: &str) -> IResult<&str, UniquePriority> {
@@ -92,8 +83,8 @@ pub fn unique_priority(s: &str) -> IResult<&str, UniquePriority> {
 }
 
 pub fn cond_predicate(s: &str) -> IResult<&str, CondPredicate> {
-    let (s, pattern) = separated_nonempty_list(symbol("&&&"), expression_or_cond_pattern)(s)?;
-    Ok((s, CondPredicate { pattern }))
+    let (s, x) = separated_nonempty_list(symbol("&&&"), expression_or_cond_pattern)(s)?;
+    Ok((s, CondPredicate { nodes: (x,) }))
 }
 
 pub fn expression_or_cond_pattern(s: &str) -> IResult<&str, ExpressionOrCondPattern> {
@@ -107,11 +98,5 @@ pub fn cond_pattern(s: &str) -> IResult<&str, CondPattern> {
     let (s, x) = expression(s)?;
     let (s, _) = symbol("matches")(s)?;
     let (s, y) = pattern(s)?;
-    Ok((
-        s,
-        CondPattern {
-            expression: x,
-            pattern: y,
-        },
-    ))
+    Ok((s, CondPattern { nodes: (x, y) }))
 }

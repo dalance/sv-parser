@@ -15,9 +15,11 @@ pub enum StatementOrNull<'a> {
 
 #[derive(Debug)]
 pub struct Statement<'a> {
-    pub identifier: Option<Identifier<'a>>,
-    pub attribute: Vec<AttributeInstance<'a>>,
-    pub item: StatementItem<'a>,
+    pub nodes: (
+        Option<BlockIdentifier<'a>>,
+        Vec<AttributeInstance<'a>>,
+        StatementItem<'a>,
+    ),
 }
 
 #[derive(Debug)]
@@ -44,6 +46,22 @@ pub enum StatementItem<'a> {
     ExpectPropertyStatement(Box<ExpectPropertyStatement<'a>>),
 }
 
+#[derive(Debug)]
+pub struct FunctionStatement<'a> {
+    pub nodes: (Statement<'a>,),
+}
+
+#[derive(Debug)]
+pub enum FunctionStatementOrNull<'a> {
+    Statement(FunctionStatement<'a>),
+    Attribute(Vec<AttributeInstance<'a>>),
+}
+
+#[derive(Debug)]
+pub struct VariableIdentifierList<'a> {
+    pub nodes: (Vec<VariableIdentifier<'a>>,),
+}
+
 // -----------------------------------------------------------------------------
 
 pub fn statement_or_null(s: &str) -> IResult<&str, StatementOrNull> {
@@ -59,14 +77,7 @@ pub fn statement(s: &str) -> IResult<&str, Statement> {
     let (s, x) = opt(terminated(block_identifier, symbol(":")))(s)?;
     let (s, y) = many0(attribute_instance)(s)?;
     let (s, z) = statement_item(s)?;
-    Ok((
-        s,
-        Statement {
-            identifier: x,
-            attribute: y,
-            item: z,
-        },
-    ))
+    Ok((s, Statement { nodes: (x, y, z) }))
 }
 
 pub fn statement_item(s: &str) -> IResult<&str, StatementItem> {
@@ -129,14 +140,23 @@ pub fn statement_item(s: &str) -> IResult<&str, StatementItem> {
     ))(s)
 }
 
-pub fn function_statement(s: &str) -> IResult<&str, Statement> {
-    statement(s)
+pub fn function_statement(s: &str) -> IResult<&str, FunctionStatement> {
+    let (s, x) = statement(s)?;
+    Ok((s, FunctionStatement { nodes: (x,) }))
 }
 
-pub fn function_statement_or_null(s: &str) -> IResult<&str, StatementOrNull> {
-    statement_or_null(s)
+pub fn function_statement_or_null(s: &str) -> IResult<&str, FunctionStatementOrNull> {
+    alt((
+        map(function_statement, |x| {
+            FunctionStatementOrNull::Statement(x)
+        }),
+        map(terminated(many0(attribute_instance), symbol(";")), |x| {
+            FunctionStatementOrNull::Attribute(x)
+        }),
+    ))(s)
 }
 
-pub fn variable_identifier_list(s: &str) -> IResult<&str, Vec<Identifier>> {
-    separated_nonempty_list(symbol(","), variable_identifier)(s)
+pub fn variable_identifier_list(s: &str) -> IResult<&str, VariableIdentifierList> {
+    let (s, x) = separated_nonempty_list(symbol(","), variable_identifier)(s)?;
+    Ok((s, VariableIdentifierList { nodes: (x,) }))
 }

@@ -9,7 +9,7 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub struct StringLiteral<'a> {
-    pub raw: &'a str,
+    pub nodes: (&'a str,),
 }
 
 // -----------------------------------------------------------------------------
@@ -46,7 +46,7 @@ pub fn string_literal_impl(s: &str) -> IResult<&str, StringLiteral> {
 
     let raw = raw.unwrap();
 
-    Ok((s, StringLiteral { raw }))
+    Ok((s, StringLiteral { nodes: (raw,) }))
 }
 
 // -----------------------------------------------------------------------------

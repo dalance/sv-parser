@@ -32,45 +32,32 @@ pub enum RealNumber<'a> {
 
 #[derive(Debug)]
 pub struct DecimalNumber<'a> {
-    pub size: Option<&'a str>,
-    pub decimal_base: &'a str,
-    pub decimal_value: &'a str,
+    pub nodes: (Option<&'a str>, &'a str, &'a str),
 }
 
 #[derive(Debug)]
 pub struct BinaryNumber<'a> {
-    pub size: Option<&'a str>,
-    pub binary_base: &'a str,
-    pub binary_value: &'a str,
+    pub nodes: (Option<&'a str>, &'a str, &'a str),
 }
 
 #[derive(Debug)]
 pub struct OctalNumber<'a> {
-    pub size: Option<&'a str>,
-    pub octal_base: &'a str,
-    pub octal_value: &'a str,
+    pub nodes: (Option<&'a str>, &'a str, &'a str),
 }
 
 #[derive(Debug)]
 pub struct HexNumber<'a> {
-    pub size: Option<&'a str>,
-    pub hex_base: &'a str,
-    pub hex_value: &'a str,
+    pub nodes: (Option<&'a str>, &'a str, &'a str),
 }
 
 #[derive(Debug)]
 pub struct FixedPointNumber<'a> {
-    pub integer_value: &'a str,
-    pub fraction_value: &'a str,
+    pub nodes: (&'a str, &'a str),
 }
 
 #[derive(Debug)]
 pub struct FloatingPointNumber<'a> {
-    pub integer_value: &'a str,
-    pub fraction_value: Option<&'a str>,
-    pub exponent: &'a str,
-    pub sign: Option<&'a str>,
-    pub exponent_value: &'a str,
+    pub nodes: (&'a str, Option<&'a str>, &'a str, Option<&'a str>, &'a str),
 }
 
 // -----------------------------------------------------------------------------
@@ -98,11 +85,7 @@ pub fn decimal_number(s: &str) -> IResult<&str, IntegralNumber> {
     ))(s)?;
     Ok((
         s,
-        IntegralNumber::DecimalNumber(DecimalNumber {
-            size: x,
-            decimal_base: y,
-            decimal_value: z,
-        }),
+        IntegralNumber::DecimalNumber(DecimalNumber { nodes: (x, y, z) }),
     ))
 }
 
@@ -115,11 +98,7 @@ pub fn binary_number(s: &str) -> IResult<&str, IntegralNumber> {
     let (s, (x, y, z)) = tuple((opt(size), binary_base, binary_value))(s)?;
     Ok((
         s,
-        IntegralNumber::BinaryNumber(BinaryNumber {
-            size: x,
-            binary_base: y,
-            binary_value: z,
-        }),
+        IntegralNumber::BinaryNumber(BinaryNumber { nodes: (x, y, z) }),
     ))
 }
 
@@ -127,24 +106,13 @@ pub fn octal_number(s: &str) -> IResult<&str, IntegralNumber> {
     let (s, (x, y, z)) = tuple((opt(size), octal_base, octal_value))(s)?;
     Ok((
         s,
-        IntegralNumber::OctalNumber(OctalNumber {
-            size: x,
-            octal_base: y,
-            octal_value: z,
-        }),
+        IntegralNumber::OctalNumber(OctalNumber { nodes: (x, y, z) }),
     ))
 }
 
 pub fn hex_number(s: &str) -> IResult<&str, IntegralNumber> {
     let (s, (x, y, z)) = tuple((opt(size), hex_base, hex_value))(s)?;
-    Ok((
-        s,
-        IntegralNumber::HexNumber(HexNumber {
-            size: x,
-            hex_base: y,
-            hex_value: z,
-        }),
-    ))
+    Ok((s, IntegralNumber::HexNumber(HexNumber { nodes: (x, y, z) })))
 }
 
 pub fn size(s: &str) -> IResult<&str, &str> {
@@ -167,10 +135,7 @@ pub fn fixed_point_number(s: &str) -> IResult<&str, RealNumber> {
     let (s, (x, _, y)) = tuple((unsigned_number, symbol("."), unsigned_number))(s)?;
     Ok((
         s,
-        RealNumber::FixedPointNumber(FixedPointNumber {
-            integer_value: x,
-            fraction_value: y,
-        }),
+        RealNumber::FixedPointNumber(FixedPointNumber { nodes: (x, y) }),
     ))
 }
 
@@ -184,11 +149,7 @@ pub fn floating_point_number(s: &str) -> IResult<&str, RealNumber> {
     Ok((
         s,
         RealNumber::FloatingPointNumber(FloatingPointNumber {
-            integer_value: x,
-            fraction_value: y,
-            exponent: z,
-            sign: v,
-            exponent_value: w,
+            nodes: (x, y, z, v, w),
         }),
     ))
 }

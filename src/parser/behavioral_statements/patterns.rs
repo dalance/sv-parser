@@ -9,12 +9,12 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub enum Pattern<'a> {
-    VariableIdentifier(Box<Identifier<'a>>),
+    VariableIdentifier(Box<VariableIdentifier<'a>>),
     Asterisk,
     ConstantExpression(Box<ConstantExpression<'a>>),
-    Tagged(Box<(Identifier<'a>, Option<Pattern<'a>>)>),
+    Tagged(Box<(MemberIdentifier<'a>, Option<Pattern<'a>>)>),
     Pattern(Box<Vec<Pattern<'a>>>),
-    MemberPattern(Box<Vec<(Identifier<'a>, Pattern<'a>)>>),
+    MemberPattern(Box<Vec<(MemberIdentifier<'a>, Pattern<'a>)>>),
 }
 
 #[derive(Debug)]
@@ -27,7 +27,7 @@ pub enum AssignmentPattern<'a> {
 
 #[derive(Debug)]
 pub enum StructurePatternKey<'a> {
-    Identifier(Identifier<'a>),
+    Identifier(MemberIdentifier<'a>),
     PatternKey(AssignmentPatternKey<'a>),
 }
 
@@ -45,26 +45,28 @@ pub enum AssignmentPatternKey<'a> {
 
 #[derive(Debug)]
 pub struct AssignmentPatternExpression<'a> {
-    pub r#type: Option<AssignmentPatternExpressionType<'a>>,
-    pub pattern: AssignmentPattern<'a>,
+    pub nodes: (
+        Option<AssignmentPatternExpressionType<'a>>,
+        AssignmentPattern<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub enum AssignmentPatternExpressionType<'a> {
-    Type(ScopedIdentifier<'a>),
-    Parameter(ScopedIdentifier<'a>),
-    IntegerAtom(IntegerAtomType<'a>),
+    Type(PsTypeIdentifier<'a>),
+    Parameter(PsParameterIdentifier<'a>),
+    IntegerAtom(IntegerAtomType),
     TypeReference(TypeReference<'a>),
 }
 
 #[derive(Debug)]
 pub struct AssignmentPatternNetLvalue<'a> {
-    pub lvalue: Vec<NetLvalue<'a>>,
+    pub nodes: (Vec<NetLvalue<'a>>,),
 }
 
 #[derive(Debug)]
 pub struct AssignmentPatternVariableLvalue<'a> {
-    pub lvalue: Vec<VariableLvalue<'a>>,
+    pub nodes: (Vec<VariableLvalue<'a>>,),
 }
 
 // -----------------------------------------------------------------------------
@@ -152,13 +154,7 @@ pub fn assignment_pattern_key(s: &str) -> IResult<&str, AssignmentPatternKey> {
 pub fn assignment_pattern_expression(s: &str) -> IResult<&str, AssignmentPatternExpression> {
     let (s, x) = opt(assignment_pattern_expression_type)(s)?;
     let (s, y) = assignment_pattern(s)?;
-    Ok((
-        s,
-        AssignmentPatternExpression {
-            r#type: x,
-            pattern: y,
-        },
-    ))
+    Ok((s, AssignmentPatternExpression { nodes: (x, y) }))
 }
 
 pub fn assignment_pattern_expression_type(
@@ -188,14 +184,14 @@ pub fn constant_assignment_pattern_expression(
 
 pub fn assignment_pattern_net_lvalue(s: &str) -> IResult<&str, AssignmentPatternNetLvalue> {
     let (s, x) = apostrophe_brace(separated_nonempty_list(symbol(","), net_lvalue))(s)?;
-    Ok((s, AssignmentPatternNetLvalue { lvalue: x }))
+    Ok((s, AssignmentPatternNetLvalue { nodes: (x,) }))
 }
 
 pub fn assignment_pattern_variable_lvalue(
     s: &str,
 ) -> IResult<&str, AssignmentPatternVariableLvalue> {
     let (s, x) = apostrophe_brace(separated_nonempty_list(symbol(","), variable_lvalue))(s)?;
-    Ok((s, AssignmentPatternVariableLvalue { lvalue: x }))
+    Ok((s, AssignmentPatternVariableLvalue { nodes: (x,) }))
 }
 
 // -----------------------------------------------------------------------------

@@ -19,40 +19,41 @@ pub enum LoopStatement<'a> {
 
 #[derive(Debug)]
 pub struct LoopStatementForever<'a> {
-    pub statement: StatementOrNull<'a>,
+    pub nodes: (StatementOrNull<'a>,),
 }
 
 #[derive(Debug)]
 pub struct LoopStatementRepeat<'a> {
-    pub expression: Expression<'a>,
-    pub statement: StatementOrNull<'a>,
+    pub nodes: (Expression<'a>, StatementOrNull<'a>),
 }
 
 #[derive(Debug)]
 pub struct LoopStatementWhile<'a> {
-    pub expression: Expression<'a>,
-    pub statement: StatementOrNull<'a>,
+    pub nodes: (Expression<'a>, StatementOrNull<'a>),
 }
 
 #[derive(Debug)]
 pub struct LoopStatementFor<'a> {
-    pub initilization: Option<ForInitialization<'a>>,
-    pub expression: Option<Expression<'a>>,
-    pub step: Option<Vec<ForStepAssignment<'a>>>,
-    pub statement: StatementOrNull<'a>,
+    pub nodes: (
+        Option<ForInitialization<'a>>,
+        Option<Expression<'a>>,
+        Option<Vec<ForStepAssignment<'a>>>,
+        StatementOrNull<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct LoopStatementDoWhile<'a> {
-    pub statement: StatementOrNull<'a>,
-    pub expression: Expression<'a>,
+    pub nodes: (StatementOrNull<'a>, Expression<'a>),
 }
 
 #[derive(Debug)]
 pub struct LoopStatementForeach<'a> {
-    pub identifier: ScopedIdentifier<'a>,
-    pub variable: Vec<Option<Identifier<'a>>>,
-    pub statement: Statement<'a>,
+    pub nodes: (
+        PsOrHierarchicalArrayIdentifier<'a>,
+        LoopVariables<'a>,
+        Statement<'a>,
+    ),
 }
 
 #[derive(Debug)]
@@ -63,16 +64,26 @@ pub enum ForInitialization<'a> {
 
 #[derive(Debug)]
 pub struct ForVariableDeclaration<'a> {
-    pub var: bool,
-    pub r#type: DataType<'a>,
-    pub declaration: Vec<(Identifier<'a>, Expression<'a>)>,
+    pub nodes: (
+        Option<Var>,
+        DataType<'a>,
+        Vec<(VariableIdentifier<'a>, Expression<'a>)>,
+    ),
 }
+
+#[derive(Debug)]
+pub struct Var {}
 
 #[derive(Debug)]
 pub enum ForStepAssignment<'a> {
     Operator(OperatorAssignment<'a>),
     IncOrDec(IncOrDecDeclaration<'a>),
     Subroutine(SubroutineCall<'a>),
+}
+
+#[derive(Debug)]
+pub struct LoopVariables<'a> {
+    pub nodes: (Vec<Option<IndexVariableIdentifier<'a>>>,),
 }
 
 // -----------------------------------------------------------------------------
@@ -93,7 +104,7 @@ pub fn loop_statement_forever(s: &str) -> IResult<&str, LoopStatement> {
     let (s, x) = statement_or_null(s)?;
     Ok((
         s,
-        LoopStatement::Forever(LoopStatementForever { statement: x }),
+        LoopStatement::Forever(LoopStatementForever { nodes: (x,) }),
     ))
 }
 
@@ -105,10 +116,7 @@ pub fn loop_statement_repeat(s: &str) -> IResult<&str, LoopStatement> {
     let (s, y) = statement_or_null(s)?;
     Ok((
         s,
-        LoopStatement::Repeat(LoopStatementRepeat {
-            expression: x,
-            statement: y,
-        }),
+        LoopStatement::Repeat(LoopStatementRepeat { nodes: (x, y) }),
     ))
 }
 
@@ -120,10 +128,7 @@ pub fn loop_statement_while(s: &str) -> IResult<&str, LoopStatement> {
     let (s, y) = statement_or_null(s)?;
     Ok((
         s,
-        LoopStatement::While(LoopStatementWhile {
-            expression: x,
-            statement: y,
-        }),
+        LoopStatement::While(LoopStatementWhile { nodes: (x, y) }),
     ))
 }
 
@@ -140,10 +145,7 @@ pub fn loop_statement_for(s: &str) -> IResult<&str, LoopStatement> {
     Ok((
         s,
         LoopStatement::For(LoopStatementFor {
-            initilization: x,
-            expression: y,
-            step: z,
-            statement: v,
+            nodes: (x, y, z, v),
         }),
     ))
 }
@@ -158,10 +160,7 @@ pub fn loop_statement_do_while(s: &str) -> IResult<&str, LoopStatement> {
     let (s, _) = symbol(";")(s)?;
     Ok((
         s,
-        LoopStatement::DoWhile(LoopStatementDoWhile {
-            statement: x,
-            expression: y,
-        }),
+        LoopStatement::DoWhile(LoopStatementDoWhile { nodes: (x, y) }),
     ))
 }
 
@@ -176,11 +175,7 @@ pub fn loop_statement_foreach(s: &str) -> IResult<&str, LoopStatement> {
     let (s, z) = statement(s)?;
     Ok((
         s,
-        LoopStatement::Foreach(LoopStatementForeach {
-            identifier: x,
-            variable: y,
-            statement: z,
-        }),
+        LoopStatement::Foreach(LoopStatementForeach { nodes: (x, y, z) }),
     ))
 }
 
@@ -206,9 +201,7 @@ pub fn for_variable_declaration(s: &str) -> IResult<&str, ForVariableDeclaration
     Ok((
         s,
         ForVariableDeclaration {
-            var: x.is_some(),
-            r#type: y,
-            declaration: z,
+            nodes: (x.map(|_| Var {}), y, z),
         },
     ))
 }
@@ -227,8 +220,9 @@ pub fn for_step_assignment(s: &str) -> IResult<&str, ForStepAssignment> {
     ))(s)
 }
 
-pub fn loop_variables(s: &str) -> IResult<&str, Vec<Option<Identifier>>> {
-    separated_nonempty_list(symbol(","), opt(index_variable_identifier))(s)
+pub fn loop_variables(s: &str) -> IResult<&str, LoopVariables> {
+    let (s, x) = separated_nonempty_list(symbol(","), opt(index_variable_identifier))(s)?;
+    Ok((s, LoopVariables { nodes: (x,) }))
 }
 
 // -----------------------------------------------------------------------------

@@ -9,8 +9,7 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub struct ProceduralTimingControlStatement<'a> {
-    pub control: ProceduralTimingControl<'a>,
-    pub statement: StatementOrNull<'a>,
+    pub nodes: (ProceduralTimingControl<'a>, StatementOrNull<'a>),
 }
 
 #[derive(Debug)]
@@ -22,8 +21,7 @@ pub enum DelayOrEventControl<'a> {
 
 #[derive(Debug)]
 pub struct DelayOrEventControlRepeat<'a> {
-    pub expression: Expression<'a>,
-    pub control: EventControl<'a>,
+    pub nodes: (Expression<'a>, EventControl<'a>),
 }
 
 #[derive(Debug)]
@@ -34,10 +32,10 @@ pub enum DelayControl<'a> {
 
 #[derive(Debug)]
 pub enum EventControl<'a> {
-    EventIdentifier(HierarchicalIdentifier<'a>),
+    EventIdentifier(HierarchicalEventIdentifier<'a>),
     EventExpression(EventExpression<'a>),
     Asterisk,
-    SequenceIdentifier(ScopedIdentifier<'a>),
+    SequenceIdentifier(PsOrHierarchicalSequenceIdentifier<'a>),
 }
 
 #[derive(Debug)]
@@ -51,15 +49,16 @@ pub enum EventExpression<'a> {
 
 #[derive(Debug)]
 pub struct EventExpressionExpression<'a> {
-    pub edge: Option<EdgeIdentifier<'a>>,
-    pub expression: Expression<'a>,
-    pub iff: Option<Expression<'a>>,
+    pub nodes: (
+        Option<EdgeIdentifier<'a>>,
+        Expression<'a>,
+        Option<Expression<'a>>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct EventExpressionSequence<'a> {
-    pub instance: SequenceInstance<'a>,
-    pub iff: Option<Expression<'a>>,
+    pub nodes: (SequenceInstance<'a>, Option<Expression<'a>>),
 }
 
 #[derive(Debug)]
@@ -78,7 +77,7 @@ pub enum JumpStatement<'a> {
 
 #[derive(Debug)]
 pub struct JumpStatementReturn<'a> {
-    pub expression: Option<Expression<'a>>,
+    pub nodes: (Option<Expression<'a>>,),
 }
 
 #[derive(Debug)]
@@ -90,14 +89,12 @@ pub enum WaitStatement<'a> {
 
 #[derive(Debug)]
 pub struct WaitStatementWait<'a> {
-    pub expression: Expression<'a>,
-    pub statement: StatementOrNull<'a>,
+    pub nodes: (Expression<'a>, StatementOrNull<'a>),
 }
 
 #[derive(Debug)]
 pub struct WaitStatementOrder<'a> {
-    pub identifier: Vec<HierarchicalIdentifier<'a>>,
-    pub block: ActionBlock<'a>,
+    pub nodes: (Vec<HierarchicalIdentifier<'a>>, ActionBlock<'a>),
 }
 
 #[derive(Debug)]
@@ -108,19 +105,21 @@ pub enum EventTrigger<'a> {
 
 #[derive(Debug)]
 pub struct EventTriggerNamed<'a> {
-    pub identifier: HierarchicalIdentifier<'a>,
+    pub nodes: (HierarchicalEventIdentifier<'a>,),
 }
 
 #[derive(Debug)]
 pub struct EventTriggerNonblocking<'a> {
-    pub control: Option<DelayOrEventControl<'a>>,
-    pub identifier: HierarchicalIdentifier<'a>,
+    pub nodes: (
+        Option<DelayOrEventControl<'a>>,
+        HierarchicalEventIdentifier<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub enum DisableStatement<'a> {
-    Task(HierarchicalIdentifier<'a>),
-    Block(HierarchicalIdentifier<'a>),
+    Task(HierarchicalTaskIdentifier<'a>),
+    Block(HierarchicalBlockIdentifier<'a>),
     Fork,
 }
 
@@ -131,13 +130,7 @@ pub fn procedural_timing_control_statement(
 ) -> IResult<&str, ProceduralTimingControlStatement> {
     let (s, x) = procedural_timing_control(s)?;
     let (s, y) = statement_or_null(s)?;
-    Ok((
-        s,
-        ProceduralTimingControlStatement {
-            control: x,
-            statement: y,
-        },
-    ))
+    Ok((s, ProceduralTimingControlStatement { nodes: (x, y) }))
 }
 
 pub fn delay_or_event_control(s: &str) -> IResult<&str, DelayOrEventControl> {
@@ -156,10 +149,7 @@ pub fn delay_or_event_control_repeat(s: &str) -> IResult<&str, DelayOrEventContr
     let (s, y) = event_control(s)?;
     Ok((
         s,
-        DelayOrEventControl::Repeat(DelayOrEventControlRepeat {
-            expression: x,
-            control: y,
-        }),
+        DelayOrEventControl::Repeat(DelayOrEventControlRepeat { nodes: (x, y) }),
     ))
 }
 
@@ -231,11 +221,7 @@ pub fn event_expression_expression(s: &str) -> IResult<&str, EventExpression> {
     let (s, z) = opt(preceded(symbol("iff"), expression))(s)?;
     Ok((
         s,
-        EventExpression::Expression(Box::new(EventExpressionExpression {
-            edge: x,
-            expression: y,
-            iff: z,
-        })),
+        EventExpression::Expression(Box::new(EventExpressionExpression { nodes: (x, y, z) })),
     ))
 }
 
@@ -244,10 +230,7 @@ pub fn event_expression_sequence(s: &str) -> IResult<&str, EventExpression> {
     let (s, y) = opt(preceded(symbol("iff"), expression))(s)?;
     Ok((
         s,
-        EventExpression::Sequence(Box::new(EventExpressionSequence {
-            instance: x,
-            iff: y,
-        })),
+        EventExpression::Sequence(Box::new(EventExpressionSequence { nodes: (x, y) })),
     ))
 }
 
@@ -294,7 +277,7 @@ pub fn jump_statement_return(s: &str) -> IResult<&str, JumpStatement> {
     let (s, _) = symbol(";")(s)?;
     Ok((
         s,
-        JumpStatement::Return(JumpStatementReturn { expression: x }),
+        JumpStatement::Return(JumpStatementReturn { nodes: (x,) }),
     ))
 }
 
@@ -322,13 +305,7 @@ pub fn wait_statement_wait(s: &str) -> IResult<&str, WaitStatement> {
     let (s, _) = symbol("wait")(s)?;
     let (s, x) = paren(expression)(s)?;
     let (s, y) = statement_or_null(s)?;
-    Ok((
-        s,
-        WaitStatement::Wait(WaitStatementWait {
-            expression: x,
-            statement: y,
-        }),
-    ))
+    Ok((s, WaitStatement::Wait(WaitStatementWait { nodes: (x, y) })))
 }
 
 pub fn wait_statement_fork(s: &str) -> IResult<&str, WaitStatement> {
@@ -347,10 +324,7 @@ pub fn wait_statement_order(s: &str) -> IResult<&str, WaitStatement> {
     let (s, y) = action_block(s)?;
     Ok((
         s,
-        WaitStatement::Order(WaitStatementOrder {
-            identifier: x,
-            block: y,
-        }),
+        WaitStatement::Order(WaitStatementOrder { nodes: (x, y) }),
     ))
 }
 
@@ -362,7 +336,7 @@ pub fn event_trigger_named(s: &str) -> IResult<&str, EventTrigger> {
     let (s, _) = symbol("->")(s)?;
     let (s, x) = hierarchical_event_identifier(s)?;
     let (s, _) = symbol(";")(s)?;
-    Ok((s, EventTrigger::Named(EventTriggerNamed { identifier: x })))
+    Ok((s, EventTrigger::Named(EventTriggerNamed { nodes: (x,) })))
 }
 
 pub fn event_trigger_nonblocking(s: &str) -> IResult<&str, EventTrigger> {
@@ -372,10 +346,7 @@ pub fn event_trigger_nonblocking(s: &str) -> IResult<&str, EventTrigger> {
     let (s, _) = symbol(";")(s)?;
     Ok((
         s,
-        EventTrigger::Nonblocking(EventTriggerNonblocking {
-            control: x,
-            identifier: y,
-        }),
+        EventTrigger::Nonblocking(EventTriggerNonblocking { nodes: (x, y) }),
     ))
 }
 

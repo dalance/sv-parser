@@ -8,13 +8,12 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub struct InitialConstruct<'a> {
-    pub statement: StatementOrNull<'a>,
+    pub nodes: (StatementOrNull<'a>,),
 }
 
 #[derive(Debug)]
 pub struct AlwaysConstruct<'a> {
-    pub keyword: AlwaysKeyword,
-    pub statement: Statement<'a>,
+    pub nodes: (AlwaysKeyword, Statement<'a>),
 }
 
 #[derive(Debug)]
@@ -27,7 +26,7 @@ pub enum AlwaysKeyword {
 
 #[derive(Debug)]
 pub struct FinalConstruct<'a> {
-    pub statement: Statement<'a>,
+    pub nodes: (FunctionStatement<'a>,),
 }
 
 #[derive(Debug)]
@@ -40,37 +39,36 @@ pub enum BlockingAssignment<'a> {
 
 #[derive(Debug)]
 pub struct BlockingAssignmentVariable<'a> {
-    pub lvalue: VariableLvalue<'a>,
-    pub control: DelayOrEventControl<'a>,
-    pub rvalue: Expression<'a>,
+    pub nodes: (VariableLvalue<'a>, DelayOrEventControl<'a>, Expression<'a>),
 }
 
 #[derive(Debug)]
 pub struct BlockingAssignmentNonrangeVariable<'a> {
-    pub lvalue: NonrangeVariableLvalue<'a>,
-    pub rvalue: DynamicArrayNew<'a>,
+    pub nodes: (NonrangeVariableLvalue<'a>, DynamicArrayNew<'a>),
 }
 
 #[derive(Debug)]
 pub struct BlockingAssignmentHierarchicalVariable<'a> {
-    pub scope: Option<Scope<'a>>,
-    pub lvalue: HierarchicalIdentifier<'a>,
-    pub select: Select<'a>,
-    pub rvalue: ClassNew<'a>,
+    pub nodes: (
+        Option<ImplicitClassHandleOrClassScopeOrPackageScope<'a>>,
+        HierarchicalVariableIdentifier<'a>,
+        Select<'a>,
+        ClassNew<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct OperatorAssignment<'a> {
-    pub lvalue: VariableLvalue<'a>,
-    pub operator: Operator<'a>,
-    pub rvalue: Expression<'a>,
+    pub nodes: (VariableLvalue<'a>, Operator<'a>, Expression<'a>),
 }
 
 #[derive(Debug)]
 pub struct NonblockingAssignment<'a> {
-    pub lvalue: VariableLvalue<'a>,
-    pub control: Option<DelayOrEventControl<'a>>,
-    pub rvalue: Expression<'a>,
+    pub nodes: (
+        VariableLvalue<'a>,
+        Option<DelayOrEventControl<'a>>,
+        Expression<'a>,
+    ),
 }
 
 #[derive(Debug)]
@@ -85,8 +83,7 @@ pub enum ProceduralContinuousAssignment<'a> {
 
 #[derive(Debug)]
 pub struct VariableAssignment<'a> {
-    pub lvalue: VariableLvalue<'a>,
-    pub rvalue: Expression<'a>,
+    pub nodes: (VariableLvalue<'a>, Expression<'a>),
 }
 
 // -----------------------------------------------------------------------------
@@ -94,19 +91,13 @@ pub struct VariableAssignment<'a> {
 pub fn initial_construct(s: &str) -> IResult<&str, InitialConstruct> {
     let (s, _) = symbol("initial")(s)?;
     let (s, x) = statement_or_null(s)?;
-    Ok((s, InitialConstruct { statement: x }))
+    Ok((s, InitialConstruct { nodes: (x,) }))
 }
 
 pub fn always_construct(s: &str) -> IResult<&str, AlwaysConstruct> {
     let (s, x) = always_keyword(s)?;
     let (s, y) = statement(s)?;
-    Ok((
-        s,
-        AlwaysConstruct {
-            keyword: x,
-            statement: y,
-        },
-    ))
+    Ok((s, AlwaysConstruct { nodes: (x, y) }))
 }
 
 pub fn always_keyword(s: &str) -> IResult<&str, AlwaysKeyword> {
@@ -121,7 +112,7 @@ pub fn always_keyword(s: &str) -> IResult<&str, AlwaysKeyword> {
 pub fn final_construct(s: &str) -> IResult<&str, FinalConstruct> {
     let (s, _) = symbol("final")(s)?;
     let (s, x) = function_statement(s)?;
-    Ok((s, FinalConstruct { statement: x }))
+    Ok((s, FinalConstruct { nodes: (x,) }))
 }
 
 pub fn blocking_assignment(s: &str) -> IResult<&str, BlockingAssignment> {
@@ -140,11 +131,7 @@ pub fn blocking_assignment_variable(s: &str) -> IResult<&str, BlockingAssignment
     let (s, z) = expression(s)?;
     Ok((
         s,
-        BlockingAssignment::Variable(BlockingAssignmentVariable {
-            lvalue: x,
-            control: y,
-            rvalue: z,
-        }),
+        BlockingAssignment::Variable(BlockingAssignmentVariable { nodes: (x, y, z) }),
     ))
 }
 
@@ -154,19 +141,12 @@ pub fn blocking_assignment_nonrange_variable(s: &str) -> IResult<&str, BlockingA
     let (s, y) = dynamic_array_new(s)?;
     Ok((
         s,
-        BlockingAssignment::NonrangeVariable(BlockingAssignmentNonrangeVariable {
-            lvalue: x,
-            rvalue: y,
-        }),
+        BlockingAssignment::NonrangeVariable(BlockingAssignmentNonrangeVariable { nodes: (x, y) }),
     ))
 }
 
 pub fn blocking_assignment_hierarchical_variable(s: &str) -> IResult<&str, BlockingAssignment> {
-    let (s, x) = opt(alt((
-        terminated(implicit_class_handle, symbol(".")),
-        class_scope,
-        package_scope,
-    )))(s)?;
+    let (s, x) = opt(implicit_class_handle_or_class_scope_or_package_scope)(s)?;
     let (s, y) = hierarchical_variable_identifier(s)?;
     let (s, z) = select(s)?;
     let (s, _) = symbol("=")(s)?;
@@ -174,10 +154,7 @@ pub fn blocking_assignment_hierarchical_variable(s: &str) -> IResult<&str, Block
     Ok((
         s,
         BlockingAssignment::HierarchicalVariable(BlockingAssignmentHierarchicalVariable {
-            scope: x,
-            lvalue: y,
-            select: z,
-            rvalue: v,
+            nodes: (x, y, z, v),
         }),
     ))
 }
@@ -186,31 +163,24 @@ pub fn operator_assignment(s: &str) -> IResult<&str, OperatorAssignment> {
     let (s, x) = variable_lvalue(s)?;
     let (s, y) = assignment_operator(s)?;
     let (s, z) = expression(s)?;
-    Ok((
-        s,
-        OperatorAssignment {
-            lvalue: x,
-            operator: y,
-            rvalue: z,
-        },
-    ))
+    Ok((s, OperatorAssignment { nodes: (x, y, z) }))
 }
 
 pub fn assignment_operator(s: &str) -> IResult<&str, Operator> {
     alt((
-        map(symbol("="), |raw| Operator { raw }),
-        map(symbol("+="), |raw| Operator { raw }),
-        map(symbol("-="), |raw| Operator { raw }),
-        map(symbol("*="), |raw| Operator { raw }),
-        map(symbol("/="), |raw| Operator { raw }),
-        map(symbol("%="), |raw| Operator { raw }),
-        map(symbol("&="), |raw| Operator { raw }),
-        map(symbol("|="), |raw| Operator { raw }),
-        map(symbol("^="), |raw| Operator { raw }),
-        map(symbol("<<<="), |raw| Operator { raw }),
-        map(symbol(">>>="), |raw| Operator { raw }),
-        map(symbol("<<="), |raw| Operator { raw }),
-        map(symbol(">>="), |raw| Operator { raw }),
+        map(symbol("="), |x| Operator { nodes: (x,) }),
+        map(symbol("+="), |x| Operator { nodes: (x,) }),
+        map(symbol("-="), |x| Operator { nodes: (x,) }),
+        map(symbol("*="), |x| Operator { nodes: (x,) }),
+        map(symbol("/="), |x| Operator { nodes: (x,) }),
+        map(symbol("%="), |x| Operator { nodes: (x,) }),
+        map(symbol("&="), |x| Operator { nodes: (x,) }),
+        map(symbol("|="), |x| Operator { nodes: (x,) }),
+        map(symbol("^="), |x| Operator { nodes: (x,) }),
+        map(symbol("<<<="), |x| Operator { nodes: (x,) }),
+        map(symbol(">>>="), |x| Operator { nodes: (x,) }),
+        map(symbol("<<="), |x| Operator { nodes: (x,) }),
+        map(symbol(">>="), |x| Operator { nodes: (x,) }),
     ))(s)
 }
 
@@ -219,14 +189,7 @@ pub fn nonblocking_assignment(s: &str) -> IResult<&str, NonblockingAssignment> {
     let (s, _) = symbol("<=")(s)?;
     let (s, y) = opt(delay_or_event_control)(s)?;
     let (s, z) = expression(s)?;
-    Ok((
-        s,
-        NonblockingAssignment {
-            lvalue: x,
-            control: y,
-            rvalue: z,
-        },
-    ))
+    Ok((s, NonblockingAssignment { nodes: (x, y, z) }))
 }
 
 pub fn procedural_continuous_assignment(s: &str) -> IResult<&str, ProceduralContinuousAssignment> {
@@ -256,11 +219,5 @@ pub fn variable_assignment(s: &str) -> IResult<&str, VariableAssignment> {
     let (s, x) = variable_lvalue(s)?;
     let (s, _) = symbol("=")(s)?;
     let (s, y) = expression(s)?;
-    Ok((
-        s,
-        VariableAssignment {
-            lvalue: x,
-            rvalue: y,
-        },
-    ))
+    Ok((s, VariableAssignment { nodes: (x, y) }))
 }

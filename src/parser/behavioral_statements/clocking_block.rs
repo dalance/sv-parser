@@ -15,18 +15,25 @@ pub enum ClockingDeclaration<'a> {
 
 #[derive(Debug)]
 pub struct ClockingDeclarationLocal<'a> {
-    pub default: bool,
-    pub beg_identifier: Option<Identifier<'a>>,
-    pub event: ClockingEvent<'a>,
-    pub item: Vec<ClockingItem<'a>>,
-    pub end_identifier: Option<Identifier<'a>>,
+    pub nodes: (
+        Option<Default>,
+        Option<ClockingIdentifier<'a>>,
+        ClockingEvent<'a>,
+        Vec<ClockingItem<'a>>,
+        Option<ClockingIdentifier<'a>>,
+    ),
 }
 
 #[derive(Debug)]
+pub struct Default {}
+
+#[derive(Debug)]
 pub struct ClockingDeclarationGlobal<'a> {
-    pub beg_identifier: Option<Identifier<'a>>,
-    pub event: ClockingEvent<'a>,
-    pub end_identifier: Option<Identifier<'a>>,
+    pub nodes: (
+        Option<ClockingIdentifier<'a>>,
+        ClockingEvent<'a>,
+        Option<ClockingIdentifier<'a>>,
+    ),
 }
 
 #[derive(Debug)]
@@ -44,14 +51,12 @@ pub enum ClockingItem<'a> {
 
 #[derive(Debug)]
 pub struct ClockingItemDirection<'a> {
-    pub direction: ClockingDirection<'a>,
-    pub assign: Vec<ClockingDeclAssign<'a>>,
+    pub nodes: (ClockingDirection<'a>, Vec<ClockingDeclAssign<'a>>),
 }
 
 #[derive(Debug)]
 pub struct ClockingItemAssertion<'a> {
-    pub attribute: Vec<AttributeInstance<'a>>,
-    pub declaration: AssertionItemDeclaration<'a>,
+    pub nodes: (Vec<AttributeInstance<'a>>, AssertionItemDeclaration<'a>),
 }
 
 #[derive(Debug)]
@@ -71,8 +76,7 @@ pub enum ClockingDirection<'a> {
 
 #[derive(Debug)]
 pub struct ClockingDeclAssign<'a> {
-    pub identifier: Identifier<'a>,
-    pub expression: Option<Expression<'a>>,
+    pub nodes: (SignalIdentifier<'a>, Option<Expression<'a>>),
 }
 
 #[derive(Debug)]
@@ -83,9 +87,11 @@ pub enum ClockingSkew<'a> {
 
 #[derive(Debug)]
 pub struct ClockingDrive<'a> {
-    pub lvalue: (HierarchicalIdentifier<'a>, Select<'a>),
-    pub cycle_delay: Option<CycleDelay<'a>>,
-    pub rvalue: Expression<'a>,
+    pub nodes: (
+        (HierarchicalIdentifier<'a>, Select<'a>),
+        Option<CycleDelay<'a>>,
+        Expression<'a>,
+    ),
 }
 
 #[derive(Debug)]
@@ -113,11 +119,7 @@ pub fn clocking_declaration_local(s: &str) -> IResult<&str, ClockingDeclaration>
     Ok((
         s,
         ClockingDeclaration::Local(ClockingDeclarationLocal {
-            default: x.is_some(),
-            beg_identifier: y,
-            event: z,
-            item: v,
-            end_identifier: w,
+            nodes: (x.map(|_| Default {}), y, z, v, w),
         }),
     ))
 }
@@ -132,11 +134,7 @@ pub fn clocking_declaration_global(s: &str) -> IResult<&str, ClockingDeclaration
     let (s, z) = opt(preceded(symbol(":"), clocking_identifier))(s)?;
     Ok((
         s,
-        ClockingDeclaration::Global(ClockingDeclarationGlobal {
-            beg_identifier: x,
-            event: y,
-            end_identifier: z,
-        }),
+        ClockingDeclaration::Global(ClockingDeclarationGlobal { nodes: (x, y, z) }),
     ))
 }
 
@@ -171,10 +169,7 @@ pub fn clocking_item_direction(s: &str) -> IResult<&str, ClockingItem> {
     let (s, y) = list_of_clocking_decl_assign(s)?;
     Ok((
         s,
-        ClockingItem::Direction(ClockingItemDirection {
-            direction: x,
-            assign: y,
-        }),
+        ClockingItem::Direction(ClockingItemDirection { nodes: (x, y) }),
     ))
 }
 
@@ -183,10 +178,7 @@ pub fn clocking_item_assertion(s: &str) -> IResult<&str, ClockingItem> {
     let (s, y) = assertion_item_declaration(s)?;
     Ok((
         s,
-        ClockingItem::Assertion(ClockingItemAssertion {
-            attribute: x,
-            declaration: y,
-        }),
+        ClockingItem::Assertion(ClockingItemAssertion { nodes: (x, y) }),
     ))
 }
 
@@ -259,13 +251,7 @@ pub fn list_of_clocking_decl_assign(s: &str) -> IResult<&str, Vec<ClockingDeclAs
 pub fn clocking_decl_assign(s: &str) -> IResult<&str, ClockingDeclAssign> {
     let (s, x) = signal_identifier(s)?;
     let (s, y) = opt(preceded(symbol("="), expression))(s)?;
-    Ok((
-        s,
-        ClockingDeclAssign {
-            identifier: x,
-            expression: y,
-        },
-    ))
+    Ok((s, ClockingDeclAssign { nodes: (x, y) }))
 }
 
 pub fn clocking_skew(s: &str) -> IResult<&str, ClockingSkew> {
@@ -288,14 +274,7 @@ pub fn clocking_drive(s: &str) -> IResult<&str, ClockingDrive> {
     let (s, _) = symbol("=")(s)?;
     let (s, y) = opt(cycle_delay)(s)?;
     let (s, z) = expression(s)?;
-    Ok((
-        s,
-        ClockingDrive {
-            lvalue: x,
-            cycle_delay: y,
-            rvalue: z,
-        },
-    ))
+    Ok((s, ClockingDrive { nodes: (x, y, z) }))
 }
 
 pub fn cycle_delay(s: &str) -> IResult<&str, CycleDelay> {

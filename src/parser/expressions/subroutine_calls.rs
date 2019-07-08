@@ -9,18 +9,22 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub struct TfCall<'a> {
-    pub identifier: ScopedIdentifier<'a>,
-    pub attribute: Vec<AttributeInstance<'a>>,
-    pub argument: Option<ListOfArguments<'a>>,
+    pub nodes: (
+        PsOrHierarchicalTfIdentifier<'a>,
+        Vec<AttributeInstance<'a>>,
+        Option<ListOfArguments<'a>>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct SystemTfCall<'a> {
-    pub identifier: Identifier<'a>,
-    pub argument: Option<ListOfArguments<'a>>,
-    pub data_type: Option<DataType<'a>>,
-    pub expression: Option<Vec<Expression<'a>>>,
-    pub clocking_event: Option<ClockingEvent<'a>>,
+    pub nodes: (
+        SystemTfIdentifier<'a>,
+        Option<ListOfArguments<'a>>,
+        Option<DataType<'a>>,
+        Option<Vec<Expression<'a>>>,
+        Option<ClockingEvent<'a>>,
+    ),
 }
 
 #[derive(Debug)]
@@ -34,20 +38,21 @@ pub enum SubroutineCall<'a> {
 
 #[derive(Debug)]
 pub struct ListOfArguments<'a> {
-    pub unnamed: Vec<Expression<'a>>,
-    pub named: Vec<(Identifier<'a>, Option<Expression<'a>>)>,
+    pub nodes: (
+        Vec<Expression<'a>>,
+        Vec<(Identifier<'a>, Option<Expression<'a>>)>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct MethodCall<'a> {
-    pub root: MethodCallRoot<'a>,
-    pub body: MethodCallBody<'a>,
+    pub nodes: (MethodCallRoot<'a>, MethodCallBody<'a>),
 }
 
 #[derive(Debug)]
 pub enum MethodCallRoot<'a> {
     Primary(Primary<'a>),
-    ImplicitClassHandle(Scope<'a>),
+    ImplicitClassHandle(ImplicitClassHandle),
 }
 
 #[derive(Debug)]
@@ -59,30 +64,36 @@ pub enum MethodCallBody<'a> {
 
 #[derive(Debug)]
 pub struct MethodCallBodyUser<'a> {
-    pub identifier: Identifier<'a>,
-    pub attribute: Vec<AttributeInstance<'a>>,
-    pub argument: Option<ListOfArguments<'a>>,
+    pub nodes: (
+        MethodIdentifier<'a>,
+        Vec<AttributeInstance<'a>>,
+        Option<ListOfArguments<'a>>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct ArrayManipulationCall<'a> {
-    pub name: ArrayMethodName<'a>,
-    pub attribute: Vec<AttributeInstance<'a>>,
-    pub argument: Option<ListOfArguments<'a>>,
-    pub with: Option<Expression<'a>>,
+    pub nodes: (
+        ArrayMethodName<'a>,
+        Vec<AttributeInstance<'a>>,
+        Option<ListOfArguments<'a>>,
+        Option<Expression<'a>>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct RandomizeCall<'a> {
-    pub attribute: Vec<AttributeInstance<'a>>,
-    pub argument: Vec<Identifier<'a>>,
-    pub with: Vec<Identifier<'a>>,
-    pub constraint_block: Option<ConstraintBlock<'a>>,
+    pub nodes: (
+        Vec<AttributeInstance<'a>>,
+        VariableIdentifierList<'a>,
+        IdentifierList<'a>,
+        Option<ConstraintBlock<'a>>,
+    ),
 }
 
 #[derive(Debug)]
 pub enum ArrayMethodName<'a> {
-    Identifier(Identifier<'a>),
+    MethodIdentifier(MethodIdentifier<'a>),
     Unique,
     And,
     Or,
@@ -99,14 +110,7 @@ pub fn tf_call(s: &str) -> IResult<&str, TfCall> {
     let (s, x) = ps_or_hierarchical_tf_identifier(s)?;
     let (s, y) = many0(attribute_instance)(s)?;
     let (s, z) = opt(paren(list_of_arguments))(s)?;
-    Ok((
-        s,
-        TfCall {
-            identifier: x,
-            attribute: y,
-            argument: z,
-        },
-    ))
+    Ok((s, TfCall { nodes: (x, y, z) }))
 }
 
 pub fn system_tf_call(s: &str) -> IResult<&str, SystemTfCall> {
@@ -123,11 +127,7 @@ pub fn system_tf_call_list_of_arguments(s: &str) -> IResult<&str, SystemTfCall> 
     Ok((
         s,
         SystemTfCall {
-            identifier: x,
-            argument: y,
-            data_type: None,
-            expression: None,
-            clocking_event: None,
+            nodes: (x, y, None, None, None),
         },
     ))
 }
@@ -141,11 +141,7 @@ pub fn system_tf_call_data_type(s: &str) -> IResult<&str, SystemTfCall> {
     Ok((
         s,
         SystemTfCall {
-            identifier: x,
-            argument: None,
-            data_type: Some(y),
-            expression: Some(vec![z]),
-            clocking_event: None,
+            nodes: (x, None, Some(y), Some(vec![z]), None),
         },
     ))
 }
@@ -160,11 +156,7 @@ pub fn system_tf_call_clocking_event(s: &str) -> IResult<&str, SystemTfCall> {
     Ok((
         s,
         SystemTfCall {
-            identifier: x,
-            argument: None,
-            data_type: None,
-            expression: Some(y),
-            clocking_event: z,
+            nodes: (x, None, None, Some(y), z),
         },
     ))
 }
@@ -192,13 +184,7 @@ pub fn list_of_arguments(s: &str) -> IResult<&str, ListOfArguments> {
         symbol(","),
         pair(preceded(symbol("."), identifier), paren(opt(expression))),
     )(s)?;
-    Ok((
-        s,
-        ListOfArguments {
-            unnamed: x,
-            named: y,
-        },
-    ))
+    Ok((s, ListOfArguments { nodes: (x, y) }))
 }
 
 pub fn method_call(s: &str) -> IResult<&str, MethodCall> {
@@ -206,7 +192,7 @@ pub fn method_call(s: &str) -> IResult<&str, MethodCall> {
     let (s, _) = symbol(".")(s)?;
     let (s, y) = method_call_body(s)?;
 
-    Ok((s, MethodCall { root: x, body: y }))
+    Ok((s, MethodCall { nodes: (x, y) }))
 }
 
 pub fn method_call_body(s: &str) -> IResult<&str, MethodCallBody> {
@@ -219,11 +205,7 @@ pub fn method_call_body_user(s: &str) -> IResult<&str, MethodCallBody> {
     let (s, z) = opt(paren(list_of_arguments))(s)?;
     Ok((
         s,
-        MethodCallBody::User(MethodCallBodyUser {
-            identifier: x,
-            attribute: y,
-            argument: z,
-        }),
+        MethodCallBody::User(MethodCallBodyUser { nodes: (x, y, z) }),
     ))
 }
 
@@ -238,14 +220,11 @@ pub fn array_manipulation_call(s: &str) -> IResult<&str, ArrayManipulationCall> 
     let (s, x) = array_method_name(s)?;
     let (s, y) = many0(attribute_instance)(s)?;
     let (s, z) = opt(paren(list_of_arguments))(s)?;
-    let (s, w) = opt(preceded(symbol("with"), paren(expression)))(s)?;
+    let (s, v) = opt(preceded(symbol("with"), paren(expression)))(s)?;
     Ok((
         s,
         ArrayManipulationCall {
-            name: x,
-            attribute: y,
-            argument: z,
-            with: w,
+            nodes: (x, y, z, v),
         },
     ))
 }
@@ -255,26 +234,29 @@ pub fn randomize_call(s: &str) -> IResult<&str, RandomizeCall> {
     let (s, x) = many0(attribute_instance)(s)?;
     let (s, y) = opt(paren(opt(alt((
         variable_identifier_list,
-        map(symbol("null"), |_| vec![]),
+        map(symbol("null"), |_| VariableIdentifierList {
+            nodes: (vec![],),
+        }),
     )))))(s)?;
     let (s, z) = opt(tuple((
         symbol("with"),
         opt(paren(opt(identifier_list))),
         constraint_block,
     )))(s)?;
-    let y = if let Some(Some(y)) = y { y } else { vec![] };
-    let (z, w) = if let Some((_, Some(Some(z)), w)) = z {
-        (z, Some(w))
+    let y = if let Some(Some(y)) = y {
+        y
     } else {
-        (vec![], None)
+        VariableIdentifierList { nodes: (vec![],) }
+    };
+    let (z, v) = if let Some((_, Some(Some(z)), v)) = z {
+        (z, Some(v))
+    } else {
+        (IdentifierList { nodes: (vec![],) }, None)
     };
     Ok((
         s,
         RandomizeCall {
-            attribute: x,
-            argument: y,
-            with: z,
-            constraint_block: w,
+            nodes: (x, y, z, v),
         },
     ))
 }
@@ -294,7 +276,7 @@ pub fn array_method_name(s: &str) -> IResult<&str, ArrayMethodName> {
         map(symbol("and"), |_| ArrayMethodName::And),
         map(symbol("or"), |_| ArrayMethodName::Or),
         map(symbol("xor"), |_| ArrayMethodName::Xor),
-        map(method_identifier, |x| ArrayMethodName::Identifier(x)),
+        map(method_identifier, |x| ArrayMethodName::MethodIdentifier(x)),
     ))(s)
 }
 

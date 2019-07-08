@@ -15,27 +15,26 @@ pub enum ContinuousAssign<'a> {
 
 #[derive(Debug)]
 pub struct ContinuousAssignNet<'a> {
-    pub drive_strength: Option<DriveStrength<'a>>,
-    pub delay3: Option<Delay3<'a>>,
-    pub list: Vec<NetAssignment<'a>>,
+    pub nodes: (
+        Option<DriveStrength>,
+        Option<Delay3<'a>>,
+        Vec<NetAssignment<'a>>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct ContinuousAssignVariable<'a> {
-    pub delay_control: Option<DelayControl<'a>>,
-    pub list: Vec<VariableAssignment<'a>>,
+    pub nodes: (Option<DelayControl<'a>>, Vec<VariableAssignment<'a>>),
 }
 
 #[derive(Debug)]
 pub struct NetAlias<'a> {
-    pub lvalue: NetLvalue<'a>,
-    pub rvalue: Vec<NetLvalue<'a>>,
+    pub nodes: (NetLvalue<'a>, Vec<NetLvalue<'a>>),
 }
 
 #[derive(Debug)]
 pub struct NetAssignment<'a> {
-    pub lvalue: NetLvalue<'a>,
-    pub rvalue: Expression<'a>,
+    pub nodes: (NetLvalue<'a>, Expression<'a>),
 }
 
 // -----------------------------------------------------------------------------
@@ -53,11 +52,7 @@ pub fn continuous_assign_net(s: &str) -> IResult<&str, ContinuousAssign> {
 
     Ok((
         s,
-        ContinuousAssign::Net(ContinuousAssignNet {
-            drive_strength: x,
-            delay3: y,
-            list: z,
-        }),
+        ContinuousAssign::Net(ContinuousAssignNet { nodes: (x, y, z) }),
     ))
 }
 
@@ -69,10 +64,7 @@ pub fn continuous_assign_variable(s: &str) -> IResult<&str, ContinuousAssign> {
 
     Ok((
         s,
-        ContinuousAssign::Variable(ContinuousAssignVariable {
-            delay_control: x,
-            list: y,
-        }),
+        ContinuousAssign::Variable(ContinuousAssignVariable { nodes: (x, y) }),
     ))
 }
 
@@ -89,13 +81,7 @@ pub fn net_alias(s: &str) -> IResult<&str, NetAlias> {
     let (s, x) = net_lvalue(s)?;
     let (s, y) = many1(preceded(symbol("="), net_lvalue))(s)?;
 
-    Ok((
-        s,
-        NetAlias {
-            lvalue: x,
-            rvalue: y,
-        },
-    ))
+    Ok((s, NetAlias { nodes: (x, y) }))
 }
 
 pub fn net_assignment(s: &str) -> IResult<&str, NetAssignment> {
@@ -103,11 +89,5 @@ pub fn net_assignment(s: &str) -> IResult<&str, NetAssignment> {
     let (s, _) = symbol("=")(s)?;
     let (s, y) = expression(s)?;
 
-    Ok((
-        s,
-        NetAssignment {
-            lvalue: x,
-            rvalue: y,
-        },
-    ))
+    Ok((s, NetAssignment { nodes: (x, y) }))
 }

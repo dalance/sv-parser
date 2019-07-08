@@ -16,26 +16,32 @@ pub enum CaseStatement<'a> {
 
 #[derive(Debug)]
 pub struct CaseStatementNormal<'a> {
-    pub unique_priority: Option<UniquePriority>,
-    pub keyword: CaseKeyword,
-    pub expression: Expression<'a>,
-    pub item: Vec<CaseItem<'a>>,
+    pub nodes: (
+        Option<UniquePriority>,
+        CaseKeyword,
+        Expression<'a>,
+        Vec<CaseItem<'a>>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct CaseStatementMatches<'a> {
-    pub unique_priority: Option<UniquePriority>,
-    pub keyword: CaseKeyword,
-    pub expression: Expression<'a>,
-    pub item: Vec<CasePatternItem<'a>>,
+    pub nodes: (
+        Option<UniquePriority>,
+        CaseKeyword,
+        Expression<'a>,
+        Vec<CasePatternItem<'a>>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct CaseStatementInside<'a> {
-    pub unique_priority: Option<UniquePriority>,
-    pub keyword: CaseKeyword,
-    pub expression: Expression<'a>,
-    pub item: Vec<CaseInsideItem<'a>>,
+    pub nodes: (
+        Option<UniquePriority>,
+        CaseKeyword,
+        Expression<'a>,
+        Vec<CaseInsideItem<'a>>,
+    ),
 }
 
 #[derive(Debug)]
@@ -65,37 +71,42 @@ pub enum CaseInsideItem<'a> {
 
 #[derive(Debug)]
 pub struct CaseItemDefault<'a> {
-    pub statement: StatementOrNull<'a>,
+    pub nodes: (StatementOrNull<'a>,),
 }
 
 #[derive(Debug)]
 pub struct CaseItemNondefault<'a> {
-    pub expression: Vec<Expression<'a>>,
-    pub statement: StatementOrNull<'a>,
+    pub nodes: (Vec<Expression<'a>>, StatementOrNull<'a>),
 }
 
 #[derive(Debug)]
 pub struct CasePatternItemNondefault<'a> {
-    pub pattern: Pattern<'a>,
-    pub expression: Option<Expression<'a>>,
-    pub statement: StatementOrNull<'a>,
+    pub nodes: (Pattern<'a>, Option<Expression<'a>>, StatementOrNull<'a>),
 }
 
 #[derive(Debug)]
 pub struct CaseInsideItemNondefault<'a> {
-    pub open_range_list: Vec<ValueRange<'a>>,
-    pub statement: StatementOrNull<'a>,
+    pub nodes: (Vec<ValueRange<'a>>, StatementOrNull<'a>),
 }
 
 #[derive(Debug)]
 pub struct RandcaseStatement<'a> {
-    pub item: Vec<RandcaseItem<'a>>,
+    pub nodes: (Vec<RandcaseItem<'a>>,),
 }
 
 #[derive(Debug)]
 pub struct RandcaseItem<'a> {
-    pub expression: Expression<'a>,
-    pub statement: StatementOrNull<'a>,
+    pub nodes: (Expression<'a>, StatementOrNull<'a>),
+}
+
+#[derive(Debug)]
+pub struct OpenRangeList<'a> {
+    pub nodes: (Vec<OpenRangeValue<'a>>,),
+}
+
+#[derive(Debug)]
+pub struct OpenRangeValue<'a> {
+    pub nodes: (ValueRange<'a>,),
 }
 
 // -----------------------------------------------------------------------------
@@ -119,10 +130,7 @@ pub fn case_statement_normal(s: &str) -> IResult<&str, CaseStatement> {
     Ok((
         s,
         CaseStatement::Normal(CaseStatementNormal {
-            unique_priority: x,
-            keyword: y,
-            expression: z,
-            item: v,
+            nodes: (x, y, z, v),
         }),
     ))
 }
@@ -139,10 +147,7 @@ pub fn case_statement_matches(s: &str) -> IResult<&str, CaseStatement> {
     Ok((
         s,
         CaseStatement::Matches(CaseStatementMatches {
-            unique_priority: x,
-            keyword: y,
-            expression: z,
-            item: v,
+            nodes: (x, y, z, v),
         }),
     ))
 }
@@ -159,10 +164,7 @@ pub fn case_statement_inside(s: &str) -> IResult<&str, CaseStatement> {
     Ok((
         s,
         CaseStatement::Inside(CaseStatementInside {
-            unique_priority: x,
-            keyword: y,
-            expression: z,
-            item: v,
+            nodes: (x, y, z, v),
         }),
     ))
 }
@@ -192,10 +194,7 @@ pub fn case_item_nondefault(s: &str) -> IResult<&str, CaseItem> {
     let (s, y) = statement_or_null(s)?;
     Ok((
         s,
-        CaseItem::NonDefault(CaseItemNondefault {
-            expression: x,
-            statement: y,
-        }),
+        CaseItem::NonDefault(CaseItemNondefault { nodes: (x, y) }),
     ))
 }
 
@@ -203,7 +202,7 @@ pub fn case_item_default(s: &str) -> IResult<&str, CaseItemDefault> {
     let (s, _) = symbol("default")(s)?;
     let (s, _) = opt(symbol(":"))(s)?;
     let (s, x) = statement_or_null(s)?;
-    Ok((s, CaseItemDefault { statement: x }))
+    Ok((s, CaseItemDefault { nodes: (x,) }))
 }
 
 pub fn case_pattern_item(s: &str) -> IResult<&str, CasePatternItem> {
@@ -220,11 +219,7 @@ pub fn case_pattern_item_nondefault(s: &str) -> IResult<&str, CasePatternItem> {
     let (s, z) = statement_or_null(s)?;
     Ok((
         s,
-        CasePatternItem::NonDefault(CasePatternItemNondefault {
-            pattern: x,
-            expression: y,
-            statement: z,
-        }),
+        CasePatternItem::NonDefault(CasePatternItemNondefault { nodes: (x, y, z) }),
     ))
 }
 
@@ -241,10 +236,7 @@ pub fn case_inside_item_nondefault(s: &str) -> IResult<&str, CaseInsideItem> {
     let (s, y) = statement_or_null(s)?;
     Ok((
         s,
-        CaseInsideItem::NonDefault(CaseInsideItemNondefault {
-            open_range_list: x,
-            statement: y,
-        }),
+        CaseInsideItem::NonDefault(CaseInsideItemNondefault { nodes: (x, y) }),
     ))
 }
 
@@ -256,20 +248,14 @@ pub fn randcase_statement(s: &str) -> IResult<&str, RandcaseStatement> {
     let (s, _) = symbol("randcase")(s)?;
     let (s, x) = many1(randcase_item)(s)?;
     let (s, _) = symbol("endcase")(s)?;
-    Ok((s, RandcaseStatement { item: x }))
+    Ok((s, RandcaseStatement { nodes: (x,) }))
 }
 
 pub fn randcase_item(s: &str) -> IResult<&str, RandcaseItem> {
     let (s, x) = expression(s)?;
     let (s, _) = symbol(":")(s)?;
     let (s, y) = statement_or_null(s)?;
-    Ok((
-        s,
-        RandcaseItem {
-            expression: x,
-            statement: y,
-        },
-    ))
+    Ok((s, RandcaseItem { nodes: (x, y) }))
 }
 
 pub fn open_range_list(s: &str) -> IResult<&str, Vec<ValueRange>> {

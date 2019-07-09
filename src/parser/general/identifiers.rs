@@ -3,7 +3,6 @@ use nom::branch::*;
 use nom::bytes::complete::*;
 use nom::combinator::*;
 use nom::error::*;
-use nom::multi::*;
 use nom::sequence::*;
 use nom::{Err, IResult};
 

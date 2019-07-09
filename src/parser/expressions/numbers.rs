@@ -416,125 +416,135 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test() {
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("659"))),
-            "Ok((LocatedSpanEx { offset: 3, line: 1, fragment: \"\", extra: () }, IntegralNumber(DecimalNumber(UnsignedNumber(UnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"659\", extra: () }, []) })))))"
+    fn test_number() {
+        parser_test!(
+            number,
+            "659",
+            Ok((_, Number::IntegralNumber(IntegralNumber::DecimalNumber(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("'h 837FF"))),
-            "Ok((LocatedSpanEx { offset: 8, line: 1, fragment: \"\", extra: () }, IntegralNumber(HexNumber(HexNumber { nodes: (None, HexBase { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"\\\'h\", extra: () }, [Space(LocatedSpanEx { offset: 2, line: 1, fragment: \" \", extra: () })]) }, HexValue { nodes: (LocatedSpanEx { offset: 3, line: 1, fragment: \"837FF\", extra: () }, []) }) }))))"
+        parser_test!(
+            number,
+            "'h 837FF",
+            Ok((_, Number::IntegralNumber(IntegralNumber::HexNumber(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("'o7460"))),
-            "Ok((LocatedSpanEx { offset: 6, line: 1, fragment: \"\", extra: () }, IntegralNumber(OctalNumber(OctalNumber { nodes: (None, OctalBase { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"\\\'o\", extra: () }, []) }, OctalValue { nodes: (LocatedSpanEx { offset: 2, line: 1, fragment: \"7460\", extra: () }, []) }) }))))"
+        parser_test!(
+            number,
+            "'h 837FF",
+            Ok((_, Number::IntegralNumber(IntegralNumber::HexNumber(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("4af"))),
-            "Err(Error((LocatedSpanEx { offset: 1, line: 1, fragment: \"af\", extra: () }, Eof)))"
+        parser_test!(
+            number,
+            "'o7460",
+            Ok((_, Number::IntegralNumber(IntegralNumber::OctalNumber(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("4'b1001"))),
-            "Ok((LocatedSpanEx { offset: 7, line: 1, fragment: \"\", extra: () }, IntegralNumber(BinaryNumber(BinaryNumber { nodes: (Some(Size { nodes: (NonZeroUnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"4\", extra: () }, []) },) }), BinaryBase { nodes: (LocatedSpanEx { offset: 1, line: 1, fragment: \"\\\'b\", extra: () }, []) }, BinaryValue { nodes: (LocatedSpanEx { offset: 3, line: 1, fragment: \"1001\", extra: () }, []) }) }))))"
+        parser_test!(number, "'4af", Err(_));
+        parser_test!(
+            number,
+            "4'b1001",
+            Ok((_, Number::IntegralNumber(IntegralNumber::BinaryNumber(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("5 'D 3"))),
-            "Ok((LocatedSpanEx { offset: 6, line: 1, fragment: \"\", extra: () }, IntegralNumber(DecimalNumber(BaseUnsigned(DecimalNumberBaseUnsigned { nodes: (Some(Size { nodes: (NonZeroUnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"5\", extra: () }, [Space(LocatedSpanEx { offset: 1, line: 1, fragment: \" \", extra: () })]) },) }), DecimalBase { nodes: (LocatedSpanEx { offset: 2, line: 1, fragment: \"\\\'D\", extra: () }, [Space(LocatedSpanEx { offset: 4, line: 1, fragment: \" \", extra: () })]) }, UnsignedNumber { nodes: (LocatedSpanEx { offset: 5, line: 1, fragment: \"3\", extra: () }, []) }) })))))"
+        parser_test!(
+            number,
+            "5 'D 3",
+            Ok((_, Number::IntegralNumber(IntegralNumber::DecimalNumber(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("3'b01x"))),
-            "Ok((LocatedSpanEx { offset: 6, line: 1, fragment: \"\", extra: () }, IntegralNumber(BinaryNumber(BinaryNumber { nodes: (Some(Size { nodes: (NonZeroUnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"3\", extra: () }, []) },) }), BinaryBase { nodes: (LocatedSpanEx { offset: 1, line: 1, fragment: \"\\\'b\", extra: () }, []) }, BinaryValue { nodes: (LocatedSpanEx { offset: 3, line: 1, fragment: \"01x\", extra: () }, []) }) }))))"
+        parser_test!(
+            number,
+            "3'b01x",
+            Ok((_, Number::IntegralNumber(IntegralNumber::BinaryNumber(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("12'hx"))),
-            "Ok((LocatedSpanEx { offset: 5, line: 1, fragment: \"\", extra: () }, IntegralNumber(HexNumber(HexNumber { nodes: (Some(Size { nodes: (NonZeroUnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"12\", extra: () }, []) },) }), HexBase { nodes: (LocatedSpanEx { offset: 2, line: 1, fragment: \"\\\'h\", extra: () }, []) }, HexValue { nodes: (LocatedSpanEx { offset: 4, line: 1, fragment: \"x\", extra: () }, []) }) }))))"
+        parser_test!(
+            number,
+            "12'hx",
+            Ok((_, Number::IntegralNumber(IntegralNumber::HexNumber(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("16'hz"))),
-            "Ok((LocatedSpanEx { offset: 5, line: 1, fragment: \"\", extra: () }, IntegralNumber(HexNumber(HexNumber { nodes: (Some(Size { nodes: (NonZeroUnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"16\", extra: () }, []) },) }), HexBase { nodes: (LocatedSpanEx { offset: 2, line: 1, fragment: \"\\\'h\", extra: () }, []) }, HexValue { nodes: (LocatedSpanEx { offset: 4, line: 1, fragment: \"z\", extra: () }, []) }) }))))"
+        parser_test!(
+            number,
+            "16'hz",
+            Ok((_, Number::IntegralNumber(IntegralNumber::HexNumber(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("8 'd -6"))),
-            "Err(Error((LocatedSpanEx { offset: 2, line: 1, fragment: \"\\\'d -6\", extra: () }, Eof)))"
+        parser_test!(number, "8 'd -6", Err(_));
+        parser_test!(
+            number,
+            "4 'shf",
+            Ok((_, Number::IntegralNumber(IntegralNumber::HexNumber(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("4 'shf"))),
-            "Ok((LocatedSpanEx { offset: 6, line: 1, fragment: \"\", extra: () }, IntegralNumber(HexNumber(HexNumber { nodes: (Some(Size { nodes: (NonZeroUnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"4\", extra: () }, [Space(LocatedSpanEx { offset: 1, line: 1, fragment: \" \", extra: () })]) },) }), HexBase { nodes: (LocatedSpanEx { offset: 2, line: 1, fragment: \"\\\'sh\", extra: () }, []) }, HexValue { nodes: (LocatedSpanEx { offset: 5, line: 1, fragment: \"f\", extra: () }, []) }) }))))"
+        parser_test!(
+            number,
+            "16'sd?",
+            Ok((_, Number::IntegralNumber(IntegralNumber::DecimalNumber(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("16'sd?"))),
-            "Ok((LocatedSpanEx { offset: 6, line: 1, fragment: \"\", extra: () }, IntegralNumber(DecimalNumber(BaseZNumber(DecimalNumberBaseZNumber { nodes: (Some(Size { nodes: (NonZeroUnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"16\", extra: () }, []) },) }), DecimalBase { nodes: (LocatedSpanEx { offset: 2, line: 1, fragment: \"\\\'sd\", extra: () }, []) }, ZNumber { nodes: (LocatedSpanEx { offset: 5, line: 1, fragment: \"?\", extra: () }, []) }) })))))"
+        parser_test!(
+            number,
+            "27_195_000",
+            Ok((_, Number::IntegralNumber(IntegralNumber::DecimalNumber(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("27_195_000"))),
-            "Ok((LocatedSpanEx { offset: 10, line: 1, fragment: \"\", extra: () }, IntegralNumber(DecimalNumber(UnsignedNumber(UnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"27_195_000\", extra: () }, []) })))))"
+        parser_test!(
+            number,
+            "16'b0011_0101_0001_1111",
+            Ok((_, Number::IntegralNumber(IntegralNumber::BinaryNumber(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("16'b0011_0101_0001_1111"))),
-            "Ok((LocatedSpanEx { offset: 23, line: 1, fragment: \"\", extra: () }, IntegralNumber(BinaryNumber(BinaryNumber { nodes: (Some(Size { nodes: (NonZeroUnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"16\", extra: () }, []) },) }), BinaryBase { nodes: (LocatedSpanEx { offset: 2, line: 1, fragment: \"\\\'b\", extra: () }, []) }, BinaryValue { nodes: (LocatedSpanEx { offset: 4, line: 1, fragment: \"0011_0101_0001_1111\", extra: () }, []) }) }))))"
+        parser_test!(
+            number,
+            "32 'h 12ab_f001",
+            Ok((_, Number::IntegralNumber(IntegralNumber::HexNumber(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("32 'h 12ab_f001"))),
-            "Ok((LocatedSpanEx { offset: 15, line: 1, fragment: \"\", extra: () }, IntegralNumber(HexNumber(HexNumber { nodes: (Some(Size { nodes: (NonZeroUnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"32\", extra: () }, [Space(LocatedSpanEx { offset: 2, line: 1, fragment: \" \", extra: () })]) },) }), HexBase { nodes: (LocatedSpanEx { offset: 3, line: 1, fragment: \"\\\'h\", extra: () }, [Space(LocatedSpanEx { offset: 5, line: 1, fragment: \" \", extra: () })]) }, HexValue { nodes: (LocatedSpanEx { offset: 6, line: 1, fragment: \"12ab_f001\", extra: () }, []) }) }))))"
+        parser_test!(
+            number,
+            "1.2",
+            Ok((_, Number::RealNumber(RealNumber::FixedPointNumber(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("1.2"))),
-            "Ok((LocatedSpanEx { offset: 3, line: 1, fragment: \"\", extra: () }, RealNumber(FixedPointNumber(FixedPointNumber { nodes: (UnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"1\", extra: () }, []) }, Symbol { nodes: (LocatedSpanEx { offset: 1, line: 1, fragment: \".\", extra: () }, []) }, UnsignedNumber { nodes: (LocatedSpanEx { offset: 2, line: 1, fragment: \"2\", extra: () }, []) }) }))))"
+        parser_test!(
+            number,
+            "0.1",
+            Ok((_, Number::RealNumber(RealNumber::FixedPointNumber(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("0.1"))),
-            "Ok((LocatedSpanEx { offset: 3, line: 1, fragment: \"\", extra: () }, RealNumber(FixedPointNumber(FixedPointNumber { nodes: (UnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"0\", extra: () }, []) }, Symbol { nodes: (LocatedSpanEx { offset: 1, line: 1, fragment: \".\", extra: () }, []) }, UnsignedNumber { nodes: (LocatedSpanEx { offset: 2, line: 1, fragment: \"1\", extra: () }, []) }) }))))"
+        parser_test!(
+            number,
+            "2394.26331",
+            Ok((_, Number::RealNumber(RealNumber::FixedPointNumber(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("2394.26331"))),
-            "Ok((LocatedSpanEx { offset: 10, line: 1, fragment: \"\", extra: () }, RealNumber(FixedPointNumber(FixedPointNumber { nodes: (UnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"2394\", extra: () }, []) }, Symbol { nodes: (LocatedSpanEx { offset: 4, line: 1, fragment: \".\", extra: () }, []) }, UnsignedNumber { nodes: (LocatedSpanEx { offset: 5, line: 1, fragment: \"26331\", extra: () }, []) }) }))))"
+        parser_test!(
+            number,
+            "1.2E12",
+            Ok((_, Number::RealNumber(RealNumber::Floating(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("1.2E12"))),
-            "Ok((LocatedSpanEx { offset: 6, line: 1, fragment: \"\", extra: () }, RealNumber(Floating(RealNumberFloating { nodes: (UnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"1\", extra: () }, []) }, Some((Symbol { nodes: (LocatedSpanEx { offset: 1, line: 1, fragment: \".\", extra: () }, []) }, UnsignedNumber { nodes: (LocatedSpanEx { offset: 2, line: 1, fragment: \"2\", extra: () }, []) })), Exp { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 3, line: 1, fragment: \"E\", extra: () }, []) },) }, None, UnsignedNumber { nodes: (LocatedSpanEx { offset: 4, line: 1, fragment: \"12\", extra: () }, []) }) }))))"
+        parser_test!(
+            number,
+            "1.30e-2",
+            Ok((_, Number::RealNumber(RealNumber::Floating(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("1.30e-2"))),
-            "Ok((LocatedSpanEx { offset: 7, line: 1, fragment: \"\", extra: () }, RealNumber(Floating(RealNumberFloating { nodes: (UnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"1\", extra: () }, []) }, Some((Symbol { nodes: (LocatedSpanEx { offset: 1, line: 1, fragment: \".\", extra: () }, []) }, UnsignedNumber { nodes: (LocatedSpanEx { offset: 2, line: 1, fragment: \"30\", extra: () }, []) })), Exp { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 4, line: 1, fragment: \"e\", extra: () }, []) },) }, Some(Minus(Symbol { nodes: (LocatedSpanEx { offset: 5, line: 1, fragment: \"-\", extra: () }, []) })), UnsignedNumber { nodes: (LocatedSpanEx { offset: 6, line: 1, fragment: \"2\", extra: () }, []) }) }))))"
+        parser_test!(
+            number,
+            "0.1e-0",
+            Ok((_, Number::RealNumber(RealNumber::Floating(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("0.1e-0"))),
-            "Ok((LocatedSpanEx { offset: 6, line: 1, fragment: \"\", extra: () }, RealNumber(Floating(RealNumberFloating { nodes: (UnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"0\", extra: () }, []) }, Some((Symbol { nodes: (LocatedSpanEx { offset: 1, line: 1, fragment: \".\", extra: () }, []) }, UnsignedNumber { nodes: (LocatedSpanEx { offset: 2, line: 1, fragment: \"1\", extra: () }, []) })), Exp { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 3, line: 1, fragment: \"e\", extra: () }, []) },) }, Some(Minus(Symbol { nodes: (LocatedSpanEx { offset: 4, line: 1, fragment: \"-\", extra: () }, []) })), UnsignedNumber { nodes: (LocatedSpanEx { offset: 5, line: 1, fragment: \"0\", extra: () }, []) }) }))))"
+        parser_test!(
+            number,
+            "23E10",
+            Ok((_, Number::RealNumber(RealNumber::Floating(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("23E10"))),
-            "Ok((LocatedSpanEx { offset: 5, line: 1, fragment: \"\", extra: () }, RealNumber(Floating(RealNumberFloating { nodes: (UnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"23\", extra: () }, []) }, None, Exp { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 2, line: 1, fragment: \"E\", extra: () }, []) },) }, None, UnsignedNumber { nodes: (LocatedSpanEx { offset: 3, line: 1, fragment: \"10\", extra: () }, []) }) }))))"
+        parser_test!(
+            number,
+            "29E-2",
+            Ok((_, Number::RealNumber(RealNumber::Floating(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("29E-2"))),
-            "Ok((LocatedSpanEx { offset: 5, line: 1, fragment: \"\", extra: () }, RealNumber(Floating(RealNumberFloating { nodes: (UnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"29\", extra: () }, []) }, None, Exp { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 2, line: 1, fragment: \"E\", extra: () }, []) },) }, Some(Minus(Symbol { nodes: (LocatedSpanEx { offset: 3, line: 1, fragment: \"-\", extra: () }, []) })), UnsignedNumber { nodes: (LocatedSpanEx { offset: 4, line: 1, fragment: \"2\", extra: () }, []) }) }))))"
+        parser_test!(
+            number,
+            "236.123_763_e-12",
+            Ok((_, Number::RealNumber(RealNumber::Floating(_))))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("236.123_763_e-12"))),
-            "Ok((LocatedSpanEx { offset: 16, line: 1, fragment: \"\", extra: () }, RealNumber(Floating(RealNumberFloating { nodes: (UnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"236\", extra: () }, []) }, Some((Symbol { nodes: (LocatedSpanEx { offset: 3, line: 1, fragment: \".\", extra: () }, []) }, UnsignedNumber { nodes: (LocatedSpanEx { offset: 4, line: 1, fragment: \"123_763_\", extra: () }, []) })), Exp { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 12, line: 1, fragment: \"e\", extra: () }, []) },) }, Some(Minus(Symbol { nodes: (LocatedSpanEx { offset: 13, line: 1, fragment: \"-\", extra: () }, []) })), UnsignedNumber { nodes: (LocatedSpanEx { offset: 14, line: 1, fragment: \"12\", extra: () }, []) }) }))))"
-        );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new(".12"))),
-            "Err(Error((LocatedSpanEx { offset: 0, line: 1, fragment: \".12\", extra: () }, Digit)))"
-        );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("9."))),
-            "Err(Error((LocatedSpanEx { offset: 1, line: 1, fragment: \".\", extra: () }, Eof)))"
-        );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new("4.E3"))),
-            "Err(Error((LocatedSpanEx { offset: 1, line: 1, fragment: \".E3\", extra: () }, Eof)))"
-        );
-        assert_eq!(
-            format!("{:?}", all_consuming(number)(Span::new(".2e-7"))),
-            "Err(Error((LocatedSpanEx { offset: 0, line: 1, fragment: \".2e-7\", extra: () }, Digit)))"
-        );
-        assert_eq!(
-            format!(
-                "{:?}",
-                all_consuming(unbased_unsized_literal)(Span::new("'0"))
-            ),
-            "Ok((LocatedSpanEx { offset: 2, line: 1, fragment: \"\", extra: () }, UnbasedUnsizedLiteral { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"\\\'0\", extra: () }, []) },) }))"
-        );
+        parser_test!(number, ".12", Err(_));
+        parser_test!(number, "9.", Err(_));
+        parser_test!(number, "4.E3", Err(_));
+        parser_test!(number, ".2e-7", Err(_));
+    }
+
+    #[test]
+    fn test_unbased_unsized_literal() {
+        parser_test!(unbased_unsized_literal, "'0", Ok((_, _)));
+        parser_test!(unbased_unsized_literal, "'1", Ok((_, _)));
+        parser_test!(unbased_unsized_literal, "'x", Ok((_, _)));
+        parser_test!(unbased_unsized_literal, "'z", Ok((_, _)));
     }
 }

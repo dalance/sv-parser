@@ -348,7 +348,7 @@ pub fn primary(s: Span) -> IResult<Span, Primary> {
             Primary::EmptyUnpackedArrayConcatenation
         }),
         primary_concatenation,
-        map(function_subroutine_call, |x| {
+        map(rec(function_subroutine_call, REC_PRIMARY), |x| {
             Primary::FunctionSubroutineCall(x)
         }),
         map(let_expression, |x| Primary::LetExpression(x)),
@@ -571,38 +571,46 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test() {
-        assert_eq!(
-            format!("{:?}", all_consuming(primary)(Span::new("2.1ns"))),
-            "Ok((LocatedSpanEx { offset: 5, line: 1, fragment: \"\", extra: () }, PrimaryLiteral(TimeLiteral(FixedPointTimeLiteral(FixedPointTimeLiteral { nodes: (FixedPointNumber { nodes: (UnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"2\", extra: () }, []) }, Symbol { nodes: (LocatedSpanEx { offset: 1, line: 1, fragment: \".\", extra: () }, []) }, UnsignedNumber { nodes: (LocatedSpanEx { offset: 2, line: 1, fragment: \"1\", extra: () }, []) }) }, NS(Symbol { nodes: (LocatedSpanEx { offset: 3, line: 1, fragment: \"ns\", extra: () }, []) })) })))))"
-        );
-        assert_eq!(
-            format!("{:?}", all_consuming(primary)(Span::new("40 ps"))),
-            "Ok((LocatedSpanEx { offset: 5, line: 1, fragment: \"\", extra: () }, PrimaryLiteral(TimeLiteral(UnsignedTimeLiteral(UnsignedTimeLiteral { nodes: (UnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"40\", extra: () }, [Space(LocatedSpanEx { offset: 2, line: 1, fragment: \" \", extra: () })]) }, PS(Symbol { nodes: (LocatedSpanEx { offset: 3, line: 1, fragment: \"ps\", extra: () }, []) })) })))))"
-        );
-        assert_eq!(
-            format!("{:?}", all_consuming(primary)(Span::new("'0"))),
-            "Ok((LocatedSpanEx { offset: 2, line: 1, fragment: \"\", extra: () }, PrimaryLiteral(UnbasedUnsizedLiteral(UnbasedUnsizedLiteral { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"\\\'0\", extra: () }, []) },) }))))"
-        );
-        assert_eq!(
-            format!("{:?}", all_consuming(primary)(Span::new("10"))),
-            "Ok((LocatedSpanEx { offset: 2, line: 1, fragment: \"\", extra: () }, PrimaryLiteral(Number(IntegralNumber(DecimalNumber(UnsignedNumber(UnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"10\", extra: () }, []) })))))))"
-        );
-        assert_eq!(
-            format!("{:?}", all_consuming(primary)(Span::new("\"aaa\""))),
-            "Ok((LocatedSpanEx { offset: 5, line: 1, fragment: \"\", extra: () }, PrimaryLiteral(StringLiteral(StringLiteral { nodes: (LocatedSpanEx { offset: 1, line: 1, fragment: \"aaa\", extra: () }, []) }))))"
-        );
-        //assert_eq!(
-        //    format!("{:?}", all_consuming(primary)(Span::new("this"))),
-        //    "Ok((LocatedSpanEx { offset: 4, line: 1, fragment: \"\", extra: () }, This(This { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"this\", extra: () }, []) },) })))"
-        //);
-        //assert_eq!(
-        //    format!("{:?}", all_consuming(primary)(Span::new("$"))),
-        //    "Ok((LocatedSpanEx { offset: 1, line: 1, fragment: \"\", extra: () }, Dollar(Dollar { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"$\", extra: () }, []) },) })))"
-        //);
-        //assert_eq!(
-        //    format!("{:?}", all_consuming(primary)(Span::new("null"))),
-        //    "Ok((LocatedSpanEx { offset: 4, line: 1, fragment: \"\", extra: () }, Null(Null { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"null\", extra: () }, []) },) })))"
-        //);
+    fn test_primary() {
+        let ret = all_consuming(primary)(Span::new_extra("2.1ns", 0));
+        if let Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::TimeLiteral(_)))) = ret {
+        } else {
+            assert!(false, "{:?}", ret)
+        }
+        let ret = all_consuming(primary)(Span::new_extra("40 ps", 0));
+        if let Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::TimeLiteral(_)))) = ret {
+        } else {
+            assert!(false, "{:?}", ret)
+        }
+        let ret = all_consuming(primary)(Span::new_extra("'0", 0));
+        if let Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::UnbasedUnsizedLiteral(_)))) = ret {
+        } else {
+            assert!(false, "{:?}", ret)
+        }
+        let ret = all_consuming(primary)(Span::new_extra("10", 0));
+        if let Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::Number(_)))) = ret {
+        } else {
+            assert!(false, "{:?}", ret)
+        }
+        let ret = all_consuming(primary)(Span::new_extra("\"aaa\"", 0));
+        if let Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::StringLiteral(_)))) = ret {
+        } else {
+            assert!(false, "{:?}", ret)
+        }
+        let ret = all_consuming(primary)(Span::new_extra("this", 0));
+        if let Ok((_, Primary::This(_))) = ret {
+        } else {
+            assert!(false, "{:?}", ret)
+        }
+        let ret = all_consuming(primary)(Span::new_extra("$", 0));
+        if let Ok((_, Primary::Dollar(_))) = ret {
+        } else {
+            assert!(false, "{:?}", ret)
+        }
+        let ret = all_consuming(primary)(Span::new_extra("null", 0));
+        if let Ok((_, Primary::Null(_))) = ret {
+        } else {
+            assert!(false, "{:?}", ret)
+        }
     }
 }

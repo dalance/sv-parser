@@ -1011,33 +1011,36 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test() {
-        assert_eq!(
-            format!("{:?}", all_consuming(identifier)(Span::new("shiftreg_a"))),
-            "Ok((LocatedSpanEx { offset: 10, line: 1, fragment: \"\", extra: () }, SimpleIdentifier(SimpleIdentifier { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"shiftreg_a\", extra: () }, []) })))"
+    fn test_identifier() {
+        parser_test!(
+            identifier,
+            "shiftreg_a",
+            Ok((_, Identifier::SimpleIdentifier(_)))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(identifier)(Span::new("_bus3"))),
-            "Ok((LocatedSpanEx { offset: 5, line: 1, fragment: \"\", extra: () }, SimpleIdentifier(SimpleIdentifier { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"_bus3\", extra: () }, []) })))"
+        parser_test!(
+            identifier,
+            "_bus3",
+            Ok((_, Identifier::SimpleIdentifier(_)))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(identifier)(Span::new("n$657"))),
-            "Ok((LocatedSpanEx { offset: 5, line: 1, fragment: \"\", extra: () }, SimpleIdentifier(SimpleIdentifier { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"n$657\", extra: () }, []) })))"
+        parser_test!(
+            identifier,
+            "n$657",
+            Ok((_, Identifier::SimpleIdentifier(_)))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(identifier)(Span::new("\\busa+index"))),
-            "Ok((LocatedSpanEx { offset: 11, line: 1, fragment: \"\", extra: () }, EscapedIdentifier(EscapedIdentifier { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"\\\\busa+index\", extra: () }, []) })))"
+        parser_test!(
+            identifier,
+            "\\busa+index",
+            Ok((_, Identifier::EscapedIdentifier(_)))
         );
-        assert_eq!(
-            format!("{:?}", all_consuming(identifier)(Span::new("\\-clock"))),
-            "Ok((LocatedSpanEx { offset: 7, line: 1, fragment: \"\", extra: () }, EscapedIdentifier(EscapedIdentifier { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"\\\\-clock\", extra: () }, []) })))"
+        parser_test!(
+            identifier,
+            "\\-clock",
+            Ok((_, Identifier::EscapedIdentifier(_)))
         );
-        assert_eq!(
-            format!(
-                "{:?}",
-                all_consuming(system_tf_identifier)(Span::new("$display"))
-            ),
-            "Ok((LocatedSpanEx { offset: 8, line: 1, fragment: \"\", extra: () }, SystemTfIdentifier { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"$display\", extra: () }, []) }))"
-        );
+    }
+
+    #[test]
+    fn test_system_tf_identifier() {
+        parser_test!(system_tf_identifier, "$display", Ok((_, _)));
     }
 }

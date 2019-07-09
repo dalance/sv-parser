@@ -52,6 +52,7 @@ pub fn binary_operator(s: Span) -> IResult<Span, BinaryOperator> {
     let (s, a) = alt((
         alt((
             symbol("+"),
+            symbol("->"),
             symbol("-"),
             symbol("**"),
             symbol("*"),
@@ -76,7 +77,6 @@ pub fn binary_operator(s: Span) -> IResult<Span, BinaryOperator> {
             symbol(">>"),
             symbol("<<<"),
             symbol("<<"),
-            symbol("->"),
             symbol("<->"),
             symbol("<="),
             symbol("<"),
@@ -130,32 +130,82 @@ mod tests {
     use nom::combinator::*;
 
     #[test]
-    fn test() {
-        assert_eq!(
-            format!("{:?}", all_consuming(unary_operator)(Span::new("~"))),
-            "Ok((LocatedSpanEx { offset: 1, line: 1, fragment: \"\", extra: () }, UnaryOperator { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"~\", extra: () }, []) },) }))"
-        );
-        assert_eq!(
-            format!("{:?}", all_consuming(binary_operator)(Span::new(">>>"))),
-            "Ok((LocatedSpanEx { offset: 3, line: 1, fragment: \"\", extra: () }, BinaryOperator { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \">>>\", extra: () }, []) },) }))"
-        );
-        assert_eq!(
-            format!("{:?}", all_consuming(inc_or_dec_operator)(Span::new("++"))),
-            "Ok((LocatedSpanEx { offset: 2, line: 1, fragment: \"\", extra: () }, IncOrDecOperator { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"++\", extra: () }, []) },) }))"
-        );
-        assert_eq!(
-            format!(
-                "{:?}",
-                all_consuming(unary_module_path_operator)(Span::new("^~"))
-            ),
-            "Ok((LocatedSpanEx { offset: 2, line: 1, fragment: \"\", extra: () }, UnaryModulePathOperator { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"^~\", extra: () }, []) },) }))"
-        );
-        assert_eq!(
-            format!(
-                "{:?}",
-                all_consuming(binary_module_path_operator)(Span::new("||"))
-            ),
-            "Ok((LocatedSpanEx { offset: 2, line: 1, fragment: \"\", extra: () }, BinaryModulePathOperator { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"||\", extra: () }, []) },) }))"
-        );
+    fn test_unary_operator() {
+        parser_test!(unary_operator, "+", Ok((_, _)));
+        parser_test!(unary_operator, "-", Ok((_, _)));
+        parser_test!(unary_operator, "!", Ok((_, _)));
+        parser_test!(unary_operator, "&", Ok((_, _)));
+        parser_test!(unary_operator, "|", Ok((_, _)));
+        parser_test!(unary_operator, "~&", Ok((_, _)));
+        parser_test!(unary_operator, "~|", Ok((_, _)));
+        parser_test!(unary_operator, "~^", Ok((_, _)));
+        parser_test!(unary_operator, "^~", Ok((_, _)));
+        parser_test!(unary_operator, "^", Ok((_, _)));
+        parser_test!(unary_operator, "~", Ok((_, _)));
+    }
+
+    #[test]
+    fn test_binary_operator() {
+        parser_test!(binary_operator, "+", Ok((_, _)));
+        parser_test!(binary_operator, "-", Ok((_, _)));
+        parser_test!(binary_operator, "**", Ok((_, _)));
+        parser_test!(binary_operator, "*", Ok((_, _)));
+        parser_test!(binary_operator, "/", Ok((_, _)));
+        parser_test!(binary_operator, "%", Ok((_, _)));
+        parser_test!(binary_operator, "===", Ok((_, _)));
+        parser_test!(binary_operator, "==?", Ok((_, _)));
+        parser_test!(binary_operator, "==", Ok((_, _)));
+        parser_test!(binary_operator, "!==", Ok((_, _)));
+        parser_test!(binary_operator, "!=?", Ok((_, _)));
+        parser_test!(binary_operator, "!=", Ok((_, _)));
+        parser_test!(binary_operator, "&&", Ok((_, _)));
+        parser_test!(binary_operator, "||", Ok((_, _)));
+        parser_test!(binary_operator, "&", Ok((_, _)));
+        parser_test!(binary_operator, "|", Ok((_, _)));
+        parser_test!(binary_operator, "^~", Ok((_, _)));
+        parser_test!(binary_operator, "^", Ok((_, _)));
+        parser_test!(binary_operator, "~^", Ok((_, _)));
+        parser_test!(binary_operator, ">>>", Ok((_, _)));
+        parser_test!(binary_operator, ">>", Ok((_, _)));
+        parser_test!(binary_operator, "<<<", Ok((_, _)));
+        parser_test!(binary_operator, "<<", Ok((_, _)));
+        parser_test!(binary_operator, "->", Ok((_, _)));
+        parser_test!(binary_operator, "<->", Ok((_, _)));
+        parser_test!(binary_operator, "<=", Ok((_, _)));
+        parser_test!(binary_operator, "<", Ok((_, _)));
+        parser_test!(binary_operator, ">=", Ok((_, _)));
+        parser_test!(binary_operator, ">", Ok((_, _)));
+    }
+
+    #[test]
+    fn test_inc_or_dec_operator() {
+        parser_test!(inc_or_dec_operator, "++", Ok((_, _)));
+        parser_test!(inc_or_dec_operator, "--", Ok((_, _)));
+    }
+
+    #[test]
+    fn test_unary_module_path_operator() {
+        parser_test!(unary_module_path_operator, "!", Ok((_, _)));
+        parser_test!(unary_module_path_operator, "&", Ok((_, _)));
+        parser_test!(unary_module_path_operator, "|", Ok((_, _)));
+        parser_test!(unary_module_path_operator, "~&", Ok((_, _)));
+        parser_test!(unary_module_path_operator, "~|", Ok((_, _)));
+        parser_test!(unary_module_path_operator, "~^", Ok((_, _)));
+        parser_test!(unary_module_path_operator, "^~", Ok((_, _)));
+        parser_test!(unary_module_path_operator, "^", Ok((_, _)));
+        parser_test!(unary_module_path_operator, "~", Ok((_, _)));
+    }
+
+    #[test]
+    fn test_binary_module_path_operator() {
+        parser_test!(binary_module_path_operator, "==", Ok((_, _)));
+        parser_test!(binary_module_path_operator, "!=", Ok((_, _)));
+        parser_test!(binary_module_path_operator, "&&", Ok((_, _)));
+        parser_test!(binary_module_path_operator, "||", Ok((_, _)));
+        parser_test!(binary_module_path_operator, "&", Ok((_, _)));
+        parser_test!(binary_module_path_operator, "|", Ok((_, _)));
+        parser_test!(binary_module_path_operator, "^~", Ok((_, _)));
+        parser_test!(binary_module_path_operator, "^", Ok((_, _)));
+        parser_test!(binary_module_path_operator, "~^", Ok((_, _)));
     }
 }

@@ -40,17 +40,8 @@ mod tests {
     use nom::combinator::*;
 
     #[test]
-    fn test() {
-        assert_eq!(
-            format!("{:?}", all_consuming(comment)(Span::new("// comment"))),
-            "Ok((LocatedSpanEx { offset: 10, line: 1, fragment: \"\", extra: () }, Comment { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"// comment\", extra: () },) }))"
-        );
-        assert_eq!(
-            format!(
-                "{:?}",
-                all_consuming(comment)(Span::new("/* comment\n\n */"))
-            ),
-            "Ok((LocatedSpanEx { offset: 15, line: 3, fragment: \"\", extra: () }, Comment { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"/* comment\\n\\n */\", extra: () },) }))"
-        );
+    fn test_comment() {
+        parser_test!(comment, "// comment", Ok((_, _)));
+        parser_test!(comment, "/* comment\n\n */", Ok((_, _)));
     }
 }

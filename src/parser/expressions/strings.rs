@@ -57,27 +57,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test() {
-        assert_eq!(
-            format!(
-                "{:?}",
-                all_consuming(string_literal)(Span::new("\"aaa aaaa\""))
-            ),
-            "Ok((LocatedSpanEx { offset: 10, line: 1, fragment: \"\", extra: () }, StringLiteral { nodes: (LocatedSpanEx { offset: 1, line: 1, fragment: \"aaa aaaa\", extra: () }, []) }))"
-        );
-        assert_eq!(
-            format!(
-                "{:?}",
-                all_consuming(string_literal)(Span::new(r#""aaa\" aaaa""#))
-            ),
-            "Ok((LocatedSpanEx { offset: 12, line: 1, fragment: \"\", extra: () }, StringLiteral { nodes: (LocatedSpanEx { offset: 1, line: 1, fragment: \"aaa\\\\\\\" aaaa\", extra: () }, []) }))"
-        );
-        assert_eq!(
-            format!(
-                "{:?}",
-                all_consuming(string_literal)(Span::new(r#""aaa\"""#))
-            ),
-            "Ok((LocatedSpanEx { offset: 7, line: 1, fragment: \"\", extra: () }, StringLiteral { nodes: (LocatedSpanEx { offset: 1, line: 1, fragment: \"aaa\\\\\\\"\", extra: () }, []) }))"
-        );
+    fn test_string_literal() {
+        parser_test!(string_literal, "\"aaa aaaa\"", Ok((_, _)));
+        parser_test!(string_literal, r#""aaa\" aaaa""#, Ok((_, _)));
+        parser_test!(string_literal, r#""aaa\"""#, Ok((_, _)));
     }
 }

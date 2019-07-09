@@ -3,8 +3,9 @@ use nom::branch::*;
 use nom::bytes::complete::*;
 use nom::character::complete::*;
 use nom::combinator::*;
+use nom::error::*;
 use nom::multi::*;
-use nom::IResult;
+use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
@@ -84,6 +85,21 @@ where
     }
 }
 
+pub fn rec<'a, O, F>(f: F, id: u32) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
+where
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+{
+    move |s: Span<'a>| {
+        if check_bit(s, id) {
+            return Err(Err::Error(make_error(s, ErrorKind::Fix)));
+        }
+        let s = set_bit(s, id, true);
+        let (s, x) = f(s)?;
+        let s = set_bit(s, id, false);
+        Ok((s, x))
+    }
+}
+
 // -----------------------------------------------------------------------------
 
 pub fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
@@ -109,4 +125,31 @@ pub fn concat<'a>(a: Span<'a>, b: Span<'a>) -> Option<Span<'a>> {
     }
 }
 
+pub fn check_bit(s: Span, id: u32) -> bool {
+    ((s.extra >> id) & 1) == 1
+}
+
+pub fn set_bit(s: Span, id: u32, bit: bool) -> Span {
+    let val = if bit { 1u64 << id } else { 0u64 };
+    let mask = !(1u64 << id);
+    let val = (s.extra & mask) | val;
+    Span {
+        offset: s.offset,
+        line: s.line,
+        fragment: s.fragment,
+        extra: val,
+    }
+}
+
 // -----------------------------------------------------------------------------
+
+#[cfg(test)]
+macro_rules! parser_test {
+    ( $x:expr, $y:expr, $z:pat ) => {
+        let ret = all_consuming($x)(Span::new_extra($y, 0));
+        if let $z = ret {
+        } else {
+            assert!(false, "{:?}", ret)
+        }
+    };
+}

@@ -77,7 +77,7 @@ pub struct Var {}
 #[derive(Debug)]
 pub enum ForStepAssignment<'a> {
     Operator(OperatorAssignment<'a>),
-    IncOrDec(IncOrDecDeclaration<'a>),
+    IncOrDec(IncOrDecExpression<'a>),
     Subroutine(SubroutineCall<'a>),
 }
 
@@ -213,7 +213,7 @@ pub fn for_step(s: &str) -> IResult<&str, Vec<ForStepAssignment>> {
 pub fn for_step_assignment(s: &str) -> IResult<&str, ForStepAssignment> {
     alt((
         map(operator_assignment, |x| ForStepAssignment::Operator(x)),
-        map(inc_or_dec_declaration, |x| ForStepAssignment::IncOrDec(x)),
+        map(inc_or_dec_expression, |x| ForStepAssignment::IncOrDec(x)),
         map(function_subroutine_call, |x| {
             ForStepAssignment::Subroutine(x)
         }),

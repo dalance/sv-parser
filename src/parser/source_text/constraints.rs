@@ -19,7 +19,7 @@ pub struct ConstraintDeclaration<'a> {
 pub struct Static {}
 
 #[derive(Debug)]
-pub struct ConstraintsBlock<'a> {
+pub struct ConstraintBlock<'a> {
     pub nodes: (Vec<ConstraintBlockItem<'a>>,),
 }
 

@@ -164,62 +164,62 @@ pub struct IdentifierList<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn constraint_declaration(s: &str) -> IResult<&str, ConstraintDeclaration> {
+pub fn constraint_declaration(s: Span) -> IResult<Span, ConstraintDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn constraint_block(s: &str) -> IResult<&str, ConstraintBlock> {
+pub fn constraint_block(s: Span) -> IResult<Span, ConstraintBlock> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn constraint_block_item(s: &str) -> IResult<&str, ConstraintBlockItem> {
+pub fn constraint_block_item(s: Span) -> IResult<Span, ConstraintBlockItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn solve_before_list(s: &str) -> IResult<&str, SolveBeforeList> {
+pub fn solve_before_list(s: Span) -> IResult<Span, SolveBeforeList> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn constraint_primary(s: &str) -> IResult<&str, ConstraintPrimary> {
+pub fn constraint_primary(s: Span) -> IResult<Span, ConstraintPrimary> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn constraint_expression(s: &str) -> IResult<&str, ConstraintExpression> {
+pub fn constraint_expression(s: Span) -> IResult<Span, ConstraintExpression> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn uniqueness_constraint(s: &str) -> IResult<&str, UniquenessConstraint> {
+pub fn uniqueness_constraint(s: Span) -> IResult<Span, UniquenessConstraint> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn constraint_set(s: &str) -> IResult<&str, ConstraintSet> {
+pub fn constraint_set(s: Span) -> IResult<Span, ConstraintSet> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn dist_list(s: &str) -> IResult<&str, DistList> {
+pub fn dist_list(s: Span) -> IResult<Span, DistList> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn dist_item(s: &str) -> IResult<&str, DistItem> {
+pub fn dist_item(s: Span) -> IResult<Span, DistItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn dist_weight(s: &str) -> IResult<&str, DistWeight> {
+pub fn dist_weight(s: Span) -> IResult<Span, DistWeight> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn constraint_prototype(s: &str) -> IResult<&str, ConstraintPrototype> {
+pub fn constraint_prototype(s: Span) -> IResult<Span, ConstraintPrototype> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn constraint_prototype_qualifier(s: &str) -> IResult<&str, ConstraintPrototypeQualifier> {
+pub fn constraint_prototype_qualifier(s: Span) -> IResult<Span, ConstraintPrototypeQualifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn extern_constraint_declaration(s: &str) -> IResult<&str, ExternConstraintDeclaration> {
+pub fn extern_constraint_declaration(s: Span) -> IResult<Span, ExternConstraintDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn identifier_list(s: &str) -> IResult<&str, IdentifierList> {
+pub fn identifier_list(s: Span) -> IResult<Span, IdentifierList> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

@@ -1,39 +1,46 @@
 use crate::parser::*;
+use nom::branch::*;
 use nom::bytes::complete::*;
 use nom::character::complete::*;
 use nom::combinator::*;
+use nom::multi::*;
 use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
 #[derive(Debug)]
 pub struct Symbol<'a> {
-    pub nodes: (&'a str,),
+    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
+}
+
+#[derive(Debug)]
+pub enum WhiteSpace<'a> {
+    Space(Span<'a>),
+    Comment(Comment<'a>),
 }
 
 // -----------------------------------------------------------------------------
 
-pub fn ws<'a, O, F>(f: F) -> impl Fn(&'a str) -> IResult<&'a str, O>
+pub fn ws<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, (O, Vec<WhiteSpace<'a>>)>
 where
-    F: Fn(&'a str) -> IResult<&'a str, O>,
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
-    move |s: &'a str| {
-        let (s, _) = space0(s)?;
+    move |s: Span<'a>| {
         let (s, x) = f(s)?;
-        let (s, _) = space0(s)?;
-        Ok((s, x))
+        let (s, y) = many0(white_space)(s)?;
+        Ok((s, (x, y)))
     }
 }
 
-pub fn symbol<'a>(t: &'a str) -> impl Fn(&'a str) -> IResult<&'a str, Symbol<'a>> {
-    move |s: &'a str| ws(map(tag(t.clone()), |x| Symbol { nodes: (x,) }))(s)
+pub fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol<'a>> {
+    move |s: Span<'a>| map(ws(tag(t.clone())), |x| Symbol { nodes: x })(s)
 }
 
-pub fn paren<'a, O, F>(f: F) -> impl Fn(&'a str) -> IResult<&'a str, O>
+pub fn paren<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
 where
-    F: Fn(&'a str) -> IResult<&'a str, O>,
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
-    move |s: &'a str| {
+    move |s: Span<'a>| {
         let (s, _) = symbol("(")(s)?;
         let (s, x) = f(s)?;
         let (s, _) = symbol(")")(s)?;
@@ -41,11 +48,11 @@ where
     }
 }
 
-pub fn bracket<'a, O, F>(f: F) -> impl Fn(&'a str) -> IResult<&'a str, O>
+pub fn bracket<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
 where
-    F: Fn(&'a str) -> IResult<&'a str, O>,
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
-    move |s: &'a str| {
+    move |s: Span<'a>| {
         let (s, _) = symbol("[")(s)?;
         let (s, x) = f(s)?;
         let (s, _) = symbol("]")(s)?;
@@ -53,11 +60,11 @@ where
     }
 }
 
-pub fn brace<'a, O, F>(f: F) -> impl Fn(&'a str) -> IResult<&'a str, O>
+pub fn brace<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
 where
-    F: Fn(&'a str) -> IResult<&'a str, O>,
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
-    move |s: &'a str| {
+    move |s: Span<'a>| {
         let (s, _) = symbol("{")(s)?;
         let (s, x) = f(s)?;
         let (s, _) = symbol("}")(s)?;
@@ -65,15 +72,40 @@ where
     }
 }
 
-pub fn apostrophe_brace<'a, O, F>(f: F) -> impl Fn(&'a str) -> IResult<&'a str, O>
+pub fn apostrophe_brace<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
 where
-    F: Fn(&'a str) -> IResult<&'a str, O>,
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
-    move |s: &'a str| {
+    move |s: Span<'a>| {
         let (s, _) = symbol("'{")(s)?;
         let (s, x) = f(s)?;
         let (s, _) = symbol("}")(s)?;
         Ok((s, x))
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+pub fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
+    alt((
+        map(multispace1, |x| WhiteSpace::Space(x)),
+        map(comment, |x| WhiteSpace::Comment(x)),
+    ))(s)
+}
+
+// -----------------------------------------------------------------------------
+
+pub fn concat<'a>(a: Span<'a>, b: Span<'a>) -> Option<Span<'a>> {
+    let c = str_concat::concat(a.fragment, b.fragment);
+    if let Ok(c) = c {
+        Some(Span {
+            offset: a.offset,
+            line: a.line,
+            fragment: c,
+            extra: a.extra,
+        })
+    } else {
+        None
     }
 }
 

@@ -259,86 +259,86 @@ pub enum TypeReference<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn casting_type(s: &str) -> IResult<&str, CastingType> {
+pub fn casting_type(s: Span) -> IResult<Span, CastingType> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn data_type(s: &str) -> IResult<&str, DataType> {
+pub fn data_type(s: Span) -> IResult<Span, DataType> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn data_type_or_implicit(s: &str) -> IResult<&str, DataTypeOrImplicit> {
+pub fn data_type_or_implicit(s: Span) -> IResult<Span, DataTypeOrImplicit> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn implicit_data_type(s: &str) -> IResult<&str, ImplicitDataType> {
+pub fn implicit_data_type(s: Span) -> IResult<Span, ImplicitDataType> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn enum_base_type(s: &str) -> IResult<&str, EnumBaseType> {
+pub fn enum_base_type(s: Span) -> IResult<Span, EnumBaseType> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn enum_name_declaration(s: &str) -> IResult<&str, EnumNameDeclaration> {
+pub fn enum_name_declaration(s: Span) -> IResult<Span, EnumNameDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn class_scope(s: &str) -> IResult<&str, ClassScope> {
+pub fn class_scope(s: Span) -> IResult<Span, ClassScope> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn integer_type(s: &str) -> IResult<&str, IntegerType> {
+pub fn integer_type(s: Span) -> IResult<Span, IntegerType> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn integer_atom_type(s: &str) -> IResult<&str, IntegerAtomType> {
+pub fn integer_atom_type(s: Span) -> IResult<Span, IntegerAtomType> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn integer_vector_type(s: &str) -> IResult<&str, IntegerVectorType> {
+pub fn integer_vector_type(s: Span) -> IResult<Span, IntegerVectorType> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn non_integer_type(s: &str) -> IResult<&str, NonIntegerType> {
+pub fn non_integer_type(s: Span) -> IResult<Span, NonIntegerType> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn net_type(s: &str) -> IResult<&str, NetType> {
+pub fn net_type(s: Span) -> IResult<Span, NetType> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn net_port_type(s: &str) -> IResult<&str, NetPortType> {
+pub fn net_port_type(s: Span) -> IResult<Span, NetPortType> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn variable_port_type(s: &str) -> IResult<&str, VariablePortType> {
+pub fn variable_port_type(s: Span) -> IResult<Span, VariablePortType> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn var_data_type(s: &str) -> IResult<&str, VarDataType> {
+pub fn var_data_type(s: Span) -> IResult<Span, VarDataType> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn signing(s: &str) -> IResult<&str, Signing> {
+pub fn signing(s: Span) -> IResult<Span, Signing> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn simple_type(s: &str) -> IResult<&str, SimpleType> {
+pub fn simple_type(s: Span) -> IResult<Span, SimpleType> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn struct_union_member(s: &str) -> IResult<&str, StructUnionMember> {
+pub fn struct_union_member(s: Span) -> IResult<Span, StructUnionMember> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn data_type_or_void(s: &str) -> IResult<&str, DataTypeOrVoid> {
+pub fn data_type_or_void(s: Span) -> IResult<Span, DataTypeOrVoid> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn struct_union(s: &str) -> IResult<&str, StructUnion> {
+pub fn struct_union(s: Span) -> IResult<Span, StructUnion> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn type_reference(s: &str) -> IResult<&str, TypeReference> {
+pub fn type_reference(s: Span) -> IResult<Span, TypeReference> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

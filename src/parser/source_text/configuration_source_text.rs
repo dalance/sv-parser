@@ -115,38 +115,38 @@ pub struct Config {}
 
 // -----------------------------------------------------------------------------
 
-pub fn config_declaration(s: &str) -> IResult<&str, ConfigDeclaration> {
+pub fn config_declaration(s: Span) -> IResult<Span, ConfigDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn design_statement(s: &str) -> IResult<&str, DesignStatement> {
+pub fn design_statement(s: Span) -> IResult<Span, DesignStatement> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn config_rule_statement(s: &str) -> IResult<&str, ConfigRuleStatement> {
+pub fn config_rule_statement(s: Span) -> IResult<Span, ConfigRuleStatement> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn default_clause(s: &str) -> IResult<&str, DefaultClause> {
+pub fn default_clause(s: Span) -> IResult<Span, DefaultClause> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn inst_clause(s: &str) -> IResult<&str, InstClause> {
+pub fn inst_clause(s: Span) -> IResult<Span, InstClause> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn inst_name(s: &str) -> IResult<&str, InstName> {
+pub fn inst_name(s: Span) -> IResult<Span, InstName> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn cell_clause(s: &str) -> IResult<&str, CellClause> {
+pub fn cell_clause(s: Span) -> IResult<Span, CellClause> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn liblist_clause(s: &str) -> IResult<&str, LiblistClause> {
+pub fn liblist_clause(s: Span) -> IResult<Span, LiblistClause> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn use_clause(s: &str) -> IResult<&str, UseClause> {
+pub fn use_clause(s: Span) -> IResult<Span, UseClause> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

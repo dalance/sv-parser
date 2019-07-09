@@ -5,13 +5,33 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug)]
-pub struct Operator<'a> {
+pub struct UnaryOperator<'a> {
+    pub nodes: (Symbol<'a>,),
+}
+
+#[derive(Debug)]
+pub struct BinaryOperator<'a> {
+    pub nodes: (Symbol<'a>,),
+}
+
+#[derive(Debug)]
+pub struct IncOrDecOperator<'a> {
+    pub nodes: (Symbol<'a>,),
+}
+
+#[derive(Debug)]
+pub struct UnaryModulePathOperator<'a> {
+    pub nodes: (Symbol<'a>,),
+}
+
+#[derive(Debug)]
+pub struct BinaryModulePathOperator<'a> {
     pub nodes: (Symbol<'a>,),
 }
 
 // -----------------------------------------------------------------------------
 
-pub fn unary_operator(s: &str) -> IResult<&str, Operator> {
+pub fn unary_operator(s: Span) -> IResult<Span, UnaryOperator> {
     let (s, a) = alt((
         symbol("+"),
         symbol("-"),
@@ -25,10 +45,10 @@ pub fn unary_operator(s: &str) -> IResult<&str, Operator> {
         symbol("^"),
         symbol("~"),
     ))(s)?;
-    Ok((s, Operator { nodes: (a,) }))
+    Ok((s, UnaryOperator { nodes: (a,) }))
 }
 
-pub fn binary_operator(s: &str) -> IResult<&str, Operator> {
+pub fn binary_operator(s: Span) -> IResult<Span, BinaryOperator> {
     let (s, a) = alt((
         alt((
             symbol("+"),
@@ -64,15 +84,15 @@ pub fn binary_operator(s: &str) -> IResult<&str, Operator> {
             symbol(">"),
         )),
     ))(s)?;
-    Ok((s, Operator { nodes: (a,) }))
+    Ok((s, BinaryOperator { nodes: (a,) }))
 }
 
-pub fn inc_or_dec_operator(s: &str) -> IResult<&str, Operator> {
+pub fn inc_or_dec_operator(s: Span) -> IResult<Span, IncOrDecOperator> {
     let (s, a) = alt((symbol("++"), symbol("--")))(s)?;
-    Ok((s, Operator { nodes: (a,) }))
+    Ok((s, IncOrDecOperator { nodes: (a,) }))
 }
 
-pub fn unary_module_path_operator(s: &str) -> IResult<&str, Operator> {
+pub fn unary_module_path_operator(s: Span) -> IResult<Span, UnaryModulePathOperator> {
     let (s, a) = alt((
         symbol("!"),
         symbol("&"),
@@ -84,10 +104,10 @@ pub fn unary_module_path_operator(s: &str) -> IResult<&str, Operator> {
         symbol("^"),
         symbol("~"),
     ))(s)?;
-    Ok((s, Operator { nodes: (a,) }))
+    Ok((s, UnaryModulePathOperator { nodes: (a,) }))
 }
 
-pub fn binary_module_path_operator(s: &str) -> IResult<&str, Operator> {
+pub fn binary_module_path_operator(s: Span) -> IResult<Span, BinaryModulePathOperator> {
     let (s, a) = alt((
         symbol("=="),
         symbol("!="),
@@ -99,7 +119,7 @@ pub fn binary_module_path_operator(s: &str) -> IResult<&str, Operator> {
         symbol("^"),
         symbol("~^"),
     ))(s)?;
-    Ok((s, Operator { nodes: (a,) }))
+    Ok((s, BinaryModulePathOperator { nodes: (a,) }))
 }
 
 // -----------------------------------------------------------------------------
@@ -112,24 +132,30 @@ mod tests {
     #[test]
     fn test() {
         assert_eq!(
-            format!("{:?}", all_consuming(unary_operator)("~")),
-            "Ok((\"\", Operator { raw: \"~\" }))"
+            format!("{:?}", all_consuming(unary_operator)(Span::new("~"))),
+            "Ok((LocatedSpanEx { offset: 1, line: 1, fragment: \"\", extra: () }, UnaryOperator { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"~\", extra: () }, []) },) }))"
         );
         assert_eq!(
-            format!("{:?}", all_consuming(binary_operator)(">>>")),
-            "Ok((\"\", Operator { raw: \">>>\" }))"
+            format!("{:?}", all_consuming(binary_operator)(Span::new(">>>"))),
+            "Ok((LocatedSpanEx { offset: 3, line: 1, fragment: \"\", extra: () }, BinaryOperator { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \">>>\", extra: () }, []) },) }))"
         );
         assert_eq!(
-            format!("{:?}", all_consuming(inc_or_dec_operator)("++")),
-            "Ok((\"\", Operator { raw: \"++\" }))"
+            format!("{:?}", all_consuming(inc_or_dec_operator)(Span::new("++"))),
+            "Ok((LocatedSpanEx { offset: 2, line: 1, fragment: \"\", extra: () }, IncOrDecOperator { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"++\", extra: () }, []) },) }))"
         );
         assert_eq!(
-            format!("{:?}", all_consuming(unary_module_path_operator)("^~")),
-            "Ok((\"\", Operator { raw: \"^~\" }))"
+            format!(
+                "{:?}",
+                all_consuming(unary_module_path_operator)(Span::new("^~"))
+            ),
+            "Ok((LocatedSpanEx { offset: 2, line: 1, fragment: \"\", extra: () }, UnaryModulePathOperator { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"^~\", extra: () }, []) },) }))"
         );
         assert_eq!(
-            format!("{:?}", all_consuming(binary_module_path_operator)("||")),
-            "Ok((\"\", Operator { raw: \"||\" }))"
+            format!(
+                "{:?}",
+                all_consuming(binary_module_path_operator)(Span::new("||"))
+            ),
+            "Ok((LocatedSpanEx { offset: 2, line: 1, fragment: \"\", extra: () }, BinaryModulePathOperator { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"||\", extra: () }, []) },) }))"
         );
     }
 }

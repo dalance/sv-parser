@@ -111,7 +111,7 @@ pub struct OpenRangeValue<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn case_statement(s: &str) -> IResult<&str, CaseStatement> {
+pub fn case_statement(s: Span) -> IResult<Span, CaseStatement> {
     alt((
         case_statement_normal,
         case_statement_matches,
@@ -119,7 +119,7 @@ pub fn case_statement(s: &str) -> IResult<&str, CaseStatement> {
     ))(s)
 }
 
-pub fn case_statement_normal(s: &str) -> IResult<&str, CaseStatement> {
+pub fn case_statement_normal(s: Span) -> IResult<Span, CaseStatement> {
     let (s, x) = opt(unique_priority)(s)?;
     let (s, y) = case_keyword(s)?;
     let (s, _) = symbol("(")(s)?;
@@ -135,7 +135,7 @@ pub fn case_statement_normal(s: &str) -> IResult<&str, CaseStatement> {
     ))
 }
 
-pub fn case_statement_matches(s: &str) -> IResult<&str, CaseStatement> {
+pub fn case_statement_matches(s: Span) -> IResult<Span, CaseStatement> {
     let (s, x) = opt(unique_priority)(s)?;
     let (s, y) = case_keyword(s)?;
     let (s, _) = symbol("(")(s)?;
@@ -152,7 +152,7 @@ pub fn case_statement_matches(s: &str) -> IResult<&str, CaseStatement> {
     ))
 }
 
-pub fn case_statement_inside(s: &str) -> IResult<&str, CaseStatement> {
+pub fn case_statement_inside(s: Span) -> IResult<Span, CaseStatement> {
     let (s, x) = opt(unique_priority)(s)?;
     let (s, y) = case_keyword(s)?;
     let (s, _) = symbol("(")(s)?;
@@ -169,7 +169,7 @@ pub fn case_statement_inside(s: &str) -> IResult<&str, CaseStatement> {
     ))
 }
 
-pub fn case_keyword(s: &str) -> IResult<&str, CaseKeyword> {
+pub fn case_keyword(s: Span) -> IResult<Span, CaseKeyword> {
     alt((
         map(symbol("casez"), |_| CaseKeyword::Casez),
         map(symbol("casex"), |_| CaseKeyword::Casex),
@@ -177,18 +177,18 @@ pub fn case_keyword(s: &str) -> IResult<&str, CaseKeyword> {
     ))(s)
 }
 
-pub fn case_expression(s: &str) -> IResult<&str, Expression> {
+pub fn case_expression(s: Span) -> IResult<Span, Expression> {
     expression(s)
 }
 
-pub fn case_item(s: &str) -> IResult<&str, CaseItem> {
+pub fn case_item(s: Span) -> IResult<Span, CaseItem> {
     alt((
         case_item_nondefault,
         map(case_item_default, |x| CaseItem::Default(x)),
     ))(s)
 }
 
-pub fn case_item_nondefault(s: &str) -> IResult<&str, CaseItem> {
+pub fn case_item_nondefault(s: Span) -> IResult<Span, CaseItem> {
     let (s, x) = separated_nonempty_list(symbol(","), case_item_expression)(s)?;
     let (s, _) = symbol(":")(s)?;
     let (s, y) = statement_or_null(s)?;
@@ -198,21 +198,21 @@ pub fn case_item_nondefault(s: &str) -> IResult<&str, CaseItem> {
     ))
 }
 
-pub fn case_item_default(s: &str) -> IResult<&str, CaseItemDefault> {
+pub fn case_item_default(s: Span) -> IResult<Span, CaseItemDefault> {
     let (s, _) = symbol("default")(s)?;
     let (s, _) = opt(symbol(":"))(s)?;
     let (s, x) = statement_or_null(s)?;
     Ok((s, CaseItemDefault { nodes: (x,) }))
 }
 
-pub fn case_pattern_item(s: &str) -> IResult<&str, CasePatternItem> {
+pub fn case_pattern_item(s: Span) -> IResult<Span, CasePatternItem> {
     alt((
         case_pattern_item_nondefault,
         map(case_item_default, |x| CasePatternItem::Default(x)),
     ))(s)
 }
 
-pub fn case_pattern_item_nondefault(s: &str) -> IResult<&str, CasePatternItem> {
+pub fn case_pattern_item_nondefault(s: Span) -> IResult<Span, CasePatternItem> {
     let (s, x) = pattern(s)?;
     let (s, y) = opt(preceded(symbol("&&&"), expression))(s)?;
     let (s, _) = symbol(":")(s)?;
@@ -223,14 +223,14 @@ pub fn case_pattern_item_nondefault(s: &str) -> IResult<&str, CasePatternItem> {
     ))
 }
 
-pub fn case_inside_item(s: &str) -> IResult<&str, CaseInsideItem> {
+pub fn case_inside_item(s: Span) -> IResult<Span, CaseInsideItem> {
     alt((
         case_inside_item_nondefault,
         map(case_item_default, |x| CaseInsideItem::Default(x)),
     ))(s)
 }
 
-pub fn case_inside_item_nondefault(s: &str) -> IResult<&str, CaseInsideItem> {
+pub fn case_inside_item_nondefault(s: Span) -> IResult<Span, CaseInsideItem> {
     let (s, x) = open_range_list(s)?;
     let (s, _) = symbol(":")(s)?;
     let (s, y) = statement_or_null(s)?;
@@ -240,28 +240,28 @@ pub fn case_inside_item_nondefault(s: &str) -> IResult<&str, CaseInsideItem> {
     ))
 }
 
-pub fn case_item_expression(s: &str) -> IResult<&str, Expression> {
+pub fn case_item_expression(s: Span) -> IResult<Span, Expression> {
     expression(s)
 }
 
-pub fn randcase_statement(s: &str) -> IResult<&str, RandcaseStatement> {
+pub fn randcase_statement(s: Span) -> IResult<Span, RandcaseStatement> {
     let (s, _) = symbol("randcase")(s)?;
     let (s, x) = many1(randcase_item)(s)?;
     let (s, _) = symbol("endcase")(s)?;
     Ok((s, RandcaseStatement { nodes: (x,) }))
 }
 
-pub fn randcase_item(s: &str) -> IResult<&str, RandcaseItem> {
+pub fn randcase_item(s: Span) -> IResult<Span, RandcaseItem> {
     let (s, x) = expression(s)?;
     let (s, _) = symbol(":")(s)?;
     let (s, y) = statement_or_null(s)?;
     Ok((s, RandcaseItem { nodes: (x, y) }))
 }
 
-pub fn open_range_list(s: &str) -> IResult<&str, Vec<ValueRange>> {
+pub fn open_range_list(s: Span) -> IResult<Span, Vec<ValueRange>> {
     separated_nonempty_list(symbol(","), open_value_range)(s)
 }
 
-pub fn open_value_range(s: &str) -> IResult<&str, ValueRange> {
+pub fn open_value_range(s: Span) -> IResult<Span, ValueRange> {
     value_range(s)
 }

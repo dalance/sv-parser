@@ -16,7 +16,7 @@ pub struct InterfaceInstantiation<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn interface_instantiation(s: &str) -> IResult<&str, InterfaceInstantiation> {
+pub fn interface_instantiation(s: Span) -> IResult<Span, InterfaceInstantiation> {
     let (s, x) = interface_identifier(s)?;
     let (s, y) = opt(parameter_value_assignment)(s)?;
     let (s, z) = separated_nonempty_list(symbol(","), hierarchical_instance)(s)?;

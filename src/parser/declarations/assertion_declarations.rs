@@ -583,168 +583,168 @@ pub struct AssertionVariableDeclaration<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn concurrent_assertion_item(s: &str) -> IResult<&str, ConcurrentAssertionItem> {
+pub fn concurrent_assertion_item(s: Span) -> IResult<Span, ConcurrentAssertionItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn concurrent_assertion_statement(s: &str) -> IResult<&str, ConcurrentAssertionStatement> {
+pub fn concurrent_assertion_statement(s: Span) -> IResult<Span, ConcurrentAssertionStatement> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn assert_property_statement(s: &str) -> IResult<&str, AssertPropertyStatement> {
+pub fn assert_property_statement(s: Span) -> IResult<Span, AssertPropertyStatement> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn assume_property_statement(s: &str) -> IResult<&str, AssumePropertyStatement> {
+pub fn assume_property_statement(s: Span) -> IResult<Span, AssumePropertyStatement> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn cover_property_statement(s: &str) -> IResult<&str, CoverPropertyStatement> {
+pub fn cover_property_statement(s: Span) -> IResult<Span, CoverPropertyStatement> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn expect_property_statement(s: &str) -> IResult<&str, ExpectPropertyStatement> {
+pub fn expect_property_statement(s: Span) -> IResult<Span, ExpectPropertyStatement> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn cover_sequence_statement(s: &str) -> IResult<&str, CoverSequenceStatement> {
+pub fn cover_sequence_statement(s: Span) -> IResult<Span, CoverSequenceStatement> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn restrict_property_statement(s: &str) -> IResult<&str, RestrictPropertyStatement> {
+pub fn restrict_property_statement(s: Span) -> IResult<Span, RestrictPropertyStatement> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn property_instance(s: &str) -> IResult<&str, PropertyInstance> {
+pub fn property_instance(s: Span) -> IResult<Span, PropertyInstance> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn property_list_of_arguments(s: &str) -> IResult<&str, PropertyListOfArguments> {
+pub fn property_list_of_arguments(s: Span) -> IResult<Span, PropertyListOfArguments> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn property_actual_arg(s: &str) -> IResult<&str, PropertyActualArg> {
+pub fn property_actual_arg(s: Span) -> IResult<Span, PropertyActualArg> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn assertion_item_declaration(s: &str) -> IResult<&str, AssertionItemDeclaration> {
+pub fn assertion_item_declaration(s: Span) -> IResult<Span, AssertionItemDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn property_declaration(s: &str) -> IResult<&str, PropertyDeclaration> {
+pub fn property_declaration(s: Span) -> IResult<Span, PropertyDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn property_port_list(s: &str) -> IResult<&str, PropertyPortList> {
+pub fn property_port_list(s: Span) -> IResult<Span, PropertyPortList> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn property_port_item(s: &str) -> IResult<&str, PropertyPortItem> {
+pub fn property_port_item(s: Span) -> IResult<Span, PropertyPortItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn property_lvar_port_direction(s: &str) -> IResult<&str, PropertyLvarPortDirection> {
+pub fn property_lvar_port_direction(s: Span) -> IResult<Span, PropertyLvarPortDirection> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn property_formal_type(s: &str) -> IResult<&str, PropertyFormalType> {
+pub fn property_formal_type(s: Span) -> IResult<Span, PropertyFormalType> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn property_spec(s: &str) -> IResult<&str, PropertySpec> {
+pub fn property_spec(s: Span) -> IResult<Span, PropertySpec> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn property_expr(s: &str) -> IResult<&str, PropertyExpr> {
+pub fn property_expr(s: Span) -> IResult<Span, PropertyExpr> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn property_case_item(s: &str) -> IResult<&str, PropertyCaseItem> {
+pub fn property_case_item(s: Span) -> IResult<Span, PropertyCaseItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn sequence_declaration(s: &str) -> IResult<&str, SequenceDeclaration> {
+pub fn sequence_declaration(s: Span) -> IResult<Span, SequenceDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn sequence_port_list(s: &str) -> IResult<&str, SequencePortList> {
+pub fn sequence_port_list(s: Span) -> IResult<Span, SequencePortList> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn sequence_port_item(s: &str) -> IResult<&str, SequencePortItem> {
+pub fn sequence_port_item(s: Span) -> IResult<Span, SequencePortItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn sequence_lvar_port_direction(s: &str) -> IResult<&str, SequenceLvarPortDirection> {
+pub fn sequence_lvar_port_direction(s: Span) -> IResult<Span, SequenceLvarPortDirection> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn sequence_formal_type(s: &str) -> IResult<&str, SequenceFormalType> {
+pub fn sequence_formal_type(s: Span) -> IResult<Span, SequenceFormalType> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn sequence_expr(s: &str) -> IResult<&str, SequenceExpr> {
+pub fn sequence_expr(s: Span) -> IResult<Span, SequenceExpr> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn cycle_delay_range(s: &str) -> IResult<&str, CycleDelayRange> {
+pub fn cycle_delay_range(s: Span) -> IResult<Span, CycleDelayRange> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn sequence_method_call(s: &str) -> IResult<&str, SequenceMethodCall> {
+pub fn sequence_method_call(s: Span) -> IResult<Span, SequenceMethodCall> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn sequence_match_item(s: &str) -> IResult<&str, SequenceMatchItem> {
+pub fn sequence_match_item(s: Span) -> IResult<Span, SequenceMatchItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn sequence_instance(s: &str) -> IResult<&str, SequenceInstance> {
+pub fn sequence_instance(s: Span) -> IResult<Span, SequenceInstance> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn sequence_list_of_arguments(s: &str) -> IResult<&str, SequenceListOfArguments> {
+pub fn sequence_list_of_arguments(s: Span) -> IResult<Span, SequenceListOfArguments> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn sequence_actual_arg(s: &str) -> IResult<&str, SequenceActualArg> {
+pub fn sequence_actual_arg(s: Span) -> IResult<Span, SequenceActualArg> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn boolean_abbrev(s: &str) -> IResult<&str, BooleanAbbrev> {
+pub fn boolean_abbrev(s: Span) -> IResult<Span, BooleanAbbrev> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn sequence_abbrev(s: &str) -> IResult<&str, SequenceAbbrev> {
+pub fn sequence_abbrev(s: Span) -> IResult<Span, SequenceAbbrev> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn consecutive_repetition(s: &str) -> IResult<&str, ConsecutiveRepetition> {
+pub fn consecutive_repetition(s: Span) -> IResult<Span, ConsecutiveRepetition> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn non_consecutive_repetition(s: &str) -> IResult<&str, NonConsecutiveRepetition> {
+pub fn non_consecutive_repetition(s: Span) -> IResult<Span, NonConsecutiveRepetition> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn goto_repetition(s: &str) -> IResult<&str, GotoRepetition> {
+pub fn goto_repetition(s: Span) -> IResult<Span, GotoRepetition> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn const_or_range_expression(s: &str) -> IResult<&str, ConstOrRangeExpression> {
+pub fn const_or_range_expression(s: Span) -> IResult<Span, ConstOrRangeExpression> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
 pub fn cycle_delay_const_range_expression(
-    s: &str,
-) -> IResult<&str, CycleDelayConstRangeExpression> {
+    s: Span,
+) -> IResult<Span, CycleDelayConstRangeExpression> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn expression_or_dist(s: &str) -> IResult<&str, ExpressionOrDist> {
+pub fn expression_or_dist(s: Span) -> IResult<Span, ExpressionOrDist> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn assertion_variable_declaration(s: &str) -> IResult<&str, AssertionVariableDeclaration> {
+pub fn assertion_variable_declaration(s: Span) -> IResult<Span, AssertionVariableDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

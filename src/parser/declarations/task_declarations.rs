@@ -96,34 +96,34 @@ pub struct TaskPrototype<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn task_declaration(s: &str) -> IResult<&str, TaskDeclaration> {
+pub fn task_declaration(s: Span) -> IResult<Span, TaskDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn task_body_declaration(s: &str) -> IResult<&str, TaskBodyDeclaration> {
+pub fn task_body_declaration(s: Span) -> IResult<Span, TaskBodyDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn tf_item_declaration(s: &str) -> IResult<&str, TfItemDeclaration> {
+pub fn tf_item_declaration(s: Span) -> IResult<Span, TfItemDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn tf_port_list(s: &str) -> IResult<&str, TfPortList> {
+pub fn tf_port_list(s: Span) -> IResult<Span, TfPortList> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn tf_port_item(s: &str) -> IResult<&str, TfPortItem> {
+pub fn tf_port_item(s: Span) -> IResult<Span, TfPortItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn tf_port_direction(s: &str) -> IResult<&str, TfPortDirection> {
+pub fn tf_port_direction(s: Span) -> IResult<Span, TfPortDirection> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn tf_port_declaration(s: &str) -> IResult<&str, TfPortDeclaration> {
+pub fn tf_port_declaration(s: Span) -> IResult<Span, TfPortDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn task_prototype(s: &str) -> IResult<&str, TaskPrototype> {
+pub fn task_prototype(s: Span) -> IResult<Span, TaskPrototype> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

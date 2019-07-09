@@ -47,7 +47,7 @@ pub struct CondPattern<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn conditional_statement(s: &str) -> IResult<&str, ConditionalStatement> {
+pub fn conditional_statement(s: Span) -> IResult<Span, ConditionalStatement> {
     let (s, x) = opt(unique_priority)(s)?;
     let (s, _) = symbol("if")(s)?;
     let (s, y) = conditional_statement_body(s)?;
@@ -65,7 +65,7 @@ pub fn conditional_statement(s: &str) -> IResult<&str, ConditionalStatement> {
     ))
 }
 
-pub fn conditional_statement_body(s: &str) -> IResult<&str, ConditionalStatementBody> {
+pub fn conditional_statement_body(s: Span) -> IResult<Span, ConditionalStatementBody> {
     let (s, _) = symbol("(")(s)?;
     let (s, x) = cond_predicate(s)?;
     let (s, _) = symbol(")")(s)?;
@@ -74,7 +74,7 @@ pub fn conditional_statement_body(s: &str) -> IResult<&str, ConditionalStatement
     Ok((s, ConditionalStatementBody { nodes: (x, y) }))
 }
 
-pub fn unique_priority(s: &str) -> IResult<&str, UniquePriority> {
+pub fn unique_priority(s: Span) -> IResult<Span, UniquePriority> {
     alt((
         map(symbol("unique0"), |_| UniquePriority::Unique0),
         map(symbol("unique"), |_| UniquePriority::Unique),
@@ -82,19 +82,19 @@ pub fn unique_priority(s: &str) -> IResult<&str, UniquePriority> {
     ))(s)
 }
 
-pub fn cond_predicate(s: &str) -> IResult<&str, CondPredicate> {
+pub fn cond_predicate(s: Span) -> IResult<Span, CondPredicate> {
     let (s, x) = separated_nonempty_list(symbol("&&&"), expression_or_cond_pattern)(s)?;
     Ok((s, CondPredicate { nodes: (x,) }))
 }
 
-pub fn expression_or_cond_pattern(s: &str) -> IResult<&str, ExpressionOrCondPattern> {
+pub fn expression_or_cond_pattern(s: Span) -> IResult<Span, ExpressionOrCondPattern> {
     alt((
         map(expression, |x| ExpressionOrCondPattern::Expression(x)),
         map(cond_pattern, |x| ExpressionOrCondPattern::CondPattern(x)),
     ))(s)
 }
 
-pub fn cond_pattern(s: &str) -> IResult<&str, CondPattern> {
+pub fn cond_pattern(s: Span) -> IResult<Span, CondPattern> {
     let (s, x) = expression(s)?;
     let (s, _) = symbol("matches")(s)?;
     let (s, y) = pattern(s)?;

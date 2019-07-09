@@ -71,7 +71,7 @@ pub struct AssignmentPatternVariableLvalue<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn pattern(s: &str) -> IResult<&str, Pattern> {
+pub fn pattern(s: Span) -> IResult<Span, Pattern> {
     alt((
         map(preceded(symbol("."), variable_identifier), |x| {
             Pattern::VariableIdentifier(Box::new(x))
@@ -98,7 +98,7 @@ pub fn pattern(s: &str) -> IResult<&str, Pattern> {
     ))(s)
 }
 
-pub fn assignment_pattern(s: &str) -> IResult<&str, AssignmentPattern> {
+pub fn assignment_pattern(s: Span) -> IResult<Span, AssignmentPattern> {
     alt((
         map(
             apostrophe_brace(separated_nonempty_list(symbol(","), expression)),
@@ -128,7 +128,7 @@ pub fn assignment_pattern(s: &str) -> IResult<&str, AssignmentPattern> {
     ))(s)
 }
 
-pub fn structure_pattern_key(s: &str) -> IResult<&str, StructurePatternKey> {
+pub fn structure_pattern_key(s: Span) -> IResult<Span, StructurePatternKey> {
     alt((
         map(member_identifier, |x| StructurePatternKey::Identifier(x)),
         map(assignment_pattern_key, |x| {
@@ -137,29 +137,29 @@ pub fn structure_pattern_key(s: &str) -> IResult<&str, StructurePatternKey> {
     ))(s)
 }
 
-pub fn array_pattern_key(s: &str) -> IResult<&str, ArrayPatternKey> {
+pub fn array_pattern_key(s: Span) -> IResult<Span, ArrayPatternKey> {
     alt((
         map(constant_expression, |x| ArrayPatternKey::Expression(x)),
         map(assignment_pattern_key, |x| ArrayPatternKey::PatternKey(x)),
     ))(s)
 }
 
-pub fn assignment_pattern_key(s: &str) -> IResult<&str, AssignmentPatternKey> {
+pub fn assignment_pattern_key(s: Span) -> IResult<Span, AssignmentPatternKey> {
     alt((
         map(simple_type, |x| AssignmentPatternKey::SimpleType(x)),
         map(symbol("default"), |_| AssignmentPatternKey::Default),
     ))(s)
 }
 
-pub fn assignment_pattern_expression(s: &str) -> IResult<&str, AssignmentPatternExpression> {
+pub fn assignment_pattern_expression(s: Span) -> IResult<Span, AssignmentPatternExpression> {
     let (s, x) = opt(assignment_pattern_expression_type)(s)?;
     let (s, y) = assignment_pattern(s)?;
     Ok((s, AssignmentPatternExpression { nodes: (x, y) }))
 }
 
 pub fn assignment_pattern_expression_type(
-    s: &str,
-) -> IResult<&str, AssignmentPatternExpressionType> {
+    s: Span,
+) -> IResult<Span, AssignmentPatternExpressionType> {
     alt((
         map(ps_type_identifier, |x| {
             AssignmentPatternExpressionType::Type(x)
@@ -177,19 +177,19 @@ pub fn assignment_pattern_expression_type(
 }
 
 pub fn constant_assignment_pattern_expression(
-    s: &str,
-) -> IResult<&str, AssignmentPatternExpression> {
+    s: Span,
+) -> IResult<Span, AssignmentPatternExpression> {
     assignment_pattern_expression(s)
 }
 
-pub fn assignment_pattern_net_lvalue(s: &str) -> IResult<&str, AssignmentPatternNetLvalue> {
+pub fn assignment_pattern_net_lvalue(s: Span) -> IResult<Span, AssignmentPatternNetLvalue> {
     let (s, x) = apostrophe_brace(separated_nonempty_list(symbol(","), net_lvalue))(s)?;
     Ok((s, AssignmentPatternNetLvalue { nodes: (x,) }))
 }
 
 pub fn assignment_pattern_variable_lvalue(
-    s: &str,
-) -> IResult<&str, AssignmentPatternVariableLvalue> {
+    s: Span,
+) -> IResult<Span, AssignmentPatternVariableLvalue> {
     let (s, x) = apostrophe_brace(separated_nonempty_list(symbol(","), variable_lvalue))(s)?;
     Ok((s, AssignmentPatternVariableLvalue { nodes: (x,) }))
 }

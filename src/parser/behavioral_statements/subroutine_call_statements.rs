@@ -14,7 +14,7 @@ pub enum SubroutineCallStatement<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn subroutine_call_statement(s: &str) -> IResult<&str, SubroutineCallStatement> {
+pub fn subroutine_call_statement(s: Span) -> IResult<Span, SubroutineCallStatement> {
     alt((
         map(terminated(subroutine_call, symbol(";")), |x| {
             SubroutineCallStatement::SubroutineCall(x)

@@ -56,18 +56,18 @@ pub enum NonPortInterfaceItem<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn interface_or_generate_item(s: &str) -> IResult<&str, InterfaceOrGenerateItem> {
+pub fn interface_or_generate_item(s: Span) -> IResult<Span, InterfaceOrGenerateItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn extern_tf_declaration(s: &str) -> IResult<&str, ExternTfDeclaration> {
+pub fn extern_tf_declaration(s: Span) -> IResult<Span, ExternTfDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn interface_item(s: &str) -> IResult<&str, InterfaceItem> {
+pub fn interface_item(s: Span) -> IResult<Span, InterfaceItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn non_port_interface_item(s: &str) -> IResult<&str, NonPortInterfaceItem> {
+pub fn non_port_interface_item(s: Span) -> IResult<Span, NonPortInterfaceItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

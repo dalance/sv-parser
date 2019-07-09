@@ -18,14 +18,14 @@ pub struct AttrSpec<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn attribute_instance(s: &str) -> IResult<&str, AttributeInstance> {
+pub fn attribute_instance(s: Span) -> IResult<Span, AttributeInstance> {
     let (s, _) = symbol("(*")(s)?;
     let (s, x) = separated_nonempty_list(symbol(","), attr_spec)(s)?;
     let (s, _) = symbol("*)")(s)?;
     Ok((s, AttributeInstance { nodes: (x,) }))
 }
 
-pub fn attr_spec(s: &str) -> IResult<&str, AttrSpec> {
+pub fn attr_spec(s: Span) -> IResult<Span, AttrSpec> {
     let (s, x) = identifier(s)?;
     let (s, y) = opt(preceded(symbol("="), constant_expression))(s)?;
     Ok((s, AttrSpec { nodes: (x, y) }))
@@ -42,23 +42,23 @@ mod tests {
         assert_eq!(
             format!(
                 "{:?}",
-                all_consuming(attribute_instance)("(* full_case, parallel_case *)")
+                all_consuming(attribute_instance)(Span::new("(* full_case, parallel_case *)"))
             ),
-            "Ok((\"\", AttributeInstance { attr_spec: [AttrSpec { attr_name: Identifier { raw: \"full_case\" }, rvalue: None }, AttrSpec { attr_name: Identifier { raw: \"parallel_case\" }, rvalue: None }] }))"
+            "Ok((LocatedSpanEx { offset: 30, line: 1, fragment: \"\", extra: () }, AttributeInstance { nodes: ([AttrSpec { nodes: (SimpleIdentifier(SimpleIdentifier { nodes: (LocatedSpanEx { offset: 3, line: 1, fragment: \"full_case\", extra: () }, []) }), None) }, AttrSpec { nodes: (SimpleIdentifier(SimpleIdentifier { nodes: (LocatedSpanEx { offset: 14, line: 1, fragment: \"parallel_case\", extra: () }, [Space(LocatedSpanEx { offset: 27, line: 1, fragment: \" \", extra: () })]) }), None) }],) }))"
         );
         assert_eq!(
             format!(
                 "{:?}",
-                all_consuming(attribute_instance)("(* full_case=1 *)")
+                all_consuming(attribute_instance)(Span::new("(* full_case=1 *)"))
             ),
-            "Ok((\"\", AttributeInstance { attr_spec: [AttrSpec { attr_name: Identifier { raw: \"full_case\" }, rvalue: Some(Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\")))))) }] }))"
+            "Ok((LocatedSpanEx { offset: 17, line: 1, fragment: \"\", extra: () }, AttributeInstance { nodes: ([AttrSpec { nodes: (SimpleIdentifier(SimpleIdentifier { nodes: (LocatedSpanEx { offset: 3, line: 1, fragment: \"full_case\", extra: () }, []) }), Some(Nullary(PrimaryLiteral(Number(IntegralNumber(DecimalNumber(UnsignedNumber(UnsignedNumber { nodes: (LocatedSpanEx { offset: 13, line: 1, fragment: \"1\", extra: () }, [Space(LocatedSpanEx { offset: 14, line: 1, fragment: \" \", extra: () })]) })))))))) }],) }))"
         );
         assert_eq!(
             format!(
                 "{:?}",
-                all_consuming(attribute_instance)("(* full_case=1, parallel_case = 0 *)")
+                all_consuming(attribute_instance)(Span::new("(* full_case=1, parallel_case = 0 *)"))
             ),
-            "Ok((\"\", AttributeInstance { attr_spec: [AttrSpec { attr_name: Identifier { raw: \"full_case\" }, rvalue: Some(Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\")))))) }, AttrSpec { attr_name: Identifier { raw: \"parallel_case\" }, rvalue: Some(Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"0\")))))) }] }))"
+            "Ok((LocatedSpanEx { offset: 36, line: 1, fragment: \"\", extra: () }, AttributeInstance { nodes: ([AttrSpec { nodes: (SimpleIdentifier(SimpleIdentifier { nodes: (LocatedSpanEx { offset: 3, line: 1, fragment: \"full_case\", extra: () }, []) }), Some(Nullary(PrimaryLiteral(Number(IntegralNumber(DecimalNumber(UnsignedNumber(UnsignedNumber { nodes: (LocatedSpanEx { offset: 13, line: 1, fragment: \"1\", extra: () }, []) })))))))) }, AttrSpec { nodes: (SimpleIdentifier(SimpleIdentifier { nodes: (LocatedSpanEx { offset: 16, line: 1, fragment: \"parallel_case\", extra: () }, [Space(LocatedSpanEx { offset: 29, line: 1, fragment: \" \", extra: () })]) }), Some(Nullary(PrimaryLiteral(Number(IntegralNumber(DecimalNumber(UnsignedNumber(UnsignedNumber { nodes: (LocatedSpanEx { offset: 32, line: 1, fragment: \"0\", extra: () }, [Space(LocatedSpanEx { offset: 33, line: 1, fragment: \" \", extra: () })]) })))))))) }],) }))"
         );
     }
 }

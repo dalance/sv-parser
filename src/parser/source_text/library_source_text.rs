@@ -34,23 +34,23 @@ pub struct IncludeStatement<'a> {
 
 #[derive(Debug)]
 pub struct FilePathSpec<'a> {
-    pub nodes: (&'a str,),
+    pub nodes: (Span<'a>,),
 }
 
 // -----------------------------------------------------------------------------
 
-pub fn library_text(s: &str) -> IResult<&str, LibraryText> {
+pub fn library_text(s: Span) -> IResult<Span, LibraryText> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn library_description(s: &str) -> IResult<&str, LibraryDescription> {
+pub fn library_description(s: Span) -> IResult<Span, LibraryDescription> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn library_declaration(s: &str) -> IResult<&str, LibraryDeclaration> {
+pub fn library_declaration(s: Span) -> IResult<Span, LibraryDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn include_statement(s: &str) -> IResult<&str, IncludeStatement> {
+pub fn include_statement(s: Span) -> IResult<Span, IncludeStatement> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

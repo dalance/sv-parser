@@ -1,4 +1,4 @@
-//use crate::parser::*;
+use crate::parser::*;
 //use nom::branch::*;
 //use nom::combinator::*;
 use nom::error::*;
@@ -41,18 +41,18 @@ pub enum ChargeStrength {
 
 // -----------------------------------------------------------------------------
 
-pub fn drive_strength(s: &str) -> IResult<&str, DriveStrength> {
+pub fn drive_strength(s: Span) -> IResult<Span, DriveStrength> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn strength0(s: &str) -> IResult<&str, Strength0> {
+pub fn strength0(s: Span) -> IResult<Span, Strength0> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn strength1(s: &str) -> IResult<&str, Strength1> {
+pub fn strength1(s: Span) -> IResult<Span, Strength1> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn charge_strength(s: &str) -> IResult<&str, ChargeStrength> {
+pub fn charge_strength(s: Span) -> IResult<Span, ChargeStrength> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

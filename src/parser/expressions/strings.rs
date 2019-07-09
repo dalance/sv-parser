@@ -9,44 +9,45 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub struct StringLiteral<'a> {
-    pub nodes: (&'a str,),
+    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
 }
 
 // -----------------------------------------------------------------------------
 
-pub fn string_literal(s: &str) -> IResult<&str, StringLiteral> {
-    ws(string_literal_impl)(s)
+pub fn string_literal(s: Span) -> IResult<Span, StringLiteral> {
+    let (s, a) = ws(string_literal_impl)(s)?;
+    Ok((s, StringLiteral { nodes: a }))
 }
 
-pub fn string_literal_impl(s: &str) -> IResult<&str, StringLiteral> {
+pub fn string_literal_impl(s: Span) -> IResult<Span, Span> {
     let (s, _) = tag("\"")(s)?;
     let (s, x) = many1(pair(is_not("\\\""), opt(pair(tag("\\"), take(1usize)))))(s)?;
     let (s, _) = tag("\"")(s)?;
 
-    let mut raw = None;
+    let mut ret = None;
     for (x, y) in x {
-        raw = if let Some(raw) = raw {
-            Some(str_concat::concat(raw, x).unwrap())
+        ret = if let Some(ret) = ret {
+            Some(concat(ret, x).unwrap())
         } else {
             Some(x)
         };
         if let Some((y, z)) = y {
-            raw = if let Some(raw) = raw {
-                Some(str_concat::concat(raw, y).unwrap())
+            ret = if let Some(ret) = ret {
+                Some(concat(ret, y).unwrap())
             } else {
                 Some(y)
             };
-            raw = if let Some(raw) = raw {
-                Some(str_concat::concat(raw, z).unwrap())
+            ret = if let Some(ret) = ret {
+                Some(concat(ret, z).unwrap())
             } else {
                 Some(z)
             };
         }
     }
 
-    let raw = raw.unwrap();
+    let ret = ret.unwrap();
 
-    Ok((s, StringLiteral { nodes: (raw,) }))
+    Ok((s, ret))
 }
 
 // -----------------------------------------------------------------------------
@@ -58,16 +59,25 @@ mod tests {
     #[test]
     fn test() {
         assert_eq!(
-            format!("{:?}", all_consuming(string_literal)("\"aaa aaaa\"")),
-            "Ok((\"\", StringLiteral { raw: \"aaa aaaa\" }))"
+            format!(
+                "{:?}",
+                all_consuming(string_literal)(Span::new("\"aaa aaaa\""))
+            ),
+            "Ok((LocatedSpanEx { offset: 10, line: 1, fragment: \"\", extra: () }, StringLiteral { nodes: (LocatedSpanEx { offset: 1, line: 1, fragment: \"aaa aaaa\", extra: () }, []) }))"
         );
         assert_eq!(
-            format!("{:?}", all_consuming(string_literal)(r#""aaa\" aaaa""#)),
-            "Ok((\"\", StringLiteral { raw: \"aaa\\\\\\\" aaaa\" }))"
+            format!(
+                "{:?}",
+                all_consuming(string_literal)(Span::new(r#""aaa\" aaaa""#))
+            ),
+            "Ok((LocatedSpanEx { offset: 12, line: 1, fragment: \"\", extra: () }, StringLiteral { nodes: (LocatedSpanEx { offset: 1, line: 1, fragment: \"aaa\\\\\\\" aaaa\", extra: () }, []) }))"
         );
         assert_eq!(
-            format!("{:?}", all_consuming(string_literal)(r#""aaa\"""#)),
-            "Ok((\"\", StringLiteral { raw: \"aaa\\\\\\\"\" }))"
+            format!(
+                "{:?}",
+                all_consuming(string_literal)(Span::new(r#""aaa\"""#))
+            ),
+            "Ok((LocatedSpanEx { offset: 7, line: 1, fragment: \"\", extra: () }, StringLiteral { nodes: (LocatedSpanEx { offset: 1, line: 1, fragment: \"aaa\\\\\\\"\", extra: () }, []) }))"
         );
     }
 }

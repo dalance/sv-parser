@@ -29,7 +29,7 @@ pub struct BinIdentifier<'a> {
 
 #[derive(Debug)]
 pub struct CIdentifier<'a> {
-    pub nodes: (&'a str,),
+    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
 }
 
 #[derive(Debug)]
@@ -104,7 +104,7 @@ pub struct EnumIdentifier<'a> {
 
 #[derive(Debug)]
 pub struct EscapedIdentifier<'a> {
-    pub nodes: (&'a str,),
+    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
 }
 
 #[derive(Debug)]
@@ -447,7 +447,7 @@ pub struct SignalIdentifier<'a> {
 
 #[derive(Debug)]
 pub struct SimpleIdentifier<'a> {
-    pub nodes: (&'a str,),
+    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
 }
 
 #[derive(Debug)]
@@ -457,7 +457,7 @@ pub struct SpecparamIdentifier<'a> {
 
 #[derive(Debug)]
 pub struct SystemTfIdentifier<'a> {
-    pub nodes: (&'a str,),
+    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
 }
 
 #[derive(Debug)]
@@ -522,438 +522,442 @@ pub enum PackageScopeOrClassScope<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn array_identifier(s: &str) -> IResult<&str, ArrayIdentifier> {
+pub fn array_identifier(s: Span) -> IResult<Span, ArrayIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ArrayIdentifier { nodes: (a,) }))
 }
 
-pub fn block_identifier(s: &str) -> IResult<&str, BlockIdentifier> {
+pub fn block_identifier(s: Span) -> IResult<Span, BlockIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, BlockIdentifier { nodes: (a,) }))
 }
 
-pub fn bin_identifier(s: &str) -> IResult<&str, BinIdentifier> {
+pub fn bin_identifier(s: Span) -> IResult<Span, BinIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, BinIdentifier { nodes: (a,) }))
 }
 
-pub fn c_identifier(s: &str) -> IResult<&str, CIdentifier> {
-    ws(c_identifier_impl)(s)
+pub fn c_identifier(s: Span) -> IResult<Span, CIdentifier> {
+    let (s, a) = ws(c_identifier_impl)(s)?;
+    Ok((s, CIdentifier { nodes: a }))
 }
 
-pub fn c_identifier_impl(s: &str) -> IResult<&str, CIdentifier> {
+pub fn c_identifier_impl(s: Span) -> IResult<Span, Span> {
     let (s, a) = is_a(AZ_)(s)?;
     let (s, b) = opt(is_a(AZ09_))(s)?;
     let a = if let Some(b) = b {
-        str_concat::concat(a, b).unwrap()
+        concat(a, b).unwrap()
     } else {
         a
     };
-    Ok((s, CIdentifier { nodes: (a,) }))
+    Ok((s, a))
 }
 
-pub fn cell_identifier(s: &str) -> IResult<&str, CellIdentifier> {
+pub fn cell_identifier(s: Span) -> IResult<Span, CellIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, CellIdentifier { nodes: (a,) }))
 }
 
-pub fn checker_identifier(s: &str) -> IResult<&str, CheckerIdentifier> {
+pub fn checker_identifier(s: Span) -> IResult<Span, CheckerIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, CheckerIdentifier { nodes: (a,) }))
 }
 
-pub fn class_identifier(s: &str) -> IResult<&str, ClassIdentifier> {
+pub fn class_identifier(s: Span) -> IResult<Span, ClassIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ClassIdentifier { nodes: (a,) }))
 }
 
-pub fn class_variable_identifier(s: &str) -> IResult<&str, ClassVariableIdentifier> {
+pub fn class_variable_identifier(s: Span) -> IResult<Span, ClassVariableIdentifier> {
     let (s, a) = variable_identifier(s)?;
     Ok((s, ClassVariableIdentifier { nodes: (a,) }))
 }
 
-pub fn clocking_identifier(s: &str) -> IResult<&str, ClockingIdentifier> {
+pub fn clocking_identifier(s: Span) -> IResult<Span, ClockingIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ClockingIdentifier { nodes: (a,) }))
 }
 
-pub fn config_identifier(s: &str) -> IResult<&str, ConfigIdentifier> {
+pub fn config_identifier(s: Span) -> IResult<Span, ConfigIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ConfigIdentifier { nodes: (a,) }))
 }
 
-pub fn const_identifier(s: &str) -> IResult<&str, ConstIdentifier> {
+pub fn const_identifier(s: Span) -> IResult<Span, ConstIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ConstIdentifier { nodes: (a,) }))
 }
 
-pub fn constraint_identifier(s: &str) -> IResult<&str, ConstraintIdentifier> {
+pub fn constraint_identifier(s: Span) -> IResult<Span, ConstraintIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ConstraintIdentifier { nodes: (a,) }))
 }
 
-pub fn covergroup_identifier(s: &str) -> IResult<&str, CovergroupIdentifier> {
+pub fn covergroup_identifier(s: Span) -> IResult<Span, CovergroupIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, CovergroupIdentifier { nodes: (a,) }))
 }
 
-pub fn covergroup_variable_identifier(s: &str) -> IResult<&str, CovergroupVariableIdentifier> {
+pub fn covergroup_variable_identifier(s: Span) -> IResult<Span, CovergroupVariableIdentifier> {
     let (s, a) = variable_identifier(s)?;
     Ok((s, CovergroupVariableIdentifier { nodes: (a,) }))
 }
 
-pub fn cover_point_identifier(s: &str) -> IResult<&str, CoverPointIdentifier> {
+pub fn cover_point_identifier(s: Span) -> IResult<Span, CoverPointIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, CoverPointIdentifier { nodes: (a,) }))
 }
 
-pub fn cross_identifier(s: &str) -> IResult<&str, CrossIdentifier> {
+pub fn cross_identifier(s: Span) -> IResult<Span, CrossIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, CrossIdentifier { nodes: (a,) }))
 }
 
-pub fn dynamic_array_variable_identifier(s: &str) -> IResult<&str, DynamicArrayVariableIdentifier> {
+pub fn dynamic_array_variable_identifier(s: Span) -> IResult<Span, DynamicArrayVariableIdentifier> {
     let (s, a) = variable_identifier(s)?;
     Ok((s, DynamicArrayVariableIdentifier { nodes: (a,) }))
 }
 
-pub fn enum_identifier(s: &str) -> IResult<&str, EnumIdentifier> {
+pub fn enum_identifier(s: Span) -> IResult<Span, EnumIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, EnumIdentifier { nodes: (a,) }))
 }
 
-pub fn escaped_identifier(s: &str) -> IResult<&str, EscapedIdentifier> {
-    ws(escaped_identifier_impl)(s)
+pub fn escaped_identifier(s: Span) -> IResult<Span, EscapedIdentifier> {
+    let (s, a) = ws(escaped_identifier_impl)(s)?;
+    Ok((s, EscapedIdentifier { nodes: a }))
 }
 
-pub fn escaped_identifier_impl(s: &str) -> IResult<&str, EscapedIdentifier> {
+pub fn escaped_identifier_impl(s: Span) -> IResult<Span, Span> {
     let (s, a) = tag("\\")(s)?;
     let (s, b) = is_not(" \t\r\n")(s)?;
-    let a = str_concat::concat(a, b).unwrap();
-    Ok((s, EscapedIdentifier { nodes: (a,) }))
+    let a = concat(a, b).unwrap();
+    Ok((s, a))
 }
 
-pub fn formal_identifier(s: &str) -> IResult<&str, FormalIdentifier> {
+pub fn formal_identifier(s: Span) -> IResult<Span, FormalIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, FormalIdentifier { nodes: (a,) }))
 }
 
-pub fn formal_port_identifier(s: &str) -> IResult<&str, FormalPortIdentifier> {
+pub fn formal_port_identifier(s: Span) -> IResult<Span, FormalPortIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, FormalPortIdentifier { nodes: (a,) }))
 }
 
-pub fn function_identifier(s: &str) -> IResult<&str, FunctionIdentifier> {
+pub fn function_identifier(s: Span) -> IResult<Span, FunctionIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, FunctionIdentifier { nodes: (a,) }))
 }
 
-pub fn generate_block_identifier(s: &str) -> IResult<&str, GenerateBlockIdentifier> {
+pub fn generate_block_identifier(s: Span) -> IResult<Span, GenerateBlockIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, GenerateBlockIdentifier { nodes: (a,) }))
 }
 
-pub fn genvar_identifier(s: &str) -> IResult<&str, GenvarIdentifier> {
+pub fn genvar_identifier(s: Span) -> IResult<Span, GenvarIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, GenvarIdentifier { nodes: (a,) }))
 }
 
-pub fn hierarchical_array_identifier(s: &str) -> IResult<&str, HierarchicalArrayIdentifier> {
+pub fn hierarchical_array_identifier(s: Span) -> IResult<Span, HierarchicalArrayIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalArrayIdentifier { nodes: (a,) }))
 }
 
-pub fn hierarchical_block_identifier(s: &str) -> IResult<&str, HierarchicalBlockIdentifier> {
+pub fn hierarchical_block_identifier(s: Span) -> IResult<Span, HierarchicalBlockIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalBlockIdentifier { nodes: (a,) }))
 }
 
-pub fn hierarchical_event_identifier(s: &str) -> IResult<&str, HierarchicalEventIdentifier> {
+pub fn hierarchical_event_identifier(s: Span) -> IResult<Span, HierarchicalEventIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalEventIdentifier { nodes: (a,) }))
 }
 
-pub fn hierarchical_identifier(s: &str) -> IResult<&str, HierarchicalIdentifier> {
+pub fn hierarchical_identifier(s: Span) -> IResult<Span, HierarchicalIdentifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn hierarchical_net_identifier(s: &str) -> IResult<&str, HierarchicalNetIdentifier> {
+pub fn hierarchical_net_identifier(s: Span) -> IResult<Span, HierarchicalNetIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalNetIdentifier { nodes: (a,) }))
 }
 
 pub fn hierarchical_parameter_identifier(
-    s: &str,
-) -> IResult<&str, HierarchicalParameterIdentifier> {
+    s: Span,
+) -> IResult<Span, HierarchicalParameterIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalParameterIdentifier { nodes: (a,) }))
 }
 
-pub fn hierarchical_property_identifier(s: &str) -> IResult<&str, HierarchicalPropertyIdentifier> {
+pub fn hierarchical_property_identifier(s: Span) -> IResult<Span, HierarchicalPropertyIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalPropertyIdentifier { nodes: (a,) }))
 }
 
-pub fn hierarchical_sequence_identifier(s: &str) -> IResult<&str, HierarchicalSequenceIdentifier> {
+pub fn hierarchical_sequence_identifier(s: Span) -> IResult<Span, HierarchicalSequenceIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalSequenceIdentifier { nodes: (a,) }))
 }
 
-pub fn hierarchical_task_identifier(s: &str) -> IResult<&str, HierarchicalTaskIdentifier> {
+pub fn hierarchical_task_identifier(s: Span) -> IResult<Span, HierarchicalTaskIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalTaskIdentifier { nodes: (a,) }))
 }
 
-pub fn hierarchical_tf_identifier(s: &str) -> IResult<&str, HierarchicalTfIdentifier> {
+pub fn hierarchical_tf_identifier(s: Span) -> IResult<Span, HierarchicalTfIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalTfIdentifier { nodes: (a,) }))
 }
 
-pub fn hierarchical_variable_identifier(s: &str) -> IResult<&str, HierarchicalVariableIdentifier> {
+pub fn hierarchical_variable_identifier(s: Span) -> IResult<Span, HierarchicalVariableIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalVariableIdentifier { nodes: (a,) }))
 }
 
-pub fn identifier(s: &str) -> IResult<&str, Identifier> {
+pub fn identifier(s: Span) -> IResult<Span, Identifier> {
     alt((
         map(escaped_identifier, |x| Identifier::EscapedIdentifier(x)),
         map(simple_identifier, |x| Identifier::SimpleIdentifier(x)),
     ))(s)
 }
 
-pub fn index_variable_identifier(s: &str) -> IResult<&str, IndexVariableIdentifier> {
+pub fn index_variable_identifier(s: Span) -> IResult<Span, IndexVariableIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, IndexVariableIdentifier { nodes: (a,) }))
 }
 
-pub fn interface_identifier(s: &str) -> IResult<&str, InterfaceIdentifier> {
+pub fn interface_identifier(s: Span) -> IResult<Span, InterfaceIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, InterfaceIdentifier { nodes: (a,) }))
 }
 
-pub fn interface_instance_identifier(s: &str) -> IResult<&str, InterfaceInstanceIdentifier> {
+pub fn interface_instance_identifier(s: Span) -> IResult<Span, InterfaceInstanceIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, InterfaceInstanceIdentifier { nodes: (a,) }))
 }
 
-pub fn inout_port_identifier(s: &str) -> IResult<&str, InoutPortIdentifier> {
+pub fn inout_port_identifier(s: Span) -> IResult<Span, InoutPortIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, InoutPortIdentifier { nodes: (a,) }))
 }
 
-pub fn input_port_identifier(s: &str) -> IResult<&str, InputPortIdentifier> {
+pub fn input_port_identifier(s: Span) -> IResult<Span, InputPortIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, InputPortIdentifier { nodes: (a,) }))
 }
 
-pub fn instance_identifier(s: &str) -> IResult<&str, InstanceIdentifier> {
+pub fn instance_identifier(s: Span) -> IResult<Span, InstanceIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, InstanceIdentifier { nodes: (a,) }))
 }
 
-pub fn library_identifier(s: &str) -> IResult<&str, LibraryIdentifier> {
+pub fn library_identifier(s: Span) -> IResult<Span, LibraryIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, LibraryIdentifier { nodes: (a,) }))
 }
 
-pub fn member_identifier(s: &str) -> IResult<&str, MemberIdentifier> {
+pub fn member_identifier(s: Span) -> IResult<Span, MemberIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, MemberIdentifier { nodes: (a,) }))
 }
 
-pub fn method_identifier(s: &str) -> IResult<&str, MethodIdentifier> {
+pub fn method_identifier(s: Span) -> IResult<Span, MethodIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, MethodIdentifier { nodes: (a,) }))
 }
 
-pub fn modport_identifier(s: &str) -> IResult<&str, ModportIdentifier> {
+pub fn modport_identifier(s: Span) -> IResult<Span, ModportIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ModportIdentifier { nodes: (a,) }))
 }
 
-pub fn module_identifier(s: &str) -> IResult<&str, ModuleIdentifier> {
+pub fn module_identifier(s: Span) -> IResult<Span, ModuleIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ModuleIdentifier { nodes: (a,) }))
 }
 
-pub fn net_identifier(s: &str) -> IResult<&str, NetIdentifier> {
+pub fn net_identifier(s: Span) -> IResult<Span, NetIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, NetIdentifier { nodes: (a,) }))
 }
 
-pub fn net_type_identifier(s: &str) -> IResult<&str, NetTypeIdentifier> {
+pub fn net_type_identifier(s: Span) -> IResult<Span, NetTypeIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, NetTypeIdentifier { nodes: (a,) }))
 }
 
-pub fn output_port_identifier(s: &str) -> IResult<&str, OutputPortIdentifier> {
+pub fn output_port_identifier(s: Span) -> IResult<Span, OutputPortIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, OutputPortIdentifier { nodes: (a,) }))
 }
 
-pub fn package_identifier(s: &str) -> IResult<&str, PackageIdentifier> {
+pub fn package_identifier(s: Span) -> IResult<Span, PackageIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, PackageIdentifier { nodes: (a,) }))
 }
 
-pub fn package_scope(s: &str) -> IResult<&str, PackageScope> {
+pub fn package_scope(s: Span) -> IResult<Span, PackageScope> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn parameter_identifier(s: &str) -> IResult<&str, ParameterIdentifier> {
+pub fn parameter_identifier(s: Span) -> IResult<Span, ParameterIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ParameterIdentifier { nodes: (a,) }))
 }
 
-pub fn port_identifier(s: &str) -> IResult<&str, PortIdentifier> {
+pub fn port_identifier(s: Span) -> IResult<Span, PortIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, PortIdentifier { nodes: (a,) }))
 }
 
-pub fn production_identifier(s: &str) -> IResult<&str, ProductionIdentifier> {
+pub fn production_identifier(s: Span) -> IResult<Span, ProductionIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ProductionIdentifier { nodes: (a,) }))
 }
 
-pub fn program_identifier(s: &str) -> IResult<&str, ProgramIdentifier> {
+pub fn program_identifier(s: Span) -> IResult<Span, ProgramIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ProgramIdentifier { nodes: (a,) }))
 }
 
-pub fn property_identifier(s: &str) -> IResult<&str, PropertyIdentifier> {
+pub fn property_identifier(s: Span) -> IResult<Span, PropertyIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, PropertyIdentifier { nodes: (a,) }))
 }
 
-pub fn ps_class_identifier(s: &str) -> IResult<&str, PsClassIdentifier> {
+pub fn ps_class_identifier(s: Span) -> IResult<Span, PsClassIdentifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn ps_covergroup_identifier(s: &str) -> IResult<&str, PsCovergroupIdentifier> {
+pub fn ps_covergroup_identifier(s: Span) -> IResult<Span, PsCovergroupIdentifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn ps_checker_identifier(s: &str) -> IResult<&str, PsCheckerIdentifier> {
+pub fn ps_checker_identifier(s: Span) -> IResult<Span, PsCheckerIdentifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn ps_identifier(s: &str) -> IResult<&str, PsIdentifier> {
+pub fn ps_identifier(s: Span) -> IResult<Span, PsIdentifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
 pub fn ps_or_hierarchical_array_identifier(
-    s: &str,
-) -> IResult<&str, PsOrHierarchicalArrayIdentifier> {
+    s: Span,
+) -> IResult<Span, PsOrHierarchicalArrayIdentifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn ps_or_hierarchical_net_identifier(s: &str) -> IResult<&str, PsOrHierarchicalNetIdentifier> {
+pub fn ps_or_hierarchical_net_identifier(s: Span) -> IResult<Span, PsOrHierarchicalNetIdentifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
 pub fn ps_or_hierarchical_property_identifier(
-    s: &str,
-) -> IResult<&str, PsOrHierarchicalPropertyIdentifier> {
+    s: Span,
+) -> IResult<Span, PsOrHierarchicalPropertyIdentifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
 pub fn ps_or_hierarchical_sequence_identifier(
-    s: &str,
-) -> IResult<&str, PsOrHierarchicalSequenceIdentifier> {
+    s: Span,
+) -> IResult<Span, PsOrHierarchicalSequenceIdentifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn ps_or_hierarchical_tf_identifier(s: &str) -> IResult<&str, PsOrHierarchicalTfIdentifier> {
+pub fn ps_or_hierarchical_tf_identifier(s: Span) -> IResult<Span, PsOrHierarchicalTfIdentifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn ps_parameter_identifier(s: &str) -> IResult<&str, PsParameterIdentifier> {
+pub fn ps_parameter_identifier(s: Span) -> IResult<Span, PsParameterIdentifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn ps_type_identifier(s: &str) -> IResult<&str, PsTypeIdentifier> {
+pub fn ps_type_identifier(s: Span) -> IResult<Span, PsTypeIdentifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn sequence_identifier(s: &str) -> IResult<&str, SequenceIdentifier> {
+pub fn sequence_identifier(s: Span) -> IResult<Span, SequenceIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, SequenceIdentifier { nodes: (a,) }))
 }
 
-pub fn signal_identifier(s: &str) -> IResult<&str, SignalIdentifier> {
+pub fn signal_identifier(s: Span) -> IResult<Span, SignalIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, SignalIdentifier { nodes: (a,) }))
 }
 
-pub fn simple_identifier(s: &str) -> IResult<&str, SimpleIdentifier> {
-    ws(simple_identifier_impl)(s)
+pub fn simple_identifier(s: Span) -> IResult<Span, SimpleIdentifier> {
+    let (s, a) = ws(simple_identifier_impl)(s)?;
+    Ok((s, SimpleIdentifier { nodes: a }))
 }
 
-pub fn simple_identifier_impl(s: &str) -> IResult<&str, SimpleIdentifier> {
+pub fn simple_identifier_impl(s: Span) -> IResult<Span, Span> {
     let (s, a) = is_a(AZ_)(s)?;
     let (s, b) = opt(is_a(AZ09_DOLLAR))(s)?;
     let a = if let Some(b) = b {
-        str_concat::concat(a, b).unwrap()
+        concat(a, b).unwrap()
     } else {
         a
     };
-    Ok((s, SimpleIdentifier { nodes: (a,) }))
+    Ok((s, a))
 }
 
-pub fn specparam_identifier(s: &str) -> IResult<&str, SpecparamIdentifier> {
+pub fn specparam_identifier(s: Span) -> IResult<Span, SpecparamIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, SpecparamIdentifier { nodes: (a,) }))
 }
 
-pub fn system_tf_identifier(s: &str) -> IResult<&str, SystemTfIdentifier> {
-    ws(system_tf_identifier_impl)(s)
+pub fn system_tf_identifier(s: Span) -> IResult<Span, SystemTfIdentifier> {
+    let (s, a) = ws(system_tf_identifier_impl)(s)?;
+    Ok((s, SystemTfIdentifier { nodes: a }))
 }
 
-pub fn system_tf_identifier_impl(s: &str) -> IResult<&str, SystemTfIdentifier> {
+pub fn system_tf_identifier_impl(s: Span) -> IResult<Span, Span> {
     let (s, a) = tag("$")(s)?;
     let (s, b) = is_a(AZ09_DOLLAR)(s)?;
-    let a = str_concat::concat(a, b).unwrap();
-    Ok((s, SystemTfIdentifier { nodes: (a,) }))
+    let a = concat(a, b).unwrap();
+    Ok((s, a))
 }
 
-pub fn task_identifier(s: &str) -> IResult<&str, TaskIdentifier> {
+pub fn task_identifier(s: Span) -> IResult<Span, TaskIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, TaskIdentifier { nodes: (a,) }))
 }
 
-pub fn tf_identifier(s: &str) -> IResult<&str, TfIdentifier> {
+pub fn tf_identifier(s: Span) -> IResult<Span, TfIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, TfIdentifier { nodes: (a,) }))
 }
 
-pub fn terminal_identifier(s: &str) -> IResult<&str, TerminalIdentifier> {
+pub fn terminal_identifier(s: Span) -> IResult<Span, TerminalIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, TerminalIdentifier { nodes: (a,) }))
 }
 
-pub fn topmodule_identifier(s: &str) -> IResult<&str, TopmoduleIdentifier> {
+pub fn topmodule_identifier(s: Span) -> IResult<Span, TopmoduleIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, TopmoduleIdentifier { nodes: (a,) }))
 }
 
-pub fn type_identifier(s: &str) -> IResult<&str, TypeIdentifier> {
+pub fn type_identifier(s: Span) -> IResult<Span, TypeIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, TypeIdentifier { nodes: (a,) }))
 }
 
-pub fn udp_identifier(s: &str) -> IResult<&str, UdpIdentifier> {
+pub fn udp_identifier(s: Span) -> IResult<Span, UdpIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, UdpIdentifier { nodes: (a,) }))
 }
 
-pub fn variable_identifier(s: &str) -> IResult<&str, VariableIdentifier> {
+pub fn variable_identifier(s: Span) -> IResult<Span, VariableIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, VariableIdentifier { nodes: (a,) }))
 }
 
 pub fn implicit_class_handle_or_class_scope_or_package_scope(
-    s: &str,
-) -> IResult<&str, ImplicitClassHandleOrClassScopeOrPackageScope> {
+    s: Span,
+) -> IResult<Span, ImplicitClassHandleOrClassScopeOrPackageScope> {
     alt((
         map(terminated(implicit_class_handle, symbol(".")), |x| {
             ImplicitClassHandleOrClassScopeOrPackageScope::ImplicitClassHandle(x)
@@ -968,8 +972,8 @@ pub fn implicit_class_handle_or_class_scope_or_package_scope(
 }
 
 pub fn implicit_class_handle_or_package_scope(
-    s: &str,
-) -> IResult<&str, ImplicitClassHandleOrPackageScope> {
+    s: Span,
+) -> IResult<Span, ImplicitClassHandleOrPackageScope> {
     alt((
         map(terminated(implicit_class_handle, symbol(".")), |x| {
             ImplicitClassHandleOrPackageScope::ImplicitClassHandle(x)
@@ -981,8 +985,8 @@ pub fn implicit_class_handle_or_package_scope(
 }
 
 pub fn implicit_class_handle_or_class_scope(
-    s: &str,
-) -> IResult<&str, ImplicitClassHandleOrClassScope> {
+    s: Span,
+) -> IResult<Span, ImplicitClassHandleOrClassScope> {
     alt((
         map(terminated(implicit_class_handle, symbol(".")), |x| {
             ImplicitClassHandleOrClassScope::ImplicitClassHandle(x)
@@ -993,7 +997,7 @@ pub fn implicit_class_handle_or_class_scope(
     ))(s)
 }
 
-pub fn package_scope_or_class_scope(s: &str) -> IResult<&str, PackageScopeOrClassScope> {
+pub fn package_scope_or_class_scope(s: Span) -> IResult<Span, PackageScopeOrClassScope> {
     alt((
         map(package_scope, |x| PackageScopeOrClassScope::PackageScope(x)),
         map(class_scope, |x| PackageScopeOrClassScope::ClassScope(x)),
@@ -1009,28 +1013,31 @@ mod tests {
     #[test]
     fn test() {
         assert_eq!(
-            format!("{:?}", all_consuming(identifier)("shiftreg_a")),
-            "Ok((\"\", Identifier { raw: \"shiftreg_a\" }))"
+            format!("{:?}", all_consuming(identifier)(Span::new("shiftreg_a"))),
+            "Ok((LocatedSpanEx { offset: 10, line: 1, fragment: \"\", extra: () }, SimpleIdentifier(SimpleIdentifier { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"shiftreg_a\", extra: () }, []) })))"
         );
         assert_eq!(
-            format!("{:?}", all_consuming(identifier)("_bus3")),
-            "Ok((\"\", Identifier { raw: \"_bus3\" }))"
+            format!("{:?}", all_consuming(identifier)(Span::new("_bus3"))),
+            "Ok((LocatedSpanEx { offset: 5, line: 1, fragment: \"\", extra: () }, SimpleIdentifier(SimpleIdentifier { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"_bus3\", extra: () }, []) })))"
         );
         assert_eq!(
-            format!("{:?}", all_consuming(identifier)("n$657")),
-            "Ok((\"\", Identifier { raw: \"n$657\" }))"
+            format!("{:?}", all_consuming(identifier)(Span::new("n$657"))),
+            "Ok((LocatedSpanEx { offset: 5, line: 1, fragment: \"\", extra: () }, SimpleIdentifier(SimpleIdentifier { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"n$657\", extra: () }, []) })))"
         );
         assert_eq!(
-            format!("{:?}", all_consuming(identifier)("\\busa+index")),
-            "Ok((\"\", Identifier { raw: \"\\\\busa+index\" }))"
+            format!("{:?}", all_consuming(identifier)(Span::new("\\busa+index"))),
+            "Ok((LocatedSpanEx { offset: 11, line: 1, fragment: \"\", extra: () }, EscapedIdentifier(EscapedIdentifier { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"\\\\busa+index\", extra: () }, []) })))"
         );
         assert_eq!(
-            format!("{:?}", all_consuming(identifier)("\\-clock")),
-            "Ok((\"\", Identifier { raw: \"\\\\-clock\" }))"
+            format!("{:?}", all_consuming(identifier)(Span::new("\\-clock"))),
+            "Ok((LocatedSpanEx { offset: 7, line: 1, fragment: \"\", extra: () }, EscapedIdentifier(EscapedIdentifier { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"\\\\-clock\", extra: () }, []) })))"
         );
         assert_eq!(
-            format!("{:?}", all_consuming(system_tf_identifier)("$display")),
-            "Ok((\"\", Identifier { raw: \"$display\" }))"
+            format!(
+                "{:?}",
+                all_consuming(system_tf_identifier)(Span::new("$display"))
+            ),
+            "Ok((LocatedSpanEx { offset: 8, line: 1, fragment: \"\", extra: () }, SystemTfIdentifier { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"$display\", extra: () }, []) }))"
         );
     }
 }

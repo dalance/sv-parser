@@ -13,6 +13,6 @@ pub struct GateInstantiation<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn gate_instantiation(s: &str) -> IResult<&str, GateInstantiation> {
+pub fn gate_instantiation(s: Span) -> IResult<Span, GateInstantiation> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

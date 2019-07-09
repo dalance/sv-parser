@@ -36,6 +36,6 @@ pub struct BlockItemDeclarationLet<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn block_item_declaration(s: &str) -> IResult<&str, BlockItemDeclaration> {
+pub fn block_item_declaration(s: Span) -> IResult<Span, BlockItemDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

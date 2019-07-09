@@ -13,6 +13,6 @@ pub struct UdpInstantiation<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn udp_instantiation(s: &str) -> IResult<&str, UdpInstantiation> {
+pub fn udp_instantiation(s: Span) -> IResult<Span, UdpInstantiation> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

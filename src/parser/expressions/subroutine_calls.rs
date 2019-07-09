@@ -102,18 +102,18 @@ pub enum ArrayMethodName<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn constant_function_call(s: &str) -> IResult<&str, SubroutineCall> {
+pub fn constant_function_call(s: Span) -> IResult<Span, SubroutineCall> {
     function_subroutine_call(s)
 }
 
-pub fn tf_call(s: &str) -> IResult<&str, TfCall> {
+pub fn tf_call(s: Span) -> IResult<Span, TfCall> {
     let (s, x) = ps_or_hierarchical_tf_identifier(s)?;
     let (s, y) = many0(attribute_instance)(s)?;
     let (s, z) = opt(paren(list_of_arguments))(s)?;
     Ok((s, TfCall { nodes: (x, y, z) }))
 }
 
-pub fn system_tf_call(s: &str) -> IResult<&str, SystemTfCall> {
+pub fn system_tf_call(s: Span) -> IResult<Span, SystemTfCall> {
     alt((
         system_tf_call_list_of_arguments,
         system_tf_call_data_type,
@@ -121,7 +121,7 @@ pub fn system_tf_call(s: &str) -> IResult<&str, SystemTfCall> {
     ))(s)
 }
 
-pub fn system_tf_call_list_of_arguments(s: &str) -> IResult<&str, SystemTfCall> {
+pub fn system_tf_call_list_of_arguments(s: Span) -> IResult<Span, SystemTfCall> {
     let (s, x) = system_tf_identifier(s)?;
     let (s, y) = opt(paren(list_of_arguments))(s)?;
     Ok((
@@ -132,7 +132,7 @@ pub fn system_tf_call_list_of_arguments(s: &str) -> IResult<&str, SystemTfCall> 
     ))
 }
 
-pub fn system_tf_call_data_type(s: &str) -> IResult<&str, SystemTfCall> {
+pub fn system_tf_call_data_type(s: Span) -> IResult<Span, SystemTfCall> {
     let (s, x) = system_tf_identifier(s)?;
     let (s, _) = symbol("(")(s)?;
     let (s, y) = data_type(s)?;
@@ -146,7 +146,7 @@ pub fn system_tf_call_data_type(s: &str) -> IResult<&str, SystemTfCall> {
     ))
 }
 
-pub fn system_tf_call_clocking_event(s: &str) -> IResult<&str, SystemTfCall> {
+pub fn system_tf_call_clocking_event(s: Span) -> IResult<Span, SystemTfCall> {
     let (s, x) = system_tf_identifier(s)?;
     let (s, _) = symbol("(")(s)?;
     let (s, y) = separated_nonempty_list(symbol(","), expression)(s)?;
@@ -161,7 +161,7 @@ pub fn system_tf_call_clocking_event(s: &str) -> IResult<&str, SystemTfCall> {
     ))
 }
 
-pub fn subroutine_call(s: &str) -> IResult<&str, SubroutineCall> {
+pub fn subroutine_call(s: Span) -> IResult<Span, SubroutineCall> {
     alt((
         map(tf_call, |x| SubroutineCall::Tf(Box::new(x))),
         map(system_tf_call, |x| SubroutineCall::SystemTf(Box::new(x))),
@@ -174,11 +174,11 @@ pub fn subroutine_call(s: &str) -> IResult<&str, SubroutineCall> {
     ))(s)
 }
 
-pub fn function_subroutine_call(s: &str) -> IResult<&str, SubroutineCall> {
+pub fn function_subroutine_call(s: Span) -> IResult<Span, SubroutineCall> {
     subroutine_call(s)
 }
 
-pub fn list_of_arguments(s: &str) -> IResult<&str, ListOfArguments> {
+pub fn list_of_arguments(s: Span) -> IResult<Span, ListOfArguments> {
     let (s, x) = separated_list(symbol(","), expression)(s)?;
     let (s, y) = separated_list(
         symbol(","),
@@ -187,7 +187,7 @@ pub fn list_of_arguments(s: &str) -> IResult<&str, ListOfArguments> {
     Ok((s, ListOfArguments { nodes: (x, y) }))
 }
 
-pub fn method_call(s: &str) -> IResult<&str, MethodCall> {
+pub fn method_call(s: Span) -> IResult<Span, MethodCall> {
     let (s, x) = method_call_root(s)?;
     let (s, _) = symbol(".")(s)?;
     let (s, y) = method_call_body(s)?;
@@ -195,11 +195,11 @@ pub fn method_call(s: &str) -> IResult<&str, MethodCall> {
     Ok((s, MethodCall { nodes: (x, y) }))
 }
 
-pub fn method_call_body(s: &str) -> IResult<&str, MethodCallBody> {
+pub fn method_call_body(s: Span) -> IResult<Span, MethodCallBody> {
     alt((method_call_body_user, built_in_method_call))(s)
 }
 
-pub fn method_call_body_user(s: &str) -> IResult<&str, MethodCallBody> {
+pub fn method_call_body_user(s: Span) -> IResult<Span, MethodCallBody> {
     let (s, x) = method_identifier(s)?;
     let (s, y) = many0(attribute_instance)(s)?;
     let (s, z) = opt(paren(list_of_arguments))(s)?;
@@ -209,14 +209,14 @@ pub fn method_call_body_user(s: &str) -> IResult<&str, MethodCallBody> {
     ))
 }
 
-pub fn built_in_method_call(s: &str) -> IResult<&str, MethodCallBody> {
+pub fn built_in_method_call(s: Span) -> IResult<Span, MethodCallBody> {
     alt((
         map(array_manipulation_call, |x| MethodCallBody::Array(x)),
         map(randomize_call, |x| MethodCallBody::Randomize(x)),
     ))(s)
 }
 
-pub fn array_manipulation_call(s: &str) -> IResult<&str, ArrayManipulationCall> {
+pub fn array_manipulation_call(s: Span) -> IResult<Span, ArrayManipulationCall> {
     let (s, x) = array_method_name(s)?;
     let (s, y) = many0(attribute_instance)(s)?;
     let (s, z) = opt(paren(list_of_arguments))(s)?;
@@ -229,7 +229,7 @@ pub fn array_manipulation_call(s: &str) -> IResult<&str, ArrayManipulationCall> 
     ))
 }
 
-pub fn randomize_call(s: &str) -> IResult<&str, RandomizeCall> {
+pub fn randomize_call(s: Span) -> IResult<Span, RandomizeCall> {
     let (s, _) = symbol("randomize")(s)?;
     let (s, x) = many0(attribute_instance)(s)?;
     let (s, y) = opt(paren(opt(alt((
@@ -261,7 +261,7 @@ pub fn randomize_call(s: &str) -> IResult<&str, RandomizeCall> {
     ))
 }
 
-pub fn method_call_root(s: &str) -> IResult<&str, MethodCallRoot> {
+pub fn method_call_root(s: Span) -> IResult<Span, MethodCallRoot> {
     alt((
         map(primary, |x| MethodCallRoot::Primary(x)),
         map(implicit_class_handle, |x| {
@@ -270,7 +270,7 @@ pub fn method_call_root(s: &str) -> IResult<&str, MethodCallRoot> {
     ))(s)
 }
 
-pub fn array_method_name(s: &str) -> IResult<&str, ArrayMethodName> {
+pub fn array_method_name(s: Span) -> IResult<Span, ArrayMethodName> {
     alt((
         map(symbol("unique"), |_| ArrayMethodName::Unique),
         map(symbol("and"), |_| ArrayMethodName::And),

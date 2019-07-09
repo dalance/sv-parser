@@ -369,82 +369,82 @@ pub struct TimeunitsDeclarationTimeprecisionTimeunit<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn source_text(s: &str) -> IResult<&str, SourceText> {
+pub fn source_text(s: Span) -> IResult<Span, SourceText> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn description(s: &str) -> IResult<&str, Description> {
+pub fn description(s: Span) -> IResult<Span, Description> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn module_nonansi_header(s: &str) -> IResult<&str, ModuleNonansiHeader> {
+pub fn module_nonansi_header(s: Span) -> IResult<Span, ModuleNonansiHeader> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn module_ansi_header(s: &str) -> IResult<&str, ModuleAnsiHeader> {
+pub fn module_ansi_header(s: Span) -> IResult<Span, ModuleAnsiHeader> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn module_declaration(s: &str) -> IResult<&str, ModuleDeclaration> {
+pub fn module_declaration(s: Span) -> IResult<Span, ModuleDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn module_keyword(s: &str) -> IResult<&str, ModuleKeyword> {
+pub fn module_keyword(s: Span) -> IResult<Span, ModuleKeyword> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn interface_declaration(s: &str) -> IResult<&str, InterfaceDeclaration> {
+pub fn interface_declaration(s: Span) -> IResult<Span, InterfaceDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn interface_nonansi_header(s: &str) -> IResult<&str, InterfaceNonansiHeader> {
+pub fn interface_nonansi_header(s: Span) -> IResult<Span, InterfaceNonansiHeader> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn interface_ansi_header(s: &str) -> IResult<&str, InterfaceAnsiHeader> {
+pub fn interface_ansi_header(s: Span) -> IResult<Span, InterfaceAnsiHeader> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn program_declaration(s: &str) -> IResult<&str, ProgramDeclaration> {
+pub fn program_declaration(s: Span) -> IResult<Span, ProgramDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn program_nonansi_header(s: &str) -> IResult<&str, ProgramNonansiHeader> {
+pub fn program_nonansi_header(s: Span) -> IResult<Span, ProgramNonansiHeader> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn program_ansi_header(s: &str) -> IResult<&str, ProgramAnsiHeader> {
+pub fn program_ansi_header(s: Span) -> IResult<Span, ProgramAnsiHeader> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn checker_declaration(s: &str) -> IResult<&str, CheckerDeclaration> {
+pub fn checker_declaration(s: Span) -> IResult<Span, CheckerDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn class_declaration(s: &str) -> IResult<&str, ClassDeclaration> {
+pub fn class_declaration(s: Span) -> IResult<Span, ClassDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn interface_class_type(s: &str) -> IResult<&str, InterfaceClassType> {
+pub fn interface_class_type(s: Span) -> IResult<Span, InterfaceClassType> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn interface_class_declaration(s: &str) -> IResult<&str, InterfaceClassDeclaration> {
+pub fn interface_class_declaration(s: Span) -> IResult<Span, InterfaceClassDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn interface_class_item(s: &str) -> IResult<&str, InterfaceClassItem> {
+pub fn interface_class_item(s: Span) -> IResult<Span, InterfaceClassItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn interface_class_method(s: &str) -> IResult<&str, InterfaceClassMethod> {
+pub fn interface_class_method(s: Span) -> IResult<Span, InterfaceClassMethod> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn package_declaration(s: &str) -> IResult<&str, PackageDeclaration> {
+pub fn package_declaration(s: Span) -> IResult<Span, PackageDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn timeunit_declaration(s: &str) -> IResult<&str, TimeunitsDeclaration> {
+pub fn timeunit_declaration(s: Span) -> IResult<Span, TimeunitsDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

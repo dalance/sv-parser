@@ -82,28 +82,28 @@ pub enum CheckerGenerateItem<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn checker_port_list(s: &str) -> IResult<&str, CheckerPortList> {
+pub fn checker_port_list(s: Span) -> IResult<Span, CheckerPortList> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn checker_port_item(s: &str) -> IResult<&str, CheckerPortItem> {
+pub fn checker_port_item(s: Span) -> IResult<Span, CheckerPortItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn checker_port_direction(s: &str) -> IResult<&str, CheckerPortDirection> {
+pub fn checker_port_direction(s: Span) -> IResult<Span, CheckerPortDirection> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn checker_or_generate_item(s: &str) -> IResult<&str, CheckerOrGenerateItem> {
+pub fn checker_or_generate_item(s: Span) -> IResult<Span, CheckerOrGenerateItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
 pub fn checker_or_generate_item_declaration(
-    s: &str,
-) -> IResult<&str, CheckerOrGenerateItemDeclaration> {
+    s: Span,
+) -> IResult<Span, CheckerOrGenerateItemDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn checker_generate_item(s: &str) -> IResult<&str, CheckerGenerateItem> {
+pub fn checker_generate_item(s: Span) -> IResult<Span, CheckerGenerateItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

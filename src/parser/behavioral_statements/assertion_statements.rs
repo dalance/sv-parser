@@ -85,7 +85,7 @@ pub enum AssertTiming {
 
 // -----------------------------------------------------------------------------
 
-pub fn assertion_item(s: &str) -> IResult<&str, AssertionItem> {
+pub fn assertion_item(s: Span) -> IResult<Span, AssertionItem> {
     alt((
         map(concurrent_assertion_item, |x| AssertionItem::Concurrent(x)),
         map(deferred_immediate_assertion_item, |x| {
@@ -94,13 +94,13 @@ pub fn assertion_item(s: &str) -> IResult<&str, AssertionItem> {
     ))(s)
 }
 
-pub fn deferred_immediate_assertion_item(s: &str) -> IResult<&str, DeferredImmediateAssetionItem> {
+pub fn deferred_immediate_assertion_item(s: Span) -> IResult<Span, DeferredImmediateAssetionItem> {
     let (s, x) = opt(terminated(block_identifier, symbol(":")))(s)?;
     let (s, y) = deferred_immediate_assertion_statement(s)?;
     Ok((s, DeferredImmediateAssetionItem { nodes: (x, y) }))
 }
 
-pub fn procedural_assertion_statement(s: &str) -> IResult<&str, ProceduralAssertionStatement> {
+pub fn procedural_assertion_statement(s: Span) -> IResult<Span, ProceduralAssertionStatement> {
     alt((
         map(concurrent_assertion_statement, |x| {
             ProceduralAssertionStatement::Concurrent(x)
@@ -114,7 +114,7 @@ pub fn procedural_assertion_statement(s: &str) -> IResult<&str, ProceduralAssert
     ))(s)
 }
 
-pub fn immediate_assertion_statement(s: &str) -> IResult<&str, ImmediateAssetionStatement> {
+pub fn immediate_assertion_statement(s: Span) -> IResult<Span, ImmediateAssetionStatement> {
     alt((
         map(simple_immediate_assertion_statement, |x| {
             ImmediateAssetionStatement::Simple(x)
@@ -126,8 +126,8 @@ pub fn immediate_assertion_statement(s: &str) -> IResult<&str, ImmediateAssetion
 }
 
 pub fn simple_immediate_assertion_statement(
-    s: &str,
-) -> IResult<&str, SimpleImmediateAssertionStatement> {
+    s: Span,
+) -> IResult<Span, SimpleImmediateAssertionStatement> {
     alt((
         map(simple_immediate_assert_statement, |x| {
             SimpleImmediateAssertionStatement::Assert(x)
@@ -141,7 +141,7 @@ pub fn simple_immediate_assertion_statement(
     ))(s)
 }
 
-pub fn simple_immediate_assert_statement(s: &str) -> IResult<&str, SimpleImmediateAssertStatement> {
+pub fn simple_immediate_assert_statement(s: Span) -> IResult<Span, SimpleImmediateAssertStatement> {
     let (s, _) = symbol("assert")(s)?;
     let (s, _) = symbol("(")(s)?;
     let (s, x) = expression(s)?;
@@ -150,7 +150,7 @@ pub fn simple_immediate_assert_statement(s: &str) -> IResult<&str, SimpleImmedia
     Ok((s, SimpleImmediateAssertStatement { nodes: (x, y) }))
 }
 
-pub fn simple_immediate_assume_statement(s: &str) -> IResult<&str, SimpleImmediateAssumeStatement> {
+pub fn simple_immediate_assume_statement(s: Span) -> IResult<Span, SimpleImmediateAssumeStatement> {
     let (s, _) = symbol("assume")(s)?;
     let (s, _) = symbol("(")(s)?;
     let (s, x) = expression(s)?;
@@ -159,7 +159,7 @@ pub fn simple_immediate_assume_statement(s: &str) -> IResult<&str, SimpleImmedia
     Ok((s, SimpleImmediateAssumeStatement { nodes: (x, y) }))
 }
 
-pub fn simple_immediate_cover_statement(s: &str) -> IResult<&str, SimpleImmediateCoverStatement> {
+pub fn simple_immediate_cover_statement(s: Span) -> IResult<Span, SimpleImmediateCoverStatement> {
     let (s, _) = symbol("cover")(s)?;
     let (s, _) = symbol("(")(s)?;
     let (s, x) = expression(s)?;
@@ -169,8 +169,8 @@ pub fn simple_immediate_cover_statement(s: &str) -> IResult<&str, SimpleImmediat
 }
 
 pub fn deferred_immediate_assertion_statement(
-    s: &str,
-) -> IResult<&str, DeferredImmediateAssertionStatement> {
+    s: Span,
+) -> IResult<Span, DeferredImmediateAssertionStatement> {
     alt((
         map(deferred_immediate_assert_statement, |x| {
             DeferredImmediateAssertionStatement::Assert(x)
@@ -185,8 +185,8 @@ pub fn deferred_immediate_assertion_statement(
 }
 
 pub fn deferred_immediate_assert_statement(
-    s: &str,
-) -> IResult<&str, DeferredImmediateAssertStatement> {
+    s: Span,
+) -> IResult<Span, DeferredImmediateAssertStatement> {
     let (s, _) = symbol("assert")(s)?;
     let (s, x) = assert_timing(s)?;
     let (s, _) = symbol("(")(s)?;
@@ -197,8 +197,8 @@ pub fn deferred_immediate_assert_statement(
 }
 
 pub fn deferred_immediate_assume_statement(
-    s: &str,
-) -> IResult<&str, DeferredImmediateAssumeStatement> {
+    s: Span,
+) -> IResult<Span, DeferredImmediateAssumeStatement> {
     let (s, _) = symbol("assume")(s)?;
     let (s, x) = assert_timing(s)?;
     let (s, _) = symbol("(")(s)?;
@@ -209,8 +209,8 @@ pub fn deferred_immediate_assume_statement(
 }
 
 pub fn deferred_immediate_cover_statement(
-    s: &str,
-) -> IResult<&str, DeferredImmediateCoverStatement> {
+    s: Span,
+) -> IResult<Span, DeferredImmediateCoverStatement> {
     let (s, _) = symbol("cover")(s)?;
     let (s, x) = assert_timing(s)?;
     let (s, _) = symbol("(")(s)?;
@@ -220,7 +220,7 @@ pub fn deferred_immediate_cover_statement(
     Ok((s, DeferredImmediateCoverStatement { nodes: (x, y, z) }))
 }
 
-pub fn assert_timing(s: &str) -> IResult<&str, AssertTiming> {
+pub fn assert_timing(s: Span) -> IResult<Span, AssertTiming> {
     alt((
         map(symbol("#0"), |_| AssertTiming::Zero),
         map(symbol("final"), |_| AssertTiming::Final),

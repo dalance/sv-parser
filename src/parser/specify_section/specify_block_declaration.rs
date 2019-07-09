@@ -13,6 +13,6 @@ pub struct SpecifyBlock<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn specify_block(s: &str) -> IResult<&str, SpecifyBlock> {
+pub fn specify_block(s: Span) -> IResult<Span, SpecifyBlock> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

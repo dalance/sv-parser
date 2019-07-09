@@ -88,7 +88,7 @@ pub struct LoopVariables<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn loop_statement(s: &str) -> IResult<&str, LoopStatement> {
+pub fn loop_statement(s: Span) -> IResult<Span, LoopStatement> {
     alt((
         loop_statement_forever,
         loop_statement_repeat,
@@ -99,7 +99,7 @@ pub fn loop_statement(s: &str) -> IResult<&str, LoopStatement> {
     ))(s)
 }
 
-pub fn loop_statement_forever(s: &str) -> IResult<&str, LoopStatement> {
+pub fn loop_statement_forever(s: Span) -> IResult<Span, LoopStatement> {
     let (s, _) = symbol("forever")(s)?;
     let (s, x) = statement_or_null(s)?;
     Ok((
@@ -108,7 +108,7 @@ pub fn loop_statement_forever(s: &str) -> IResult<&str, LoopStatement> {
     ))
 }
 
-pub fn loop_statement_repeat(s: &str) -> IResult<&str, LoopStatement> {
+pub fn loop_statement_repeat(s: Span) -> IResult<Span, LoopStatement> {
     let (s, _) = symbol("repeat")(s)?;
     let (s, _) = symbol("(")(s)?;
     let (s, x) = expression(s)?;
@@ -120,7 +120,7 @@ pub fn loop_statement_repeat(s: &str) -> IResult<&str, LoopStatement> {
     ))
 }
 
-pub fn loop_statement_while(s: &str) -> IResult<&str, LoopStatement> {
+pub fn loop_statement_while(s: Span) -> IResult<Span, LoopStatement> {
     let (s, _) = symbol("while")(s)?;
     let (s, _) = symbol("(")(s)?;
     let (s, x) = expression(s)?;
@@ -132,7 +132,7 @@ pub fn loop_statement_while(s: &str) -> IResult<&str, LoopStatement> {
     ))
 }
 
-pub fn loop_statement_for(s: &str) -> IResult<&str, LoopStatement> {
+pub fn loop_statement_for(s: Span) -> IResult<Span, LoopStatement> {
     let (s, _) = symbol("for")(s)?;
     let (s, _) = symbol("(")(s)?;
     let (s, x) = opt(for_initialization)(s)?;
@@ -150,7 +150,7 @@ pub fn loop_statement_for(s: &str) -> IResult<&str, LoopStatement> {
     ))
 }
 
-pub fn loop_statement_do_while(s: &str) -> IResult<&str, LoopStatement> {
+pub fn loop_statement_do_while(s: Span) -> IResult<Span, LoopStatement> {
     let (s, _) = symbol("do")(s)?;
     let (s, x) = statement_or_null(s)?;
     let (s, _) = symbol("while")(s)?;
@@ -164,7 +164,7 @@ pub fn loop_statement_do_while(s: &str) -> IResult<&str, LoopStatement> {
     ))
 }
 
-pub fn loop_statement_foreach(s: &str) -> IResult<&str, LoopStatement> {
+pub fn loop_statement_foreach(s: Span) -> IResult<Span, LoopStatement> {
     let (s, _) = symbol("foreach")(s)?;
     let (s, _) = symbol("(")(s)?;
     let (s, x) = ps_or_hierarchical_array_identifier(s)?;
@@ -179,7 +179,7 @@ pub fn loop_statement_foreach(s: &str) -> IResult<&str, LoopStatement> {
     ))
 }
 
-pub fn for_initialization(s: &str) -> IResult<&str, ForInitialization> {
+pub fn for_initialization(s: Span) -> IResult<Span, ForInitialization> {
     alt((
         map(list_of_variable_assignments, |x| {
             ForInitialization::Assignment(x)
@@ -191,7 +191,7 @@ pub fn for_initialization(s: &str) -> IResult<&str, ForInitialization> {
     ))(s)
 }
 
-pub fn for_variable_declaration(s: &str) -> IResult<&str, ForVariableDeclaration> {
+pub fn for_variable_declaration(s: Span) -> IResult<Span, ForVariableDeclaration> {
     let (s, x) = opt(symbol("var"))(s)?;
     let (s, y) = data_type(s)?;
     let (s, z) = separated_nonempty_list(
@@ -206,11 +206,11 @@ pub fn for_variable_declaration(s: &str) -> IResult<&str, ForVariableDeclaration
     ))
 }
 
-pub fn for_step(s: &str) -> IResult<&str, Vec<ForStepAssignment>> {
+pub fn for_step(s: Span) -> IResult<Span, Vec<ForStepAssignment>> {
     separated_nonempty_list(symbol(","), for_step_assignment)(s)
 }
 
-pub fn for_step_assignment(s: &str) -> IResult<&str, ForStepAssignment> {
+pub fn for_step_assignment(s: Span) -> IResult<Span, ForStepAssignment> {
     alt((
         map(operator_assignment, |x| ForStepAssignment::Operator(x)),
         map(inc_or_dec_expression, |x| ForStepAssignment::IncOrDec(x)),
@@ -220,7 +220,7 @@ pub fn for_step_assignment(s: &str) -> IResult<&str, ForStepAssignment> {
     ))(s)
 }
 
-pub fn loop_variables(s: &str) -> IResult<&str, LoopVariables> {
+pub fn loop_variables(s: Span) -> IResult<Span, LoopVariables> {
     let (s, x) = separated_nonempty_list(symbol(","), opt(index_variable_identifier))(s)?;
     Ok((s, LoopVariables { nodes: (x,) }))
 }

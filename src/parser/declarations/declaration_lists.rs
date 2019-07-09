@@ -85,54 +85,54 @@ pub struct ListOfVariablePortIdentifiers<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn list_of_defparam_assignments(s: &str) -> IResult<&str, ListOfDefparamAssignments> {
+pub fn list_of_defparam_assignments(s: Span) -> IResult<Span, ListOfDefparamAssignments> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn list_of_genvar_identifiers(s: &str) -> IResult<&str, ListOfGenvarIdentifiers> {
+pub fn list_of_genvar_identifiers(s: Span) -> IResult<Span, ListOfGenvarIdentifiers> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn list_of_interface_identifiers(s: &str) -> IResult<&str, ListOfInterfaceIdentifiers> {
+pub fn list_of_interface_identifiers(s: Span) -> IResult<Span, ListOfInterfaceIdentifiers> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn list_of_net_decl_assignments(s: &str) -> IResult<&str, ListOfNetDeclAssignments> {
+pub fn list_of_net_decl_assignments(s: Span) -> IResult<Span, ListOfNetDeclAssignments> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn list_of_param_assignments(s: &str) -> IResult<&str, ListOfParamAssignments> {
+pub fn list_of_param_assignments(s: Span) -> IResult<Span, ListOfParamAssignments> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn list_of_port_identifiers(s: &str) -> IResult<&str, ListOfPortIdentifiers> {
+pub fn list_of_port_identifiers(s: Span) -> IResult<Span, ListOfPortIdentifiers> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn list_of_udp_port_identifiers(s: &str) -> IResult<&str, ListOfUdpPortIdentifiers> {
+pub fn list_of_udp_port_identifiers(s: Span) -> IResult<Span, ListOfUdpPortIdentifiers> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn list_of_specparam_assignments(s: &str) -> IResult<&str, ListOfSpecparamAssignments> {
+pub fn list_of_specparam_assignments(s: Span) -> IResult<Span, ListOfSpecparamAssignments> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn list_of_tf_variable_identifiers(s: &str) -> IResult<&str, ListOfTfVariableIdentifiers> {
+pub fn list_of_tf_variable_identifiers(s: Span) -> IResult<Span, ListOfTfVariableIdentifiers> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn list_of_type_assignments(s: &str) -> IResult<&str, ListOfTypeAssignments> {
+pub fn list_of_type_assignments(s: Span) -> IResult<Span, ListOfTypeAssignments> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn list_of_variable_decl_assignments(s: &str) -> IResult<&str, ListOfVariableDeclAssignments> {
+pub fn list_of_variable_decl_assignments(s: Span) -> IResult<Span, ListOfVariableDeclAssignments> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn list_of_variable_identifiers(s: &str) -> IResult<&str, ListOfVariableIdentifiers> {
+pub fn list_of_variable_identifiers(s: Span) -> IResult<Span, ListOfVariableIdentifiers> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn list_of_variable_port_identifiers(s: &str) -> IResult<&str, ListOfVariablePortIdentifiers> {
+pub fn list_of_variable_port_identifiers(s: Span) -> IResult<Span, ListOfVariablePortIdentifiers> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

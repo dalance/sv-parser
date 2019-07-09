@@ -442,134 +442,134 @@ pub struct CovergroupExpression<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn covergroup_declaration(s: &str) -> IResult<&str, CovergroupDeclaration> {
+pub fn covergroup_declaration(s: Span) -> IResult<Span, CovergroupDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn coverage_spec_or_option(s: &str) -> IResult<&str, CoverageSpecOrOption> {
+pub fn coverage_spec_or_option(s: Span) -> IResult<Span, CoverageSpecOrOption> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn coverage_option(s: &str) -> IResult<&str, CoverageOption> {
+pub fn coverage_option(s: Span) -> IResult<Span, CoverageOption> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn coverage_spec(s: &str) -> IResult<&str, CoverageSpec> {
+pub fn coverage_spec(s: Span) -> IResult<Span, CoverageSpec> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn coverage_event(s: &str) -> IResult<&str, CoverageEvent> {
+pub fn coverage_event(s: Span) -> IResult<Span, CoverageEvent> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn block_event_expression(s: &str) -> IResult<&str, BlockEventExpression> {
+pub fn block_event_expression(s: Span) -> IResult<Span, BlockEventExpression> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn hierarchical_btf_identifier(s: &str) -> IResult<&str, HierarchicalBtfIdentifier> {
+pub fn hierarchical_btf_identifier(s: Span) -> IResult<Span, HierarchicalBtfIdentifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn cover_point(s: &str) -> IResult<&str, CoverPoint> {
+pub fn cover_point(s: Span) -> IResult<Span, CoverPoint> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn bins_or_empty(s: &str) -> IResult<&str, BinsOrEmpty> {
+pub fn bins_or_empty(s: Span) -> IResult<Span, BinsOrEmpty> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn bins_or_options(s: &str) -> IResult<&str, BinsOrOptions> {
+pub fn bins_or_options(s: Span) -> IResult<Span, BinsOrOptions> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn bins_keyword(s: &str) -> IResult<&str, BinsKeyword> {
+pub fn bins_keyword(s: Span) -> IResult<Span, BinsKeyword> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn trans_list(s: &str) -> IResult<&str, TransList> {
+pub fn trans_list(s: Span) -> IResult<Span, TransList> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn trans_set(s: &str) -> IResult<&str, TransSet> {
+pub fn trans_set(s: Span) -> IResult<Span, TransSet> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn trans_range_list(s: &str) -> IResult<&str, TransRangeList> {
+pub fn trans_range_list(s: Span) -> IResult<Span, TransRangeList> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn trans_item(s: &str) -> IResult<&str, TransItem> {
+pub fn trans_item(s: Span) -> IResult<Span, TransItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn repeat_range(s: &str) -> IResult<&str, RepeatRange> {
+pub fn repeat_range(s: Span) -> IResult<Span, RepeatRange> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn cover_cross(s: &str) -> IResult<&str, CoverCross> {
+pub fn cover_cross(s: Span) -> IResult<Span, CoverCross> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn list_of_cross_items(s: &str) -> IResult<&str, ListOfCrossItems> {
+pub fn list_of_cross_items(s: Span) -> IResult<Span, ListOfCrossItems> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn cross_item(s: &str) -> IResult<&str, CrossItem> {
+pub fn cross_item(s: Span) -> IResult<Span, CrossItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn cross_body(s: &str) -> IResult<&str, CrossBody> {
+pub fn cross_body(s: Span) -> IResult<Span, CrossBody> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn cross_body_item(s: &str) -> IResult<&str, CrossBodyItem> {
+pub fn cross_body_item(s: Span) -> IResult<Span, CrossBodyItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn bins_selection_or_option(s: &str) -> IResult<&str, BinsSelectionOrOption> {
+pub fn bins_selection_or_option(s: Span) -> IResult<Span, BinsSelectionOrOption> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn bins_selection(s: &str) -> IResult<&str, BinsSelection> {
+pub fn bins_selection(s: Span) -> IResult<Span, BinsSelection> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn select_expression(s: &str) -> IResult<&str, SelectExpression> {
+pub fn select_expression(s: Span) -> IResult<Span, SelectExpression> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn select_condition(s: &str) -> IResult<&str, SelectCondition> {
+pub fn select_condition(s: Span) -> IResult<Span, SelectCondition> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn bins_expression(s: &str) -> IResult<&str, BinsExpression> {
+pub fn bins_expression(s: Span) -> IResult<Span, BinsExpression> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn covergroup_range_list(s: &str) -> IResult<&str, CovergroupRangeList> {
+pub fn covergroup_range_list(s: Span) -> IResult<Span, CovergroupRangeList> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn covergroup_value_range(s: &str) -> IResult<&str, CovergroupValueRange> {
+pub fn covergroup_value_range(s: Span) -> IResult<Span, CovergroupValueRange> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn with_covergroup_expression(s: &str) -> IResult<&str, WithCovergroupExpression> {
+pub fn with_covergroup_expression(s: Span) -> IResult<Span, WithCovergroupExpression> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn set_covergroup_expression(s: &str) -> IResult<&str, SetCovergroupExpression> {
+pub fn set_covergroup_expression(s: Span) -> IResult<Span, SetCovergroupExpression> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn integer_covergroup_expression(s: &str) -> IResult<&str, IntegerCovergroupExpression> {
+pub fn integer_covergroup_expression(s: Span) -> IResult<Span, IntegerCovergroupExpression> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn cross_set_expression(s: &str) -> IResult<&str, CrossSetExpression> {
+pub fn cross_set_expression(s: Span) -> IResult<Span, CrossSetExpression> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn covergroup_expression(s: &str) -> IResult<&str, CovergroupExpression> {
+pub fn covergroup_expression(s: Span) -> IResult<Span, CovergroupExpression> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

@@ -18,3 +18,5 @@ pub use source_text::*;
 pub use specify_section::*;
 pub use udp_declaration_and_instantiation::*;
 pub use utils::*;
+
+pub type Span<'a> = nom_locate::LocatedSpan<&'a str>;

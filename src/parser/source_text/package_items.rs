@@ -49,20 +49,20 @@ pub enum AnonymousProgramItem<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn package_item(s: &str) -> IResult<&str, PackageItem> {
+pub fn package_item(s: Span) -> IResult<Span, PackageItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
 pub fn package_or_generate_item_declaration(
-    s: &str,
-) -> IResult<&str, PackageOrGenerateItemDeclaration> {
+    s: Span,
+) -> IResult<Span, PackageOrGenerateItemDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn anonymous_program(s: &str) -> IResult<&str, AnonymousProgram> {
+pub fn anonymous_program(s: Span) -> IResult<Span, AnonymousProgram> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn anonymous_program_item(s: &str) -> IResult<&str, AnonymousProgramItem> {
+pub fn anonymous_program_item(s: Span) -> IResult<Span, AnonymousProgramItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

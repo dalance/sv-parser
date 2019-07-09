@@ -185,56 +185,56 @@ pub enum BindInstantiation<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn elaboration_system_task(s: &str) -> IResult<&str, ElaborationSystemTask> {
+pub fn elaboration_system_task(s: Span) -> IResult<Span, ElaborationSystemTask> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn finish_number(s: &str) -> IResult<&str, FinishNumber> {
+pub fn finish_number(s: Span) -> IResult<Span, FinishNumber> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn module_common_item(s: &str) -> IResult<&str, ModuleCommonItem> {
+pub fn module_common_item(s: Span) -> IResult<Span, ModuleCommonItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn module_item(s: &str) -> IResult<&str, ModuleItem> {
+pub fn module_item(s: Span) -> IResult<Span, ModuleItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn module_or_generate_item(s: &str) -> IResult<&str, ModuleOrGenerateItem> {
+pub fn module_or_generate_item(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
 pub fn module_or_generate_item_declaration(
-    s: &str,
-) -> IResult<&str, ModuleOrGenerateItemDeclaration> {
+    s: Span,
+) -> IResult<Span, ModuleOrGenerateItemDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn non_port_module_item(s: &str) -> IResult<&str, NonPortModuleItem> {
+pub fn non_port_module_item(s: Span) -> IResult<Span, NonPortModuleItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn parameter_override(s: &str) -> IResult<&str, ParameterOverride> {
+pub fn parameter_override(s: Span) -> IResult<Span, ParameterOverride> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn bind_directive(s: &str) -> IResult<&str, BindDirective> {
+pub fn bind_directive(s: Span) -> IResult<Span, BindDirective> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn bind_target_scope(s: &str) -> IResult<&str, BindTargetScope> {
+pub fn bind_target_scope(s: Span) -> IResult<Span, BindTargetScope> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn bind_target_instance(s: &str) -> IResult<&str, BindTargetInstance> {
+pub fn bind_target_instance(s: Span) -> IResult<Span, BindTargetInstance> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn bind_target_instance_list(s: &str) -> IResult<&str, BindTargetInstanceList> {
+pub fn bind_target_instance_list(s: Span) -> IResult<Span, BindTargetInstanceList> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn bind_instantiation(s: &str) -> IResult<&str, BindInstantiation> {
+pub fn bind_instantiation(s: Span) -> IResult<Span, BindInstantiation> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

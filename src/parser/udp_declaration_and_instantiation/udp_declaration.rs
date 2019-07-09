@@ -13,6 +13,6 @@ pub struct UdpDeclaration<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn udp_declaration(s: &str) -> IResult<&str, UdpDeclaration> {
+pub fn udp_declaration(s: Span) -> IResult<Span, UdpDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

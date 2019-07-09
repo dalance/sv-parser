@@ -117,50 +117,50 @@ pub struct DynamicArrayNew<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn defparam_assignment(s: &str) -> IResult<&str, DefparamAssignment> {
+pub fn defparam_assignment(s: Span) -> IResult<Span, DefparamAssignment> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn net_decl_assignment(s: &str) -> IResult<&str, NetDeclAssignment> {
+pub fn net_decl_assignment(s: Span) -> IResult<Span, NetDeclAssignment> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn param_assignment(s: &str) -> IResult<&str, ParamAssignment> {
+pub fn param_assignment(s: Span) -> IResult<Span, ParamAssignment> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn specparam_assignment(s: &str) -> IResult<&str, SpecparamAssignment> {
+pub fn specparam_assignment(s: Span) -> IResult<Span, SpecparamAssignment> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn type_assignment(s: &str) -> IResult<&str, TypeAssignment> {
+pub fn type_assignment(s: Span) -> IResult<Span, TypeAssignment> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn pulse_control_specparam(s: &str) -> IResult<&str, PulseControlSpecparam> {
+pub fn pulse_control_specparam(s: Span) -> IResult<Span, PulseControlSpecparam> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn error_limit_value(s: &str) -> IResult<&str, ErrorLimitValue> {
+pub fn error_limit_value(s: Span) -> IResult<Span, ErrorLimitValue> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn reject_limit_value(s: &str) -> IResult<&str, RejectLimitValue> {
+pub fn reject_limit_value(s: Span) -> IResult<Span, RejectLimitValue> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn limit_value(s: &str) -> IResult<&str, LimitValue> {
+pub fn limit_value(s: Span) -> IResult<Span, LimitValue> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn variable_decl_assignment(s: &str) -> IResult<&str, VariableDeclAssignment> {
+pub fn variable_decl_assignment(s: Span) -> IResult<Span, VariableDeclAssignment> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn class_new(s: &str) -> IResult<&str, ClassNew> {
+pub fn class_new(s: Span) -> IResult<Span, ClassNew> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn dynamic_array_new(s: &str) -> IResult<&str, DynamicArrayNew> {
+pub fn dynamic_array_new(s: Span) -> IResult<Span, DynamicArrayNew> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

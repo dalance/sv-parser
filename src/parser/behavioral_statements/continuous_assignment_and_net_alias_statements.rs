@@ -39,11 +39,11 @@ pub struct NetAssignment<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn continuous_assign(s: &str) -> IResult<&str, ContinuousAssign> {
+pub fn continuous_assign(s: Span) -> IResult<Span, ContinuousAssign> {
     alt((continuous_assign_net, continuous_assign_variable))(s)
 }
 
-pub fn continuous_assign_net(s: &str) -> IResult<&str, ContinuousAssign> {
+pub fn continuous_assign_net(s: Span) -> IResult<Span, ContinuousAssign> {
     let (s, _) = symbol("assign")(s)?;
     let (s, x) = opt(drive_strength)(s)?;
     let (s, y) = opt(delay3)(s)?;
@@ -56,7 +56,7 @@ pub fn continuous_assign_net(s: &str) -> IResult<&str, ContinuousAssign> {
     ))
 }
 
-pub fn continuous_assign_variable(s: &str) -> IResult<&str, ContinuousAssign> {
+pub fn continuous_assign_variable(s: Span) -> IResult<Span, ContinuousAssign> {
     let (s, _) = symbol("assign")(s)?;
     let (s, x) = opt(delay_control)(s)?;
     let (s, y) = list_of_variable_assignments(s)?;
@@ -68,15 +68,15 @@ pub fn continuous_assign_variable(s: &str) -> IResult<&str, ContinuousAssign> {
     ))
 }
 
-pub fn list_of_net_assignments(s: &str) -> IResult<&str, Vec<NetAssignment>> {
+pub fn list_of_net_assignments(s: Span) -> IResult<Span, Vec<NetAssignment>> {
     separated_nonempty_list(symbol(","), net_assignment)(s)
 }
 
-pub fn list_of_variable_assignments(s: &str) -> IResult<&str, Vec<VariableAssignment>> {
+pub fn list_of_variable_assignments(s: Span) -> IResult<Span, Vec<VariableAssignment>> {
     separated_nonempty_list(symbol(","), variable_assignment)(s)
 }
 
-pub fn net_alias(s: &str) -> IResult<&str, NetAlias> {
+pub fn net_alias(s: Span) -> IResult<Span, NetAlias> {
     let (s, _) = symbol("alias")(s)?;
     let (s, x) = net_lvalue(s)?;
     let (s, y) = many1(preceded(symbol("="), net_lvalue))(s)?;
@@ -84,7 +84,7 @@ pub fn net_alias(s: &str) -> IResult<&str, NetAlias> {
     Ok((s, NetAlias { nodes: (x, y) }))
 }
 
-pub fn net_assignment(s: &str) -> IResult<&str, NetAssignment> {
+pub fn net_assignment(s: Span) -> IResult<Span, NetAssignment> {
     let (s, x) = net_lvalue(s)?;
     let (s, _) = symbol("=")(s)?;
     let (s, y) = expression(s)?;

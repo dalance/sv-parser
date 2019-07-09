@@ -197,54 +197,54 @@ pub struct AnsiPortDeclarationParen<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn parameter_port_list(s: &str) -> IResult<&str, ParameterPortList> {
+pub fn parameter_port_list(s: Span) -> IResult<Span, ParameterPortList> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn parameter_port_declaration(s: &str) -> IResult<&str, ParameterPortDeclaration> {
+pub fn parameter_port_declaration(s: Span) -> IResult<Span, ParameterPortDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn list_of_ports(s: &str) -> IResult<&str, ListOfPorts> {
+pub fn list_of_ports(s: Span) -> IResult<Span, ListOfPorts> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn list_of_port_declarations(s: &str) -> IResult<&str, ListOfPortDeclarations> {
+pub fn list_of_port_declarations(s: Span) -> IResult<Span, ListOfPortDeclarations> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn port_declaration(s: &str) -> IResult<&str, PortDeclaration> {
+pub fn port_declaration(s: Span) -> IResult<Span, PortDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn port(s: &str) -> IResult<&str, Port> {
+pub fn port(s: Span) -> IResult<Span, Port> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn port_expression(s: &str) -> IResult<&str, PortExpression> {
+pub fn port_expression(s: Span) -> IResult<Span, PortExpression> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn port_reference(s: &str) -> IResult<&str, PortReference> {
+pub fn port_reference(s: Span) -> IResult<Span, PortReference> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn port_direction(s: &str) -> IResult<&str, PortDirection> {
+pub fn port_direction(s: Span) -> IResult<Span, PortDirection> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn net_port_header(s: &str) -> IResult<&str, NetPortHeader> {
+pub fn net_port_header(s: Span) -> IResult<Span, NetPortHeader> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn variable_port_header(s: &str) -> IResult<&str, VariablePortHeader> {
+pub fn variable_port_header(s: Span) -> IResult<Span, VariablePortHeader> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn interface_port_header(s: &str) -> IResult<&str, InterfacePortHeader> {
+pub fn interface_port_header(s: Span) -> IResult<Span, InterfacePortHeader> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn ansi_port_declaration(s: &str) -> IResult<&str, AnsiPortDeclaration> {
+pub fn ansi_port_declaration(s: Span) -> IResult<Span, AnsiPortDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

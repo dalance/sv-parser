@@ -44,26 +44,26 @@ pub struct UnsizedDimension {
 
 // -----------------------------------------------------------------------------
 
-pub fn unpacked_dimension(s: &str) -> IResult<&str, UnpackedDimension> {
+pub fn unpacked_dimension(s: Span) -> IResult<Span, UnpackedDimension> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn packed_dimension(s: &str) -> IResult<&str, PackedDimension> {
+pub fn packed_dimension(s: Span) -> IResult<Span, PackedDimension> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn associative_dimension(s: &str) -> IResult<&str, AssociativeDimension> {
+pub fn associative_dimension(s: Span) -> IResult<Span, AssociativeDimension> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn variable_dimension(s: &str) -> IResult<&str, VariableDimension> {
+pub fn variable_dimension(s: Span) -> IResult<Span, VariableDimension> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn queue_dimension(s: &str) -> IResult<&str, QueueDimension> {
+pub fn queue_dimension(s: Span) -> IResult<Span, QueueDimension> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn unsized_dimension(s: &str) -> IResult<&str, UnsizedDimension> {
+pub fn unsized_dimension(s: Span) -> IResult<Span, UnsizedDimension> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

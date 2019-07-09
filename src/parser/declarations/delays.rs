@@ -33,7 +33,7 @@ pub struct Delay2Mintypmax<'a> {
 
 #[derive(Debug)]
 pub enum DelayValue<'a> {
-    UnsignedNumber(&'a str),
+    UnsignedNumber(UnsignedNumber<'a>),
     RealNumber(RealNumber<'a>),
     Identifier(Identifier<'a>),
     TimeLiteral(TimeLiteral<'a>),
@@ -42,14 +42,14 @@ pub enum DelayValue<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn delay3(s: &str) -> IResult<&str, Delay3> {
+pub fn delay3(s: Span) -> IResult<Span, Delay3> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn delay2(s: &str) -> IResult<&str, Delay2> {
+pub fn delay2(s: Span) -> IResult<Span, Delay2> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn delay_value(s: &str) -> IResult<&str, DelayValue> {
+pub fn delay_value(s: Span) -> IResult<Span, DelayValue> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

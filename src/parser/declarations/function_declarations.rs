@@ -120,42 +120,42 @@ pub struct DpiTaskProto<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn function_data_type_or_implicit(s: &str) -> IResult<&str, FunctionDataTypeOrImplicit> {
+pub fn function_data_type_or_implicit(s: Span) -> IResult<Span, FunctionDataTypeOrImplicit> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn function_declaration(s: &str) -> IResult<&str, FunctionDeclaration> {
+pub fn function_declaration(s: Span) -> IResult<Span, FunctionDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn function_body_declaration(s: &str) -> IResult<&str, FunctionBodyDeclaration> {
+pub fn function_body_declaration(s: Span) -> IResult<Span, FunctionBodyDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn function_prototype(s: &str) -> IResult<&str, FunctionPrototype> {
+pub fn function_prototype(s: Span) -> IResult<Span, FunctionPrototype> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn dpi_import_export(s: &str) -> IResult<&str, DpiImportExport> {
+pub fn dpi_import_export(s: Span) -> IResult<Span, DpiImportExport> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn dpi_spec_string(s: &str) -> IResult<&str, DpiSpecString> {
+pub fn dpi_spec_string(s: Span) -> IResult<Span, DpiSpecString> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn dpi_function_import_property(s: &str) -> IResult<&str, DpiFunctionImportProperty> {
+pub fn dpi_function_import_property(s: Span) -> IResult<Span, DpiFunctionImportProperty> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn dpi_task_import_property(s: &str) -> IResult<&str, DpiTaskImportProperty> {
+pub fn dpi_task_import_property(s: Span) -> IResult<Span, DpiTaskImportProperty> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn dpi_function_proto(s: &str) -> IResult<&str, DpiFunctionProto> {
+pub fn dpi_function_proto(s: Span) -> IResult<Span, DpiFunctionProto> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn dpi_task_proto(s: &str) -> IResult<&str, DpiTaskProto> {
+pub fn dpi_task_proto(s: Span) -> IResult<Span, DpiTaskProto> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

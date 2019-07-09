@@ -39,17 +39,21 @@ pub enum GenvarIteration<'a> {
 
 #[derive(Debug)]
 pub struct GenvarIterationAssignment<'a> {
-    pub nodes: (GenvarIdentifier<'a>, Operator<'a>, ConstantExpression<'a>),
+    pub nodes: (
+        GenvarIdentifier<'a>,
+        AssignmentOperator<'a>,
+        ConstantExpression<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct GenvarIterationPrefix<'a> {
-    pub nodes: (Operator<'a>, GenvarIdentifier<'a>),
+    pub nodes: (IncOrDecOperator<'a>, GenvarIdentifier<'a>),
 }
 
 #[derive(Debug)]
 pub struct GenvarIterationSuffix<'a> {
-    pub nodes: (GenvarIdentifier<'a>, Operator<'a>),
+    pub nodes: (GenvarIdentifier<'a>, IncOrDecOperator<'a>),
 }
 
 #[derive(Debug)]
@@ -113,14 +117,14 @@ pub enum GenerateItem<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn generate_region(s: &str) -> IResult<&str, GenerateRegion> {
+pub fn generate_region(s: Span) -> IResult<Span, GenerateRegion> {
     let (s, _) = symbol("generate")(s)?;
     let (s, x) = many0(generate_item)(s)?;
     let (s, _) = symbol("endgenerate")(s)?;
     Ok((s, GenerateRegion { nodes: (x,) }))
 }
 
-pub fn loop_generate_construct(s: &str) -> IResult<&str, LoopGenerateConstruct> {
+pub fn loop_generate_construct(s: Span) -> IResult<Span, LoopGenerateConstruct> {
     let (s, _) = symbol("for")(s)?;
     let (s, _) = symbol("(")(s)?;
     let (s, x) = generate_initialization(s)?;
@@ -138,7 +142,7 @@ pub fn loop_generate_construct(s: &str) -> IResult<&str, LoopGenerateConstruct> 
     ))
 }
 
-pub fn generate_initialization(s: &str) -> IResult<&str, GenvarInitialization> {
+pub fn generate_initialization(s: Span) -> IResult<Span, GenvarInitialization> {
     let (s, x) = opt(symbol("genvar"))(s)?;
     let (s, y) = genvar_identifier(s)?;
     let (s, _) = symbol("=")(s)?;
@@ -151,7 +155,7 @@ pub fn generate_initialization(s: &str) -> IResult<&str, GenvarInitialization> {
     ))
 }
 
-pub fn genvar_iteration(s: &str) -> IResult<&str, GenvarIteration> {
+pub fn genvar_iteration(s: Span) -> IResult<Span, GenvarIteration> {
     alt((
         genvar_iteration_assignment,
         genvar_iteration_prefix,
@@ -159,7 +163,7 @@ pub fn genvar_iteration(s: &str) -> IResult<&str, GenvarIteration> {
     ))(s)
 }
 
-pub fn genvar_iteration_assignment(s: &str) -> IResult<&str, GenvarIteration> {
+pub fn genvar_iteration_assignment(s: Span) -> IResult<Span, GenvarIteration> {
     let (s, x) = genvar_identifier(s)?;
     let (s, y) = assignment_operator(s)?;
     let (s, z) = genvar_expression(s)?;
@@ -169,7 +173,7 @@ pub fn genvar_iteration_assignment(s: &str) -> IResult<&str, GenvarIteration> {
     ))
 }
 
-pub fn genvar_iteration_prefix(s: &str) -> IResult<&str, GenvarIteration> {
+pub fn genvar_iteration_prefix(s: Span) -> IResult<Span, GenvarIteration> {
     let (s, x) = inc_or_dec_operator(s)?;
     let (s, y) = genvar_identifier(s)?;
     Ok((
@@ -178,7 +182,7 @@ pub fn genvar_iteration_prefix(s: &str) -> IResult<&str, GenvarIteration> {
     ))
 }
 
-pub fn genvar_iteration_suffix(s: &str) -> IResult<&str, GenvarIteration> {
+pub fn genvar_iteration_suffix(s: Span) -> IResult<Span, GenvarIteration> {
     let (s, x) = genvar_identifier(s)?;
     let (s, y) = inc_or_dec_operator(s)?;
     Ok((
@@ -187,7 +191,7 @@ pub fn genvar_iteration_suffix(s: &str) -> IResult<&str, GenvarIteration> {
     ))
 }
 
-pub fn conditional_generate_construct(s: &str) -> IResult<&str, ConditionalGenerateConstruct> {
+pub fn conditional_generate_construct(s: Span) -> IResult<Span, ConditionalGenerateConstruct> {
     alt((
         map(if_generate_construct, |x| {
             ConditionalGenerateConstruct::If(x)
@@ -198,7 +202,7 @@ pub fn conditional_generate_construct(s: &str) -> IResult<&str, ConditionalGener
     ))(s)
 }
 
-pub fn if_generate_construct(s: &str) -> IResult<&str, IfGenerateConstruct> {
+pub fn if_generate_construct(s: Span) -> IResult<Span, IfGenerateConstruct> {
     let (s, _) = symbol("if")(s)?;
     let (s, x) = paren(constant_expression)(s)?;
     let (s, y) = generate_block(s)?;
@@ -206,7 +210,7 @@ pub fn if_generate_construct(s: &str) -> IResult<&str, IfGenerateConstruct> {
     Ok((s, IfGenerateConstruct { nodes: (x, y, z) }))
 }
 
-pub fn case_generate_construct(s: &str) -> IResult<&str, CaseGenerateConstruct> {
+pub fn case_generate_construct(s: Span) -> IResult<Span, CaseGenerateConstruct> {
     let (s, _) = symbol("case")(s)?;
     let (s, x) = paren(constant_expression)(s)?;
     let (s, y) = many1(case_generate_item)(s)?;
@@ -214,11 +218,11 @@ pub fn case_generate_construct(s: &str) -> IResult<&str, CaseGenerateConstruct> 
     Ok((s, CaseGenerateConstruct { nodes: (x, y) }))
 }
 
-pub fn case_generate_item(s: &str) -> IResult<&str, CaseGenerateItem> {
+pub fn case_generate_item(s: Span) -> IResult<Span, CaseGenerateItem> {
     alt((case_generate_item_nondefault, case_generate_item_default))(s)
 }
 
-pub fn case_generate_item_nondefault(s: &str) -> IResult<&str, CaseGenerateItem> {
+pub fn case_generate_item_nondefault(s: Span) -> IResult<Span, CaseGenerateItem> {
     let (s, x) = separated_nonempty_list(symbol(","), constant_expression)(s)?;
     let (s, _) = symbol(":")(s)?;
     let (s, y) = generate_block(s)?;
@@ -228,7 +232,7 @@ pub fn case_generate_item_nondefault(s: &str) -> IResult<&str, CaseGenerateItem>
     ))
 }
 
-pub fn case_generate_item_default(s: &str) -> IResult<&str, CaseGenerateItem> {
+pub fn case_generate_item_default(s: Span) -> IResult<Span, CaseGenerateItem> {
     let (s, _) = symbol("default")(s)?;
     let (s, _) = opt(symbol(":"))(s)?;
     let (s, x) = generate_block(s)?;
@@ -238,16 +242,16 @@ pub fn case_generate_item_default(s: &str) -> IResult<&str, CaseGenerateItem> {
     ))
 }
 
-pub fn generate_block(s: &str) -> IResult<&str, GenerateBlock> {
+pub fn generate_block(s: Span) -> IResult<Span, GenerateBlock> {
     alt((generate_block_single, generate_block_multiple))(s)
 }
 
-pub fn generate_block_single(s: &str) -> IResult<&str, GenerateBlock> {
+pub fn generate_block_single(s: Span) -> IResult<Span, GenerateBlock> {
     let (s, x) = generate_item(s)?;
     Ok((s, GenerateBlock::Single(x)))
 }
 
-pub fn generate_block_multiple(s: &str) -> IResult<&str, GenerateBlock> {
+pub fn generate_block_multiple(s: Span) -> IResult<Span, GenerateBlock> {
     let (s, x) = opt(terminated(generate_block_identifier, symbol(":")))(s)?;
     let (s, _) = symbol("begin")(s)?;
     let (s, y) = opt(preceded(symbol(":"), generate_block_identifier))(s)?;
@@ -262,7 +266,7 @@ pub fn generate_block_multiple(s: &str) -> IResult<&str, GenerateBlock> {
     ))
 }
 
-pub fn generate_item(s: &str) -> IResult<&str, GenerateItem> {
+pub fn generate_item(s: Span) -> IResult<Span, GenerateItem> {
     alt((
         map(module_or_generate_item, |x| GenerateItem::Module(x)),
         map(interface_or_generate_item, |x| GenerateItem::Interface(x)),

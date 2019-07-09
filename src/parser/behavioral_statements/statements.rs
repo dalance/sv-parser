@@ -64,7 +64,7 @@ pub struct VariableIdentifierList<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn statement_or_null(s: &str) -> IResult<&str, StatementOrNull> {
+pub fn statement_or_null(s: Span) -> IResult<Span, StatementOrNull> {
     alt((
         map(statement, |x| StatementOrNull::Statement(x)),
         map(terminated(many0(attribute_instance), symbol(";")), |x| {
@@ -73,14 +73,14 @@ pub fn statement_or_null(s: &str) -> IResult<&str, StatementOrNull> {
     ))(s)
 }
 
-pub fn statement(s: &str) -> IResult<&str, Statement> {
+pub fn statement(s: Span) -> IResult<Span, Statement> {
     let (s, x) = opt(terminated(block_identifier, symbol(":")))(s)?;
     let (s, y) = many0(attribute_instance)(s)?;
     let (s, z) = statement_item(s)?;
     Ok((s, Statement { nodes: (x, y, z) }))
 }
 
-pub fn statement_item(s: &str) -> IResult<&str, StatementItem> {
+pub fn statement_item(s: Span) -> IResult<Span, StatementItem> {
     alt((
         map(terminated(blocking_assignment, symbol(";")), |x| {
             StatementItem::BlockingAssignment(Box::new(x))
@@ -140,12 +140,12 @@ pub fn statement_item(s: &str) -> IResult<&str, StatementItem> {
     ))(s)
 }
 
-pub fn function_statement(s: &str) -> IResult<&str, FunctionStatement> {
+pub fn function_statement(s: Span) -> IResult<Span, FunctionStatement> {
     let (s, x) = statement(s)?;
     Ok((s, FunctionStatement { nodes: (x,) }))
 }
 
-pub fn function_statement_or_null(s: &str) -> IResult<&str, FunctionStatementOrNull> {
+pub fn function_statement_or_null(s: Span) -> IResult<Span, FunctionStatementOrNull> {
     alt((
         map(function_statement, |x| {
             FunctionStatementOrNull::Statement(x)
@@ -156,7 +156,7 @@ pub fn function_statement_or_null(s: &str) -> IResult<&str, FunctionStatementOrN
     ))(s)
 }
 
-pub fn variable_identifier_list(s: &str) -> IResult<&str, VariableIdentifierList> {
+pub fn variable_identifier_list(s: Span) -> IResult<Span, VariableIdentifierList> {
     let (s, x) = separated_nonempty_list(symbol(","), variable_identifier)(s)?;
     Ok((s, VariableIdentifierList { nodes: (x,) }))
 }

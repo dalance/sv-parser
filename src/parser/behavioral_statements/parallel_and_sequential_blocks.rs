@@ -48,21 +48,21 @@ pub enum JoinKeyword {
 
 // -----------------------------------------------------------------------------
 
-pub fn action_block(s: &str) -> IResult<&str, ActionBlock> {
+pub fn action_block(s: Span) -> IResult<Span, ActionBlock> {
     alt((
         map(statement_or_null, |x| ActionBlock::Statement(x)),
         action_block_else,
     ))(s)
 }
 
-pub fn action_block_else(s: &str) -> IResult<&str, ActionBlock> {
+pub fn action_block_else(s: Span) -> IResult<Span, ActionBlock> {
     let (s, x) = opt(statement)(s)?;
     let (s, _) = symbol("else")(s)?;
     let (s, y) = statement_or_null(s)?;
     Ok((s, ActionBlock::Else(ActionBlockElse { nodes: (x, y) })))
 }
 
-pub fn seq_block(s: &str) -> IResult<&str, SeqBlock> {
+pub fn seq_block(s: Span) -> IResult<Span, SeqBlock> {
     let (s, _) = symbol("begin")(s)?;
     let (s, x) = opt(preceded(symbol(":"), block_identifier))(s)?;
     let (s, y) = many0(block_item_declaration)(s)?;
@@ -77,7 +77,7 @@ pub fn seq_block(s: &str) -> IResult<&str, SeqBlock> {
     ))
 }
 
-pub fn par_block(s: &str) -> IResult<&str, ParBlock> {
+pub fn par_block(s: Span) -> IResult<Span, ParBlock> {
     let (s, _) = symbol("fork")(s)?;
     let (s, x) = opt(preceded(symbol(":"), block_identifier))(s)?;
     let (s, y) = many0(block_item_declaration)(s)?;
@@ -92,7 +92,7 @@ pub fn par_block(s: &str) -> IResult<&str, ParBlock> {
     ))
 }
 
-pub fn join_keyword(s: &str) -> IResult<&str, JoinKeyword> {
+pub fn join_keyword(s: Span) -> IResult<Span, JoinKeyword> {
     alt((
         map(symbol("join_any"), |_| JoinKeyword::JoinAny),
         map(symbol("join_none"), |_| JoinKeyword::JoinNone),

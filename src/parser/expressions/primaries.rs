@@ -86,9 +86,24 @@ pub enum Primary<'a> {
     AssignmentPatternExpression(AssignmentPatternExpression<'a>),
     StreamingConcatenation(StreamingConcatenation<'a>),
     SequenceMethodCall(SequenceMethodCall<'a>),
-    This,
-    Dollar,
-    Null,
+    This(This<'a>),
+    Dollar(Dollar<'a>),
+    Null(Null<'a>),
+}
+
+#[derive(Debug)]
+pub struct This<'a> {
+    pub nodes: (Symbol<'a>,),
+}
+
+#[derive(Debug)]
+pub struct Dollar<'a> {
+    pub nodes: (Symbol<'a>,),
+}
+
+#[derive(Debug)]
+pub struct Null<'a> {
+    pub nodes: (Symbol<'a>,),
 }
 
 #[derive(Debug)]
@@ -219,7 +234,7 @@ pub struct ConstantCast<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn constant_primary(s: &str) -> IResult<&str, ConstantPrimary> {
+pub fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
     alt((
         map(symbol("null"), |_| ConstantPrimary::Null),
         map(primary_literal, |x| ConstantPrimary::PrimaryLiteral(x)),
@@ -245,7 +260,7 @@ pub fn constant_primary(s: &str) -> IResult<&str, ConstantPrimary> {
     ))(s)
 }
 
-pub fn constant_primary_ps_parameter(s: &str) -> IResult<&str, ConstantPrimary> {
+pub fn constant_primary_ps_parameter(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, x) = ps_parameter_identifier(s)?;
     let (s, y) = constant_select(s)?;
     Ok((
@@ -254,7 +269,7 @@ pub fn constant_primary_ps_parameter(s: &str) -> IResult<&str, ConstantPrimary> 
     ))
 }
 
-pub fn constant_primary_specparam(s: &str) -> IResult<&str, ConstantPrimary> {
+pub fn constant_primary_specparam(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, x) = specparam_identifier(s)?;
     let (s, y) = opt(bracket(constant_range_expression))(s)?;
     Ok((
@@ -263,7 +278,7 @@ pub fn constant_primary_specparam(s: &str) -> IResult<&str, ConstantPrimary> {
     ))
 }
 
-pub fn constant_primary_formal_port(s: &str) -> IResult<&str, ConstantPrimary> {
+pub fn constant_primary_formal_port(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, x) = formal_port_identifier(s)?;
     let (s, y) = constant_select(s)?;
     Ok((
@@ -272,7 +287,7 @@ pub fn constant_primary_formal_port(s: &str) -> IResult<&str, ConstantPrimary> {
     ))
 }
 
-pub fn constant_primary_enum(s: &str) -> IResult<&str, ConstantPrimary> {
+pub fn constant_primary_enum(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, x) = package_scope_or_class_scope(s)?;
     let (s, y) = enum_identifier(s)?;
     Ok((
@@ -281,7 +296,7 @@ pub fn constant_primary_enum(s: &str) -> IResult<&str, ConstantPrimary> {
     ))
 }
 
-pub fn constant_primary_concatenation(s: &str) -> IResult<&str, ConstantPrimary> {
+pub fn constant_primary_concatenation(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, x) = constant_concatenation(s)?;
     let (s, y) = opt(bracket(constant_range_expression))(s)?;
     Ok((
@@ -290,7 +305,7 @@ pub fn constant_primary_concatenation(s: &str) -> IResult<&str, ConstantPrimary>
     ))
 }
 
-pub fn constant_primary_multiple_concatenation(s: &str) -> IResult<&str, ConstantPrimary> {
+pub fn constant_primary_multiple_concatenation(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, x) = constant_multiple_concatenation(s)?;
     let (s, y) = opt(bracket(constant_range_expression))(s)?;
     Ok((
@@ -301,12 +316,12 @@ pub fn constant_primary_multiple_concatenation(s: &str) -> IResult<&str, Constan
     ))
 }
 
-pub fn constant_primary_mintypmax_expression(s: &str) -> IResult<&str, ConstantPrimary> {
+pub fn constant_primary_mintypmax_expression(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, x) = paren(constant_mintypmax_expression)(s)?;
     Ok((s, ConstantPrimary::MintypmaxExpression(x)))
 }
 
-pub fn module_path_primary(s: &str) -> IResult<&str, ModulePathPrimary> {
+pub fn module_path_primary(s: Span) -> IResult<Span, ModulePathPrimary> {
     alt((
         map(number, |x| ModulePathPrimary::Number(x)),
         map(identifier, |x| ModulePathPrimary::Identifier(x)),
@@ -325,7 +340,7 @@ pub fn module_path_primary(s: &str) -> IResult<&str, ModulePathPrimary> {
     ))(s)
 }
 
-pub fn primary(s: &str) -> IResult<&str, Primary> {
+pub fn primary(s: Span) -> IResult<Span, Primary> {
     alt((
         map(primary_literal, |x| Primary::PrimaryLiteral(x)),
         primary_hierarchical,
@@ -348,13 +363,13 @@ pub fn primary(s: &str) -> IResult<&str, Primary> {
             Primary::StreamingConcatenation(x)
         }),
         map(sequence_method_call, |x| Primary::SequenceMethodCall(x)),
-        map(symbol("this"), |_| Primary::This),
-        map(symbol("$"), |_| Primary::Dollar),
-        map(symbol("null"), |_| Primary::Null),
+        map(symbol("this"), |x| Primary::This(This { nodes: (x,) })),
+        map(symbol("$"), |x| Primary::Dollar(Dollar { nodes: (x,) })),
+        map(symbol("null"), |x| Primary::Null(Null { nodes: (x,) })),
     ))(s)
 }
 
-pub fn primary_hierarchical(s: &str) -> IResult<&str, Primary> {
+pub fn primary_hierarchical(s: Span) -> IResult<Span, Primary> {
     let (s, x) = opt(primary_hierarchical_qualifier)(s)?;
     let (s, y) = hierarchical_identifier(s)?;
     let (s, z) = select(s)?;
@@ -364,7 +379,7 @@ pub fn primary_hierarchical(s: &str) -> IResult<&str, Primary> {
     ))
 }
 
-pub fn primary_concatenation(s: &str) -> IResult<&str, Primary> {
+pub fn primary_concatenation(s: Span) -> IResult<Span, Primary> {
     let (s, x) = concatenation(s)?;
     let (s, y) = opt(range_expression)(s)?;
     Ok((
@@ -373,7 +388,7 @@ pub fn primary_concatenation(s: &str) -> IResult<&str, Primary> {
     ))
 }
 
-pub fn primary_multiple_concatenation(s: &str) -> IResult<&str, Primary> {
+pub fn primary_multiple_concatenation(s: Span) -> IResult<Span, Primary> {
     let (s, x) = multiple_concatenation(s)?;
     let (s, y) = opt(range_expression)(s)?;
     Ok((
@@ -382,7 +397,7 @@ pub fn primary_multiple_concatenation(s: &str) -> IResult<&str, Primary> {
     ))
 }
 
-pub fn primary_hierarchical_qualifier(s: &str) -> IResult<&str, PrimaryHierarchicalQualifier> {
+pub fn primary_hierarchical_qualifier(s: Span) -> IResult<Span, PrimaryHierarchicalQualifier> {
     alt((
         map(class_qualifier, |x| {
             PrimaryHierarchicalQualifier::ClassQualifier(x)
@@ -393,7 +408,7 @@ pub fn primary_hierarchical_qualifier(s: &str) -> IResult<&str, PrimaryHierarchi
     ))(s)
 }
 
-pub fn class_qualifier(s: &str) -> IResult<&str, ClassQualifier> {
+pub fn class_qualifier(s: Span) -> IResult<Span, ClassQualifier> {
     let (s, x) = opt(symbol("local::"))(s)?;
     let (s, y) = opt(implicit_class_handle_or_class_scope)(s)?;
     Ok((
@@ -404,14 +419,14 @@ pub fn class_qualifier(s: &str) -> IResult<&str, ClassQualifier> {
     ))
 }
 
-pub fn range_expression(s: &str) -> IResult<&str, RangeExpression> {
+pub fn range_expression(s: Span) -> IResult<Span, RangeExpression> {
     alt((
         map(expression, |x| RangeExpression::Expression(x)),
         map(part_select_range, |x| RangeExpression::PartSelectRange(x)),
     ))(s)
 }
 
-pub fn primary_literal(s: &str) -> IResult<&str, PrimaryLiteral> {
+pub fn primary_literal(s: Span) -> IResult<Span, PrimaryLiteral> {
     alt((
         map(time_literal, |x| PrimaryLiteral::TimeLiteral(x)),
         map(number, |x| PrimaryLiteral::Number(x)),
@@ -422,11 +437,11 @@ pub fn primary_literal(s: &str) -> IResult<&str, PrimaryLiteral> {
     ))(s)
 }
 
-pub fn time_literal(s: &str) -> IResult<&str, TimeLiteral> {
+pub fn time_literal(s: Span) -> IResult<Span, TimeLiteral> {
     alt((unsigned_time_literal, fixed_point_time_literal))(s)
 }
 
-pub fn unsigned_time_literal(s: &str) -> IResult<&str, TimeLiteral> {
+pub fn unsigned_time_literal(s: Span) -> IResult<Span, TimeLiteral> {
     let (s, x) = unsigned_number(s)?;
     let (s, y) = time_unit(s)?;
     Ok((
@@ -435,7 +450,7 @@ pub fn unsigned_time_literal(s: &str) -> IResult<&str, TimeLiteral> {
     ))
 }
 
-pub fn fixed_point_time_literal(s: &str) -> IResult<&str, TimeLiteral> {
+pub fn fixed_point_time_literal(s: Span) -> IResult<Span, TimeLiteral> {
     let (s, x) = fixed_point_number(s)?;
     let (s, y) = time_unit(s)?;
     Ok((
@@ -444,7 +459,7 @@ pub fn fixed_point_time_literal(s: &str) -> IResult<&str, TimeLiteral> {
     ))
 }
 
-pub fn time_unit(s: &str) -> IResult<&str, TimeUnit> {
+pub fn time_unit(s: Span) -> IResult<Span, TimeUnit> {
     alt((
         map(symbol("s"), |x| TimeUnit::S(x)),
         map(symbol("ms"), |x| TimeUnit::MS(x)),
@@ -455,7 +470,7 @@ pub fn time_unit(s: &str) -> IResult<&str, TimeUnit> {
     ))(s)
 }
 
-pub fn implicit_class_handle(s: &str) -> IResult<&str, ImplicitClassHandle> {
+pub fn implicit_class_handle(s: Span) -> IResult<Span, ImplicitClassHandle> {
     alt((
         map(
             tuple((symbol("this"), symbol("."), symbol("super"))),
@@ -466,12 +481,12 @@ pub fn implicit_class_handle(s: &str) -> IResult<&str, ImplicitClassHandle> {
     ))(s)
 }
 
-pub fn bit_select(s: &str) -> IResult<&str, BitSelect> {
+pub fn bit_select(s: Span) -> IResult<Span, BitSelect> {
     let (s, x) = many0(bracket(expression))(s)?;
     Ok((s, BitSelect { nodes: (x,) }))
 }
 
-pub fn select(s: &str) -> IResult<&str, Select> {
+pub fn select(s: Span) -> IResult<Span, Select> {
     let (s, x) = opt(pair(
         many0(preceded(symbol("."), pair(member_identifier, bit_select))),
         preceded(symbol("."), member_identifier),
@@ -488,7 +503,7 @@ pub fn select(s: &str) -> IResult<&str, Select> {
     Ok((s, Select { nodes: (x, y, z) }))
 }
 
-pub fn nonrange_select(s: &str) -> IResult<&str, Select> {
+pub fn nonrange_select(s: Span) -> IResult<Span, Select> {
     let (s, x) = opt(pair(
         many0(preceded(symbol("."), pair(member_identifier, bit_select))),
         preceded(symbol("."), member_identifier),
@@ -509,12 +524,12 @@ pub fn nonrange_select(s: &str) -> IResult<&str, Select> {
     ))
 }
 
-pub fn constant_bit_select(s: &str) -> IResult<&str, ConstantBitSelect> {
+pub fn constant_bit_select(s: Span) -> IResult<Span, ConstantBitSelect> {
     let (s, x) = many0(bracket(constant_expression))(s)?;
     Ok((s, ConstantBitSelect { nodes: (x,) }))
 }
 
-pub fn constant_select(s: &str) -> IResult<&str, ConstantSelect> {
+pub fn constant_select(s: Span) -> IResult<Span, ConstantSelect> {
     let (s, x) = opt(pair(
         many0(preceded(symbol("."), pair(member_identifier, bit_select))),
         preceded(symbol("."), member_identifier),
@@ -531,18 +546,18 @@ pub fn constant_select(s: &str) -> IResult<&str, ConstantSelect> {
     Ok((s, ConstantSelect { nodes: (x, y, z) }))
 }
 
-pub fn constant_cast(s: &str) -> IResult<&str, ConstantCast> {
+pub fn constant_cast(s: Span) -> IResult<Span, ConstantCast> {
     let (s, x) = casting_type(s)?;
     let (s, _) = symbol("'")(s)?;
     let (s, y) = paren(constant_expression)(s)?;
     Ok((s, ConstantCast { nodes: (x, y) }))
 }
 
-pub fn constant_let_expression(s: &str) -> IResult<&str, LetExpression> {
+pub fn constant_let_expression(s: Span) -> IResult<Span, LetExpression> {
     let_expression(s)
 }
 
-pub fn cast(s: &str) -> IResult<&str, Cast> {
+pub fn cast(s: Span) -> IResult<Span, Cast> {
     let (s, x) = casting_type(s)?;
     let (s, _) = symbol("'")(s)?;
     let (s, y) = paren(expression)(s)?;
@@ -558,48 +573,36 @@ mod tests {
     #[test]
     fn test() {
         assert_eq!(
-            format!("{:?}", all_consuming(primary)("2.1ns")),
-            "Ok((\"\", PrimaryLiteral(TimeLiteral(FixedPointTimeLiteral(FixedPointTimeLiteral { number: FixedPointNumber(FixedPointNumber { integer_value: \"2\", fraction_value: \"1\" }), unit: NS })))))"
+            format!("{:?}", all_consuming(primary)(Span::new("2.1ns"))),
+            "Ok((LocatedSpanEx { offset: 5, line: 1, fragment: \"\", extra: () }, PrimaryLiteral(TimeLiteral(FixedPointTimeLiteral(FixedPointTimeLiteral { nodes: (FixedPointNumber { nodes: (UnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"2\", extra: () }, []) }, Symbol { nodes: (LocatedSpanEx { offset: 1, line: 1, fragment: \".\", extra: () }, []) }, UnsignedNumber { nodes: (LocatedSpanEx { offset: 2, line: 1, fragment: \"1\", extra: () }, []) }) }, NS(Symbol { nodes: (LocatedSpanEx { offset: 3, line: 1, fragment: \"ns\", extra: () }, []) })) })))))"
         );
         assert_eq!(
-            format!("{:?}", all_consuming(primary)("40 ps")),
-            "Ok((\"\", PrimaryLiteral(TimeLiteral(UnsignedTimeLiteral(UnsignedTimeLiteral { number: \"40\", unit: PS })))))"
+            format!("{:?}", all_consuming(primary)(Span::new("40 ps"))),
+            "Ok((LocatedSpanEx { offset: 5, line: 1, fragment: \"\", extra: () }, PrimaryLiteral(TimeLiteral(UnsignedTimeLiteral(UnsignedTimeLiteral { nodes: (UnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"40\", extra: () }, [Space(LocatedSpanEx { offset: 2, line: 1, fragment: \" \", extra: () })]) }, PS(Symbol { nodes: (LocatedSpanEx { offset: 3, line: 1, fragment: \"ps\", extra: () }, []) })) })))))"
         );
         assert_eq!(
-            format!("{:?}", all_consuming(primary)("'0")),
-            "Ok((\"\", PrimaryLiteral(UnbasedUnsizedLiteral(\"\\\'0\"))))"
+            format!("{:?}", all_consuming(primary)(Span::new("'0"))),
+            "Ok((LocatedSpanEx { offset: 2, line: 1, fragment: \"\", extra: () }, PrimaryLiteral(UnbasedUnsizedLiteral(UnbasedUnsizedLiteral { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"\\\'0\", extra: () }, []) },) }))))"
         );
         assert_eq!(
-            format!("{:?}", all_consuming(primary)("10")),
-            "Ok((\"\", PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"10\"))))))"
+            format!("{:?}", all_consuming(primary)(Span::new("10"))),
+            "Ok((LocatedSpanEx { offset: 2, line: 1, fragment: \"\", extra: () }, PrimaryLiteral(Number(IntegralNumber(DecimalNumber(UnsignedNumber(UnsignedNumber { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"10\", extra: () }, []) })))))))"
         );
         assert_eq!(
-            format!("{:?}", all_consuming(primary)("\"aaa\"")),
-            "Ok((\"\", PrimaryLiteral(StringLiteral(StringLiteral { raw: \"aaa\" }))))"
+            format!("{:?}", all_consuming(primary)(Span::new("\"aaa\""))),
+            "Ok((LocatedSpanEx { offset: 5, line: 1, fragment: \"\", extra: () }, PrimaryLiteral(StringLiteral(StringLiteral { nodes: (LocatedSpanEx { offset: 1, line: 1, fragment: \"aaa\", extra: () }, []) }))))"
         );
         //assert_eq!(
-        //    format!("{:?}", all_consuming(primary)("this")),
-        //    "Ok((\"\", This))"
+        //    format!("{:?}", all_consuming(primary)(Span::new("this"))),
+        //    "Ok((LocatedSpanEx { offset: 4, line: 1, fragment: \"\", extra: () }, This(This { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"this\", extra: () }, []) },) })))"
         //);
         //assert_eq!(
-        //    format!("{:?}", all_consuming(primary)("$")),
-        //    "Ok((\"\", Dollar))"
+        //    format!("{:?}", all_consuming(primary)(Span::new("$"))),
+        //    "Ok((LocatedSpanEx { offset: 1, line: 1, fragment: \"\", extra: () }, Dollar(Dollar { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"$\", extra: () }, []) },) })))"
         //);
         //assert_eq!(
-        //    format!("{:?}", all_consuming(primary)("null")),
-        //    "Ok((\"\", Null))"
+        //    format!("{:?}", all_consuming(primary)(Span::new("null"))),
+        //    "Ok((LocatedSpanEx { offset: 4, line: 1, fragment: \"\", extra: () }, Null(Null { nodes: (Symbol { nodes: (LocatedSpanEx { offset: 0, line: 1, fragment: \"null\", extra: () }, []) },) })))"
         //);
-        assert_eq!(
-            format!("{:?}", all_consuming(primary)("this . super.a")),
-            "Ok((\"\", Hierarchical(PrimaryHierarchical { qualifier: Some(ClassQualifier(ClassQualifier { local: false, scope: Some(ImplicitClassHandle(ThisSuper)) })), identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: \"a\" } }, select: Select { member: None, bit_select: [], part_select_range: None } })))"
-        );
-        assert_eq!(
-            format!("{:?}", all_consuming(module_path_primary)("10")),
-            "Ok((\"\", Number(IntegralNumber(UnsignedNumber(\"10\")))))"
-        );
-        assert_eq!(
-            format!("{:?}", all_consuming(constant_primary)("null")),
-            "Ok((\"\", Null))"
-        );
     }
 }

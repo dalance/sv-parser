@@ -86,38 +86,38 @@ pub enum ImportExport {
 
 // -----------------------------------------------------------------------------
 
-pub fn modport_declaration(s: &str) -> IResult<&str, ModportDeclaration> {
+pub fn modport_declaration(s: Span) -> IResult<Span, ModportDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn modport_item(s: &str) -> IResult<&str, ModportItem> {
+pub fn modport_item(s: Span) -> IResult<Span, ModportItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn modport_ports_declaration(s: &str) -> IResult<&str, ModportPortsDeclaraton> {
+pub fn modport_ports_declaration(s: Span) -> IResult<Span, ModportPortsDeclaraton> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn modport_clocking_declaration(s: &str) -> IResult<&str, ModportClockingDeclaration> {
+pub fn modport_clocking_declaration(s: Span) -> IResult<Span, ModportClockingDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn modport_simple_ports_declaration(s: &str) -> IResult<&str, ModportSimplePortsDeclaration> {
+pub fn modport_simple_ports_declaration(s: Span) -> IResult<Span, ModportSimplePortsDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn modport_simple_port(s: &str) -> IResult<&str, ModportSimplePort> {
+pub fn modport_simple_port(s: Span) -> IResult<Span, ModportSimplePort> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn modport_tf_ports_declaration(s: &str) -> IResult<&str, ModportTfPortsDeclaration> {
+pub fn modport_tf_ports_declaration(s: Span) -> IResult<Span, ModportTfPortsDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn modport_tf_port(s: &str) -> IResult<&str, ModportTfPort> {
+pub fn modport_tf_port(s: Span) -> IResult<Span, ModportTfPort> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn import_export(s: &str) -> IResult<&str, ImportExport> {
+pub fn import_export(s: Span) -> IResult<Span, ImportExport> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

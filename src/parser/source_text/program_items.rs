@@ -61,14 +61,14 @@ pub enum ProgramGenerateItem<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn program_item(s: &str) -> IResult<&str, ProgramItem> {
+pub fn program_item(s: Span) -> IResult<Span, ProgramItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn non_port_program_item(s: &str) -> IResult<&str, NonPortProgramItem> {
+pub fn non_port_program_item(s: Span) -> IResult<Span, NonPortProgramItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn program_generate_item(s: &str) -> IResult<&str, ProgramGenerateItem> {
+pub fn program_generate_item(s: Span) -> IResult<Span, ProgramGenerateItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

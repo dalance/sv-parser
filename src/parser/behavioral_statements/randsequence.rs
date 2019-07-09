@@ -100,7 +100,7 @@ pub struct RsCaseItemNondefault<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn randsequence_statement(s: &str) -> IResult<&str, RandsequenceStatement> {
+pub fn randsequence_statement(s: Span) -> IResult<Span, RandsequenceStatement> {
     let (s, _) = symbol("randsequence")(s)?;
     let (s, _) = symbol("(")(s)?;
     let (s, x) = opt(production_identifier)(s)?;
@@ -110,7 +110,7 @@ pub fn randsequence_statement(s: &str) -> IResult<&str, RandsequenceStatement> {
     Ok((s, RandsequenceStatement { nodes: (x, y) }))
 }
 
-pub fn production(s: &str) -> IResult<&str, Production> {
+pub fn production(s: Span) -> IResult<Span, Production> {
     let (s, x) = opt(data_type_or_void)(s)?;
     let (s, y) = production_identifier(s)?;
     let (s, z) = opt(paren(tf_port_list))(s)?;
@@ -125,7 +125,7 @@ pub fn production(s: &str) -> IResult<&str, Production> {
     ))
 }
 
-pub fn rs_rule(s: &str) -> IResult<&str, RsRule> {
+pub fn rs_rule(s: Span) -> IResult<Span, RsRule> {
     let (s, x) = rs_production_list(s)?;
     let (s, y) = opt(preceded(
         symbol(":="),
@@ -140,16 +140,16 @@ pub fn rs_rule(s: &str) -> IResult<&str, RsRule> {
     Ok((s, RsRule { nodes: (x, y, z) }))
 }
 
-pub fn rs_production_list(s: &str) -> IResult<&str, RsProductionList> {
+pub fn rs_production_list(s: Span) -> IResult<Span, RsProductionList> {
     alt((rs_production_list_prod, rs_production_list_join))(s)
 }
 
-pub fn rs_production_list_prod(s: &str) -> IResult<&str, RsProductionList> {
+pub fn rs_production_list_prod(s: Span) -> IResult<Span, RsProductionList> {
     let (s, x) = many1(rs_prod)(s)?;
     Ok((s, RsProductionList::Prod(x)))
 }
 
-pub fn rs_production_list_join(s: &str) -> IResult<&str, RsProductionList> {
+pub fn rs_production_list_join(s: Span) -> IResult<Span, RsProductionList> {
     let (s, _) = symbol("rand")(s)?;
     let (s, _) = symbol("join")(s)?;
     let (s, x) = opt(paren(expression))(s)?;
@@ -163,7 +163,7 @@ pub fn rs_production_list_join(s: &str) -> IResult<&str, RsProductionList> {
     Ok((s, RsProductionList::Join((x, y))))
 }
 
-pub fn weight_specification(s: &str) -> IResult<&str, WeightSpecification> {
+pub fn weight_specification(s: Span) -> IResult<Span, WeightSpecification> {
     alt((
         map(integral_number, |x| WeightSpecification::IntegralNumber(x)),
         map(ps_identifier, |x| WeightSpecification::PsIdentifier(x)),
@@ -171,7 +171,7 @@ pub fn weight_specification(s: &str) -> IResult<&str, WeightSpecification> {
     ))(s)
 }
 
-pub fn rs_code_block(s: &str) -> IResult<&str, RsCodeBlock> {
+pub fn rs_code_block(s: Span) -> IResult<Span, RsCodeBlock> {
     let (s, _) = symbol("{")(s)?;
     let (s, x) = many0(data_declaration)(s)?;
     let (s, y) = many0(statement_or_null)(s)?;
@@ -179,7 +179,7 @@ pub fn rs_code_block(s: &str) -> IResult<&str, RsCodeBlock> {
     Ok((s, RsCodeBlock { nodes: (x, y) }))
 }
 
-pub fn rs_prod(s: &str) -> IResult<&str, RsProd> {
+pub fn rs_prod(s: Span) -> IResult<Span, RsProd> {
     alt((
         map(production_item, |x| RsProd::Item(x)),
         map(rs_code_block, |x| RsProd::CodeBlock(x)),
@@ -189,13 +189,13 @@ pub fn rs_prod(s: &str) -> IResult<&str, RsProd> {
     ))(s)
 }
 
-pub fn production_item(s: &str) -> IResult<&str, ProductionItem> {
+pub fn production_item(s: Span) -> IResult<Span, ProductionItem> {
     let (s, x) = production_identifier(s)?;
     let (s, y) = opt(paren(list_of_arguments))(s)?;
     Ok((s, ProductionItem { nodes: (x, y) }))
 }
 
-pub fn rs_if_else(s: &str) -> IResult<&str, RsIfElse> {
+pub fn rs_if_else(s: Span) -> IResult<Span, RsIfElse> {
     let (s, _) = symbol("if")(s)?;
     let (s, x) = paren(expression)(s)?;
     let (s, y) = production_item(s)?;
@@ -203,25 +203,25 @@ pub fn rs_if_else(s: &str) -> IResult<&str, RsIfElse> {
     Ok((s, RsIfElse { nodes: (x, y, z) }))
 }
 
-pub fn rs_repeat(s: &str) -> IResult<&str, RsRepeat> {
+pub fn rs_repeat(s: Span) -> IResult<Span, RsRepeat> {
     let (s, _) = symbol("repeat")(s)?;
     let (s, x) = paren(expression)(s)?;
     let (s, y) = production_item(s)?;
     Ok((s, RsRepeat { nodes: (x, y) }))
 }
 
-pub fn rs_case(s: &str) -> IResult<&str, RsCase> {
+pub fn rs_case(s: Span) -> IResult<Span, RsCase> {
     let (s, _) = symbol("case")(s)?;
     let (s, x) = paren(case_expression)(s)?;
     let (s, y) = many1(rs_case_item)(s)?;
     Ok((s, RsCase { nodes: (x, y) }))
 }
 
-pub fn rs_case_item(s: &str) -> IResult<&str, RsCaseItem> {
+pub fn rs_case_item(s: Span) -> IResult<Span, RsCaseItem> {
     alt((rs_case_item_nondefault, rs_case_item_default))(s)
 }
 
-pub fn rs_case_item_nondefault(s: &str) -> IResult<&str, RsCaseItem> {
+pub fn rs_case_item_nondefault(s: Span) -> IResult<Span, RsCaseItem> {
     let (s, x) = separated_nonempty_list(symbol(","), case_item_expression)(s)?;
     let (s, _) = symbol(":")(s)?;
     let (s, y) = production_item(s)?;
@@ -232,7 +232,7 @@ pub fn rs_case_item_nondefault(s: &str) -> IResult<&str, RsCaseItem> {
     ))
 }
 
-pub fn rs_case_item_default(s: &str) -> IResult<&str, RsCaseItem> {
+pub fn rs_case_item_default(s: Span) -> IResult<Span, RsCaseItem> {
     let (s, _) = symbol("default")(s)?;
     let (s, _) = opt(symbol(":"))(s)?;
     let (s, x) = production_item(s)?;

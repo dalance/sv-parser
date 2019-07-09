@@ -126,14 +126,14 @@ pub enum DisableStatement<'a> {
 // -----------------------------------------------------------------------------
 
 pub fn procedural_timing_control_statement(
-    s: &str,
-) -> IResult<&str, ProceduralTimingControlStatement> {
+    s: Span,
+) -> IResult<Span, ProceduralTimingControlStatement> {
     let (s, x) = procedural_timing_control(s)?;
     let (s, y) = statement_or_null(s)?;
     Ok((s, ProceduralTimingControlStatement { nodes: (x, y) }))
 }
 
-pub fn delay_or_event_control(s: &str) -> IResult<&str, DelayOrEventControl> {
+pub fn delay_or_event_control(s: Span) -> IResult<Span, DelayOrEventControl> {
     alt((
         map(delay_control, |x| DelayOrEventControl::Delay(x)),
         map(event_control, |x| DelayOrEventControl::Event(x)),
@@ -141,7 +141,7 @@ pub fn delay_or_event_control(s: &str) -> IResult<&str, DelayOrEventControl> {
     ))(s)
 }
 
-pub fn delay_or_event_control_repeat(s: &str) -> IResult<&str, DelayOrEventControl> {
+pub fn delay_or_event_control_repeat(s: Span) -> IResult<Span, DelayOrEventControl> {
     let (s, _) = symbol("repeat")(s)?;
     let (s, _) = symbol("(")(s)?;
     let (s, x) = expression(s)?;
@@ -153,17 +153,17 @@ pub fn delay_or_event_control_repeat(s: &str) -> IResult<&str, DelayOrEventContr
     ))
 }
 
-pub fn delay_control(s: &str) -> IResult<&str, DelayControl> {
+pub fn delay_control(s: Span) -> IResult<Span, DelayControl> {
     alt((delay_control_delay, delay_control_mintypmax))(s)
 }
 
-pub fn delay_control_delay(s: &str) -> IResult<&str, DelayControl> {
+pub fn delay_control_delay(s: Span) -> IResult<Span, DelayControl> {
     let (s, _) = symbol("#")(s)?;
     let (s, x) = delay_value(s)?;
     Ok((s, DelayControl::Delay(x)))
 }
 
-pub fn delay_control_mintypmax(s: &str) -> IResult<&str, DelayControl> {
+pub fn delay_control_mintypmax(s: Span) -> IResult<Span, DelayControl> {
     let (s, _) = symbol("#")(s)?;
     let (s, _) = symbol("(")(s)?;
     let (s, x) = mintypmax_expression(s)?;
@@ -171,7 +171,7 @@ pub fn delay_control_mintypmax(s: &str) -> IResult<&str, DelayControl> {
     Ok((s, DelayControl::Mintypmax(x)))
 }
 
-pub fn event_control(s: &str) -> IResult<&str, EventControl> {
+pub fn event_control(s: Span) -> IResult<Span, EventControl> {
     alt((
         event_control_event_identifier,
         event_control_event_expression,
@@ -180,13 +180,13 @@ pub fn event_control(s: &str) -> IResult<&str, EventControl> {
     ))(s)
 }
 
-pub fn event_control_event_identifier(s: &str) -> IResult<&str, EventControl> {
+pub fn event_control_event_identifier(s: Span) -> IResult<Span, EventControl> {
     let (s, _) = symbol("@")(s)?;
     let (s, x) = hierarchical_event_identifier(s)?;
     Ok((s, EventControl::EventIdentifier(x)))
 }
 
-pub fn event_control_event_expression(s: &str) -> IResult<&str, EventControl> {
+pub fn event_control_event_expression(s: Span) -> IResult<Span, EventControl> {
     let (s, _) = symbol("@")(s)?;
     let (s, _) = symbol("(")(s)?;
     let (s, x) = event_expression(s)?;
@@ -194,18 +194,18 @@ pub fn event_control_event_expression(s: &str) -> IResult<&str, EventControl> {
     Ok((s, EventControl::EventExpression(x)))
 }
 
-pub fn event_control_asterisk(s: &str) -> IResult<&str, EventControl> {
+pub fn event_control_asterisk(s: Span) -> IResult<Span, EventControl> {
     let (s, _) = alt((symbol("@*"), preceded(symbol("@"), symbol("(*)"))))(s)?;
     Ok((s, EventControl::Asterisk))
 }
 
-pub fn event_control_sequence_identifier(s: &str) -> IResult<&str, EventControl> {
+pub fn event_control_sequence_identifier(s: Span) -> IResult<Span, EventControl> {
     let (s, _) = symbol("@")(s)?;
     let (s, x) = ps_or_hierarchical_sequence_identifier(s)?;
     Ok((s, EventControl::SequenceIdentifier(x)))
 }
 
-pub fn event_expression(s: &str) -> IResult<&str, EventExpression> {
+pub fn event_expression(s: Span) -> IResult<Span, EventExpression> {
     alt((
         event_expression_expression,
         event_expression_sequence,
@@ -215,7 +215,7 @@ pub fn event_expression(s: &str) -> IResult<&str, EventExpression> {
     ))(s)
 }
 
-pub fn event_expression_expression(s: &str) -> IResult<&str, EventExpression> {
+pub fn event_expression_expression(s: Span) -> IResult<Span, EventExpression> {
     let (s, x) = opt(edge_identifier)(s)?;
     let (s, y) = expression(s)?;
     let (s, z) = opt(preceded(symbol("iff"), expression))(s)?;
@@ -225,7 +225,7 @@ pub fn event_expression_expression(s: &str) -> IResult<&str, EventExpression> {
     ))
 }
 
-pub fn event_expression_sequence(s: &str) -> IResult<&str, EventExpression> {
+pub fn event_expression_sequence(s: Span) -> IResult<Span, EventExpression> {
     let (s, x) = sequence_instance(s)?;
     let (s, y) = opt(preceded(symbol("iff"), expression))(s)?;
     Ok((
@@ -234,28 +234,28 @@ pub fn event_expression_sequence(s: &str) -> IResult<&str, EventExpression> {
     ))
 }
 
-pub fn event_expression_or(s: &str) -> IResult<&str, EventExpression> {
+pub fn event_expression_or(s: Span) -> IResult<Span, EventExpression> {
     let (s, x) = event_expression(s)?;
     let (s, _) = symbol("or")(s)?;
     let (s, y) = event_expression(s)?;
     Ok((s, EventExpression::Or(Box::new((x, y)))))
 }
 
-pub fn event_expression_comma(s: &str) -> IResult<&str, EventExpression> {
+pub fn event_expression_comma(s: Span) -> IResult<Span, EventExpression> {
     let (s, x) = event_expression(s)?;
     let (s, _) = symbol(",")(s)?;
     let (s, y) = event_expression(s)?;
     Ok((s, EventExpression::Comma(Box::new((x, y)))))
 }
 
-pub fn event_expression_paren(s: &str) -> IResult<&str, EventExpression> {
+pub fn event_expression_paren(s: Span) -> IResult<Span, EventExpression> {
     let (s, _) = symbol("(")(s)?;
     let (s, x) = event_expression(s)?;
     let (s, _) = symbol(")")(s)?;
     Ok((s, EventExpression::Paren(Box::new(x))))
 }
 
-pub fn procedural_timing_control(s: &str) -> IResult<&str, ProceduralTimingControl> {
+pub fn procedural_timing_control(s: Span) -> IResult<Span, ProceduralTimingControl> {
     alt((
         map(delay_control, |x| ProceduralTimingControl::DelayControl(x)),
         map(event_control, |x| ProceduralTimingControl::EventControl(x)),
@@ -263,7 +263,7 @@ pub fn procedural_timing_control(s: &str) -> IResult<&str, ProceduralTimingContr
     ))(s)
 }
 
-pub fn jump_statement(s: &str) -> IResult<&str, JumpStatement> {
+pub fn jump_statement(s: Span) -> IResult<Span, JumpStatement> {
     alt((
         jump_statement_return,
         jump_statement_break,
@@ -271,7 +271,7 @@ pub fn jump_statement(s: &str) -> IResult<&str, JumpStatement> {
     ))(s)
 }
 
-pub fn jump_statement_return(s: &str) -> IResult<&str, JumpStatement> {
+pub fn jump_statement_return(s: Span) -> IResult<Span, JumpStatement> {
     let (s, _) = symbol("return")(s)?;
     let (s, x) = opt(expression)(s)?;
     let (s, _) = symbol(";")(s)?;
@@ -281,19 +281,19 @@ pub fn jump_statement_return(s: &str) -> IResult<&str, JumpStatement> {
     ))
 }
 
-pub fn jump_statement_break(s: &str) -> IResult<&str, JumpStatement> {
+pub fn jump_statement_break(s: Span) -> IResult<Span, JumpStatement> {
     let (s, _) = symbol("break")(s)?;
     let (s, _) = symbol(";")(s)?;
     Ok((s, JumpStatement::Break))
 }
 
-pub fn jump_statement_continue(s: &str) -> IResult<&str, JumpStatement> {
+pub fn jump_statement_continue(s: Span) -> IResult<Span, JumpStatement> {
     let (s, _) = symbol("continue")(s)?;
     let (s, _) = symbol(";")(s)?;
     Ok((s, JumpStatement::Continue))
 }
 
-pub fn wait_statement(s: &str) -> IResult<&str, WaitStatement> {
+pub fn wait_statement(s: Span) -> IResult<Span, WaitStatement> {
     alt((
         wait_statement_wait,
         wait_statement_fork,
@@ -301,21 +301,21 @@ pub fn wait_statement(s: &str) -> IResult<&str, WaitStatement> {
     ))(s)
 }
 
-pub fn wait_statement_wait(s: &str) -> IResult<&str, WaitStatement> {
+pub fn wait_statement_wait(s: Span) -> IResult<Span, WaitStatement> {
     let (s, _) = symbol("wait")(s)?;
     let (s, x) = paren(expression)(s)?;
     let (s, y) = statement_or_null(s)?;
     Ok((s, WaitStatement::Wait(WaitStatementWait { nodes: (x, y) })))
 }
 
-pub fn wait_statement_fork(s: &str) -> IResult<&str, WaitStatement> {
+pub fn wait_statement_fork(s: Span) -> IResult<Span, WaitStatement> {
     let (s, _) = symbol("wait")(s)?;
     let (s, _) = symbol("fork")(s)?;
     let (s, _) = symbol(";")(s)?;
     Ok((s, WaitStatement::Fork))
 }
 
-pub fn wait_statement_order(s: &str) -> IResult<&str, WaitStatement> {
+pub fn wait_statement_order(s: Span) -> IResult<Span, WaitStatement> {
     let (s, _) = symbol("wait_order")(s)?;
     let (s, x) = paren(separated_nonempty_list(
         symbol(","),
@@ -328,18 +328,18 @@ pub fn wait_statement_order(s: &str) -> IResult<&str, WaitStatement> {
     ))
 }
 
-pub fn event_trigger(s: &str) -> IResult<&str, EventTrigger> {
+pub fn event_trigger(s: Span) -> IResult<Span, EventTrigger> {
     alt((event_trigger_named, event_trigger_nonblocking))(s)
 }
 
-pub fn event_trigger_named(s: &str) -> IResult<&str, EventTrigger> {
+pub fn event_trigger_named(s: Span) -> IResult<Span, EventTrigger> {
     let (s, _) = symbol("->")(s)?;
     let (s, x) = hierarchical_event_identifier(s)?;
     let (s, _) = symbol(";")(s)?;
     Ok((s, EventTrigger::Named(EventTriggerNamed { nodes: (x,) })))
 }
 
-pub fn event_trigger_nonblocking(s: &str) -> IResult<&str, EventTrigger> {
+pub fn event_trigger_nonblocking(s: Span) -> IResult<Span, EventTrigger> {
     let (s, _) = symbol("->>")(s)?;
     let (s, x) = opt(delay_or_event_control)(s)?;
     let (s, y) = hierarchical_event_identifier(s)?;
@@ -350,7 +350,7 @@ pub fn event_trigger_nonblocking(s: &str) -> IResult<&str, EventTrigger> {
     ))
 }
 
-pub fn disable_statement(s: &str) -> IResult<&str, DisableStatement> {
+pub fn disable_statement(s: Span) -> IResult<Span, DisableStatement> {
     alt((
         disable_statement_task,
         disable_statement_block,
@@ -358,21 +358,21 @@ pub fn disable_statement(s: &str) -> IResult<&str, DisableStatement> {
     ))(s)
 }
 
-pub fn disable_statement_task(s: &str) -> IResult<&str, DisableStatement> {
+pub fn disable_statement_task(s: Span) -> IResult<Span, DisableStatement> {
     let (s, _) = symbol("disable")(s)?;
     let (s, x) = hierarchical_task_identifier(s)?;
     let (s, _) = symbol(";")(s)?;
     Ok((s, DisableStatement::Task(x)))
 }
 
-pub fn disable_statement_block(s: &str) -> IResult<&str, DisableStatement> {
+pub fn disable_statement_block(s: Span) -> IResult<Span, DisableStatement> {
     let (s, _) = symbol("disable")(s)?;
     let (s, x) = hierarchical_block_identifier(s)?;
     let (s, _) = symbol(";")(s)?;
     Ok((s, DisableStatement::Block(x)))
 }
 
-pub fn disable_statement_fork(s: &str) -> IResult<&str, DisableStatement> {
+pub fn disable_statement_fork(s: Span) -> IResult<Span, DisableStatement> {
     let (s, _) = symbol("disable")(s)?;
     let (s, _) = symbol("fork")(s)?;
     let (s, _) = symbol(";")(s)?;

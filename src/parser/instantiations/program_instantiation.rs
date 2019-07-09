@@ -16,7 +16,7 @@ pub struct ProgramInstantiation<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn program_instantiation(s: &str) -> IResult<&str, ProgramInstantiation> {
+pub fn program_instantiation(s: Span) -> IResult<Span, ProgramInstantiation> {
     let (s, x) = program_identifier(s)?;
     let (s, y) = opt(parameter_value_assignment)(s)?;
     let (s, z) = separated_nonempty_list(symbol(","), hierarchical_instance)(s)?;

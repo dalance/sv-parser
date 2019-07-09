@@ -103,11 +103,11 @@ pub enum CycleDelay<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn clocking_declaration(s: &str) -> IResult<&str, ClockingDeclaration> {
+pub fn clocking_declaration(s: Span) -> IResult<Span, ClockingDeclaration> {
     alt((clocking_declaration_local, clocking_declaration_global))(s)
 }
 
-pub fn clocking_declaration_local(s: &str) -> IResult<&str, ClockingDeclaration> {
+pub fn clocking_declaration_local(s: Span) -> IResult<Span, ClockingDeclaration> {
     let (s, x) = opt(symbol("default"))(s)?;
     let (s, _) = symbol("clocking")(s)?;
     let (s, y) = opt(clocking_identifier)(s)?;
@@ -124,7 +124,7 @@ pub fn clocking_declaration_local(s: &str) -> IResult<&str, ClockingDeclaration>
     ))
 }
 
-pub fn clocking_declaration_global(s: &str) -> IResult<&str, ClockingDeclaration> {
+pub fn clocking_declaration_global(s: Span) -> IResult<Span, ClockingDeclaration> {
     let (s, _) = opt(symbol("global"))(s)?;
     let (s, _) = symbol("clocking")(s)?;
     let (s, x) = opt(clocking_identifier)(s)?;
@@ -138,7 +138,7 @@ pub fn clocking_declaration_global(s: &str) -> IResult<&str, ClockingDeclaration
     ))
 }
 
-pub fn clocking_event(s: &str) -> IResult<&str, ClockingEvent> {
+pub fn clocking_event(s: Span) -> IResult<Span, ClockingEvent> {
     alt((
         map(preceded(symbol("@"), identifier), |x| {
             ClockingEvent::Identifier(x)
@@ -149,7 +149,7 @@ pub fn clocking_event(s: &str) -> IResult<&str, ClockingEvent> {
     ))(s)
 }
 
-pub fn clocking_item(s: &str) -> IResult<&str, ClockingItem> {
+pub fn clocking_item(s: Span) -> IResult<Span, ClockingItem> {
     alt((
         clocking_item_default_skew,
         clocking_item_direction,
@@ -157,14 +157,14 @@ pub fn clocking_item(s: &str) -> IResult<&str, ClockingItem> {
     ))(s)
 }
 
-pub fn clocking_item_default_skew(s: &str) -> IResult<&str, ClockingItem> {
+pub fn clocking_item_default_skew(s: Span) -> IResult<Span, ClockingItem> {
     let (s, _) = symbol("default")(s)?;
     let (s, x) = default_skew(s)?;
     let (s, _) = symbol(";")(s)?;
     Ok((s, ClockingItem::DefaultSkew(x)))
 }
 
-pub fn clocking_item_direction(s: &str) -> IResult<&str, ClockingItem> {
+pub fn clocking_item_direction(s: Span) -> IResult<Span, ClockingItem> {
     let (s, x) = clocking_direction(s)?;
     let (s, y) = list_of_clocking_decl_assign(s)?;
     Ok((
@@ -173,7 +173,7 @@ pub fn clocking_item_direction(s: &str) -> IResult<&str, ClockingItem> {
     ))
 }
 
-pub fn clocking_item_assertion(s: &str) -> IResult<&str, ClockingItem> {
+pub fn clocking_item_assertion(s: Span) -> IResult<Span, ClockingItem> {
     let (s, x) = many0(attribute_instance)(s)?;
     let (s, y) = assertion_item_declaration(s)?;
     Ok((
@@ -182,7 +182,7 @@ pub fn clocking_item_assertion(s: &str) -> IResult<&str, ClockingItem> {
     ))
 }
 
-pub fn default_skew(s: &str) -> IResult<&str, DefaultSkew> {
+pub fn default_skew(s: Span) -> IResult<Span, DefaultSkew> {
     alt((
         default_skew_input,
         default_skew_output,
@@ -190,19 +190,19 @@ pub fn default_skew(s: &str) -> IResult<&str, DefaultSkew> {
     ))(s)
 }
 
-pub fn default_skew_input(s: &str) -> IResult<&str, DefaultSkew> {
+pub fn default_skew_input(s: Span) -> IResult<Span, DefaultSkew> {
     let (s, _) = symbol("input")(s)?;
     let (s, x) = clocking_skew(s)?;
     Ok((s, DefaultSkew::Input(x)))
 }
 
-pub fn default_skew_output(s: &str) -> IResult<&str, DefaultSkew> {
+pub fn default_skew_output(s: Span) -> IResult<Span, DefaultSkew> {
     let (s, _) = symbol("output")(s)?;
     let (s, x) = clocking_skew(s)?;
     Ok((s, DefaultSkew::Output(x)))
 }
 
-pub fn default_skew_input_output(s: &str) -> IResult<&str, DefaultSkew> {
+pub fn default_skew_input_output(s: Span) -> IResult<Span, DefaultSkew> {
     let (s, _) = symbol("input")(s)?;
     let (s, x) = clocking_skew(s)?;
     let (s, _) = symbol("output")(s)?;
@@ -210,7 +210,7 @@ pub fn default_skew_input_output(s: &str) -> IResult<&str, DefaultSkew> {
     Ok((s, DefaultSkew::InputOutput((x, y))))
 }
 
-pub fn clocking_direction(s: &str) -> IResult<&str, ClockingDirection> {
+pub fn clocking_direction(s: Span) -> IResult<Span, ClockingDirection> {
     alt((
         clocking_direction_input,
         clocking_direction_output,
@@ -219,19 +219,19 @@ pub fn clocking_direction(s: &str) -> IResult<&str, ClockingDirection> {
     ))(s)
 }
 
-pub fn clocking_direction_input(s: &str) -> IResult<&str, ClockingDirection> {
+pub fn clocking_direction_input(s: Span) -> IResult<Span, ClockingDirection> {
     let (s, _) = symbol("input")(s)?;
     let (s, x) = opt(clocking_skew)(s)?;
     Ok((s, ClockingDirection::Input(x)))
 }
 
-pub fn clocking_direction_output(s: &str) -> IResult<&str, ClockingDirection> {
+pub fn clocking_direction_output(s: Span) -> IResult<Span, ClockingDirection> {
     let (s, _) = symbol("output")(s)?;
     let (s, x) = opt(clocking_skew)(s)?;
     Ok((s, ClockingDirection::Output(x)))
 }
 
-pub fn clocking_direction_input_output(s: &str) -> IResult<&str, ClockingDirection> {
+pub fn clocking_direction_input_output(s: Span) -> IResult<Span, ClockingDirection> {
     let (s, _) = symbol("input")(s)?;
     let (s, x) = opt(clocking_skew)(s)?;
     let (s, _) = symbol("output")(s)?;
@@ -239,37 +239,37 @@ pub fn clocking_direction_input_output(s: &str) -> IResult<&str, ClockingDirecti
     Ok((s, ClockingDirection::InputOutput((x, y))))
 }
 
-pub fn clocking_direction_inout(s: &str) -> IResult<&str, ClockingDirection> {
+pub fn clocking_direction_inout(s: Span) -> IResult<Span, ClockingDirection> {
     let (s, _) = symbol("inout")(s)?;
     Ok((s, ClockingDirection::Inout))
 }
 
-pub fn list_of_clocking_decl_assign(s: &str) -> IResult<&str, Vec<ClockingDeclAssign>> {
+pub fn list_of_clocking_decl_assign(s: Span) -> IResult<Span, Vec<ClockingDeclAssign>> {
     many1(clocking_decl_assign)(s)
 }
 
-pub fn clocking_decl_assign(s: &str) -> IResult<&str, ClockingDeclAssign> {
+pub fn clocking_decl_assign(s: Span) -> IResult<Span, ClockingDeclAssign> {
     let (s, x) = signal_identifier(s)?;
     let (s, y) = opt(preceded(symbol("="), expression))(s)?;
     Ok((s, ClockingDeclAssign { nodes: (x, y) }))
 }
 
-pub fn clocking_skew(s: &str) -> IResult<&str, ClockingSkew> {
+pub fn clocking_skew(s: Span) -> IResult<Span, ClockingSkew> {
     alt((clocking_skew_edge, clocking_skew_delay))(s)
 }
 
-pub fn clocking_skew_edge(s: &str) -> IResult<&str, ClockingSkew> {
+pub fn clocking_skew_edge(s: Span) -> IResult<Span, ClockingSkew> {
     let (s, x) = edge_identifier(s)?;
     let (s, y) = opt(delay_control)(s)?;
     Ok((s, ClockingSkew::Edge((x, y))))
 }
 
-pub fn clocking_skew_delay(s: &str) -> IResult<&str, ClockingSkew> {
+pub fn clocking_skew_delay(s: Span) -> IResult<Span, ClockingSkew> {
     let (s, x) = delay_control(s)?;
     Ok((s, ClockingSkew::Delay(x)))
 }
 
-pub fn clocking_drive(s: &str) -> IResult<&str, ClockingDrive> {
+pub fn clocking_drive(s: Span) -> IResult<Span, ClockingDrive> {
     let (s, x) = clockvar_expression(s)?;
     let (s, _) = symbol("=")(s)?;
     let (s, y) = opt(cycle_delay)(s)?;
@@ -277,7 +277,7 @@ pub fn clocking_drive(s: &str) -> IResult<&str, ClockingDrive> {
     Ok((s, ClockingDrive { nodes: (x, y, z) }))
 }
 
-pub fn cycle_delay(s: &str) -> IResult<&str, CycleDelay> {
+pub fn cycle_delay(s: Span) -> IResult<Span, CycleDelay> {
     alt((
         map(preceded(symbol("##"), integral_number), |x| {
             CycleDelay::IntegralNumber(x)
@@ -291,11 +291,11 @@ pub fn cycle_delay(s: &str) -> IResult<&str, CycleDelay> {
     ))(s)
 }
 
-pub fn clockvar(s: &str) -> IResult<&str, HierarchicalIdentifier> {
+pub fn clockvar(s: Span) -> IResult<Span, HierarchicalIdentifier> {
     hierarchical_identifier(s)
 }
 
-pub fn clockvar_expression(s: &str) -> IResult<&str, (HierarchicalIdentifier, Select)> {
+pub fn clockvar_expression(s: Span) -> IResult<Span, (HierarchicalIdentifier, Select)> {
     pair(clockvar, select)(s)
 }
 

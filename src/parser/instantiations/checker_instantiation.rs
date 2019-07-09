@@ -48,7 +48,7 @@ pub struct NamedCheckerPortConnectionAsterisk<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn checker_instantiation(s: &str) -> IResult<&str, CheckerInstantiation> {
+pub fn checker_instantiation(s: Span) -> IResult<Span, CheckerInstantiation> {
     let (s, x) = ps_checker_identifier(s)?;
     let (s, y) = name_of_instance(s)?;
     let (s, z) = paren(opt(list_of_checker_port_connections))(s)?;
@@ -56,7 +56,7 @@ pub fn checker_instantiation(s: &str) -> IResult<&str, CheckerInstantiation> {
     Ok((s, CheckerInstantiation { nodes: (x, y, z) }))
 }
 
-pub fn list_of_checker_port_connections(s: &str) -> IResult<&str, ListOfCheckerPortConnections> {
+pub fn list_of_checker_port_connections(s: Span) -> IResult<Span, ListOfCheckerPortConnections> {
     alt((
         map(
             separated_nonempty_list(symbol(","), ordered_checker_port_connection),
@@ -69,13 +69,13 @@ pub fn list_of_checker_port_connections(s: &str) -> IResult<&str, ListOfCheckerP
     ))(s)
 }
 
-pub fn ordered_checker_port_connection(s: &str) -> IResult<&str, OrderedCheckerPortConnection> {
+pub fn ordered_checker_port_connection(s: Span) -> IResult<Span, OrderedCheckerPortConnection> {
     let (s, x) = many0(attribute_instance)(s)?;
     let (s, y) = opt(property_actual_arg)(s)?;
     Ok((s, OrderedCheckerPortConnection { nodes: (x, y) }))
 }
 
-pub fn named_checker_port_connection(s: &str) -> IResult<&str, NamedCheckerPortConnection> {
+pub fn named_checker_port_connection(s: Span) -> IResult<Span, NamedCheckerPortConnection> {
     alt((
         named_checker_port_connection_identifier,
         named_checker_port_connection_asterisk,
@@ -83,8 +83,8 @@ pub fn named_checker_port_connection(s: &str) -> IResult<&str, NamedCheckerPortC
 }
 
 pub fn named_checker_port_connection_identifier(
-    s: &str,
-) -> IResult<&str, NamedCheckerPortConnection> {
+    s: Span,
+) -> IResult<Span, NamedCheckerPortConnection> {
     let (s, x) = many0(attribute_instance)(s)?;
     let (s, _) = symbol(".")(s)?;
     let (s, y) = formal_port_identifier(s)?;
@@ -99,8 +99,8 @@ pub fn named_checker_port_connection_identifier(
 }
 
 pub fn named_checker_port_connection_asterisk(
-    s: &str,
-) -> IResult<&str, NamedCheckerPortConnection> {
+    s: Span,
+) -> IResult<Span, NamedCheckerPortConnection> {
     let (s, x) = many0(attribute_instance)(s)?;
     let (s, _) = symbol(".")(s)?;
     let (s, _) = symbol("*")(s)?;

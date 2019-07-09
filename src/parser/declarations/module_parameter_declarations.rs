@@ -44,14 +44,14 @@ pub struct SpecparamDeclaration<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn local_parameter_declaration(s: &str) -> IResult<&str, LocalParameterDeclaration> {
+pub fn local_parameter_declaration(s: Span) -> IResult<Span, LocalParameterDeclaration> {
     alt((
         local_parameter_declaration_param,
         local_parameter_declaration_type,
     ))(s)
 }
 
-pub fn local_parameter_declaration_param(s: &str) -> IResult<&str, LocalParameterDeclaration> {
+pub fn local_parameter_declaration_param(s: Span) -> IResult<Span, LocalParameterDeclaration> {
     let (s, _) = symbol("localparam")(s)?;
     let (s, x) = data_type_or_implicit(s)?;
     let (s, y) = list_of_param_assignments(s)?;
@@ -61,7 +61,7 @@ pub fn local_parameter_declaration_param(s: &str) -> IResult<&str, LocalParamete
     ))
 }
 
-pub fn local_parameter_declaration_type(s: &str) -> IResult<&str, LocalParameterDeclaration> {
+pub fn local_parameter_declaration_type(s: Span) -> IResult<Span, LocalParameterDeclaration> {
     let (s, _) = symbol("localparam")(s)?;
     let (s, _) = symbol("type")(s)?;
     let (s, x) = list_of_type_assignments(s)?;
@@ -71,11 +71,11 @@ pub fn local_parameter_declaration_type(s: &str) -> IResult<&str, LocalParameter
     ))
 }
 
-pub fn parameter_declaration(s: &str) -> IResult<&str, ParameterDeclaration> {
+pub fn parameter_declaration(s: Span) -> IResult<Span, ParameterDeclaration> {
     alt((parameter_declaration_param, parameter_declaration_type))(s)
 }
 
-pub fn parameter_declaration_param(s: &str) -> IResult<&str, ParameterDeclaration> {
+pub fn parameter_declaration_param(s: Span) -> IResult<Span, ParameterDeclaration> {
     let (s, _) = symbol("parameter")(s)?;
     let (s, x) = data_type_or_implicit(s)?;
     let (s, y) = list_of_param_assignments(s)?;
@@ -85,7 +85,7 @@ pub fn parameter_declaration_param(s: &str) -> IResult<&str, ParameterDeclaratio
     ))
 }
 
-pub fn parameter_declaration_type(s: &str) -> IResult<&str, ParameterDeclaration> {
+pub fn parameter_declaration_type(s: Span) -> IResult<Span, ParameterDeclaration> {
     let (s, _) = symbol("parameter")(s)?;
     let (s, _) = symbol("type")(s)?;
     let (s, x) = list_of_type_assignments(s)?;
@@ -95,7 +95,7 @@ pub fn parameter_declaration_type(s: &str) -> IResult<&str, ParameterDeclaration
     ))
 }
 
-pub fn specparam_declaration(s: &str) -> IResult<&str, SpecparamDeclaration> {
+pub fn specparam_declaration(s: Span) -> IResult<Span, SpecparamDeclaration> {
     let (s, _) = symbol("specparam")(s)?;
     let (s, x) = opt(packed_dimension)(s)?;
     let (s, y) = list_of_specparam_assignments(s)?;

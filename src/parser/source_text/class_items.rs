@@ -164,42 +164,42 @@ pub struct New {}
 
 // -----------------------------------------------------------------------------
 
-pub fn class_item(s: &str) -> IResult<&str, ClassItem> {
+pub fn class_item(s: Span) -> IResult<Span, ClassItem> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn class_property(s: &str) -> IResult<&str, ClassProperty> {
+pub fn class_property(s: Span) -> IResult<Span, ClassProperty> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn class_method(s: &str) -> IResult<&str, ClassMethod> {
+pub fn class_method(s: Span) -> IResult<Span, ClassMethod> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn class_constructor_prototype(s: &str) -> IResult<&str, ClassConstructorPrototype> {
+pub fn class_constructor_prototype(s: Span) -> IResult<Span, ClassConstructorPrototype> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn class_constraint(s: &str) -> IResult<&str, ClassConstraint> {
+pub fn class_constraint(s: Span) -> IResult<Span, ClassConstraint> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn class_item_qualifier(s: &str) -> IResult<&str, ClassItemQualifier> {
+pub fn class_item_qualifier(s: Span) -> IResult<Span, ClassItemQualifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn property_qualifier(s: &str) -> IResult<&str, PropertyQualifier> {
+pub fn property_qualifier(s: Span) -> IResult<Span, PropertyQualifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn random_qualifier(s: &str) -> IResult<&str, RandomQualifier> {
+pub fn random_qualifier(s: Span) -> IResult<Span, RandomQualifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn method_qualifier(s: &str) -> IResult<&str, MethodQualifier> {
+pub fn method_qualifier(s: Span) -> IResult<Span, MethodQualifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
-pub fn class_constructor_declaration(s: &str) -> IResult<&str, ClassConstructorDeclaration> {
+pub fn class_constructor_declaration(s: Span) -> IResult<Span, ClassConstructorDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

@@ -13,6 +13,6 @@ pub struct EdgeIdentifier<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn edge_identifier(s: &str) -> IResult<&str, EdgeIdentifier> {
+pub fn edge_identifier(s: Span) -> IResult<Span, EdgeIdentifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

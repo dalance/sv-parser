@@ -79,7 +79,7 @@ pub struct NamedPortConnectionAsterisk<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn module_instantiation(s: &str) -> IResult<&str, ModuleInstantiation> {
+pub fn module_instantiation(s: Span) -> IResult<Span, ModuleInstantiation> {
     let (s, x) = module_identifier(s)?;
     let (s, y) = opt(parameter_value_assignment)(s)?;
     let (s, z) = separated_nonempty_list(symbol(","), hierarchical_instance)(s)?;
@@ -87,13 +87,13 @@ pub fn module_instantiation(s: &str) -> IResult<&str, ModuleInstantiation> {
     Ok((s, ModuleInstantiation { nodes: (x, y, z) }))
 }
 
-pub fn parameter_value_assignment(s: &str) -> IResult<&str, ParameterValueAssignment> {
+pub fn parameter_value_assignment(s: Span) -> IResult<Span, ParameterValueAssignment> {
     let (s, _) = symbol("#")(s)?;
     let (s, x) = paren(list_of_parameter_assignments)(s)?;
     Ok((s, ParameterValueAssignment { nodes: (x,) }))
 }
 
-pub fn list_of_parameter_assignments(s: &str) -> IResult<&str, ListOfParameterAssignments> {
+pub fn list_of_parameter_assignments(s: Span) -> IResult<Span, ListOfParameterAssignments> {
     alt((
         map(
             separated_nonempty_list(symbol(","), ordered_parameter_assignment),
@@ -106,31 +106,31 @@ pub fn list_of_parameter_assignments(s: &str) -> IResult<&str, ListOfParameterAs
     ))(s)
 }
 
-pub fn ordered_parameter_assignment(s: &str) -> IResult<&str, OrderedParameterAssignment> {
+pub fn ordered_parameter_assignment(s: Span) -> IResult<Span, OrderedParameterAssignment> {
     let (s, x) = param_expression(s)?;
     Ok((s, OrderedParameterAssignment { nodes: (x,) }))
 }
 
-pub fn named_parameter_assignment(s: &str) -> IResult<&str, NamedParameterAssignment> {
+pub fn named_parameter_assignment(s: Span) -> IResult<Span, NamedParameterAssignment> {
     let (s, _) = symbol(".")(s)?;
     let (s, x) = parameter_identifier(s)?;
     let (s, y) = paren(opt(param_expression))(s)?;
     Ok((s, NamedParameterAssignment { nodes: (x, y) }))
 }
 
-pub fn hierarchical_instance(s: &str) -> IResult<&str, HierarchicalInstance> {
+pub fn hierarchical_instance(s: Span) -> IResult<Span, HierarchicalInstance> {
     let (s, x) = name_of_instance(s)?;
     let (s, y) = paren(opt(list_of_port_connections))(s)?;
     Ok((s, HierarchicalInstance { nodes: (x, y) }))
 }
 
-pub fn name_of_instance(s: &str) -> IResult<&str, NameOfInstance> {
+pub fn name_of_instance(s: Span) -> IResult<Span, NameOfInstance> {
     let (s, x) = instance_identifier(s)?;
     let (s, y) = many0(unpacked_dimension)(s)?;
     Ok((s, NameOfInstance { nodes: (x, y) }))
 }
 
-pub fn list_of_port_connections(s: &str) -> IResult<&str, ListOfPortConnections> {
+pub fn list_of_port_connections(s: Span) -> IResult<Span, ListOfPortConnections> {
     alt((
         map(
             separated_nonempty_list(symbol(","), ordered_port_connection),
@@ -143,20 +143,20 @@ pub fn list_of_port_connections(s: &str) -> IResult<&str, ListOfPortConnections>
     ))(s)
 }
 
-pub fn ordered_port_connection(s: &str) -> IResult<&str, OrderedPortConnection> {
+pub fn ordered_port_connection(s: Span) -> IResult<Span, OrderedPortConnection> {
     let (s, x) = many0(attribute_instance)(s)?;
     let (s, y) = opt(expression)(s)?;
     Ok((s, OrderedPortConnection { nodes: (x, y) }))
 }
 
-pub fn named_port_connection(s: &str) -> IResult<&str, NamedPortConnection> {
+pub fn named_port_connection(s: Span) -> IResult<Span, NamedPortConnection> {
     alt((
         named_port_connection_identifier,
         named_port_connection_asterisk,
     ))(s)
 }
 
-pub fn named_port_connection_identifier(s: &str) -> IResult<&str, NamedPortConnection> {
+pub fn named_port_connection_identifier(s: Span) -> IResult<Span, NamedPortConnection> {
     let (s, x) = many0(attribute_instance)(s)?;
     let (s, _) = symbol(".")(s)?;
     let (s, y) = port_identifier(s)?;
@@ -168,7 +168,7 @@ pub fn named_port_connection_identifier(s: &str) -> IResult<&str, NamedPortConne
     ))
 }
 
-pub fn named_port_connection_asterisk(s: &str) -> IResult<&str, NamedPortConnection> {
+pub fn named_port_connection_asterisk(s: Span) -> IResult<Span, NamedPortConnection> {
     let (s, x) = many0(attribute_instance)(s)?;
     let (s, _) = symbol(".")(s)?;
     let (s, _) = symbol("*")(s)?;

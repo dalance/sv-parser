@@ -1,6 +1,7 @@
 use crate::parser::*;
 use nom::bytes::complete::*;
 use nom::character::complete::*;
+use nom::combinator::*;
 use nom::IResult;
 
 // -----------------------------------------------------------------------------
@@ -17,8 +18,8 @@ where
     }
 }
 
-pub fn symbol<'a>(t: &'a str) -> impl Fn(&'a str) -> IResult<&'a str, &'a str> {
-    move |s: &'a str| ws(tag(t.clone()))(s)
+pub fn symbol<'a>(t: &'a str) -> impl Fn(&'a str) -> IResult<&'a str, Symbol<'a>> {
+    move |s: &'a str| ws(map(tag(t.clone()), |x| Symbol { nodes: (x,) }))(s)
 }
 
 pub fn paren<'a, O, F>(f: F) -> impl Fn(&'a str) -> IResult<&'a str, O>
@@ -67,6 +68,11 @@ where
         let (s, _) = symbol("}")(s)?;
         Ok((s, x))
     }
+}
+
+#[derive(Debug)]
+pub struct Symbol<'a> {
+    pub nodes: (&'a str,),
 }
 
 // -----------------------------------------------------------------------------

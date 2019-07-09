@@ -134,7 +134,7 @@ pub enum RangeExpression<'a> {
 pub enum PrimaryLiteral<'a> {
     Number(Number<'a>),
     TimeLiteral(TimeLiteral<'a>),
-    UnbasedUnsizedLiteral(&'a str),
+    UnbasedUnsizedLiteral(UnbasedUnsizedLiteral<'a>),
     StringLiteral(StringLiteral<'a>),
 }
 
@@ -145,13 +145,13 @@ pub enum TimeLiteral<'a> {
 }
 
 #[derive(Debug)]
-pub enum TimeUnit {
-    S,
-    MS,
-    US,
-    NS,
-    PS,
-    FS,
+pub enum TimeUnit<'a> {
+    S(Symbol<'a>),
+    MS(Symbol<'a>),
+    US(Symbol<'a>),
+    NS(Symbol<'a>),
+    PS(Symbol<'a>),
+    FS(Symbol<'a>),
 }
 
 #[derive(Debug)]
@@ -168,12 +168,12 @@ pub struct BitSelect<'a> {
 
 #[derive(Debug)]
 pub struct UnsignedTimeLiteral<'a> {
-    pub nodes: (&'a str, TimeUnit),
+    pub nodes: (UnsignedNumber<'a>, TimeUnit<'a>),
 }
 
 #[derive(Debug)]
 pub struct FixedPointTimeLiteral<'a> {
-    pub nodes: (RealNumber<'a>, TimeUnit),
+    pub nodes: (FixedPointNumber<'a>, TimeUnit<'a>),
 }
 
 #[derive(Debug)]
@@ -445,24 +445,14 @@ pub fn fixed_point_time_literal(s: &str) -> IResult<&str, TimeLiteral> {
 }
 
 pub fn time_unit(s: &str) -> IResult<&str, TimeUnit> {
-    let (s, x) = alt((
-        symbol("s"),
-        symbol("ms"),
-        symbol("us"),
-        symbol("ns"),
-        symbol("ps"),
-        symbol("fs"),
-    ))(s)?;
-    let unit = match x {
-        "s" => TimeUnit::S,
-        "ms" => TimeUnit::MS,
-        "us" => TimeUnit::US,
-        "ns" => TimeUnit::NS,
-        "ps" => TimeUnit::PS,
-        "fs" => TimeUnit::FS,
-        _ => unreachable!(),
-    };
-    Ok((s, unit))
+    alt((
+        map(symbol("s"), |x| TimeUnit::S(x)),
+        map(symbol("ms"), |x| TimeUnit::MS(x)),
+        map(symbol("us"), |x| TimeUnit::US(x)),
+        map(symbol("ns"), |x| TimeUnit::NS(x)),
+        map(symbol("ps"), |x| TimeUnit::PS(x)),
+        map(symbol("fs"), |x| TimeUnit::FS(x)),
+    ))(s)
 }
 
 pub fn implicit_class_handle(s: &str) -> IResult<&str, ImplicitClassHandle> {

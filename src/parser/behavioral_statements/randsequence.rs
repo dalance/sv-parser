@@ -39,8 +39,8 @@ pub enum RsProductionList<'a> {
 
 #[derive(Debug)]
 pub enum WeightSpecification<'a> {
-    Number(Number<'a>),
-    Identifier(PsIdentifier<'a>),
+    IntegralNumber(IntegralNumber<'a>),
+    PsIdentifier(PsIdentifier<'a>),
     Expression(Expression<'a>),
 }
 
@@ -165,8 +165,8 @@ pub fn rs_production_list_join(s: &str) -> IResult<&str, RsProductionList> {
 
 pub fn weight_specification(s: &str) -> IResult<&str, WeightSpecification> {
     alt((
-        map(integral_number, |x| WeightSpecification::Number(x)),
-        map(ps_identifier, |x| WeightSpecification::Identifier(x)),
+        map(integral_number, |x| WeightSpecification::IntegralNumber(x)),
+        map(ps_identifier, |x| WeightSpecification::PsIdentifier(x)),
         map(paren(expression), |x| WeightSpecification::Expression(x)),
     ))(s)
 }

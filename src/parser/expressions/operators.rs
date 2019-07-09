@@ -6,13 +6,13 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub struct Operator<'a> {
-    pub nodes: (&'a str,),
+    pub nodes: (Symbol<'a>,),
 }
 
 // -----------------------------------------------------------------------------
 
 pub fn unary_operator(s: &str) -> IResult<&str, Operator> {
-    let (s, x) = alt((
+    let (s, a) = alt((
         symbol("+"),
         symbol("-"),
         symbol("!"),
@@ -25,11 +25,11 @@ pub fn unary_operator(s: &str) -> IResult<&str, Operator> {
         symbol("^"),
         symbol("~"),
     ))(s)?;
-    Ok((s, Operator { nodes: (x,) }))
+    Ok((s, Operator { nodes: (a,) }))
 }
 
 pub fn binary_operator(s: &str) -> IResult<&str, Operator> {
-    let (s, x) = alt((
+    let (s, a) = alt((
         alt((
             symbol("+"),
             symbol("-"),
@@ -64,16 +64,16 @@ pub fn binary_operator(s: &str) -> IResult<&str, Operator> {
             symbol(">"),
         )),
     ))(s)?;
-    Ok((s, Operator { nodes: (x,) }))
+    Ok((s, Operator { nodes: (a,) }))
 }
 
 pub fn inc_or_dec_operator(s: &str) -> IResult<&str, Operator> {
-    let (s, x) = alt((symbol("++"), symbol("--")))(s)?;
-    Ok((s, Operator { nodes: (x,) }))
+    let (s, a) = alt((symbol("++"), symbol("--")))(s)?;
+    Ok((s, Operator { nodes: (a,) }))
 }
 
 pub fn unary_module_path_operator(s: &str) -> IResult<&str, Operator> {
-    let (s, x) = alt((
+    let (s, a) = alt((
         symbol("!"),
         symbol("&"),
         symbol("|"),
@@ -84,11 +84,11 @@ pub fn unary_module_path_operator(s: &str) -> IResult<&str, Operator> {
         symbol("^"),
         symbol("~"),
     ))(s)?;
-    Ok((s, Operator { nodes: (x,) }))
+    Ok((s, Operator { nodes: (a,) }))
 }
 
 pub fn binary_module_path_operator(s: &str) -> IResult<&str, Operator> {
-    let (s, x) = alt((
+    let (s, a) = alt((
         symbol("=="),
         symbol("!="),
         symbol("&&"),
@@ -99,7 +99,7 @@ pub fn binary_module_path_operator(s: &str) -> IResult<&str, Operator> {
         symbol("^"),
         symbol("~^"),
     ))(s)?;
-    Ok((s, Operator { nodes: (x,) }))
+    Ok((s, Operator { nodes: (a,) }))
 }
 
 // -----------------------------------------------------------------------------

@@ -96,7 +96,7 @@ pub struct ClockingDrive<'a> {
 
 #[derive(Debug)]
 pub enum CycleDelay<'a> {
-    Number(Number<'a>),
+    IntegralNumber(IntegralNumber<'a>),
     Identifier(Identifier<'a>),
     Expression(Expression<'a>),
 }
@@ -280,7 +280,7 @@ pub fn clocking_drive(s: &str) -> IResult<&str, ClockingDrive> {
 pub fn cycle_delay(s: &str) -> IResult<&str, CycleDelay> {
     alt((
         map(preceded(symbol("##"), integral_number), |x| {
-            CycleDelay::Number(x)
+            CycleDelay::IntegralNumber(x)
         }),
         map(preceded(symbol("##"), identifier), |x| {
             CycleDelay::Identifier(x)

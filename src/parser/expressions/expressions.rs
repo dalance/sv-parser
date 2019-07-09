@@ -218,7 +218,7 @@ pub enum ModulePathMintypmaxExpression<'a> {
 #[derive(Debug)]
 pub enum PartSelectRange<'a> {
     Range((ConstantExpression<'a>, ConstantExpression<'a>)),
-    IndexedRange((Expression<'a>, &'a str, ConstantExpression<'a>)),
+    IndexedRange((Expression<'a>, Symbol<'a>, ConstantExpression<'a>)),
 }
 
 // -----------------------------------------------------------------------------

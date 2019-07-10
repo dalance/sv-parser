@@ -21,13 +21,13 @@ A parser library for System Verilog.
 | declaration                       | type_declarations                     |      |        |      |
 | declaration                       | net_and_variable_types                |      |        |      |
 | declaration                       | strengths                             |      |        |      |
-| declaration                       | delays                                |      |        |      |
+| declaration                       | delays                                | x    |        |      |
 | declaration                       | declaration_lists                     |      |        |      |
 | declaration                       | declaration_assignments               |      |        |      |
 | declaration                       | declaration_ranges                    |      |        |      |
 | declaration                       | function_declarations                 |      |        |      |
 | declaration                       | task_declarations                     |      |        |      |
-| declaration                       | block_item_declarations               |      |        |      |
+| declaration                       | block_item_declarations               | x    | x      |      |
 | declaration                       | interface_declarations                |      |        |      |
 | declaration                       | assertion_declarations                |      |        |      |
 | declaration                       | covergroup_declarations               |      |        |      |
@@ -40,7 +40,7 @@ A parser library for System Verilog.
 | instantiations                    | interface_instantiation               | x    | x      |      |
 | instantiations                    | program_instantiation                 | x    | x      |      |
 | instantiations                    | checker_instantiation                 | x    | x      |      |
-| instantiations                    | generated_instantiation               |      |        |      |
+| instantiations                    | generated_instantiation               | x    | x      |      |
 | udp_declaration_and_instantiation | udp_declaration                       |      |        |      |
 | udp_declaration_and_instantiation | udp_ports                             |      |        |      |
 | udp_declaration_and_instantiation | udp_body                              |      |        |      |

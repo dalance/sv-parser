@@ -8,27 +8,46 @@ use nom::{Err, IResult};
 
 #[derive(Debug)]
 pub enum Delay3<'a> {
-    DelayValue(DelayValue<'a>),
+    Single(Delay3Single<'a>),
     Mintypmax(Delay3Mintypmax<'a>),
+}
+
+#[derive(Debug)]
+pub struct Delay3Single<'a> {
+    pub nodes: (Symbol<'a>, DelayValue<'a>),
 }
 
 #[derive(Debug)]
 pub struct Delay3Mintypmax<'a> {
     pub nodes: (
-        MintypmaxExpression<'a>,
-        Option<(MintypmaxExpression<'a>, Option<MintypmaxExpression<'a>>)>,
+        Symbol<'a>,
+        Paren<
+            'a,
+            (
+                MintypmaxExpression<'a>,
+                Option<(MintypmaxExpression<'a>, Option<MintypmaxExpression<'a>>)>,
+            ),
+        >,
     ),
 }
 
 #[derive(Debug)]
 pub enum Delay2<'a> {
-    DelayValue(DelayValue<'a>),
+    Single(Delay2Single<'a>),
     Mintypmax(Delay2Mintypmax<'a>),
 }
 
 #[derive(Debug)]
+pub struct Delay2Single<'a> {
+    pub nodes: (Symbol<'a>, DelayValue<'a>),
+}
+
+#[derive(Debug)]
 pub struct Delay2Mintypmax<'a> {
-    pub nodes: (MintypmaxExpression<'a>, Option<MintypmaxExpression<'a>>),
+    pub nodes: (
+        Symbol<'a>,
+        Paren<'a, (MintypmaxExpression<'a>, Option<MintypmaxExpression<'a>>)>,
+    ),
 }
 
 #[derive(Debug)]
@@ -37,7 +56,7 @@ pub enum DelayValue<'a> {
     RealNumber(RealNumber<'a>),
     Identifier(Identifier<'a>),
     TimeLiteral(TimeLiteral<'a>),
-    Step1,
+    Step1(Symbol<'a>),
 }
 
 // -----------------------------------------------------------------------------

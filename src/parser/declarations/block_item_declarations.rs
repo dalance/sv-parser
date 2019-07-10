@@ -1,8 +1,7 @@
 use crate::parser::*;
-//use nom::branch::*;
-//use nom::combinator::*;
-use nom::error::*;
-use nom::{Err, IResult};
+use nom::branch::*;
+use nom::multi::*;
+use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
@@ -21,12 +20,20 @@ pub struct BlockItemDeclarationData<'a> {
 
 #[derive(Debug)]
 pub struct BlockItemDeclarationLocalParameter<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, LocalParameterDeclaration<'a>),
+    pub nodes: (
+        Vec<AttributeInstance<'a>>,
+        LocalParameterDeclaration<'a>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct BlockItemDeclarationParameter<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, ParameterDeclaration<'a>),
+    pub nodes: (
+        Vec<AttributeInstance<'a>>,
+        ParameterDeclaration<'a>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug)]
@@ -37,5 +44,50 @@ pub struct BlockItemDeclarationLet<'a> {
 // -----------------------------------------------------------------------------
 
 pub fn block_item_declaration(s: Span) -> IResult<Span, BlockItemDeclaration> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        block_item_declaration_data,
+        block_item_declaration_local_parameter,
+        block_item_declaration_parameter,
+        block_item_declaration_let,
+    ))(s)
+}
+
+pub fn block_item_declaration_data(s: Span) -> IResult<Span, BlockItemDeclaration> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = data_declaration(s)?;
+    Ok((
+        s,
+        BlockItemDeclaration::Data(BlockItemDeclarationData { nodes: (a, b) }),
+    ))
+}
+
+pub fn block_item_declaration_local_parameter(s: Span) -> IResult<Span, BlockItemDeclaration> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = local_parameter_declaration(s)?;
+    let (s, c) = symbol(";")(s)?;
+    Ok((
+        s,
+        BlockItemDeclaration::LocalParameter(BlockItemDeclarationLocalParameter {
+            nodes: (a, b, c),
+        }),
+    ))
+}
+
+pub fn block_item_declaration_parameter(s: Span) -> IResult<Span, BlockItemDeclaration> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = parameter_declaration(s)?;
+    let (s, c) = symbol(";")(s)?;
+    Ok((
+        s,
+        BlockItemDeclaration::Parameter(BlockItemDeclarationParameter { nodes: (a, b, c) }),
+    ))
+}
+
+pub fn block_item_declaration_let(s: Span) -> IResult<Span, BlockItemDeclaration> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = let_declaration(s)?;
+    Ok((
+        s,
+        BlockItemDeclaration::Let(BlockItemDeclarationLet { nodes: (a, b) }),
+    ))
 }

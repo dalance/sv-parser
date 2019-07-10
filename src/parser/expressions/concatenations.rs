@@ -9,40 +9,67 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub struct Concatenation<'a> {
-    pub nodes: (Vec<Expression<'a>>,),
+    pub nodes: (
+        Symbol<'a>,
+        Expression<'a>,
+        Vec<(Symbol<'a>, Expression<'a>)>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct ConstantConcatenation<'a> {
-    pub nodes: (Vec<ConstantExpression<'a>>,),
+    pub nodes: (
+        Symbol<'a>,
+        ConstantExpression<'a>,
+        Vec<(Symbol<'a>, ConstantExpression<'a>)>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct ConstantMultipleConcatenation<'a> {
-    pub nodes: (ConstantExpression<'a>, ConstantConcatenation<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        ConstantExpression<'a>,
+        ConstantConcatenation<'a>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct ModulePathConcatenation<'a> {
-    pub nodes: (Vec<ModulePathExpression<'a>>,),
+    pub nodes: (
+        Symbol<'a>,
+        ModulePathExpression<'a>,
+        Vec<(Symbol<'a>, ModulePathExpression<'a>)>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct ModulePathMultipleConcatenation<'a> {
-    pub nodes: (ConstantExpression<'a>, ModulePathConcatenation<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        ConstantExpression<'a>,
+        ModulePathConcatenation<'a>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct MultipleConcatenation<'a> {
-    pub nodes: (Expression<'a>, Concatenation<'a>),
+    pub nodes: (Symbol<'a>, Expression<'a>, Concatenation<'a>, Symbol<'a>),
 }
 
 #[derive(Debug)]
 pub struct StreamingConcatenation<'a> {
     pub nodes: (
+        Symbol<'a>,
         StreamOperator<'a>,
         Option<SliceSize<'a>>,
         StreamConcatenation<'a>,
+        Symbol<'a>,
     ),
 }
 
@@ -53,32 +80,52 @@ pub struct StreamOperator<'a> {
 
 #[derive(Debug)]
 pub enum SliceSize<'a> {
-    Type(SimpleType<'a>),
-    Expression(ConstantExpression<'a>),
+    SimpleType(SimpleType<'a>),
+    ConstantExpression(ConstantExpression<'a>),
 }
 
 #[derive(Debug)]
 pub struct StreamConcatenation<'a> {
-    pub nodes: (Vec<StreamExpression<'a>>,),
-}
-
-#[derive(Debug)]
-pub struct StreamExpression<'a> {
-    pub nodes: (Expression<'a>, Option<ArrayRangeExpression<'a>>),
-}
-
-#[derive(Debug)]
-pub struct ArrayRangeExpression<'a> {
     pub nodes: (
-        Expression<'a>,
-        Option<ArrayRangeOperator<'a>>,
-        Option<Expression<'a>>,
+        Symbol<'a>,
+        StreamExpression<'a>,
+        Vec<(Symbol<'a>, StreamExpression<'a>)>,
+        Symbol<'a>,
     ),
 }
 
 #[derive(Debug)]
-pub struct ArrayRangeOperator<'a> {
-    pub nodes: (Symbol<'a>,),
+pub struct StreamExpression<'a> {
+    pub nodes: (
+        Expression<'a>,
+        Option<(
+            Symbol<'a>,
+            (Symbol<'a>, ArrayRangeExpression<'a>, Symbol<'a>),
+        )>,
+    ),
+}
+
+#[derive(Debug)]
+pub enum ArrayRangeExpression<'a> {
+    Expression(Expression<'a>),
+    Colon(ArrayRangeExpressionColon<'a>),
+    PlusColon(ArrayRangeExpressionPlusColon<'a>),
+    MinusColon(ArrayRangeExpressionMinusColon<'a>),
+}
+
+#[derive(Debug)]
+pub struct ArrayRangeExpressionColon<'a> {
+    pub nodes: (Expression<'a>, Symbol<'a>, Expression<'a>),
+}
+
+#[derive(Debug)]
+pub struct ArrayRangeExpressionPlusColon<'a> {
+    pub nodes: (Expression<'a>, Symbol<'a>, Expression<'a>),
+}
+
+#[derive(Debug)]
+pub struct ArrayRangeExpressionMinusColon<'a> {
+    pub nodes: (Expression<'a>, Symbol<'a>, Expression<'a>),
 }
 
 #[derive(Debug)]
@@ -89,53 +136,97 @@ pub struct EmptyUnpackedArrayConcatenation<'a> {
 // -----------------------------------------------------------------------------
 
 pub fn concatenation(s: Span) -> IResult<Span, Concatenation> {
-    let (s, x) = brace(separated_nonempty_list(symbol(","), expression))(s)?;
-    Ok((s, Concatenation { nodes: (x,) }))
+    let (s, a) = symbol("{")(s)?;
+    let (s, b) = expression(s)?;
+    let (s, c) = many0(pair(symbol(","), expression))(s)?;
+    let (s, d) = symbol("}")(s)?;
+    Ok((
+        s,
+        Concatenation {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn constant_concatenation(s: Span) -> IResult<Span, ConstantConcatenation> {
-    let (s, x) = brace(separated_nonempty_list(symbol(","), constant_expression))(s)?;
-    Ok((s, ConstantConcatenation { nodes: (x,) }))
+    let (s, a) = symbol("{")(s)?;
+    let (s, b) = constant_expression(s)?;
+    let (s, c) = many0(pair(symbol(","), constant_expression))(s)?;
+    let (s, d) = symbol("}")(s)?;
+    Ok((
+        s,
+        ConstantConcatenation {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn constant_multiple_concatenation(s: Span) -> IResult<Span, ConstantMultipleConcatenation> {
-    let (s, _) = symbol("{")(s)?;
-    let (s, x) = constant_expression(s)?;
-    let (s, y) = constant_concatenation(s)?;
-    let (s, _) = symbol("}")(s)?;
-    Ok((s, ConstantMultipleConcatenation { nodes: (x, y) }))
+    let (s, a) = symbol("{")(s)?;
+    let (s, b) = constant_expression(s)?;
+    let (s, c) = constant_concatenation(s)?;
+    let (s, d) = symbol("}")(s)?;
+    Ok((
+        s,
+        ConstantMultipleConcatenation {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn module_path_concatenation(s: Span) -> IResult<Span, ModulePathConcatenation> {
-    let (s, x) = brace(separated_nonempty_list(symbol(","), module_path_expression))(s)?;
-    Ok((s, ModulePathConcatenation { nodes: (x,) }))
+    let (s, a) = symbol("{")(s)?;
+    let (s, b) = module_path_expression(s)?;
+    let (s, c) = many0(pair(symbol(","), module_path_expression))(s)?;
+    let (s, d) = symbol("}")(s)?;
+    Ok((
+        s,
+        ModulePathConcatenation {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn module_path_multiple_concatenation(
     s: Span,
 ) -> IResult<Span, ModulePathMultipleConcatenation> {
-    let (s, _) = symbol("{")(s)?;
-    let (s, x) = constant_expression(s)?;
-    let (s, y) = module_path_concatenation(s)?;
-    let (s, _) = symbol("}")(s)?;
-    Ok((s, ModulePathMultipleConcatenation { nodes: (x, y) }))
+    let (s, a) = symbol("{")(s)?;
+    let (s, b) = constant_expression(s)?;
+    let (s, c) = module_path_concatenation(s)?;
+    let (s, d) = symbol("}")(s)?;
+    Ok((
+        s,
+        ModulePathMultipleConcatenation {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn multiple_concatenation(s: Span) -> IResult<Span, MultipleConcatenation> {
-    let (s, _) = symbol("{")(s)?;
-    let (s, x) = expression(s)?;
-    let (s, y) = concatenation(s)?;
-    let (s, _) = symbol("}")(s)?;
-    Ok((s, MultipleConcatenation { nodes: (x, y) }))
+    let (s, a) = symbol("{")(s)?;
+    let (s, b) = expression(s)?;
+    let (s, c) = concatenation(s)?;
+    let (s, d) = symbol("}")(s)?;
+    Ok((
+        s,
+        MultipleConcatenation {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn streaming_concatenation(s: Span) -> IResult<Span, StreamingConcatenation> {
-    let (s, _) = symbol("{")(s)?;
-    let (s, x) = stream_operator(s)?;
-    let (s, y) = opt(slice_size)(s)?;
-    let (s, z) = stream_concatenation(s)?;
-    let (s, _) = symbol("}")(s)?;
-    Ok((s, StreamingConcatenation { nodes: (x, y, z) }))
+    let (s, a) = symbol("{")(s)?;
+    let (s, b) = stream_operator(s)?;
+    let (s, c) = opt(slice_size)(s)?;
+    let (s, d) = stream_concatenation(s)?;
+    let (s, e) = symbol("}")(s)?;
+    Ok((
+        s,
+        StreamingConcatenation {
+            nodes: (a, b, c, d, e),
+        },
+    ))
 }
 
 pub fn stream_operator(s: Span) -> IResult<Span, StreamOperator> {
@@ -147,39 +238,67 @@ pub fn stream_operator(s: Span) -> IResult<Span, StreamOperator> {
 
 pub fn slice_size(s: Span) -> IResult<Span, SliceSize> {
     alt((
-        map(simple_type, |x| SliceSize::Type(x)),
-        map(constant_expression, |x| SliceSize::Expression(x)),
+        map(simple_type, |x| SliceSize::SimpleType(x)),
+        map(constant_expression, |x| SliceSize::ConstantExpression(x)),
     ))(s)
 }
 
 pub fn stream_concatenation(s: Span) -> IResult<Span, StreamConcatenation> {
-    let (s, x) = brace(separated_nonempty_list(symbol(","), stream_expression))(s)?;
-    Ok((s, StreamConcatenation { nodes: (x,) }))
+    let (s, a) = symbol("{")(s)?;
+    let (s, b) = stream_expression(s)?;
+    let (s, c) = many0(pair(symbol(","), stream_expression))(s)?;
+    let (s, d) = symbol("}")(s)?;
+    Ok((
+        s,
+        StreamConcatenation {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn stream_expression(s: Span) -> IResult<Span, StreamExpression> {
-    let (s, x) = expression(s)?;
-    let (s, y) = opt(preceded(symbol("with"), bracket(array_range_expression)))(s)?;
-    Ok((s, StreamExpression { nodes: (x, y) }))
+    let (s, a) = expression(s)?;
+    let (s, b) = opt(pair(symbol("with"), bracket2(array_range_expression)))(s)?;
+    Ok((s, StreamExpression { nodes: (a, b) }))
 }
 
 pub fn array_range_expression(s: Span) -> IResult<Span, ArrayRangeExpression> {
-    let (s, x) = expression(s)?;
-    let (s, y) = opt(pair(array_range_operator, expression))(s)?;
-    let (y, z) = if let Some((y, z)) = y {
-        (Some(y), Some(z))
-    } else {
-        (None, None)
-    };
-    Ok((s, ArrayRangeExpression { nodes: (x, y, z) }))
+    alt((
+        map(expression, |x| ArrayRangeExpression::Expression(x)),
+        array_range_expression_colon,
+        array_range_expression_plus_colon,
+        array_range_expression_minus_colon,
+    ))(s)
 }
 
-pub fn array_range_operator(s: Span) -> IResult<Span, ArrayRangeOperator> {
-    alt((
-        map(symbol(":"), |x| ArrayRangeOperator { nodes: (x,) }),
-        map(symbol("+:"), |x| ArrayRangeOperator { nodes: (x,) }),
-        map(symbol("-:"), |x| ArrayRangeOperator { nodes: (x,) }),
-    ))(s)
+pub fn array_range_expression_colon(s: Span) -> IResult<Span, ArrayRangeExpression> {
+    let (s, a) = expression(s)?;
+    let (s, b) = symbol(":")(s)?;
+    let (s, c) = expression(s)?;
+    Ok((
+        s,
+        ArrayRangeExpression::Colon(ArrayRangeExpressionColon { nodes: (a, b, c) }),
+    ))
+}
+
+pub fn array_range_expression_plus_colon(s: Span) -> IResult<Span, ArrayRangeExpression> {
+    let (s, a) = expression(s)?;
+    let (s, b) = symbol("+:")(s)?;
+    let (s, c) = expression(s)?;
+    Ok((
+        s,
+        ArrayRangeExpression::PlusColon(ArrayRangeExpressionPlusColon { nodes: (a, b, c) }),
+    ))
+}
+
+pub fn array_range_expression_minus_colon(s: Span) -> IResult<Span, ArrayRangeExpression> {
+    let (s, a) = expression(s)?;
+    let (s, b) = symbol("-:")(s)?;
+    let (s, c) = expression(s)?;
+    Ok((
+        s,
+        ArrayRangeExpression::MinusColon(ArrayRangeExpressionMinusColon { nodes: (a, b, c) }),
+    ))
 }
 
 pub fn empty_unpacked_array_concatenation(

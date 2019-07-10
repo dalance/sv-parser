@@ -36,7 +36,7 @@ A parser library for System Verilog.
 | primitive_instance                | primitive_strengths                   |      |        |      |
 | primitive_instance                | primitive_terminals                   |      |        |      |
 | primitive_instance                | primitive_gate_and_switch_types       |      |        |      |
-| instantiations                    | module_instantiation                  |      |        |      |
+| instantiations                    | module_instantiation                  | x    | x      |      |
 | instantiations                    | interface_instantiation               | x    | x      |      |
 | instantiations                    | program_instantiation                 | x    | x      |      |
 | instantiations                    | checker_instantiation                 | x    | x      |      |
@@ -65,8 +65,8 @@ A parser library for System Verilog.
 | specify_section                   | system_timing_check_commands          |      |        |      |
 | specify_section                   | system_timing_check_command_arguments |      |        |      |
 | specify_section                   | system_timing_check_event_definitions |      |        |      |
-| expressions                       | concatenations                        |      |        |      |
-| expressions                       | subroutine_calls                      |      |        |      |
+| expressions                       | concatenations                        | x    | x      |      |
+| expressions                       | subroutine_calls                      | x    | x      |      |
 | expressions                       | expressions                           | x    | x      |      |
 | expressions                       | primaries                             | x    | x      |      |
 | expressions                       | expression_leftside_values            | x    | x      |      |

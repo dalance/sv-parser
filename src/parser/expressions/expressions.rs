@@ -108,7 +108,7 @@ pub enum ConstantParamExpression<'a> {
 #[derive(Debug)]
 pub enum ParamExpression<'a> {
     MintypmaxExpression(MintypmaxExpression<'a>),
-    DataType(DataType<'a>),
+    DataType(Box<DataType<'a>>),
     Dollar(Symbol<'a>),
 }
 
@@ -419,7 +419,7 @@ pub fn param_expression(s: Span) -> IResult<Span, ParamExpression> {
         map(mintypmax_expression, |x| {
             ParamExpression::MintypmaxExpression(x)
         }),
-        map(data_type, |x| ParamExpression::DataType(x)),
+        map(data_type, |x| ParamExpression::DataType(Box::new(x))),
     ))(s)
 }
 

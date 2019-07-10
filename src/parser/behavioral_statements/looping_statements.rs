@@ -58,7 +58,7 @@ pub struct LoopStatementForeach<'a> {
 
 #[derive(Debug)]
 pub enum ForInitialization<'a> {
-    Assignment(Vec<VariableAssignment<'a>>),
+    Assignment(ListOfVariableAssignments<'a>),
     Declaration(Vec<ForVariableDeclaration<'a>>),
 }
 

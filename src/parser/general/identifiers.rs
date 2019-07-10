@@ -497,20 +497,20 @@ pub struct VariableIdentifier<'a> {
 
 #[derive(Debug)]
 pub enum ImplicitClassHandleOrClassScopeOrPackageScope<'a> {
-    ImplicitClassHandle(ImplicitClassHandle<'a>),
+    ImplicitClassHandle((ImplicitClassHandle<'a>, Symbol<'a>)),
     ClassScope(ClassScope<'a>),
     PackageScope(PackageScope<'a>),
 }
 
 #[derive(Debug)]
 pub enum ImplicitClassHandleOrPackageScope<'a> {
-    ImplicitClassHandle(ImplicitClassHandle<'a>),
+    ImplicitClassHandle((ImplicitClassHandle<'a>, Symbol<'a>)),
     PackageScope(PackageScope<'a>),
 }
 
 #[derive(Debug)]
 pub enum ImplicitClassHandleOrClassScope<'a> {
-    ImplicitClassHandle(ImplicitClassHandle<'a>),
+    ImplicitClassHandle((ImplicitClassHandle<'a>, Symbol<'a>)),
     ClassScope(ClassScope<'a>),
 }
 
@@ -959,7 +959,7 @@ pub fn implicit_class_handle_or_class_scope_or_package_scope(
     s: Span,
 ) -> IResult<Span, ImplicitClassHandleOrClassScopeOrPackageScope> {
     alt((
-        map(terminated(implicit_class_handle, symbol(".")), |x| {
+        map(pair(implicit_class_handle, symbol(".")), |x| {
             ImplicitClassHandleOrClassScopeOrPackageScope::ImplicitClassHandle(x)
         }),
         map(class_scope, |x| {
@@ -975,7 +975,7 @@ pub fn implicit_class_handle_or_package_scope(
     s: Span,
 ) -> IResult<Span, ImplicitClassHandleOrPackageScope> {
     alt((
-        map(terminated(implicit_class_handle, symbol(".")), |x| {
+        map(pair(implicit_class_handle, symbol(".")), |x| {
             ImplicitClassHandleOrPackageScope::ImplicitClassHandle(x)
         }),
         map(package_scope, |x| {
@@ -988,7 +988,7 @@ pub fn implicit_class_handle_or_class_scope(
     s: Span,
 ) -> IResult<Span, ImplicitClassHandleOrClassScope> {
     alt((
-        map(terminated(implicit_class_handle, symbol(".")), |x| {
+        map(pair(implicit_class_handle, symbol(".")), |x| {
             ImplicitClassHandleOrClassScope::ImplicitClassHandle(x)
         }),
         map(class_scope, |x| {

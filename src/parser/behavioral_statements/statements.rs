@@ -10,13 +10,18 @@ use nom::IResult;
 #[derive(Debug)]
 pub enum StatementOrNull<'a> {
     Statement(Statement<'a>),
-    Attribute(Vec<AttributeInstance<'a>>),
+    Attribute(StatementOrNullAttribute<'a>),
+}
+
+#[derive(Debug)]
+pub struct StatementOrNullAttribute<'a> {
+    pub nodes: (Vec<AttributeInstance<'a>>, Symbol<'a>),
 }
 
 #[derive(Debug)]
 pub struct Statement<'a> {
     pub nodes: (
-        Option<BlockIdentifier<'a>>,
+        Option<(BlockIdentifier<'a>, Symbol<'a>)>,
         Vec<AttributeInstance<'a>>,
         StatementItem<'a>,
     ),
@@ -24,12 +29,12 @@ pub struct Statement<'a> {
 
 #[derive(Debug)]
 pub enum StatementItem<'a> {
-    BlockingAssignment(Box<BlockingAssignment<'a>>),
-    NonblockingAssignment(Box<NonblockingAssignment<'a>>),
-    ProceduralContinuousAssignment(Box<ProceduralContinuousAssignment<'a>>),
+    BlockingAssignment(Box<(BlockingAssignment<'a>, Symbol<'a>)>),
+    NonblockingAssignment(Box<(NonblockingAssignment<'a>, Symbol<'a>)>),
+    ProceduralContinuousAssignment(Box<(ProceduralContinuousAssignment<'a>, Symbol<'a>)>),
     CaseStatement(Box<CaseStatement<'a>>),
     ConditionalStatement(Box<ConditionalStatement<'a>>),
-    IncOrDecExpression(Box<IncOrDecExpression<'a>>),
+    IncOrDecExpression(Box<(IncOrDecExpression<'a>, Symbol<'a>)>),
     SubroutineCallStatement(Box<SubroutineCallStatement<'a>>),
     DisableStatement(Box<DisableStatement<'a>>),
     EventTrigger(Box<EventTrigger<'a>>),
@@ -40,7 +45,7 @@ pub enum StatementItem<'a> {
     SeqBlock(Box<SeqBlock<'a>>),
     WaitStatement(Box<WaitStatement<'a>>),
     ProceduralAssertionStatement(Box<ProceduralAssertionStatement<'a>>),
-    ClockingDrive(Box<ClockingDrive<'a>>),
+    ClockingDrive(Box<(ClockingDrive<'a>, Symbol<'a>)>),
     RandsequenceStatement(Box<RandsequenceStatement<'a>>),
     RandcaseStatement(Box<RandcaseStatement<'a>>),
     ExpectPropertyStatement(Box<ExpectPropertyStatement<'a>>),
@@ -54,12 +59,17 @@ pub struct FunctionStatement<'a> {
 #[derive(Debug)]
 pub enum FunctionStatementOrNull<'a> {
     Statement(FunctionStatement<'a>),
-    Attribute(Vec<AttributeInstance<'a>>),
+    Attribute(FunctionStatementOrNullAttribute<'a>),
+}
+
+#[derive(Debug)]
+pub struct FunctionStatementOrNullAttribute<'a> {
+    pub nodes: (Vec<AttributeInstance<'a>>, Symbol<'a>),
 }
 
 #[derive(Debug)]
 pub struct VariableIdentifierList<'a> {
-    pub nodes: (Vec<VariableIdentifier<'a>>,),
+    pub nodes: (List<Symbol<'a>, VariableIdentifier<'a>>,),
 }
 
 // -----------------------------------------------------------------------------
@@ -67,38 +77,44 @@ pub struct VariableIdentifierList<'a> {
 pub fn statement_or_null(s: Span) -> IResult<Span, StatementOrNull> {
     alt((
         map(statement, |x| StatementOrNull::Statement(x)),
-        map(terminated(many0(attribute_instance), symbol(";")), |x| {
-            StatementOrNull::Attribute(x)
-        }),
+        statement_or_null_attribute,
     ))(s)
 }
 
+pub fn statement_or_null_attribute(s: Span) -> IResult<Span, StatementOrNull> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = symbol(";")(s)?;
+    Ok((
+        s,
+        StatementOrNull::Attribute(StatementOrNullAttribute { nodes: (a, b) }),
+    ))
+}
+
 pub fn statement(s: Span) -> IResult<Span, Statement> {
-    let (s, x) = opt(terminated(block_identifier, symbol(":")))(s)?;
-    let (s, y) = many0(attribute_instance)(s)?;
-    let (s, z) = statement_item(s)?;
-    Ok((s, Statement { nodes: (x, y, z) }))
+    let (s, a) = opt(pair(block_identifier, symbol(":")))(s)?;
+    let (s, b) = many0(attribute_instance)(s)?;
+    let (s, c) = statement_item(s)?;
+    Ok((s, Statement { nodes: (a, b, c) }))
 }
 
 pub fn statement_item(s: Span) -> IResult<Span, StatementItem> {
     alt((
-        map(terminated(blocking_assignment, symbol(";")), |x| {
+        map(pair(blocking_assignment, symbol(";")), |x| {
             StatementItem::BlockingAssignment(Box::new(x))
         }),
-        map(terminated(nonblocking_assignment, symbol(";")), |x| {
+        map(pair(nonblocking_assignment, symbol(";")), |x| {
             StatementItem::NonblockingAssignment(Box::new(x))
         }),
-        map(
-            terminated(procedural_continuous_assignment, symbol(";")),
-            |x| StatementItem::ProceduralContinuousAssignment(Box::new(x)),
-        ),
+        map(pair(procedural_continuous_assignment, symbol(";")), |x| {
+            StatementItem::ProceduralContinuousAssignment(Box::new(x))
+        }),
         map(case_statement, |x| {
             StatementItem::CaseStatement(Box::new(x))
         }),
         map(conditional_statement, |x| {
             StatementItem::ConditionalStatement(Box::new(x))
         }),
-        map(terminated(inc_or_dec_expression, symbol(";")), |x| {
+        map(pair(inc_or_dec_expression, symbol(";")), |x| {
             StatementItem::IncOrDecExpression(Box::new(x))
         }),
         map(subroutine_call_statement, |x| {
@@ -125,7 +141,7 @@ pub fn statement_item(s: Span) -> IResult<Span, StatementItem> {
         map(procedural_assertion_statement, |x| {
             StatementItem::ProceduralAssertionStatement(Box::new(x))
         }),
-        map(terminated(clocking_drive, symbol(";")), |x| {
+        map(pair(clocking_drive, symbol(";")), |x| {
             StatementItem::ClockingDrive(Box::new(x))
         }),
         map(randsequence_statement, |x| {
@@ -141,8 +157,8 @@ pub fn statement_item(s: Span) -> IResult<Span, StatementItem> {
 }
 
 pub fn function_statement(s: Span) -> IResult<Span, FunctionStatement> {
-    let (s, x) = statement(s)?;
-    Ok((s, FunctionStatement { nodes: (x,) }))
+    let (s, a) = statement(s)?;
+    Ok((s, FunctionStatement { nodes: (a,) }))
 }
 
 pub fn function_statement_or_null(s: Span) -> IResult<Span, FunctionStatementOrNull> {
@@ -150,13 +166,20 @@ pub fn function_statement_or_null(s: Span) -> IResult<Span, FunctionStatementOrN
         map(function_statement, |x| {
             FunctionStatementOrNull::Statement(x)
         }),
-        map(terminated(many0(attribute_instance), symbol(";")), |x| {
-            FunctionStatementOrNull::Attribute(x)
-        }),
+        function_statement_or_null_attribute,
     ))(s)
 }
 
+pub fn function_statement_or_null_attribute(s: Span) -> IResult<Span, FunctionStatementOrNull> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = symbol(";")(s)?;
+    Ok((
+        s,
+        FunctionStatementOrNull::Attribute(FunctionStatementOrNullAttribute { nodes: (a, b) }),
+    ))
+}
+
 pub fn variable_identifier_list(s: Span) -> IResult<Span, VariableIdentifierList> {
-    let (s, x) = separated_nonempty_list(symbol(","), variable_identifier)(s)?;
-    Ok((s, VariableIdentifierList { nodes: (x,) }))
+    let (s, a) = list(symbol(","), variable_identifier)(s)?;
+    Ok((s, VariableIdentifierList { nodes: (a,) }))
 }

@@ -9,93 +9,96 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub enum ActionBlock<'a> {
-    Statement(StatementOrNull<'a>),
+    StatementOrNull(StatementOrNull<'a>),
     Else(ActionBlockElse<'a>),
 }
 
 #[derive(Debug)]
 pub struct ActionBlockElse<'a> {
-    pub nodes: (Option<Statement<'a>>, StatementOrNull<'a>),
+    pub nodes: (Option<Statement<'a>>, Symbol<'a>, StatementOrNull<'a>),
 }
 
 #[derive(Debug)]
 pub struct SeqBlock<'a> {
     pub nodes: (
-        Option<BlockIdentifier<'a>>,
+        Symbol<'a>,
+        Option<(Symbol<'a>, BlockIdentifier<'a>)>,
         Vec<BlockItemDeclaration<'a>>,
         Vec<StatementOrNull<'a>>,
-        Option<BlockIdentifier<'a>>,
+        Symbol<'a>,
+        Option<(Symbol<'a>, BlockIdentifier<'a>)>,
     ),
 }
 
 #[derive(Debug)]
 pub struct ParBlock<'a> {
     pub nodes: (
-        Option<BlockIdentifier<'a>>,
+        Symbol<'a>,
+        Option<(Symbol<'a>, BlockIdentifier<'a>)>,
         Vec<BlockItemDeclaration<'a>>,
         Vec<StatementOrNull<'a>>,
-        JoinKeyword,
-        Option<BlockIdentifier<'a>>,
+        JoinKeyword<'a>,
+        Option<(Symbol<'a>, BlockIdentifier<'a>)>,
     ),
 }
 
 #[derive(Debug)]
-pub enum JoinKeyword {
-    Join,
-    JoinAny,
-    JoinNone,
+pub enum JoinKeyword<'a> {
+    Join(Symbol<'a>),
+    JoinAny(Symbol<'a>),
+    JoinNone(Symbol<'a>),
 }
 
 // -----------------------------------------------------------------------------
 
 pub fn action_block(s: Span) -> IResult<Span, ActionBlock> {
     alt((
-        map(statement_or_null, |x| ActionBlock::Statement(x)),
+        map(statement_or_null, |x| ActionBlock::StatementOrNull(x)),
         action_block_else,
     ))(s)
 }
 
 pub fn action_block_else(s: Span) -> IResult<Span, ActionBlock> {
-    let (s, x) = opt(statement)(s)?;
-    let (s, _) = symbol("else")(s)?;
-    let (s, y) = statement_or_null(s)?;
-    Ok((s, ActionBlock::Else(ActionBlockElse { nodes: (x, y) })))
+    let (s, a) = opt(statement)(s)?;
+    let (s, b) = symbol("else")(s)?;
+    let (s, c) = statement_or_null(s)?;
+    Ok((s, ActionBlock::Else(ActionBlockElse { nodes: (a, b, c) })))
 }
 
 pub fn seq_block(s: Span) -> IResult<Span, SeqBlock> {
-    let (s, _) = symbol("begin")(s)?;
-    let (s, x) = opt(preceded(symbol(":"), block_identifier))(s)?;
-    let (s, y) = many0(block_item_declaration)(s)?;
-    let (s, z) = many0(statement_or_null)(s)?;
-    let (s, _) = symbol("end")(s)?;
-    let (s, v) = opt(preceded(symbol(":"), block_identifier))(s)?;
+    let (s, a) = symbol("begin")(s)?;
+    let (s, b) = opt(pair(symbol(":"), block_identifier))(s)?;
+    let (s, c) = many0(block_item_declaration)(s)?;
+    let (s, d) = many0(statement_or_null)(s)?;
+    let (s, e) = symbol("end")(s)?;
+    let (s, f) = opt(pair(symbol(":"), block_identifier))(s)?;
     Ok((
         s,
         SeqBlock {
-            nodes: (x, y, z, v),
+            nodes: (a, b, c, d, e, f),
         },
     ))
 }
 
 pub fn par_block(s: Span) -> IResult<Span, ParBlock> {
-    let (s, _) = symbol("fork")(s)?;
-    let (s, x) = opt(preceded(symbol(":"), block_identifier))(s)?;
-    let (s, y) = many0(block_item_declaration)(s)?;
-    let (s, z) = many0(statement_or_null)(s)?;
-    let (s, v) = join_keyword(s)?;
-    let (s, w) = opt(preceded(symbol(":"), block_identifier))(s)?;
+    let (s, a) = symbol("fork")(s)?;
+    let (s, b) = opt(pair(symbol(":"), block_identifier))(s)?;
+    let (s, c) = many0(block_item_declaration)(s)?;
+    let (s, d) = many0(statement_or_null)(s)?;
+    let (s, e) = join_keyword(s)?;
+    let (s, f) = opt(pair(symbol(":"), block_identifier))(s)?;
     Ok((
         s,
         ParBlock {
-            nodes: (x, y, z, v, w),
+            nodes: (a, b, c, d, e, f),
         },
     ))
 }
 
 pub fn join_keyword(s: Span) -> IResult<Span, JoinKeyword> {
     alt((
-        map(symbol("join_any"), |_| JoinKeyword::JoinAny),
-        map(symbol("join_none"), |_| JoinKeyword::JoinNone),
-        map(symbol("join"), |_| JoinKeyword::Join),
+        map(symbol("join_any"), |x| JoinKeyword::JoinAny(x)),
+        map(symbol("join_none"), |x| JoinKeyword::JoinNone(x)),
+        map(symbol("join"), |x| JoinKeyword::Join(x)),
     ))(s)
 }

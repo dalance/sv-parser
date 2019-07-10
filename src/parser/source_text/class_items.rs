@@ -200,6 +200,10 @@ pub fn method_qualifier(s: Span) -> IResult<Span, MethodQualifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
+pub fn method_prototype(s: Span) -> IResult<Span, MethodPrototype> {
+    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+}
+
 pub fn class_constructor_declaration(s: Span) -> IResult<Span, ClassConstructorDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

@@ -81,6 +81,11 @@ pub struct ArrayRangeOperator<'a> {
     pub nodes: (Symbol<'a>,),
 }
 
+#[derive(Debug)]
+pub struct EmptyUnpackedArrayConcatenation<'a> {
+    pub nodes: (Symbol<'a>, Symbol<'a>),
+}
+
 // -----------------------------------------------------------------------------
 
 pub fn concatenation(s: Span) -> IResult<Span, Concatenation> {
@@ -177,10 +182,12 @@ pub fn array_range_operator(s: Span) -> IResult<Span, ArrayRangeOperator> {
     ))(s)
 }
 
-pub fn empty_unpacked_array_concatenation(s: Span) -> IResult<Span, ()> {
-    let (s, _) = symbol("{")(s)?;
-    let (s, _) = symbol("}")(s)?;
-    Ok((s, ()))
+pub fn empty_unpacked_array_concatenation(
+    s: Span,
+) -> IResult<Span, EmptyUnpackedArrayConcatenation> {
+    let (s, a) = symbol("{")(s)?;
+    let (s, b) = symbol("}")(s)?;
+    Ok((s, EmptyUnpackedArrayConcatenation { nodes: (a, b) }))
 }
 
 // -----------------------------------------------------------------------------

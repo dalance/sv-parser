@@ -1,6 +1,7 @@
 use crate::parser::*;
 use nom::combinator::*;
 use nom::multi::*;
+use nom::sequence::*;
 use nom::IResult;
 
 // -----------------------------------------------------------------------------
@@ -10,18 +11,26 @@ pub struct ProgramInstantiation<'a> {
     pub nodes: (
         ProgramIdentifier<'a>,
         Option<ParameterValueAssignment<'a>>,
-        Vec<HierarchicalInstance<'a>>,
+        HierarchicalInstance<'a>,
+        Vec<(Symbol<'a>, HierarchicalInstance<'a>)>,
+        Symbol<'a>,
     ),
 }
 
 // -----------------------------------------------------------------------------
 
 pub fn program_instantiation(s: Span) -> IResult<Span, ProgramInstantiation> {
-    let (s, x) = program_identifier(s)?;
-    let (s, y) = opt(parameter_value_assignment)(s)?;
-    let (s, z) = separated_nonempty_list(symbol(","), hierarchical_instance)(s)?;
-    let (s, _) = symbol(";")(s)?;
-    Ok((s, ProgramInstantiation { nodes: (x, y, z) }))
+    let (s, a) = program_identifier(s)?;
+    let (s, b) = opt(parameter_value_assignment)(s)?;
+    let (s, c) = hierarchical_instance(s)?;
+    let (s, d) = many0(pair(symbol(","), hierarchical_instance))(s)?;
+    let (s, e) = symbol(";")(s)?;
+    Ok((
+        s,
+        ProgramInstantiation {
+            nodes: (a, b, c, d, e),
+        },
+    ))
 }
 
 // -----------------------------------------------------------------------------

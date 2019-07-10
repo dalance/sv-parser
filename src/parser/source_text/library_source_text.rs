@@ -73,11 +73,11 @@ pub fn library_declaration(s: Span) -> IResult<Span, LibraryDeclaration> {
     let (s, b) = library_identifier(s)?;
     let (s, c) = file_path_spec(s)?;
     let (s, d) = many0(pair(symbol(","), file_path_spec))(s)?;
-    let (s, e) = opt(tuple((
+    let (s, e) = opt(triple(
         symbol("-incdir"),
         file_path_spec,
         many0(pair(symbol(","), file_path_spec)),
-    )))(s)?;
+    ))(s)?;
     let (s, f) = symbol(";")(s)?;
     Ok((
         s,
@@ -94,6 +94,7 @@ pub fn include_statement(s: Span) -> IResult<Span, IncludeStatement> {
     Ok((s, IncludeStatement { nodes: (a, b, c) }))
 }
 
+//TODO support non literal path
 pub fn file_path_spec(s: Span) -> IResult<Span, FilePathSpec> {
     let (s, a) = string_literal(s)?;
     Ok((s, FilePathSpec { nodes: (a,) }))

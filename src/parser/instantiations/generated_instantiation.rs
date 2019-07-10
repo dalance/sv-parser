@@ -16,7 +16,7 @@ pub struct GenerateRegion<'a> {
 pub struct LoopGenerateConstruct<'a> {
     pub nodes: (
         GenvarInitialization<'a>,
-        ConstantExpression<'a>,
+        GenvarExpression<'a>,
         GenvarIteration<'a>,
         GenerateBlock<'a>,
     ),
@@ -42,7 +42,7 @@ pub struct GenvarIterationAssignment<'a> {
     pub nodes: (
         GenvarIdentifier<'a>,
         AssignmentOperator<'a>,
-        ConstantExpression<'a>,
+        GenvarExpression<'a>,
     ),
 }
 

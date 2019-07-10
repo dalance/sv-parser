@@ -14,7 +14,7 @@ pub enum FunctionDataTypeOrImplicit<'a> {
 
 #[derive(Debug)]
 pub struct FunctionDeclaration<'a> {
-    pub nodes: (Option<Lifetime>, FunctionBodyDeclaration<'a>),
+    pub nodes: (Option<Lifetime<'a>>, FunctionBodyDeclaration<'a>),
 }
 
 #[derive(Debug)]

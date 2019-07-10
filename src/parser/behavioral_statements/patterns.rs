@@ -60,6 +60,11 @@ pub enum AssignmentPatternExpressionType<'a> {
 }
 
 #[derive(Debug)]
+pub struct ConstantAssignmentPatternExpression<'a> {
+    pub nodes: (AssignmentPatternExpression<'a>,),
+}
+
+#[derive(Debug)]
 pub struct AssignmentPatternNetLvalue<'a> {
     pub nodes: (Vec<NetLvalue<'a>>,),
 }
@@ -178,8 +183,9 @@ pub fn assignment_pattern_expression_type(
 
 pub fn constant_assignment_pattern_expression(
     s: Span,
-) -> IResult<Span, AssignmentPatternExpression> {
-    assignment_pattern_expression(s)
+) -> IResult<Span, ConstantAssignmentPatternExpression> {
+    let (s, a) = assignment_pattern_expression(s)?;
+    Ok((s, ConstantAssignmentPatternExpression { nodes: (a,) }))
 }
 
 pub fn assignment_pattern_net_lvalue(s: Span) -> IResult<Span, AssignmentPatternNetLvalue> {

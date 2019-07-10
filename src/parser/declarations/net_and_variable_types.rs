@@ -287,6 +287,10 @@ pub fn class_scope(s: Span) -> IResult<Span, ClassScope> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
+pub fn class_type(s: Span) -> IResult<Span, ClassType> {
+    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+}
+
 pub fn integer_type(s: Span) -> IResult<Span, IntegerType> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

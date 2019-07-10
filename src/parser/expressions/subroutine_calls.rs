@@ -8,6 +8,11 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug)]
+pub struct ConstantFunctionCall<'a> {
+    pub nodes: (FunctionSubroutineCall<'a>,),
+}
+
+#[derive(Debug)]
 pub struct TfCall<'a> {
     pub nodes: (
         PsOrHierarchicalTfIdentifier<'a>,
@@ -37,6 +42,11 @@ pub enum SubroutineCall<'a> {
 }
 
 #[derive(Debug)]
+pub struct FunctionSubroutineCall<'a> {
+    pub nodes: (SubroutineCall<'a>,),
+}
+
+#[derive(Debug)]
 pub struct ListOfArguments<'a> {
     pub nodes: (
         Vec<Expression<'a>>,
@@ -50,16 +60,9 @@ pub struct MethodCall<'a> {
 }
 
 #[derive(Debug)]
-pub enum MethodCallRoot<'a> {
-    Primary(Primary<'a>),
-    ImplicitClassHandle(ImplicitClassHandle),
-}
-
-#[derive(Debug)]
 pub enum MethodCallBody<'a> {
     User(MethodCallBodyUser<'a>),
-    Array(ArrayManipulationCall<'a>),
-    Randomize(RandomizeCall<'a>),
+    BuiltInMethodCall(BuiltInMethodCall<'a>),
 }
 
 #[derive(Debug)]
@@ -69,6 +72,12 @@ pub struct MethodCallBodyUser<'a> {
         Vec<AttributeInstance<'a>>,
         Option<ListOfArguments<'a>>,
     ),
+}
+
+#[derive(Debug)]
+pub enum BuiltInMethodCall<'a> {
+    ArrayManipulationCall(ArrayManipulationCall<'a>),
+    RandomizeCall(RandomizeCall<'a>),
 }
 
 #[derive(Debug)]
@@ -92,6 +101,12 @@ pub struct RandomizeCall<'a> {
 }
 
 #[derive(Debug)]
+pub enum MethodCallRoot<'a> {
+    Primary(Primary<'a>),
+    ImplicitClassHandle(ImplicitClassHandle<'a>),
+}
+
+#[derive(Debug)]
 pub enum ArrayMethodName<'a> {
     MethodIdentifier(MethodIdentifier<'a>),
     Unique,
@@ -102,8 +117,9 @@ pub enum ArrayMethodName<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn constant_function_call(s: Span) -> IResult<Span, SubroutineCall> {
-    function_subroutine_call(s)
+pub fn constant_function_call(s: Span) -> IResult<Span, ConstantFunctionCall> {
+    let (s, a) = function_subroutine_call(s)?;
+    Ok((s, ConstantFunctionCall { nodes: (a,) }))
 }
 
 pub fn tf_call(s: Span) -> IResult<Span, TfCall> {
@@ -167,15 +183,15 @@ pub fn subroutine_call(s: Span) -> IResult<Span, SubroutineCall> {
         map(system_tf_call, |x| SubroutineCall::SystemTf(Box::new(x))),
         map(method_call, |x| SubroutineCall::Method(Box::new(x))),
         map(
-            tuple((symbol("std"), symbol("::"), randomize_call)),
+            triple(symbol("std"), symbol("::"), randomize_call),
             |(_, _, x)| SubroutineCall::StdRandomize(Box::new(x)),
         ),
         map(randomize_call, |x| SubroutineCall::Randomize(Box::new(x))),
     ))(s)
 }
 
-pub fn function_subroutine_call(s: Span) -> IResult<Span, SubroutineCall> {
-    subroutine_call(s)
+pub fn function_subroutine_call(s: Span) -> IResult<Span, FunctionSubroutineCall> {
+    map(subroutine_call, |x| FunctionSubroutineCall { nodes: (x,) })(s)
 }
 
 pub fn list_of_arguments(s: Span) -> IResult<Span, ListOfArguments> {
@@ -196,7 +212,12 @@ pub fn method_call(s: Span) -> IResult<Span, MethodCall> {
 }
 
 pub fn method_call_body(s: Span) -> IResult<Span, MethodCallBody> {
-    alt((method_call_body_user, built_in_method_call))(s)
+    alt((
+        method_call_body_user,
+        map(built_in_method_call, |x| {
+            MethodCallBody::BuiltInMethodCall(x)
+        }),
+    ))(s)
 }
 
 pub fn method_call_body_user(s: Span) -> IResult<Span, MethodCallBody> {
@@ -209,10 +230,12 @@ pub fn method_call_body_user(s: Span) -> IResult<Span, MethodCallBody> {
     ))
 }
 
-pub fn built_in_method_call(s: Span) -> IResult<Span, MethodCallBody> {
+pub fn built_in_method_call(s: Span) -> IResult<Span, BuiltInMethodCall> {
     alt((
-        map(array_manipulation_call, |x| MethodCallBody::Array(x)),
-        map(randomize_call, |x| MethodCallBody::Randomize(x)),
+        map(array_manipulation_call, |x| {
+            BuiltInMethodCall::ArrayManipulationCall(x)
+        }),
+        map(randomize_call, |x| BuiltInMethodCall::RandomizeCall(x)),
     ))(s)
 }
 
@@ -238,11 +261,11 @@ pub fn randomize_call(s: Span) -> IResult<Span, RandomizeCall> {
             nodes: (vec![],),
         }),
     )))))(s)?;
-    let (s, z) = opt(tuple((
+    let (s, z) = opt(triple(
         symbol("with"),
         opt(paren(opt(identifier_list))),
         constraint_block,
-    )))(s)?;
+    ))(s)?;
     let y = if let Some(Some(y)) = y {
         y
     } else {

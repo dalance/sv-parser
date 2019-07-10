@@ -2,6 +2,7 @@ use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
 use nom::multi::*;
+use nom::sequence::*;
 use nom::IResult;
 
 // -----------------------------------------------------------------------------
@@ -11,14 +12,33 @@ pub struct CheckerInstantiation<'a> {
     pub nodes: (
         PsCheckerIdentifier<'a>,
         NameOfInstance<'a>,
+        Symbol<'a>,
         Option<ListOfCheckerPortConnections<'a>>,
+        Symbol<'a>,
+        Symbol<'a>,
     ),
 }
 
 #[derive(Debug)]
 pub enum ListOfCheckerPortConnections<'a> {
-    Ordered(Vec<OrderedCheckerPortConnection<'a>>),
-    Named(Vec<NamedCheckerPortConnection<'a>>),
+    Ordered(ListOfCheckerPortConnectionsOrdered<'a>),
+    Named(ListOfCheckerPortConnectionsNamed<'a>),
+}
+
+#[derive(Debug)]
+pub struct ListOfCheckerPortConnectionsOrdered<'a> {
+    pub nodes: (
+        OrderedCheckerPortConnection<'a>,
+        Vec<(Symbol<'a>, OrderedCheckerPortConnection<'a>)>,
+    ),
+}
+
+#[derive(Debug)]
+pub struct ListOfCheckerPortConnectionsNamed<'a> {
+    pub nodes: (
+        NamedCheckerPortConnection<'a>,
+        Vec<(Symbol<'a>, NamedCheckerPortConnection<'a>)>,
+    ),
 }
 
 #[derive(Debug)]
@@ -36,37 +56,61 @@ pub enum NamedCheckerPortConnection<'a> {
 pub struct NamedCheckerPortConnectionIdentifier<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
+        Symbol<'a>,
         FormalPortIdentifier<'a>,
-        Option<PropertyActualArg<'a>>,
+        Option<(Symbol<'a>, Option<PropertyActualArg<'a>>, Symbol<'a>)>,
     ),
 }
 
 #[derive(Debug)]
 pub struct NamedCheckerPortConnectionAsterisk<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>,),
+    pub nodes: (Vec<AttributeInstance<'a>>, Symbol<'a>),
 }
 
 // -----------------------------------------------------------------------------
 
 pub fn checker_instantiation(s: Span) -> IResult<Span, CheckerInstantiation> {
-    let (s, x) = ps_checker_identifier(s)?;
-    let (s, y) = name_of_instance(s)?;
-    let (s, z) = paren(opt(list_of_checker_port_connections))(s)?;
-    let (s, _) = symbol(";")(s)?;
-    Ok((s, CheckerInstantiation { nodes: (x, y, z) }))
+    let (s, a) = ps_checker_identifier(s)?;
+    let (s, b) = name_of_instance(s)?;
+    let (s, (c, d, e)) = paren2(opt(list_of_checker_port_connections))(s)?;
+    let (s, f) = symbol(";")(s)?;
+    Ok((
+        s,
+        CheckerInstantiation {
+            nodes: (a, b, c, d, e, f),
+        },
+    ))
 }
 
 pub fn list_of_checker_port_connections(s: Span) -> IResult<Span, ListOfCheckerPortConnections> {
     alt((
-        map(
-            separated_nonempty_list(symbol(","), ordered_checker_port_connection),
-            |x| ListOfCheckerPortConnections::Ordered(x),
-        ),
-        map(
-            separated_nonempty_list(symbol(","), named_checker_port_connection),
-            |x| ListOfCheckerPortConnections::Named(x),
-        ),
+        list_of_checker_port_connections_ordered,
+        list_of_checker_port_connections_named,
     ))(s)
+}
+
+pub fn list_of_checker_port_connections_ordered(
+    s: Span,
+) -> IResult<Span, ListOfCheckerPortConnections> {
+    let (s, a) = ordered_checker_port_connection(s)?;
+    let (s, b) = many0(pair(symbol(","), ordered_checker_port_connection))(s)?;
+    Ok((
+        s,
+        ListOfCheckerPortConnections::Ordered(ListOfCheckerPortConnectionsOrdered {
+            nodes: (a, b),
+        }),
+    ))
+}
+
+pub fn list_of_checker_port_connections_named(
+    s: Span,
+) -> IResult<Span, ListOfCheckerPortConnections> {
+    let (s, a) = named_checker_port_connection(s)?;
+    let (s, b) = many0(pair(symbol(","), named_checker_port_connection))(s)?;
+    Ok((
+        s,
+        ListOfCheckerPortConnections::Named(ListOfCheckerPortConnectionsNamed { nodes: (a, b) }),
+    ))
 }
 
 pub fn ordered_checker_port_connection(s: Span) -> IResult<Span, OrderedCheckerPortConnection> {
@@ -85,15 +129,14 @@ pub fn named_checker_port_connection(s: Span) -> IResult<Span, NamedCheckerPortC
 pub fn named_checker_port_connection_identifier(
     s: Span,
 ) -> IResult<Span, NamedCheckerPortConnection> {
-    let (s, x) = many0(attribute_instance)(s)?;
-    let (s, _) = symbol(".")(s)?;
-    let (s, y) = formal_port_identifier(s)?;
-    let (s, z) = opt(paren(opt(property_actual_arg)))(s)?;
-    let z = if let Some(Some(z)) = z { Some(z) } else { None };
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = symbol(".")(s)?;
+    let (s, c) = formal_port_identifier(s)?;
+    let (s, d) = opt(paren2(opt(property_actual_arg)))(s)?;
     Ok((
         s,
         NamedCheckerPortConnection::Identifier(NamedCheckerPortConnectionIdentifier {
-            nodes: (x, y, z),
+            nodes: (a, b, c, d),
         }),
     ))
 }
@@ -101,12 +144,11 @@ pub fn named_checker_port_connection_identifier(
 pub fn named_checker_port_connection_asterisk(
     s: Span,
 ) -> IResult<Span, NamedCheckerPortConnection> {
-    let (s, x) = many0(attribute_instance)(s)?;
-    let (s, _) = symbol(".")(s)?;
-    let (s, _) = symbol("*")(s)?;
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = symbol(".*")(s)?;
     Ok((
         s,
-        NamedCheckerPortConnection::Asterisk(NamedCheckerPortConnectionAsterisk { nodes: (x,) }),
+        NamedCheckerPortConnection::Asterisk(NamedCheckerPortConnectionAsterisk { nodes: (a, b) }),
     ))
 }
 

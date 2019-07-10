@@ -20,7 +20,7 @@ pub struct DataDeclarationVariable<'a> {
     pub nodes: (
         Option<Const>,
         Option<Var>,
-        Option<Lifetime>,
+        Option<Lifetime<'a>>,
         DataTypeOrImplicit<'a>,
         ListOfVariableDeclAssignments<'a>,
     ),
@@ -176,9 +176,9 @@ pub struct NetTypeDeclarationNetType<'a> {
 }
 
 #[derive(Debug)]
-pub enum Lifetime {
-    Static,
-    Automatic,
+pub enum Lifetime<'a> {
+    Static(Symbol<'a>),
+    Automatic(Symbol<'a>),
 }
 
 // -----------------------------------------------------------------------------
@@ -429,7 +429,7 @@ pub fn net_type_declaration_net_type(s: Span) -> IResult<Span, NetTypeDeclaratio
 
 pub fn lifetime(s: Span) -> IResult<Span, Lifetime> {
     alt((
-        map(symbol("static"), |_| Lifetime::Static),
-        map(symbol("automatic"), |_| Lifetime::Automatic),
+        map(symbol("static"), |x| Lifetime::Static(x)),
+        map(symbol("automatic"), |x| Lifetime::Automatic(x)),
     ))(s)
 }

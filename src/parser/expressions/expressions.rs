@@ -34,15 +34,17 @@ pub struct IncOrDecExpressionSuffix<'a> {
 pub struct ConditionalExpression<'a> {
     pub nodes: (
         CondPredicate<'a>,
+        Symbol<'a>,
         Vec<AttributeInstance<'a>>,
         Expression<'a>,
+        Symbol<'a>,
         Expression<'a>,
     ),
 }
 
 #[derive(Debug)]
 pub enum ConstantExpression<'a> {
-    Nullary(Box<ConstantPrimary<'a>>),
+    ConstantPrimary(Box<ConstantPrimary<'a>>),
     Unary(Box<ConstantExpressionUnary<'a>>),
     Binary(Box<ConstantExpressionBinary<'a>>),
     Ternary(Box<ConstantExpressionTernary<'a>>),
@@ -71,8 +73,10 @@ pub struct ConstantExpressionBinary<'a> {
 pub struct ConstantExpressionTernary<'a> {
     pub nodes: (
         ConstantExpression<'a>,
+        Symbol<'a>,
         Vec<AttributeInstance<'a>>,
         ConstantExpression<'a>,
+        Symbol<'a>,
         ConstantExpression<'a>,
     ),
 }
@@ -80,75 +84,76 @@ pub struct ConstantExpressionTernary<'a> {
 #[derive(Debug)]
 pub enum ConstantMintypmaxExpression<'a> {
     Unary(ConstantExpression<'a>),
-    Ternary(
-        (
-            ConstantExpression<'a>,
-            ConstantExpression<'a>,
-            ConstantExpression<'a>,
-        ),
+    Ternary(ConstantMintypmaxExpressionTernary<'a>),
+}
+
+#[derive(Debug)]
+pub struct ConstantMintypmaxExpressionTernary<'a> {
+    pub nodes: (
+        ConstantExpression<'a>,
+        Symbol<'a>,
+        ConstantExpression<'a>,
+        Symbol<'a>,
+        ConstantExpression<'a>,
     ),
 }
 
 #[derive(Debug)]
 pub enum ConstantParamExpression<'a> {
-    Mintypmax(ConstantMintypmaxExpression<'a>),
+    ConstantMintypmaxExpression(ConstantMintypmaxExpression<'a>),
     DataType(DataType<'a>),
-    Dollar,
+    Dollar(Symbol<'a>),
 }
 
 #[derive(Debug)]
 pub enum ParamExpression<'a> {
-    Mintypmax(MintypmaxExpression<'a>),
+    MintypmaxExpression(MintypmaxExpression<'a>),
     DataType(DataType<'a>),
-    Dollar,
+    Dollar(Symbol<'a>),
 }
 
 #[derive(Debug)]
 pub enum ConstantRangeExpression<'a> {
-    Expression(ConstantExpression<'a>),
-    PartSelectRange(ConstantPartSelectRange<'a>),
+    ConstantExpression(ConstantExpression<'a>),
+    ConstantPartSelectRange(ConstantPartSelectRange<'a>),
 }
 
 #[derive(Debug)]
 pub enum ConstantPartSelectRange<'a> {
-    Range(ConstantRange<'a>),
-    IndexedRange(ConstantIndexedRange<'a>),
+    ConstantRange(ConstantRange<'a>),
+    ConstantIndexedRange(ConstantIndexedRange<'a>),
 }
 
 #[derive(Debug)]
 pub struct ConstantRange<'a> {
-    pub nodes: (ConstantExpression<'a>, ConstantExpression<'a>),
+    pub nodes: (ConstantExpression<'a>, Symbol<'a>, ConstantExpression<'a>),
 }
 
 #[derive(Debug)]
 pub struct ConstantIndexedRange<'a> {
-    pub nodes: (
-        ConstantExpression<'a>,
-        ConstantIndexedRangeOperator<'a>,
-        ConstantExpression<'a>,
-    ),
-}
-
-#[derive(Debug)]
-pub struct ConstantIndexedRangeOperator<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (ConstantExpression<'a>, Symbol<'a>, ConstantExpression<'a>),
 }
 
 #[derive(Debug)]
 pub enum Expression<'a> {
-    Nullary(Box<Primary<'a>>),
+    Primary(Box<Primary<'a>>),
     Unary(Box<ExpressionUnary<'a>>),
-    IncOrDec(Box<IncOrDecExpression<'a>>),
-    Assignment(Box<OperatorAssignment<'a>>),
+    IncOrDecExpression(Box<IncOrDecExpression<'a>>),
+    OperatorAssignment(Box<ExpressionOperatorAssignment<'a>>),
     Binary(Box<ExpressionBinary<'a>>),
-    Conditional(Box<ConditionalExpression<'a>>),
-    Inside(Box<InsideExpression<'a>>),
-    TaggedUnion(Box<TaggedUnionExpression<'a>>),
+    ConditionalExpression(Box<ConditionalExpression<'a>>),
+    InsideExpression(Box<InsideExpression<'a>>),
+    TaggedUnionExpression(Box<TaggedUnionExpression<'a>>),
 }
 
 #[derive(Debug)]
 pub struct ExpressionUnary<'a> {
     pub nodes: (UnaryOperator<'a>, Vec<AttributeInstance<'a>>, Primary<'a>),
+}
+
+#[derive(Debug)]
+pub struct ExpressionOperatorAssignment<'a> {
+    pub nodes: (Symbol<'a>, OperatorAssignment<'a>, Symbol<'a>),
 }
 
 #[derive(Debug)]
@@ -163,42 +168,72 @@ pub struct ExpressionBinary<'a> {
 
 #[derive(Debug)]
 pub struct TaggedUnionExpression<'a> {
-    pub nodes: (MemberIdentifier<'a>, Option<Expression<'a>>),
+    pub nodes: (Symbol<'a>, MemberIdentifier<'a>, Option<Expression<'a>>),
 }
 
 #[derive(Debug)]
 pub struct InsideExpression<'a> {
-    pub nodes: (Expression<'a>, Vec<ValueRange<'a>>),
+    pub nodes: (
+        Expression<'a>,
+        Symbol<'a>,
+        Symbol<'a>,
+        Vec<ValueRange<'a>>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub enum ValueRange<'a> {
-    Unary(Expression<'a>),
-    Binary((Expression<'a>, Expression<'a>)),
+    Expression(Expression<'a>),
+    Binary(ValueRangeBinary<'a>),
+}
+
+#[derive(Debug)]
+pub struct ValueRangeBinary<'a> {
+    pub nodes: (
+        Symbol<'a>,
+        Expression<'a>,
+        Symbol<'a>,
+        Expression<'a>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub enum MintypmaxExpression<'a> {
-    Unary(Expression<'a>),
-    Ternary((Expression<'a>, Expression<'a>, Expression<'a>)),
+    Expression(Expression<'a>),
+    Ternary(MintypmaxExpressionTernary<'a>),
+}
+
+#[derive(Debug)]
+pub struct MintypmaxExpressionTernary<'a> {
+    pub nodes: (
+        Expression<'a>,
+        Symbol<'a>,
+        Expression<'a>,
+        Symbol<'a>,
+        Expression<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct ModulePathConditionalExpression<'a> {
     pub nodes: (
         ModulePathExpression<'a>,
+        Symbol<'a>,
         Vec<AttributeInstance<'a>>,
         ModulePathExpression<'a>,
+        Symbol<'a>,
         ModulePathExpression<'a>,
     ),
 }
 
 #[derive(Debug)]
 pub enum ModulePathExpression<'a> {
-    Nullary(Box<ModulePathPrimary<'a>>),
+    ModulePathPrimary(Box<ModulePathPrimary<'a>>),
     Unary(Box<ModulePathExpressionUnary<'a>>),
     Binary(Box<ModulePathExpressionBinary<'a>>),
-    Conditional(Box<ModulePathConditionalExpression<'a>>),
+    ModulePathConditionalExpression(Box<ModulePathConditionalExpression<'a>>),
 }
 
 #[derive(Debug)]
@@ -222,20 +257,35 @@ pub struct ModulePathExpressionBinary<'a> {
 
 #[derive(Debug)]
 pub enum ModulePathMintypmaxExpression<'a> {
-    Unary(ModulePathExpression<'a>),
-    Ternary(
-        (
-            ModulePathExpression<'a>,
-            ModulePathExpression<'a>,
-            ModulePathExpression<'a>,
-        ),
+    ModulePathExpression(ModulePathExpression<'a>),
+    Ternary(ModulePathMintypmaxExpressionTernary<'a>),
+}
+
+#[derive(Debug)]
+pub struct ModulePathMintypmaxExpressionTernary<'a> {
+    pub nodes: (
+        ModulePathExpression<'a>,
+        Symbol<'a>,
+        ModulePathExpression<'a>,
+        Symbol<'a>,
+        ModulePathExpression<'a>,
     ),
 }
 
 #[derive(Debug)]
 pub enum PartSelectRange<'a> {
-    Range((ConstantExpression<'a>, ConstantExpression<'a>)),
-    IndexedRange((Expression<'a>, Symbol<'a>, ConstantExpression<'a>)),
+    ConstantRange(ConstantRange<'a>),
+    IndexedRange(IndexedRange<'a>),
+}
+
+#[derive(Debug)]
+pub struct IndexedRange<'a> {
+    pub nodes: (Expression<'a>, Symbol<'a>, ConstantExpression<'a>),
+}
+
+#[derive(Debug)]
+pub struct GenvarExpression<'a> {
+    pub nodes: (ConstantExpression<'a>,),
 }
 
 // -----------------------------------------------------------------------------
@@ -245,36 +295,36 @@ pub fn inc_or_dec_expression(s: Span) -> IResult<Span, IncOrDecExpression> {
 }
 
 pub fn inc_or_dec_expression_prefix(s: Span) -> IResult<Span, IncOrDecExpression> {
-    let (s, x) = inc_or_dec_operator(s)?;
-    let (s, y) = many0(attribute_instance)(s)?;
-    let (s, z) = variable_lvalue(s)?;
+    let (s, a) = inc_or_dec_operator(s)?;
+    let (s, b) = many0(attribute_instance)(s)?;
+    let (s, c) = variable_lvalue(s)?;
     Ok((
         s,
-        IncOrDecExpression::Prefix(IncOrDecExpressionPrefix { nodes: (x, y, z) }),
+        IncOrDecExpression::Prefix(IncOrDecExpressionPrefix { nodes: (a, b, c) }),
     ))
 }
 
 pub fn inc_or_dec_expression_suffix(s: Span) -> IResult<Span, IncOrDecExpression> {
-    let (s, x) = variable_lvalue(s)?;
-    let (s, y) = many0(attribute_instance)(s)?;
-    let (s, z) = inc_or_dec_operator(s)?;
+    let (s, a) = variable_lvalue(s)?;
+    let (s, b) = many0(attribute_instance)(s)?;
+    let (s, c) = inc_or_dec_operator(s)?;
     Ok((
         s,
-        IncOrDecExpression::Suffix(IncOrDecExpressionSuffix { nodes: (x, y, z) }),
+        IncOrDecExpression::Suffix(IncOrDecExpressionSuffix { nodes: (a, b, c) }),
     ))
 }
 
 pub fn conditional_expression(s: Span) -> IResult<Span, ConditionalExpression> {
-    let (s, x) = cond_predicate(s)?;
-    let (s, _) = symbol("?")(s)?;
-    let (s, y) = many0(attribute_instance)(s)?;
-    let (s, z) = expression(s)?;
-    let (s, _) = symbol(":")(s)?;
-    let (s, v) = expression(s)?;
+    let (s, a) = cond_predicate(s)?;
+    let (s, b) = symbol("?")(s)?;
+    let (s, c) = many0(attribute_instance)(s)?;
+    let (s, d) = expression(s)?;
+    let (s, e) = symbol(":")(s)?;
+    let (s, f) = expression(s)?;
     Ok((
         s,
         ConditionalExpression {
-            nodes: (x, y, z, v),
+            nodes: (a, b, c, d, e, f),
         },
     ))
 }
@@ -282,7 +332,7 @@ pub fn conditional_expression(s: Span) -> IResult<Span, ConditionalExpression> {
 pub fn constant_expression(s: Span) -> IResult<Span, ConstantExpression> {
     alt((
         map(constant_primary, |x| {
-            ConstantExpression::Nullary(Box::new(x))
+            ConstantExpression::ConstantPrimary(Box::new(x))
         }),
         constant_expression_unary,
         constant_expression_binary,
@@ -291,39 +341,39 @@ pub fn constant_expression(s: Span) -> IResult<Span, ConstantExpression> {
 }
 
 pub fn constant_expression_unary(s: Span) -> IResult<Span, ConstantExpression> {
-    let (s, x) = unary_operator(s)?;
-    let (s, y) = many0(attribute_instance)(s)?;
-    let (s, z) = constant_primary(s)?;
+    let (s, a) = unary_operator(s)?;
+    let (s, b) = many0(attribute_instance)(s)?;
+    let (s, c) = constant_primary(s)?;
     Ok((
         s,
-        ConstantExpression::Unary(Box::new(ConstantExpressionUnary { nodes: (x, y, z) })),
+        ConstantExpression::Unary(Box::new(ConstantExpressionUnary { nodes: (a, b, c) })),
     ))
 }
 
 pub fn constant_expression_binary(s: Span) -> IResult<Span, ConstantExpression> {
-    let (s, x) = constant_expression(s)?;
-    let (s, y) = binary_operator(s)?;
-    let (s, z) = many0(attribute_instance)(s)?;
-    let (s, v) = constant_expression(s)?;
+    let (s, a) = constant_expression(s)?;
+    let (s, b) = binary_operator(s)?;
+    let (s, c) = many0(attribute_instance)(s)?;
+    let (s, d) = constant_expression(s)?;
     Ok((
         s,
         ConstantExpression::Binary(Box::new(ConstantExpressionBinary {
-            nodes: (x, y, z, v),
+            nodes: (a, b, c, d),
         })),
     ))
 }
 
 pub fn constant_expression_ternary(s: Span) -> IResult<Span, ConstantExpression> {
-    let (s, x) = constant_expression(s)?;
-    let (s, _) = symbol("?")(s)?;
-    let (s, y) = many0(attribute_instance)(s)?;
-    let (s, z) = constant_expression(s)?;
-    let (s, _) = symbol(":")(s)?;
-    let (s, v) = constant_expression(s)?;
+    let (s, a) = constant_expression(s)?;
+    let (s, b) = symbol("?")(s)?;
+    let (s, c) = many0(attribute_instance)(s)?;
+    let (s, d) = constant_expression(s)?;
+    let (s, e) = symbol(":")(s)?;
+    let (s, f) = constant_expression(s)?;
     Ok((
         s,
         ConstantExpression::Ternary(Box::new(ConstantExpressionTernary {
-            nodes: (x, y, z, v),
+            nodes: (a, b, c, d, e, f),
         })),
     ))
 }
@@ -340,19 +390,24 @@ pub fn constant_mintypmax_expression(s: Span) -> IResult<Span, ConstantMintypmax
 pub fn constant_mintypmax_expression_ternary(
     s: Span,
 ) -> IResult<Span, ConstantMintypmaxExpression> {
-    let (s, x) = constant_expression(s)?;
-    let (s, _) = symbol(":")(s)?;
-    let (s, y) = constant_expression(s)?;
-    let (s, _) = symbol(":")(s)?;
-    let (s, z) = constant_expression(s)?;
-    Ok((s, ConstantMintypmaxExpression::Ternary((x, y, z))))
+    let (s, a) = constant_expression(s)?;
+    let (s, b) = symbol(":")(s)?;
+    let (s, c) = constant_expression(s)?;
+    let (s, d) = symbol(":")(s)?;
+    let (s, e) = constant_expression(s)?;
+    Ok((
+        s,
+        ConstantMintypmaxExpression::Ternary(ConstantMintypmaxExpressionTernary {
+            nodes: (a, b, c, d, e),
+        }),
+    ))
 }
 
 pub fn constant_param_expression(s: Span) -> IResult<Span, ConstantParamExpression> {
     alt((
-        map(symbol("$"), |_| ConstantParamExpression::Dollar),
+        map(symbol("$"), |x| ConstantParamExpression::Dollar(x)),
         map(constant_mintypmax_expression, |x| {
-            ConstantParamExpression::Mintypmax(x)
+            ConstantParamExpression::ConstantMintypmaxExpression(x)
         }),
         map(data_type, |x| ConstantParamExpression::DataType(x)),
     ))(s)
@@ -360,8 +415,10 @@ pub fn constant_param_expression(s: Span) -> IResult<Span, ConstantParamExpressi
 
 pub fn param_expression(s: Span) -> IResult<Span, ParamExpression> {
     alt((
-        map(symbol("$"), |_| ParamExpression::Dollar),
-        map(mintypmax_expression, |x| ParamExpression::Mintypmax(x)),
+        map(symbol("$"), |x| ParamExpression::Dollar(x)),
+        map(mintypmax_expression, |x| {
+            ParamExpression::MintypmaxExpression(x)
+        }),
         map(data_type, |x| ParamExpression::DataType(x)),
     ))(s)
 }
@@ -369,54 +426,56 @@ pub fn param_expression(s: Span) -> IResult<Span, ParamExpression> {
 pub fn constant_range_expression(s: Span) -> IResult<Span, ConstantRangeExpression> {
     alt((
         map(constant_part_select_range, |x| {
-            ConstantRangeExpression::PartSelectRange(x)
+            ConstantRangeExpression::ConstantPartSelectRange(x)
         }),
         map(constant_expression, |x| {
-            ConstantRangeExpression::Expression(x)
+            ConstantRangeExpression::ConstantExpression(x)
         }),
     ))(s)
 }
 
 pub fn constant_part_select_range(s: Span) -> IResult<Span, ConstantPartSelectRange> {
     alt((
-        map(constant_range, |x| ConstantPartSelectRange::Range(x)),
+        map(constant_range, |x| {
+            ConstantPartSelectRange::ConstantRange(x)
+        }),
         map(constant_indexed_range, |x| {
-            ConstantPartSelectRange::IndexedRange(x)
+            ConstantPartSelectRange::ConstantIndexedRange(x)
         }),
     ))(s)
 }
 
 pub fn constant_range(s: Span) -> IResult<Span, ConstantRange> {
-    let (s, x) = constant_expression(s)?;
-    let (s, _) = symbol(":")(s)?;
-    let (s, y) = constant_expression(s)?;
-    Ok((s, ConstantRange { nodes: (x, y) }))
+    let (s, a) = constant_expression(s)?;
+    let (s, b) = symbol(":")(s)?;
+    let (s, c) = constant_expression(s)?;
+    Ok((s, ConstantRange { nodes: (a, b, c) }))
 }
 
 pub fn constant_indexed_range(s: Span) -> IResult<Span, ConstantIndexedRange> {
-    let (s, x) = constant_expression(s)?;
-    let (s, y) = map(alt((symbol("+:"), symbol("-:"))), |x| {
-        ConstantIndexedRangeOperator { nodes: (x,) }
-    })(s)?;
-    let (s, z) = constant_expression(s)?;
-    Ok((s, ConstantIndexedRange { nodes: (x, y, z) }))
+    let (s, a) = constant_expression(s)?;
+    let (s, b) = alt((symbol("+:"), symbol("-:")))(s)?;
+    let (s, c) = constant_expression(s)?;
+    Ok((s, ConstantIndexedRange { nodes: (a, b, c) }))
 }
 
 pub fn expression(s: Span) -> IResult<Span, Expression> {
     alt((
-        map(primary, |x| Expression::Nullary(Box::new(x))),
+        map(primary, |x| Expression::Primary(Box::new(x))),
         expression_unary,
-        map(inc_or_dec_expression, |x| Expression::IncOrDec(Box::new(x))),
-        map(paren(operator_assignment), |x| {
-            Expression::Assignment(Box::new(x))
+        map(inc_or_dec_expression, |x| {
+            Expression::IncOrDecExpression(Box::new(x))
         }),
+        expression_operator_assignment,
         expression_binary,
         map(conditional_expression, |x| {
-            Expression::Conditional(Box::new(x))
+            Expression::ConditionalExpression(Box::new(x))
         }),
-        map(inside_expression, |x| Expression::Inside(Box::new(x))),
+        map(inside_expression, |x| {
+            Expression::InsideExpression(Box::new(x))
+        }),
         map(tagged_union_expression, |x| {
-            Expression::TaggedUnion(Box::new(x))
+            Expression::TaggedUnionExpression(Box::new(x))
         }),
     ))(s)
 }
@@ -431,78 +490,103 @@ pub fn expression_unary(s: Span) -> IResult<Span, Expression> {
     ))
 }
 
+pub fn expression_operator_assignment(s: Span) -> IResult<Span, Expression> {
+    let (s, a) = paren2(operator_assignment)(s)?;
+    Ok((
+        s,
+        Expression::OperatorAssignment(Box::new(ExpressionOperatorAssignment { nodes: a })),
+    ))
+}
+
 pub fn expression_binary(s: Span) -> IResult<Span, Expression> {
-    let (s, x) = expression(s)?;
-    let (s, y) = binary_operator(s)?;
-    let (s, z) = many0(attribute_instance)(s)?;
-    let (s, v) = expression(s)?;
+    let (s, a) = expression(s)?;
+    let (s, b) = binary_operator(s)?;
+    let (s, c) = many0(attribute_instance)(s)?;
+    let (s, d) = expression(s)?;
     Ok((
         s,
         Expression::Binary(Box::new(ExpressionBinary {
-            nodes: (x, y, z, v),
+            nodes: (a, b, c, d),
         })),
     ))
 }
 
 pub fn tagged_union_expression(s: Span) -> IResult<Span, TaggedUnionExpression> {
-    let (s, _) = symbol("tagged")(s)?;
-    let (s, x) = member_identifier(s)?;
-    let (s, y) = opt(expression)(s)?;
-    Ok((s, TaggedUnionExpression { nodes: (x, y) }))
+    let (s, a) = symbol("tagged")(s)?;
+    let (s, b) = member_identifier(s)?;
+    let (s, c) = opt(expression)(s)?;
+    Ok((s, TaggedUnionExpression { nodes: (a, b, c) }))
 }
 
 pub fn inside_expression(s: Span) -> IResult<Span, InsideExpression> {
-    let (s, x) = expression(s)?;
-    let (s, _) = symbol("inside")(s)?;
-    let (s, y) = brace(open_range_list)(s)?;
-    Ok((s, InsideExpression { nodes: (x, y) }))
+    let (s, a) = expression(s)?;
+    let (s, b) = symbol("inside")(s)?;
+    let (s, c) = symbol("{")(s)?;
+    let (s, d) = brace(open_range_list)(s)?;
+    let (s, e) = symbol("}")(s)?;
+    Ok((
+        s,
+        InsideExpression {
+            nodes: (a, b, c, d, e),
+        },
+    ))
 }
 
 pub fn value_range(s: Span) -> IResult<Span, ValueRange> {
     alt((
         value_range_binary,
-        map(expression, |x| ValueRange::Unary(x)),
+        map(expression, |x| ValueRange::Expression(x)),
     ))(s)
 }
 
 pub fn value_range_binary(s: Span) -> IResult<Span, ValueRange> {
-    let (s, _) = symbol("[")(s)?;
-    let (s, x) = expression(s)?;
-    let (s, _) = symbol(":")(s)?;
-    let (s, y) = expression(s)?;
-    let (s, _) = symbol("]")(s)?;
-    Ok((s, ValueRange::Binary((x, y))))
+    let (s, a) = symbol("[")(s)?;
+    let (s, b) = expression(s)?;
+    let (s, c) = symbol(":")(s)?;
+    let (s, d) = expression(s)?;
+    let (s, e) = symbol("]")(s)?;
+    Ok((
+        s,
+        ValueRange::Binary(ValueRangeBinary {
+            nodes: (a, b, c, d, e),
+        }),
+    ))
 }
 
 pub fn mintypmax_expression(s: Span) -> IResult<Span, MintypmaxExpression> {
     alt((
         mintypmax_expression_ternary,
-        map(expression, |x| MintypmaxExpression::Unary(x)),
+        map(expression, |x| MintypmaxExpression::Expression(x)),
     ))(s)
 }
 
 pub fn mintypmax_expression_ternary(s: Span) -> IResult<Span, MintypmaxExpression> {
-    let (s, x) = expression(s)?;
-    let (s, _) = symbol(":")(s)?;
-    let (s, y) = expression(s)?;
-    let (s, _) = symbol(":")(s)?;
-    let (s, z) = expression(s)?;
-    Ok((s, MintypmaxExpression::Ternary((x, y, z))))
+    let (s, a) = expression(s)?;
+    let (s, b) = symbol(":")(s)?;
+    let (s, c) = expression(s)?;
+    let (s, d) = symbol(":")(s)?;
+    let (s, e) = expression(s)?;
+    Ok((
+        s,
+        MintypmaxExpression::Ternary(MintypmaxExpressionTernary {
+            nodes: (a, b, c, d, e),
+        }),
+    ))
 }
 
 pub fn module_path_conditional_expression(
     s: Span,
 ) -> IResult<Span, ModulePathConditionalExpression> {
-    let (s, x) = module_path_expression(s)?;
-    let (s, _) = symbol("?")(s)?;
-    let (s, y) = many0(attribute_instance)(s)?;
-    let (s, z) = module_path_expression(s)?;
-    let (s, _) = symbol(":")(s)?;
-    let (s, v) = module_path_expression(s)?;
+    let (s, a) = module_path_expression(s)?;
+    let (s, b) = symbol("?")(s)?;
+    let (s, c) = many0(attribute_instance)(s)?;
+    let (s, d) = module_path_expression(s)?;
+    let (s, e) = symbol(":")(s)?;
+    let (s, f) = module_path_expression(s)?;
     Ok((
         s,
         ModulePathConditionalExpression {
-            nodes: (x, y, z, v),
+            nodes: (a, b, c, d, e, f),
         },
     ))
 }
@@ -510,35 +594,35 @@ pub fn module_path_conditional_expression(
 pub fn module_path_expression(s: Span) -> IResult<Span, ModulePathExpression> {
     alt((
         map(module_path_primary, |x| {
-            ModulePathExpression::Nullary(Box::new(x))
+            ModulePathExpression::ModulePathPrimary(Box::new(x))
         }),
         module_path_expression_unary,
         module_path_expression_binary,
         map(module_path_conditional_expression, |x| {
-            ModulePathExpression::Conditional(Box::new(x))
+            ModulePathExpression::ModulePathConditionalExpression(Box::new(x))
         }),
     ))(s)
 }
 
 pub fn module_path_expression_unary(s: Span) -> IResult<Span, ModulePathExpression> {
-    let (s, x) = unary_module_path_operator(s)?;
-    let (s, y) = many0(attribute_instance)(s)?;
-    let (s, z) = module_path_primary(s)?;
+    let (s, a) = unary_module_path_operator(s)?;
+    let (s, b) = many0(attribute_instance)(s)?;
+    let (s, c) = module_path_primary(s)?;
     Ok((
         s,
-        ModulePathExpression::Unary(Box::new(ModulePathExpressionUnary { nodes: (x, y, z) })),
+        ModulePathExpression::Unary(Box::new(ModulePathExpressionUnary { nodes: (a, b, c) })),
     ))
 }
 
 pub fn module_path_expression_binary(s: Span) -> IResult<Span, ModulePathExpression> {
-    let (s, x) = module_path_expression(s)?;
-    let (s, y) = binary_module_path_operator(s)?;
-    let (s, z) = many0(attribute_instance)(s)?;
-    let (s, v) = module_path_expression(s)?;
+    let (s, a) = module_path_expression(s)?;
+    let (s, b) = binary_module_path_operator(s)?;
+    let (s, c) = many0(attribute_instance)(s)?;
+    let (s, d) = module_path_expression(s)?;
     Ok((
         s,
         ModulePathExpression::Binary(Box::new(ModulePathExpressionBinary {
-            nodes: (x, y, z, v),
+            nodes: (a, b, c, d),
         })),
     ))
 }
@@ -547,7 +631,7 @@ pub fn module_path_mintypmax_expression(s: Span) -> IResult<Span, ModulePathMint
     alt((
         module_path_mintypmax_expression_ternary,
         map(module_path_expression, |x| {
-            ModulePathMintypmaxExpression::Unary(x)
+            ModulePathMintypmaxExpression::ModulePathExpression(x)
         }),
     ))(s)
 }
@@ -555,34 +639,36 @@ pub fn module_path_mintypmax_expression(s: Span) -> IResult<Span, ModulePathMint
 pub fn module_path_mintypmax_expression_ternary(
     s: Span,
 ) -> IResult<Span, ModulePathMintypmaxExpression> {
-    let (s, x) = module_path_expression(s)?;
-    let (s, _) = symbol(":")(s)?;
-    let (s, y) = module_path_expression(s)?;
-    let (s, _) = symbol(":")(s)?;
-    let (s, z) = module_path_expression(s)?;
-    Ok((s, ModulePathMintypmaxExpression::Ternary((x, y, z))))
+    let (s, a) = module_path_expression(s)?;
+    let (s, b) = symbol(":")(s)?;
+    let (s, c) = module_path_expression(s)?;
+    let (s, d) = symbol(":")(s)?;
+    let (s, e) = module_path_expression(s)?;
+    Ok((
+        s,
+        ModulePathMintypmaxExpression::Ternary(ModulePathMintypmaxExpressionTernary {
+            nodes: (a, b, c, d, e),
+        }),
+    ))
 }
 
 pub fn part_select_range(s: Span) -> IResult<Span, PartSelectRange> {
-    alt((range, indexed_range))(s)
+    alt((
+        map(constant_range, |x| PartSelectRange::ConstantRange(x)),
+        map(indexed_range, |x| PartSelectRange::IndexedRange(x)),
+    ))(s)
 }
 
-pub fn range(s: Span) -> IResult<Span, PartSelectRange> {
-    let (s, x) = constant_expression(s)?;
-    let (s, _) = symbol(":")(s)?;
-    let (s, y) = constant_expression(s)?;
-    Ok((s, PartSelectRange::Range((x, y))))
+pub fn indexed_range(s: Span) -> IResult<Span, IndexedRange> {
+    let (s, a) = expression(s)?;
+    let (s, b) = alt((symbol("+:"), symbol("-:")))(s)?;
+    let (s, c) = constant_expression(s)?;
+    Ok((s, IndexedRange { nodes: (a, b, c) }))
 }
 
-pub fn indexed_range(s: Span) -> IResult<Span, PartSelectRange> {
-    let (s, x) = expression(s)?;
-    let (s, y) = alt((symbol("+:"), symbol("-:")))(s)?;
-    let (s, z) = constant_expression(s)?;
-    Ok((s, PartSelectRange::IndexedRange((x, y, z))))
-}
-
-pub fn genvar_expression(s: Span) -> IResult<Span, ConstantExpression> {
-    constant_expression(s)
+pub fn genvar_expression(s: Span) -> IResult<Span, GenvarExpression> {
+    let (s, a) = constant_expression(s)?;
+    Ok((s, GenvarExpression { nodes: (a,) }))
 }
 
 // -----------------------------------------------------------------------------
@@ -591,22 +677,5 @@ pub fn genvar_expression(s: Span) -> IResult<Span, ConstantExpression> {
 mod tests {
 
     #[test]
-    fn test() {
-        // TODO after operator_assignment
-        //assert_eq!(
-        //    format!(
-        //        "{:?}",
-        //        all_consuming(expression)("(a:b:c) + (d:e:f)")
-        //    ),
-        //    ""
-        //);
-        // TODO after operator_assignment
-        //assert_eq!(
-        //    format!(
-        //        "{:?}",
-        //        all_consuming(expression)("val - (32'd 50: 32'd 75: 32'd 100)")
-        //    ),
-        //    ""
-        //);
-    }
+    fn test() {}
 }

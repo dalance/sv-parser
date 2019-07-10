@@ -17,19 +17,19 @@ pub fn comment(s: Span) -> IResult<Span, Comment> {
 }
 
 pub fn one_line_comment(s: Span) -> IResult<Span, Comment> {
-    let (s, x) = tag("//")(s)?;
-    let (s, y) = is_not("\n")(s)?;
-    let x = concat(x, y).unwrap();
-    Ok((s, Comment { nodes: (x,) }))
+    let (s, a) = tag("//")(s)?;
+    let (s, b) = is_not("\n")(s)?;
+    let a = concat(a, b).unwrap();
+    Ok((s, Comment { nodes: (a,) }))
 }
 
 pub fn block_comment(s: Span) -> IResult<Span, Comment> {
-    let (s, x) = tag("/*")(s)?;
-    let (s, y) = is_not("*/")(s)?;
-    let (s, z) = tag("*/")(s)?;
-    let x = concat(x, y).unwrap();
-    let x = concat(x, z).unwrap();
-    Ok((s, Comment { nodes: (x,) }))
+    let (s, a) = tag("/*")(s)?;
+    let (s, b) = is_not("*/")(s)?;
+    let (s, c) = tag("*/")(s)?;
+    let a = concat(a, b).unwrap();
+    let a = concat(a, c).unwrap();
+    Ok((s, Comment { nodes: (a,) }))
 }
 
 // -----------------------------------------------------------------------------

@@ -8,7 +8,7 @@ use nom::{Err, IResult};
 
 #[derive(Debug)]
 pub struct TaskDeclaration<'a> {
-    pub nodes: (Option<Lifetime>, TaskBodyDeclaration<'a>),
+    pub nodes: (Option<Lifetime<'a>>, TaskBodyDeclaration<'a>),
 }
 
 #[derive(Debug)]

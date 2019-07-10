@@ -9,7 +9,7 @@ use nom::IResult;
 #[derive(Debug)]
 pub enum SubroutineCallStatement<'a> {
     SubroutineCall(SubroutineCall<'a>),
-    FunctionSubroutineCall(SubroutineCall<'a>),
+    FunctionSubroutineCall(FunctionSubroutineCall<'a>),
 }
 
 // -----------------------------------------------------------------------------
@@ -21,7 +21,7 @@ pub fn subroutine_call_statement(s: Span) -> IResult<Span, SubroutineCallStateme
         }),
         map(
             delimited(
-                tuple((symbol("void"), symbol("'"), symbol("("))),
+                triple(symbol("void"), symbol("'"), symbol("(")),
                 function_subroutine_call,
                 pair(symbol(")"), symbol(";")),
             ),

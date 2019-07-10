@@ -37,15 +37,41 @@ pub fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol<'
     move |s: Span<'a>| map(ws(tag(t.clone())), |x| Symbol { nodes: x })(s)
 }
 
+pub fn paren2<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, (Symbol<'a>, O, Symbol<'a>)>
+where
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+{
+    move |s: Span<'a>| {
+        let (s, a) = symbol("(")(s)?;
+        let (s, b) = f(s)?;
+        let (s, c) = symbol(")")(s)?;
+        Ok((s, (a, b, c)))
+    }
+}
+
+pub fn bracket2<'a, O, F>(
+    f: F,
+) -> impl Fn(Span<'a>) -> IResult<Span<'a>, (Symbol<'a>, O, Symbol<'a>)>
+where
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+{
+    move |s: Span<'a>| {
+        let (s, a) = symbol("[")(s)?;
+        let (s, b) = f(s)?;
+        let (s, c) = symbol("]")(s)?;
+        Ok((s, (a, b, c)))
+    }
+}
+
 pub fn paren<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
         let (s, _) = symbol("(")(s)?;
-        let (s, x) = f(s)?;
+        let (s, b) = f(s)?;
         let (s, _) = symbol(")")(s)?;
-        Ok((s, x))
+        Ok((s, b))
     }
 }
 
@@ -55,9 +81,9 @@ where
 {
     move |s: Span<'a>| {
         let (s, _) = symbol("[")(s)?;
-        let (s, x) = f(s)?;
+        let (s, b) = f(s)?;
         let (s, _) = symbol("]")(s)?;
-        Ok((s, x))
+        Ok((s, b))
     }
 }
 
@@ -97,6 +123,24 @@ where
         let (s, x) = f(s)?;
         let s = set_bit(s, id, false);
         Ok((s, x))
+    }
+}
+
+pub fn triple<'a, O1, O2, O3, F, G, H>(
+    f: F,
+    g: G,
+    h: H,
+) -> impl Fn(Span<'a>) -> IResult<Span<'a>, (O1, O2, O3)>
+where
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O1>,
+    G: Fn(Span<'a>) -> IResult<Span<'a>, O2>,
+    H: Fn(Span<'a>) -> IResult<Span<'a>, O3>,
+{
+    move |s: Span<'a>| {
+        let (s, x) = f(s)?;
+        let (s, y) = g(s)?;
+        let (s, z) = h(s)?;
+        Ok((s, (x, y, z)))
     }
 }
 

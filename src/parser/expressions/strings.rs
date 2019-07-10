@@ -20,12 +20,12 @@ pub fn string_literal(s: Span) -> IResult<Span, StringLiteral> {
 }
 
 pub fn string_literal_impl(s: Span) -> IResult<Span, Span> {
-    let (s, _) = tag("\"")(s)?;
-    let (s, x) = many1(pair(is_not("\\\""), opt(pair(tag("\\"), take(1usize)))))(s)?;
-    let (s, _) = tag("\"")(s)?;
+    let (s, a) = tag("\"")(s)?;
+    let (s, b) = many1(pair(is_not("\\\""), opt(pair(tag("\\"), take(1usize)))))(s)?;
+    let (s, c) = tag("\"")(s)?;
 
     let mut ret = None;
-    for (x, y) in x {
+    for (x, y) in b {
         ret = if let Some(ret) = ret {
             Some(concat(ret, x).unwrap())
         } else {
@@ -45,9 +45,11 @@ pub fn string_literal_impl(s: Span) -> IResult<Span, Span> {
         }
     }
 
-    let ret = ret.unwrap();
+    let b = ret.unwrap();
+    let a = concat(a, b).unwrap();
+    let a = concat(a, c).unwrap();
 
-    Ok((s, ret))
+    Ok((s, a))
 }
 
 // -----------------------------------------------------------------------------

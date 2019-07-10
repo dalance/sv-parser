@@ -8,27 +8,38 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub struct AttributeInstance<'a> {
-    pub nodes: (Vec<AttrSpec<'a>>,),
+    pub nodes: (
+        Symbol<'a>,
+        AttrSpec<'a>,
+        Vec<(Symbol<'a>, AttrSpec<'a>)>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct AttrSpec<'a> {
-    pub nodes: (Identifier<'a>, Option<ConstantExpression<'a>>),
+    pub nodes: (Identifier<'a>, Option<(Symbol<'a>, ConstantExpression<'a>)>),
 }
 
 // -----------------------------------------------------------------------------
 
 pub fn attribute_instance(s: Span) -> IResult<Span, AttributeInstance> {
-    let (s, _) = symbol("(*")(s)?;
-    let (s, x) = separated_nonempty_list(symbol(","), attr_spec)(s)?;
-    let (s, _) = symbol("*)")(s)?;
-    Ok((s, AttributeInstance { nodes: (x,) }))
+    let (s, a) = symbol("(*")(s)?;
+    let (s, b) = attr_spec(s)?;
+    let (s, c) = many0(pair(symbol(","), attr_spec))(s)?;
+    let (s, d) = symbol("*)")(s)?;
+    Ok((
+        s,
+        AttributeInstance {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn attr_spec(s: Span) -> IResult<Span, AttrSpec> {
-    let (s, x) = identifier(s)?;
-    let (s, y) = opt(preceded(symbol("="), constant_expression))(s)?;
-    Ok((s, AttrSpec { nodes: (x, y) }))
+    let (s, a) = identifier(s)?;
+    let (s, b) = opt(pair(symbol("="), constant_expression))(s)?;
+    Ok((s, AttrSpec { nodes: (a, b) }))
 }
 
 // -----------------------------------------------------------------------------

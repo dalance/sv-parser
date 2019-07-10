@@ -497,20 +497,20 @@ pub struct VariableIdentifier<'a> {
 
 #[derive(Debug)]
 pub enum ImplicitClassHandleOrClassScopeOrPackageScope<'a> {
-    ImplicitClassHandle(ImplicitClassHandle),
+    ImplicitClassHandle(ImplicitClassHandle<'a>),
     ClassScope(ClassScope<'a>),
     PackageScope(PackageScope<'a>),
 }
 
 #[derive(Debug)]
 pub enum ImplicitClassHandleOrPackageScope<'a> {
-    ImplicitClassHandle(ImplicitClassHandle),
+    ImplicitClassHandle(ImplicitClassHandle<'a>),
     PackageScope(PackageScope<'a>),
 }
 
 #[derive(Debug)]
 pub enum ImplicitClassHandleOrClassScope<'a> {
-    ImplicitClassHandle(ImplicitClassHandle),
+    ImplicitClassHandle(ImplicitClassHandle<'a>),
     ClassScope(ClassScope<'a>),
 }
 

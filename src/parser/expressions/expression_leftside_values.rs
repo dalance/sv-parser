@@ -9,14 +9,24 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub enum NetLvalue<'a> {
-    Identifier(Box<NetLvalueIdentifier<'a>>),
-    Lvalue(Box<Vec<NetLvalue<'a>>>),
-    Pattern(Box<NetLvaluePattern<'a>>),
+    Identifier(NetLvalueIdentifier<'a>),
+    Lvalue(Box<NetLvalueLvalue<'a>>),
+    Pattern(NetLvaluePattern<'a>),
 }
 
 #[derive(Debug)]
 pub struct NetLvalueIdentifier<'a> {
     pub nodes: (PsOrHierarchicalNetIdentifier<'a>, ConstantSelect<'a>),
+}
+
+#[derive(Debug)]
+pub struct NetLvalueLvalue<'a> {
+    pub nodes: (
+        Symbol<'a>,
+        NetLvalue<'a>,
+        Vec<(Symbol<'a>, NetLvalue<'a>)>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug)]
@@ -29,10 +39,10 @@ pub struct NetLvaluePattern<'a> {
 
 #[derive(Debug)]
 pub enum VariableLvalue<'a> {
-    Identifier(Box<VariableLvalueIdentifier<'a>>),
-    Lvalue(Box<Vec<VariableLvalue<'a>>>),
-    Pattern(Box<VariableLvaluePattern<'a>>),
-    Concatenation(Box<StreamingConcatenation<'a>>),
+    Identifier(VariableLvalueIdentifier<'a>),
+    Lvalue(Box<VariableLvalueLvalue<'a>>),
+    Pattern(VariableLvaluePattern<'a>),
+    StreamingConcatenation(StreamingConcatenation<'a>),
 }
 
 #[derive(Debug)]
@@ -41,6 +51,16 @@ pub struct VariableLvalueIdentifier<'a> {
         Option<ImplicitClassHandleOrPackageScope<'a>>,
         HierarchicalVariableIdentifier<'a>,
         Select<'a>,
+    ),
+}
+
+#[derive(Debug)]
+pub struct VariableLvalueLvalue<'a> {
+    pub nodes: (
+        Symbol<'a>,
+        VariableLvalue<'a>,
+        Vec<(Symbol<'a>, VariableLvalue<'a>)>,
+        Symbol<'a>,
     ),
 }
 
@@ -57,7 +77,7 @@ pub struct NonrangeVariableLvalue<'a> {
     pub nodes: (
         Option<ImplicitClassHandleOrPackageScope<'a>>,
         HierarchicalVariableIdentifier<'a>,
-        Select<'a>,
+        NonrangeSelect<'a>,
     ),
 }
 
@@ -68,36 +88,31 @@ pub fn net_lvalue(s: Span) -> IResult<Span, NetLvalue> {
 }
 
 pub fn net_lvalue_identifier(s: Span) -> IResult<Span, NetLvalue> {
-    let (s, x) = ps_or_hierarchical_net_identifier(s)?;
-    let (s, y) = constant_select(s)?;
+    let (s, a) = ps_or_hierarchical_net_identifier(s)?;
+    let (s, b) = constant_select(s)?;
     Ok((
         s,
-        NetLvalue::Identifier(Box::new(NetLvalueIdentifier { nodes: (x, y) })),
+        NetLvalue::Identifier(NetLvalueIdentifier { nodes: (a, b) }),
     ))
 }
 
 pub fn net_lvalue_pattern(s: Span) -> IResult<Span, NetLvalue> {
-    let (s, x) = opt(assignment_pattern_expression_type)(s)?;
-    let (s, y) = assignment_pattern_net_lvalue(s)?;
-    Ok((
-        s,
-        NetLvalue::Pattern(Box::new(NetLvaluePattern { nodes: (x, y) })),
-    ))
+    let (s, a) = opt(assignment_pattern_expression_type)(s)?;
+    let (s, b) = assignment_pattern_net_lvalue(s)?;
+    Ok((s, NetLvalue::Pattern(NetLvaluePattern { nodes: (a, b) })))
 }
 
 pub fn net_lvalue_lvalue(s: Span) -> IResult<Span, NetLvalue> {
-    let (s, _) = symbol("{")(s)?;
-    let (s, x) = net_lvalue(s)?;
-    let (s, y) = many0(preceded(symbol(","), net_lvalue))(s)?;
-    let (s, _) = symbol("}")(s)?;
-
-    let mut ret = Vec::new();
-    ret.push(x);
-    for y in y {
-        ret.push(y);
-    }
-
-    Ok((s, NetLvalue::Lvalue(Box::new(ret))))
+    let (s, a) = symbol("{")(s)?;
+    let (s, b) = net_lvalue(s)?;
+    let (s, c) = many0(pair(symbol(","), net_lvalue))(s)?;
+    let (s, d) = symbol("}")(s)?;
+    Ok((
+        s,
+        NetLvalue::Lvalue(Box::new(NetLvalueLvalue {
+            nodes: (a, b, c, d),
+        })),
+    ))
 }
 
 pub fn variable_lvalue(s: Span) -> IResult<Span, VariableLvalue> {
@@ -106,99 +121,56 @@ pub fn variable_lvalue(s: Span) -> IResult<Span, VariableLvalue> {
         variable_lvalue_lvalue,
         variable_lvalue_pattern,
         map(streaming_concatenation, |x| {
-            VariableLvalue::Concatenation(Box::new(x))
+            VariableLvalue::StreamingConcatenation(x)
         }),
     ))(s)
 }
 
 pub fn variable_lvalue_identifier(s: Span) -> IResult<Span, VariableLvalue> {
-    let (s, x) = opt(implicit_class_handle_or_package_scope)(s)?;
-    let (s, y) = hierarchical_variable_identifier(s)?;
-    let (s, z) = select(s)?;
+    let (s, a) = opt(implicit_class_handle_or_package_scope)(s)?;
+    let (s, b) = hierarchical_variable_identifier(s)?;
+    let (s, c) = select(s)?;
     Ok((
         s,
-        VariableLvalue::Identifier(Box::new(VariableLvalueIdentifier { nodes: (x, y, z) })),
+        VariableLvalue::Identifier(VariableLvalueIdentifier { nodes: (a, b, c) }),
     ))
 }
 
 pub fn variable_lvalue_pattern(s: Span) -> IResult<Span, VariableLvalue> {
-    let (s, x) = opt(assignment_pattern_expression_type)(s)?;
-    let (s, y) = assignment_pattern_variable_lvalue(s)?;
+    let (s, a) = opt(assignment_pattern_expression_type)(s)?;
+    let (s, b) = assignment_pattern_variable_lvalue(s)?;
     Ok((
         s,
-        VariableLvalue::Pattern(Box::new(VariableLvaluePattern { nodes: (x, y) })),
+        VariableLvalue::Pattern(VariableLvaluePattern { nodes: (a, b) }),
     ))
 }
 
 pub fn variable_lvalue_lvalue(s: Span) -> IResult<Span, VariableLvalue> {
-    let (s, _) = symbol("{")(s)?;
-    let (s, x) = variable_lvalue(s)?;
-    let (s, y) = many0(preceded(symbol(","), variable_lvalue))(s)?;
-    let (s, _) = symbol("}")(s)?;
-
-    let mut ret = Vec::new();
-    ret.push(x);
-    for y in y {
-        ret.push(y);
-    }
-
-    Ok((s, VariableLvalue::Lvalue(Box::new(ret))))
+    let (s, a) = symbol("{")(s)?;
+    let (s, b) = variable_lvalue(s)?;
+    let (s, c) = many0(pair(symbol(","), variable_lvalue))(s)?;
+    let (s, d) = symbol("}")(s)?;
+    Ok((
+        s,
+        VariableLvalue::Lvalue(Box::new(VariableLvalueLvalue {
+            nodes: (a, b, c, d),
+        })),
+    ))
 }
 
 pub fn nonrange_variable_lvalue(s: Span) -> IResult<Span, NonrangeVariableLvalue> {
-    let (s, x) = opt(implicit_class_handle_or_package_scope)(s)?;
-    let (s, y) = hierarchical_variable_identifier(s)?;
-    let (s, z) = nonrange_select(s)?;
-    Ok((s, NonrangeVariableLvalue { nodes: (x, y, z) }))
+    let (s, a) = opt(implicit_class_handle_or_package_scope)(s)?;
+    let (s, b) = hierarchical_variable_identifier(s)?;
+    let (s, c) = nonrange_select(s)?;
+    Ok((s, NonrangeVariableLvalue { nodes: (a, b, c) }))
 }
 
 // -----------------------------------------------------------------------------
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    //use super::*;
 
     #[test]
-    fn test() {
-        //assert_eq!(
-        //    format!("{:?}", all_consuming(net_lvalue)(Span::new("a"))),
-        //    "Ok((\"\", Identifier(NetLvalueIdentifier { identifier: ScopedIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: \"a\" } } }, select: ConstantSelect { member: None, bit_select: [], part_select_range: None } })))"
-        //);
-        //assert_eq!(
-        //    format!("{:?}", all_consuming(net_lvalue)(Span::new("a[1][2]"))),
-        //    "Ok((\"\", Identifier(NetLvalueIdentifier { identifier: ScopedIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: \"a\" } } }, select: ConstantSelect { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\"))))), Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"2\")))))], part_select_range: None } })))"
-        //);
-        //assert_eq!(
-        //    format!("{:?}", all_consuming(net_lvalue)(Span::new("a[1][10:5]"))),
-        //    "Ok((\"\", Identifier(NetLvalueIdentifier { identifier: ScopedIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: \"a\" } } }, select: ConstantSelect { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\")))))], part_select_range: Some(Range((Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"10\"))))), Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"5\")))))))) } })))"
-        //);
-        //assert_eq!(
-        //    format!("{:?}", all_consuming(net_lvalue)(Span::new("{a, b[1], c}"))),
-        //    "Ok((\"\", Lvalue([Identifier(NetLvalueIdentifier { identifier: ScopedIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: \"a\" } } }, select: ConstantSelect { member: None, bit_select: [], part_select_range: None } }), Identifier(NetLvalueIdentifier { identifier: ScopedIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: \"b\" } } }, select: ConstantSelect { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\")))))], part_select_range: None } }), Identifier(NetLvalueIdentifier { identifier: ScopedIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: \"c\" } } }, select: ConstantSelect { member: None, bit_select: [], part_select_range: None } })])))"
-        //);
-        //assert_eq!(
-        //    format!("{:?}", all_consuming(variable_lvalue)(Span::new("a"))),
-        //    "Ok((\"\", Identifier(VariableLvalueIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: \"a\" } }, select: Select { member: None, bit_select: [], part_select_range: None } })))"
-        //);
-        //assert_eq!(
-        //    format!("{:?}", all_consuming(variable_lvalue)(Span::new("a[1][2]"))),
-        //    "Ok((\"\", Identifier(VariableLvalueIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: \"a\" } }, select: Select { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\"))))), Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"2\")))))], part_select_range: None } })))"
-        //);
-        //assert_eq!(
-        //    format!("{:?}", all_consuming(variable_lvalue)(Span::new("a[1][10:5]"))),
-        //    "Ok((\"\", Identifier(VariableLvalueIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: \"a\" } }, select: Select { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\")))))], part_select_range: Some(Range((Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"10\"))))), Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"5\")))))))) } })))"
-        //);
-        //assert_eq!(
-        //    format!("{:?}", all_consuming(variable_lvalue)(Span::new("{a, b[1], c}"))),
-        //    "Ok((\"\", Lvalue([Identifier(VariableLvalueIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: \"a\" } }, select: Select { member: None, bit_select: [], part_select_range: None } }), Identifier(VariableLvalueIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: \"b\" } }, select: Select { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\")))))], part_select_range: None } }), Identifier(VariableLvalueIdentifier { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: \"c\" } }, select: Select { member: None, bit_select: [], part_select_range: None } })])))"
-        //);
-        //assert_eq!(
-        //    format!("{:?}", all_consuming(nonrange_variable_lvalue)(Span::new("a"))),
-        //    "Ok((\"\", NonrangeVariableLvalue { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: \"a\" } }, select: Select { member: None, bit_select: [], part_select_range: None } }))"
-        //);
-        //assert_eq!(
-        //    format!("{:?}", all_consuming(nonrange_variable_lvalue)(Span::new("a[1][2]"))),
-        //    "Ok((\"\", NonrangeVariableLvalue { scope: None, identifier: HierarchicalIdentifier { hierarchy: [], identifier: Identifier { raw: \"a\" } }, select: Select { member: None, bit_select: [Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"1\"))))), Nullary(PrimaryLiteral(Number(IntegralNumber(UnsignedNumber(\"2\")))))], part_select_range: None } }))"
-        //);
-    }
+    fn test() {}
 }

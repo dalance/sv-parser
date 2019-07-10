@@ -2,7 +2,6 @@ use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
 use nom::multi::*;
-use nom::sequence::*;
 use nom::IResult;
 
 // -----------------------------------------------------------------------------
@@ -12,8 +11,7 @@ pub struct ModuleInstantiation<'a> {
     pub nodes: (
         ModuleIdentifier<'a>,
         Option<ParameterValueAssignment<'a>>,
-        HierarchicalInstance<'a>,
-        Vec<(Symbol<'a>, HierarchicalInstance<'a>)>,
+        List<Symbol<'a>, HierarchicalInstance<'a>>,
         Symbol<'a>,
     ),
 }
@@ -22,11 +20,7 @@ pub struct ModuleInstantiation<'a> {
 pub struct ParameterValueAssignment<'a> {
     pub nodes: (
         Symbol<'a>,
-        (
-            Symbol<'a>,
-            Option<ListOfParameterAssignments<'a>>,
-            Symbol<'a>,
-        ),
+        Paren<'a, Option<ListOfParameterAssignments<'a>>>,
     ),
 }
 
@@ -38,18 +32,12 @@ pub enum ListOfParameterAssignments<'a> {
 
 #[derive(Debug)]
 pub struct ListOfParameterAssignmentsOrdered<'a> {
-    pub nodes: (
-        OrderedParameterAssignment<'a>,
-        Vec<(Symbol<'a>, OrderedParameterAssignment<'a>)>,
-    ),
+    pub nodes: (List<Symbol<'a>, OrderedParameterAssignment<'a>>,),
 }
 
 #[derive(Debug)]
 pub struct ListOfParameterAssignmentsNamed<'a> {
-    pub nodes: (
-        NamedParameterAssignment<'a>,
-        Vec<(Symbol<'a>, NamedParameterAssignment<'a>)>,
-    ),
+    pub nodes: (List<Symbol<'a>, NamedParameterAssignment<'a>>,),
 }
 
 #[derive(Debug)]
@@ -62,7 +50,7 @@ pub struct NamedParameterAssignment<'a> {
     pub nodes: (
         Symbol<'a>,
         ParameterIdentifier<'a>,
-        (Symbol<'a>, Option<ParamExpression<'a>>, Symbol<'a>),
+        Paren<'a, Option<ParamExpression<'a>>>,
     ),
 }
 
@@ -70,7 +58,7 @@ pub struct NamedParameterAssignment<'a> {
 pub struct HierarchicalInstance<'a> {
     pub nodes: (
         NameOfInstance<'a>,
-        (Symbol<'a>, Option<ListOfPortConnections<'a>>, Symbol<'a>),
+        Paren<'a, Option<ListOfPortConnections<'a>>>,
     ),
 }
 
@@ -87,18 +75,12 @@ pub enum ListOfPortConnections<'a> {
 
 #[derive(Debug)]
 pub struct ListOfPortConnectionsOrdered<'a> {
-    pub nodes: (
-        OrderedPortConnection<'a>,
-        Vec<(Symbol<'a>, OrderedPortConnection<'a>)>,
-    ),
+    pub nodes: (List<Symbol<'a>, OrderedPortConnection<'a>>,),
 }
 
 #[derive(Debug)]
 pub struct ListOfPortConnectionsNamed<'a> {
-    pub nodes: (
-        NamedPortConnection<'a>,
-        Vec<(Symbol<'a>, NamedPortConnection<'a>)>,
-    ),
+    pub nodes: (List<Symbol<'a>, NamedPortConnection<'a>>,),
 }
 
 #[derive(Debug)]
@@ -118,7 +100,7 @@ pub struct NamedPortConnectionIdentifier<'a> {
         Vec<AttributeInstance<'a>>,
         Symbol<'a>,
         PortIdentifier<'a>,
-        Option<(Symbol<'a>, Option<Expression<'a>>, Symbol<'a>)>,
+        Option<Paren<'a, Option<Expression<'a>>>>,
     ),
 }
 
@@ -132,13 +114,12 @@ pub struct NamedPortConnectionAsterisk<'a> {
 pub fn module_instantiation(s: Span) -> IResult<Span, ModuleInstantiation> {
     let (s, a) = module_identifier(s)?;
     let (s, b) = opt(parameter_value_assignment)(s)?;
-    let (s, c) = hierarchical_instance(s)?;
-    let (s, d) = many0(pair(symbol(","), hierarchical_instance))(s)?;
-    let (s, e) = symbol(";")(s)?;
+    let (s, c) = list(symbol(","), hierarchical_instance)(s)?;
+    let (s, d) = symbol(";")(s)?;
     Ok((
         s,
         ModuleInstantiation {
-            nodes: (a, b, c, d, e),
+            nodes: (a, b, c, d),
         },
     ))
 }
@@ -157,20 +138,18 @@ pub fn list_of_parameter_assignments(s: Span) -> IResult<Span, ListOfParameterAs
 }
 
 pub fn list_of_parameter_assignments_ordered(s: Span) -> IResult<Span, ListOfParameterAssignments> {
-    let (s, a) = ordered_parameter_assignment(s)?;
-    let (s, b) = many0(pair(symbol(","), ordered_parameter_assignment))(s)?;
+    let (s, a) = list(symbol(","), ordered_parameter_assignment)(s)?;
     Ok((
         s,
-        ListOfParameterAssignments::Ordered(ListOfParameterAssignmentsOrdered { nodes: (a, b) }),
+        ListOfParameterAssignments::Ordered(ListOfParameterAssignmentsOrdered { nodes: (a,) }),
     ))
 }
 
 pub fn list_of_parameter_assignments_named(s: Span) -> IResult<Span, ListOfParameterAssignments> {
-    let (s, a) = named_parameter_assignment(s)?;
-    let (s, b) = many0(pair(symbol(","), named_parameter_assignment))(s)?;
+    let (s, a) = list(symbol(","), named_parameter_assignment)(s)?;
     Ok((
         s,
-        ListOfParameterAssignments::Named(ListOfParameterAssignmentsNamed { nodes: (a, b) }),
+        ListOfParameterAssignments::Named(ListOfParameterAssignmentsNamed { nodes: (a,) }),
     ))
 }
 
@@ -206,20 +185,18 @@ pub fn list_of_port_connections(s: Span) -> IResult<Span, ListOfPortConnections>
 }
 
 pub fn list_of_port_connections_ordered(s: Span) -> IResult<Span, ListOfPortConnections> {
-    let (s, a) = ordered_port_connection(s)?;
-    let (s, b) = many0(pair(symbol(","), ordered_port_connection))(s)?;
+    let (s, a) = list(symbol(","), ordered_port_connection)(s)?;
     Ok((
         s,
-        ListOfPortConnections::Ordered(ListOfPortConnectionsOrdered { nodes: (a, b) }),
+        ListOfPortConnections::Ordered(ListOfPortConnectionsOrdered { nodes: (a,) }),
     ))
 }
 
 pub fn list_of_port_connections_named(s: Span) -> IResult<Span, ListOfPortConnections> {
-    let (s, a) = named_port_connection(s)?;
-    let (s, b) = many0(pair(symbol(","), named_port_connection))(s)?;
+    let (s, a) = list(symbol(","), named_port_connection)(s)?;
     Ok((
         s,
-        ListOfPortConnections::Named(ListOfPortConnectionsNamed { nodes: (a, b) }),
+        ListOfPortConnections::Named(ListOfPortConnectionsNamed { nodes: (a,) }),
     ))
 }
 

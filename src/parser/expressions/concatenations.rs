@@ -1,7 +1,6 @@
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
-use nom::multi::*;
 use nom::sequence::*;
 use nom::IResult;
 
@@ -9,67 +8,45 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub struct Concatenation<'a> {
-    pub nodes: (
-        Symbol<'a>,
-        Expression<'a>,
-        Vec<(Symbol<'a>, Expression<'a>)>,
-        Symbol<'a>,
-    ),
+    pub nodes: (Brace<'a, List<Symbol<'a>, Expression<'a>>>,),
 }
 
 #[derive(Debug)]
 pub struct ConstantConcatenation<'a> {
-    pub nodes: (
-        Symbol<'a>,
-        ConstantExpression<'a>,
-        Vec<(Symbol<'a>, ConstantExpression<'a>)>,
-        Symbol<'a>,
-    ),
+    pub nodes: (Brace<'a, List<Symbol<'a>, ConstantExpression<'a>>>,),
 }
 
 #[derive(Debug)]
 pub struct ConstantMultipleConcatenation<'a> {
-    pub nodes: (
-        Symbol<'a>,
-        ConstantExpression<'a>,
-        ConstantConcatenation<'a>,
-        Symbol<'a>,
-    ),
+    pub nodes: (Brace<'a, (ConstantExpression<'a>, ConstantConcatenation<'a>)>,),
 }
 
 #[derive(Debug)]
 pub struct ModulePathConcatenation<'a> {
-    pub nodes: (
-        Symbol<'a>,
-        ModulePathExpression<'a>,
-        Vec<(Symbol<'a>, ModulePathExpression<'a>)>,
-        Symbol<'a>,
-    ),
+    pub nodes: (Brace<'a, List<Symbol<'a>, ModulePathExpression<'a>>>,),
 }
 
 #[derive(Debug)]
 pub struct ModulePathMultipleConcatenation<'a> {
-    pub nodes: (
-        Symbol<'a>,
-        ConstantExpression<'a>,
-        ModulePathConcatenation<'a>,
-        Symbol<'a>,
-    ),
+    pub nodes: (Brace<'a, (ConstantExpression<'a>, ModulePathConcatenation<'a>)>,),
 }
 
 #[derive(Debug)]
 pub struct MultipleConcatenation<'a> {
-    pub nodes: (Symbol<'a>, Expression<'a>, Concatenation<'a>, Symbol<'a>),
+    pub nodes: (Brace<'a, (Expression<'a>, Concatenation<'a>)>,),
 }
 
 #[derive(Debug)]
 pub struct StreamingConcatenation<'a> {
     pub nodes: (
-        Symbol<'a>,
-        StreamOperator<'a>,
-        Option<SliceSize<'a>>,
-        StreamConcatenation<'a>,
-        Symbol<'a>,
+        Brace<
+            'a,
+            (
+                StreamOperator<'a>,
+                Option<SliceSize<'a>>,
+                StreamConcatenation<'a>,
+            ),
+        >,
     ),
 }
 
@@ -86,22 +63,14 @@ pub enum SliceSize<'a> {
 
 #[derive(Debug)]
 pub struct StreamConcatenation<'a> {
-    pub nodes: (
-        Symbol<'a>,
-        StreamExpression<'a>,
-        Vec<(Symbol<'a>, StreamExpression<'a>)>,
-        Symbol<'a>,
-    ),
+    pub nodes: (Brace<'a, List<Symbol<'a>, StreamExpression<'a>>>,),
 }
 
 #[derive(Debug)]
 pub struct StreamExpression<'a> {
     pub nodes: (
         Expression<'a>,
-        Option<(
-            Symbol<'a>,
-            (Symbol<'a>, ArrayRangeExpression<'a>, Symbol<'a>),
-        )>,
+        Option<(Symbol<'a>, Bracket<'a, ArrayRangeExpression<'a>>)>,
     ),
 }
 
@@ -136,97 +105,44 @@ pub struct EmptyUnpackedArrayConcatenation<'a> {
 // -----------------------------------------------------------------------------
 
 pub fn concatenation(s: Span) -> IResult<Span, Concatenation> {
-    let (s, a) = symbol("{")(s)?;
-    let (s, b) = expression(s)?;
-    let (s, c) = many0(pair(symbol(","), expression))(s)?;
-    let (s, d) = symbol("}")(s)?;
-    Ok((
-        s,
-        Concatenation {
-            nodes: (a, b, c, d),
-        },
-    ))
+    let (s, a) = brace2(list(symbol(","), expression))(s)?;
+    Ok((s, Concatenation { nodes: (a,) }))
 }
 
 pub fn constant_concatenation(s: Span) -> IResult<Span, ConstantConcatenation> {
-    let (s, a) = symbol("{")(s)?;
-    let (s, b) = constant_expression(s)?;
-    let (s, c) = many0(pair(symbol(","), constant_expression))(s)?;
-    let (s, d) = symbol("}")(s)?;
-    Ok((
-        s,
-        ConstantConcatenation {
-            nodes: (a, b, c, d),
-        },
-    ))
+    let (s, a) = brace2(list(symbol(","), constant_expression))(s)?;
+    Ok((s, ConstantConcatenation { nodes: (a,) }))
 }
 
 pub fn constant_multiple_concatenation(s: Span) -> IResult<Span, ConstantMultipleConcatenation> {
-    let (s, a) = symbol("{")(s)?;
-    let (s, b) = constant_expression(s)?;
-    let (s, c) = constant_concatenation(s)?;
-    let (s, d) = symbol("}")(s)?;
-    Ok((
-        s,
-        ConstantMultipleConcatenation {
-            nodes: (a, b, c, d),
-        },
-    ))
+    let (s, a) = brace2(pair(constant_expression, constant_concatenation))(s)?;
+    Ok((s, ConstantMultipleConcatenation { nodes: (a,) }))
 }
 
 pub fn module_path_concatenation(s: Span) -> IResult<Span, ModulePathConcatenation> {
-    let (s, a) = symbol("{")(s)?;
-    let (s, b) = module_path_expression(s)?;
-    let (s, c) = many0(pair(symbol(","), module_path_expression))(s)?;
-    let (s, d) = symbol("}")(s)?;
-    Ok((
-        s,
-        ModulePathConcatenation {
-            nodes: (a, b, c, d),
-        },
-    ))
+    let (s, a) = brace2(list(symbol(","), module_path_expression))(s)?;
+    Ok((s, ModulePathConcatenation { nodes: (a,) }))
 }
 
 pub fn module_path_multiple_concatenation(
     s: Span,
 ) -> IResult<Span, ModulePathMultipleConcatenation> {
-    let (s, a) = symbol("{")(s)?;
-    let (s, b) = constant_expression(s)?;
-    let (s, c) = module_path_concatenation(s)?;
-    let (s, d) = symbol("}")(s)?;
-    Ok((
-        s,
-        ModulePathMultipleConcatenation {
-            nodes: (a, b, c, d),
-        },
-    ))
+    let (s, a) = brace2(pair(constant_expression, module_path_concatenation))(s)?;
+    Ok((s, ModulePathMultipleConcatenation { nodes: (a,) }))
 }
 
 pub fn multiple_concatenation(s: Span) -> IResult<Span, MultipleConcatenation> {
-    let (s, a) = symbol("{")(s)?;
-    let (s, b) = expression(s)?;
-    let (s, c) = concatenation(s)?;
-    let (s, d) = symbol("}")(s)?;
-    Ok((
-        s,
-        MultipleConcatenation {
-            nodes: (a, b, c, d),
-        },
-    ))
+    let (s, a) = brace2(pair(expression, concatenation))(s)?;
+    Ok((s, MultipleConcatenation { nodes: (a,) }))
 }
 
 pub fn streaming_concatenation(s: Span) -> IResult<Span, StreamingConcatenation> {
-    let (s, a) = symbol("{")(s)?;
-    let (s, b) = stream_operator(s)?;
-    let (s, c) = opt(slice_size)(s)?;
-    let (s, d) = stream_concatenation(s)?;
-    let (s, e) = symbol("}")(s)?;
-    Ok((
-        s,
-        StreamingConcatenation {
-            nodes: (a, b, c, d, e),
-        },
-    ))
+    let (s, a) = brace2(triple(
+        stream_operator,
+        opt(slice_size),
+        stream_concatenation,
+    ))(s)?;
+    Ok((s, StreamingConcatenation { nodes: (a,) }))
 }
 
 pub fn stream_operator(s: Span) -> IResult<Span, StreamOperator> {
@@ -244,16 +160,8 @@ pub fn slice_size(s: Span) -> IResult<Span, SliceSize> {
 }
 
 pub fn stream_concatenation(s: Span) -> IResult<Span, StreamConcatenation> {
-    let (s, a) = symbol("{")(s)?;
-    let (s, b) = stream_expression(s)?;
-    let (s, c) = many0(pair(symbol(","), stream_expression))(s)?;
-    let (s, d) = symbol("}")(s)?;
-    Ok((
-        s,
-        StreamConcatenation {
-            nodes: (a, b, c, d),
-        },
-    ))
+    let (s, a) = brace2(list(symbol(","), stream_expression))(s)?;
+    Ok((s, StreamConcatenation { nodes: (a,) }))
 }
 
 pub fn stream_expression(s: Span) -> IResult<Span, StreamExpression> {

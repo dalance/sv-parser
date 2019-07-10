@@ -1,8 +1,6 @@
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
-use nom::multi::*;
-use nom::sequence::*;
 use nom::IResult;
 
 // -----------------------------------------------------------------------------
@@ -21,12 +19,7 @@ pub struct NetLvalueIdentifier<'a> {
 
 #[derive(Debug)]
 pub struct NetLvalueLvalue<'a> {
-    pub nodes: (
-        Symbol<'a>,
-        NetLvalue<'a>,
-        Vec<(Symbol<'a>, NetLvalue<'a>)>,
-        Symbol<'a>,
-    ),
+    pub nodes: (Brace<'a, List<Symbol<'a>, NetLvalue<'a>>>,),
 }
 
 #[derive(Debug)]
@@ -56,12 +49,7 @@ pub struct VariableLvalueIdentifier<'a> {
 
 #[derive(Debug)]
 pub struct VariableLvalueLvalue<'a> {
-    pub nodes: (
-        Symbol<'a>,
-        VariableLvalue<'a>,
-        Vec<(Symbol<'a>, VariableLvalue<'a>)>,
-        Symbol<'a>,
-    ),
+    pub nodes: (Brace<'a, List<Symbol<'a>, VariableLvalue<'a>>>,),
 }
 
 #[derive(Debug)]
@@ -103,15 +91,10 @@ pub fn net_lvalue_pattern(s: Span) -> IResult<Span, NetLvalue> {
 }
 
 pub fn net_lvalue_lvalue(s: Span) -> IResult<Span, NetLvalue> {
-    let (s, a) = symbol("{")(s)?;
-    let (s, b) = net_lvalue(s)?;
-    let (s, c) = many0(pair(symbol(","), net_lvalue))(s)?;
-    let (s, d) = symbol("}")(s)?;
+    let (s, a) = brace2(list(symbol(","), net_lvalue))(s)?;
     Ok((
         s,
-        NetLvalue::Lvalue(Box::new(NetLvalueLvalue {
-            nodes: (a, b, c, d),
-        })),
+        NetLvalue::Lvalue(Box::new(NetLvalueLvalue { nodes: (a,) })),
     ))
 }
 
@@ -146,15 +129,10 @@ pub fn variable_lvalue_pattern(s: Span) -> IResult<Span, VariableLvalue> {
 }
 
 pub fn variable_lvalue_lvalue(s: Span) -> IResult<Span, VariableLvalue> {
-    let (s, a) = symbol("{")(s)?;
-    let (s, b) = variable_lvalue(s)?;
-    let (s, c) = many0(pair(symbol(","), variable_lvalue))(s)?;
-    let (s, d) = symbol("}")(s)?;
+    let (s, a) = brace2(list(symbol(","), variable_lvalue))(s)?;
     Ok((
         s,
-        VariableLvalue::Lvalue(Box::new(VariableLvalueLvalue {
-            nodes: (a, b, c, d),
-        })),
+        VariableLvalue::Lvalue(Box::new(VariableLvalueLvalue { nodes: (a,) })),
     ))
 }
 

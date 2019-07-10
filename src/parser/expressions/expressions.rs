@@ -153,7 +153,7 @@ pub struct ExpressionUnary<'a> {
 
 #[derive(Debug)]
 pub struct ExpressionOperatorAssignment<'a> {
-    pub nodes: (Symbol<'a>, OperatorAssignment<'a>, Symbol<'a>),
+    pub nodes: (Paren<'a, OperatorAssignment<'a>>,),
 }
 
 #[derive(Debug)]
@@ -173,13 +173,7 @@ pub struct TaggedUnionExpression<'a> {
 
 #[derive(Debug)]
 pub struct InsideExpression<'a> {
-    pub nodes: (
-        Expression<'a>,
-        Symbol<'a>,
-        Symbol<'a>,
-        Vec<ValueRange<'a>>,
-        Symbol<'a>,
-    ),
+    pub nodes: (Expression<'a>, Symbol<'a>, Brace<'a, Vec<ValueRange<'a>>>),
 }
 
 #[derive(Debug)]
@@ -190,13 +184,7 @@ pub enum ValueRange<'a> {
 
 #[derive(Debug)]
 pub struct ValueRangeBinary<'a> {
-    pub nodes: (
-        Symbol<'a>,
-        Expression<'a>,
-        Symbol<'a>,
-        Expression<'a>,
-        Symbol<'a>,
-    ),
+    pub nodes: (Bracket<'a, (Expression<'a>, Symbol<'a>, Expression<'a>)>,),
 }
 
 #[derive(Debug)]
@@ -494,7 +482,7 @@ pub fn expression_operator_assignment(s: Span) -> IResult<Span, Expression> {
     let (s, a) = paren2(operator_assignment)(s)?;
     Ok((
         s,
-        Expression::OperatorAssignment(Box::new(ExpressionOperatorAssignment { nodes: a })),
+        Expression::OperatorAssignment(Box::new(ExpressionOperatorAssignment { nodes: (a,) })),
     ))
 }
 
@@ -521,15 +509,8 @@ pub fn tagged_union_expression(s: Span) -> IResult<Span, TaggedUnionExpression> 
 pub fn inside_expression(s: Span) -> IResult<Span, InsideExpression> {
     let (s, a) = expression(s)?;
     let (s, b) = symbol("inside")(s)?;
-    let (s, c) = symbol("{")(s)?;
-    let (s, d) = brace(open_range_list)(s)?;
-    let (s, e) = symbol("}")(s)?;
-    Ok((
-        s,
-        InsideExpression {
-            nodes: (a, b, c, d, e),
-        },
-    ))
+    let (s, c) = brace2(open_range_list)(s)?;
+    Ok((s, InsideExpression { nodes: (a, b, c) }))
 }
 
 pub fn value_range(s: Span) -> IResult<Span, ValueRange> {
@@ -540,17 +521,8 @@ pub fn value_range(s: Span) -> IResult<Span, ValueRange> {
 }
 
 pub fn value_range_binary(s: Span) -> IResult<Span, ValueRange> {
-    let (s, a) = symbol("[")(s)?;
-    let (s, b) = expression(s)?;
-    let (s, c) = symbol(":")(s)?;
-    let (s, d) = expression(s)?;
-    let (s, e) = symbol("]")(s)?;
-    Ok((
-        s,
-        ValueRange::Binary(ValueRangeBinary {
-            nodes: (a, b, c, d, e),
-        }),
-    ))
+    let (s, a) = bracket2(triple(expression, symbol(":"), expression))(s)?;
+    Ok((s, ValueRange::Binary(ValueRangeBinary { nodes: (a,) })))
 }
 
 pub fn mintypmax_expression(s: Span) -> IResult<Span, MintypmaxExpression> {

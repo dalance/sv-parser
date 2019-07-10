@@ -17,7 +17,7 @@ pub struct TfCall<'a> {
     pub nodes: (
         PsOrHierarchicalTfIdentifier<'a>,
         Vec<AttributeInstance<'a>>,
-        Option<(Symbol<'a>, ListOfArguments<'a>, Symbol<'a>)>,
+        Option<Paren<'a, ListOfArguments<'a>>>,
     ),
 }
 
@@ -32,7 +32,7 @@ pub enum SystemTfCall<'a> {
 pub struct SystemTfCallArgOptional<'a> {
     pub nodes: (
         SystemTfIdentifier<'a>,
-        Option<(Symbol<'a>, ListOfArguments<'a>, Symbol<'a>)>,
+        Option<Paren<'a, ListOfArguments<'a>>>,
     ),
 }
 
@@ -40,10 +40,7 @@ pub struct SystemTfCallArgOptional<'a> {
 pub struct SystemTfCallArgDataType<'a> {
     pub nodes: (
         SystemTfIdentifier<'a>,
-        Symbol<'a>,
-        DataType<'a>,
-        Option<(Symbol<'a>, Expression<'a>)>,
-        Symbol<'a>,
+        Paren<'a, (DataType<'a>, Option<(Symbol<'a>, Expression<'a>)>)>,
     ),
 }
 
@@ -51,11 +48,13 @@ pub struct SystemTfCallArgDataType<'a> {
 pub struct SystemTfCallArgExpression<'a> {
     pub nodes: (
         SystemTfIdentifier<'a>,
-        Symbol<'a>,
-        Expression<'a>,
-        Vec<(Symbol<'a>, Option<Expression<'a>>)>,
-        Option<(Symbol<'a>, Option<ClockingEvent<'a>>)>,
-        Symbol<'a>,
+        Paren<
+            'a,
+            (
+                List<Symbol<'a>, Option<Expression<'a>>>,
+                Option<(Symbol<'a>, Option<ClockingEvent<'a>>)>,
+            ),
+        >,
     ),
 }
 
@@ -86,15 +85,12 @@ pub enum ListOfArguments<'a> {
 #[derive(Debug)]
 pub struct ListOfArgumentsOrdered<'a> {
     pub nodes: (
-        Option<Expression<'a>>,
-        Vec<(Symbol<'a>, Option<Expression<'a>>)>,
+        List<Symbol<'a>, Option<Expression<'a>>>,
         Vec<(
             Symbol<'a>,
             Symbol<'a>,
             Identifier<'a>,
-            Symbol<'a>,
-            Option<Expression<'a>>,
-            Symbol<'a>,
+            Paren<'a, Option<Expression<'a>>>,
         )>,
     ),
 }
@@ -104,16 +100,12 @@ pub struct ListOfArgumentsNamed<'a> {
     pub nodes: (
         Symbol<'a>,
         Identifier<'a>,
-        Symbol<'a>,
-        Option<Expression<'a>>,
-        Symbol<'a>,
+        Paren<'a, Option<Expression<'a>>>,
         Vec<(
             Symbol<'a>,
             Symbol<'a>,
             Identifier<'a>,
-            Symbol<'a>,
-            Option<Expression<'a>>,
-            Symbol<'a>,
+            Paren<'a, Option<Expression<'a>>>,
         )>,
     ),
 }
@@ -134,7 +126,7 @@ pub struct MethodCallBodyUser<'a> {
     pub nodes: (
         MethodIdentifier<'a>,
         Vec<AttributeInstance<'a>>,
-        Option<(Symbol<'a>, ListOfArguments<'a>, Symbol<'a>)>,
+        Option<Paren<'a, ListOfArguments<'a>>>,
     ),
 }
 
@@ -149,8 +141,8 @@ pub struct ArrayManipulationCall<'a> {
     pub nodes: (
         ArrayMethodName<'a>,
         Vec<AttributeInstance<'a>>,
-        Option<(Symbol<'a>, ListOfArguments<'a>, Symbol<'a>)>,
-        Option<(Symbol<'a>, (Symbol<'a>, Expression<'a>, Symbol<'a>))>,
+        Option<Paren<'a, ListOfArguments<'a>>>,
+        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
     ),
 }
 
@@ -159,14 +151,10 @@ pub struct RandomizeCall<'a> {
     pub nodes: (
         Symbol<'a>,
         Vec<AttributeInstance<'a>>,
+        Option<Paren<'a, Option<VariableIdentifierListOrNull<'a>>>>,
         Option<(
             Symbol<'a>,
-            Option<VariableIdentifierListOrNull<'a>>,
-            Symbol<'a>,
-        )>,
-        Option<(
-            Symbol<'a>,
-            Option<(Symbol<'a>, Option<IdentifierList<'a>>, Symbol<'a>)>,
+            Option<Paren<'a, Option<IdentifierList<'a>>>>,
             ConstraintBlock<'a>,
         )>,
     ),
@@ -226,30 +214,22 @@ pub fn system_tf_call_arg_optional(s: Span) -> IResult<Span, SystemTfCall> {
 
 pub fn system_tf_call_arg_data_type(s: Span) -> IResult<Span, SystemTfCall> {
     let (s, a) = system_tf_identifier(s)?;
-    let (s, b) = symbol("(")(s)?;
-    let (s, c) = data_type(s)?;
-    let (s, d) = opt(pair(symbol(","), expression))(s)?;
-    let (s, e) = symbol(")")(s)?;
+    let (s, b) = paren2(pair(data_type, opt(pair(symbol(","), expression))))(s)?;
     Ok((
         s,
-        SystemTfCall::ArgDataType(SystemTfCallArgDataType {
-            nodes: (a, b, c, d, e),
-        }),
+        SystemTfCall::ArgDataType(SystemTfCallArgDataType { nodes: (a, b) }),
     ))
 }
 
 pub fn system_tf_call_arg_expression(s: Span) -> IResult<Span, SystemTfCall> {
     let (s, a) = system_tf_identifier(s)?;
-    let (s, b) = symbol("(")(s)?;
-    let (s, c) = expression(s)?;
-    let (s, d) = many0(pair(symbol(","), opt(expression)))(s)?;
-    let (s, e) = opt(pair(symbol(","), opt(clocking_event)))(s)?;
-    let (s, f) = symbol(")")(s)?;
+    let (s, b) = paren2(pair(
+        list(symbol(","), opt(expression)),
+        opt(pair(symbol(","), opt(clocking_event))),
+    ))(s)?;
     Ok((
         s,
-        SystemTfCall::ArgExpression(SystemTfCallArgExpression {
-            nodes: (a, b, c, d, e, f),
-        }),
+        SystemTfCall::ArgExpression(SystemTfCallArgExpression { nodes: (a, b) }),
     ))
 }
 
@@ -282,40 +262,33 @@ pub fn list_of_arguments(s: Span) -> IResult<Span, ListOfArguments> {
 }
 
 pub fn list_of_arguments_ordered(s: Span) -> IResult<Span, ListOfArguments> {
-    let (s, a) = opt(expression)(s)?;
-    let (s, b) = many0(pair(symbol(","), opt(expression)))(s)?;
-    let (s, c) = many0(tuple((
+    let (s, a) = list(symbol(","), opt(expression))(s)?;
+    let (s, b) = many0(tuple((
         symbol(","),
         symbol("."),
         identifier,
-        symbol("("),
-        opt(expression),
-        symbol(")"),
+        paren2(opt(expression)),
     )))(s)?;
     Ok((
         s,
-        ListOfArguments::Ordered(ListOfArgumentsOrdered { nodes: (a, b, c) }),
+        ListOfArguments::Ordered(ListOfArgumentsOrdered { nodes: (a, b) }),
     ))
 }
 
 pub fn list_of_arguments_named(s: Span) -> IResult<Span, ListOfArguments> {
     let (s, a) = symbol(".")(s)?;
     let (s, b) = identifier(s)?;
-    let (s, c) = symbol("(")(s)?;
-    let (s, d) = opt(expression)(s)?;
-    let (s, e) = symbol(")")(s)?;
-    let (s, f) = many0(tuple((
+    let (s, c) = paren2(opt(expression))(s)?;
+    let (s, d) = many0(tuple((
         symbol(","),
         symbol("."),
         identifier,
-        symbol("("),
-        opt(expression),
-        symbol(")"),
+        paren2(opt(expression)),
     )))(s)?;
     Ok((
         s,
         ListOfArguments::Named(ListOfArgumentsNamed {
-            nodes: (a, b, c, d, e, f),
+            nodes: (a, b, c, d),
         }),
     ))
 }

@@ -100,9 +100,7 @@ pub struct ModuleDeclarationWildcard<'a> {
         ModuleKeyword<'a>,
         Option<Lifetime<'a>>,
         ModuleIdentifier<'a>,
-        Symbol<'a>,
-        Symbol<'a>,
-        Symbol<'a>,
+        Paren<'a, Symbol<'a>>,
         Symbol<'a>,
         Option<TimeunitsDeclaration<'a>>,
         Vec<ModuleItem<'a>>,
@@ -165,9 +163,7 @@ pub struct InterfaceDeclarationWildcard<'a> {
         Symbol<'a>,
         Option<Lifetime<'a>>,
         InterfaceIdentifier<'a>,
-        Symbol<'a>,
-        Symbol<'a>,
-        Symbol<'a>,
+        Paren<'a, Symbol<'a>>,
         Symbol<'a>,
         Option<TimeunitsDeclaration<'a>>,
         Vec<InterfaceItem<'a>>,
@@ -251,9 +247,7 @@ pub struct ProgramDeclarationWildcard<'a> {
         Vec<AttributeInstance<'a>>,
         Symbol<'a>,
         ProgramIdentifier<'a>,
-        Symbol<'a>,
-        Symbol<'a>,
-        Symbol<'a>,
+        Paren<'a, Symbol<'a>>,
         Symbol<'a>,
         Option<TimeunitsDeclaration<'a>>,
         Vec<ProgramItem<'a>>,
@@ -305,7 +299,7 @@ pub struct CheckerDeclaration<'a> {
     pub nodes: (
         Symbol<'a>,
         CheckerIdentifier<'a>,
-        Option<(Symbol<'a>, Option<CheckerPortList<'a>>, Symbol<'a>)>,
+        Option<Paren<'a, Option<CheckerPortList<'a>>>>,
         Symbol<'a>,
         Vec<(Vec<AttributeInstance<'a>>, CheckerOrGenerateItem<'a>)>,
         Symbol<'a>,
@@ -324,13 +318,9 @@ pub struct ClassDeclaration<'a> {
         Option<(
             Symbol<'a>,
             ClassType<'a>,
-            Option<(Symbol<'a>, ListOfArguments<'a>, Symbol<'a>)>,
+            Option<Paren<'a, ListOfArguments<'a>>>,
         )>,
-        Option<(
-            Symbol<'a>,
-            InterfaceClassType<'a>,
-            Vec<(Symbol<'a>, InterfaceClassType<'a>)>,
-        )>,
+        Option<(Symbol<'a>, List<Symbol<'a>, InterfaceClassType<'a>>)>,
         Symbol<'a>,
         Vec<ClassItem<'a>>,
         Symbol<'a>,
@@ -355,11 +345,7 @@ pub struct InterfaceClassDeclaration<'a> {
         Symbol<'a>,
         ClassIdentifier<'a>,
         Option<ParameterPortList<'a>>,
-        Option<(
-            Symbol<'a>,
-            InterfaceClassType<'a>,
-            Vec<(Symbol<'a>, InterfaceClassType<'a>)>,
-        )>,
+        Option<(Symbol<'a>, List<Symbol<'a>, InterfaceClassType<'a>>)>,
         Symbol<'a>,
         Vec<InterfaceClassItem<'a>>,
         Symbol<'a>,
@@ -566,18 +552,16 @@ pub fn module_declaration_wildcard(s: Span) -> IResult<Span, ModuleDeclaration> 
     let (s, b) = module_keyword(s)?;
     let (s, c) = opt(lifetime)(s)?;
     let (s, d) = module_identifier(s)?;
-    let (s, e) = symbol("(")(s)?;
-    let (s, f) = symbol(".*")(s)?;
-    let (s, g) = symbol(")")(s)?;
-    let (s, h) = symbol(";")(s)?;
-    let (s, i) = opt(timeunits_declaration)(s)?;
-    let (s, j) = many0(module_item)(s)?;
-    let (s, k) = symbol("endmodule")(s)?;
-    let (s, l) = opt(pair(symbol(":"), module_identifier))(s)?;
+    let (s, e) = paren2(symbol(".*"))(s)?;
+    let (s, f) = symbol(";")(s)?;
+    let (s, g) = opt(timeunits_declaration)(s)?;
+    let (s, h) = many0(module_item)(s)?;
+    let (s, i) = symbol("endmodule")(s)?;
+    let (s, j) = opt(pair(symbol(":"), module_identifier))(s)?;
     Ok((
         s,
         ModuleDeclaration::Wildcard(ModuleDeclarationWildcard {
-            nodes: (a, b, c, d, e, f, g, h, i, j, k, l),
+            nodes: (a, b, c, d, e, f, g, h, i, j),
         }),
     ))
 }
@@ -650,18 +634,16 @@ pub fn interface_declaration_wildcard(s: Span) -> IResult<Span, InterfaceDeclara
     let (s, b) = symbol("interface")(s)?;
     let (s, c) = opt(lifetime)(s)?;
     let (s, d) = interface_identifier(s)?;
-    let (s, e) = symbol("(")(s)?;
-    let (s, f) = symbol(".*")(s)?;
-    let (s, g) = symbol(")")(s)?;
-    let (s, h) = symbol(";")(s)?;
-    let (s, i) = opt(timeunits_declaration)(s)?;
-    let (s, j) = many0(interface_item)(s)?;
-    let (s, k) = symbol("endinterface")(s)?;
-    let (s, l) = opt(pair(symbol(":"), interface_identifier))(s)?;
+    let (s, e) = paren2(symbol(".*"))(s)?;
+    let (s, f) = symbol(";")(s)?;
+    let (s, g) = opt(timeunits_declaration)(s)?;
+    let (s, h) = many0(interface_item)(s)?;
+    let (s, i) = symbol("endinterface")(s)?;
+    let (s, j) = opt(pair(symbol(":"), interface_identifier))(s)?;
     Ok((
         s,
         InterfaceDeclaration::Wildcard(InterfaceDeclarationWildcard {
-            nodes: (a, b, c, d, e, f, g, h, i, j, k, l),
+            nodes: (a, b, c, d, e, f, g, h, i, j),
         }),
     ))
 }
@@ -760,18 +742,16 @@ pub fn program_declaration_wildcard(s: Span) -> IResult<Span, ProgramDeclaration
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = symbol("program")(s)?;
     let (s, c) = program_identifier(s)?;
-    let (s, d) = symbol("(")(s)?;
-    let (s, e) = symbol(".*")(s)?;
-    let (s, f) = symbol(")")(s)?;
-    let (s, g) = symbol(";")(s)?;
-    let (s, h) = opt(timeunits_declaration)(s)?;
-    let (s, i) = many0(program_item)(s)?;
-    let (s, j) = symbol("endprogram")(s)?;
-    let (s, k) = opt(pair(symbol(":"), program_identifier))(s)?;
+    let (s, d) = paren2(symbol(".*"))(s)?;
+    let (s, e) = symbol(";")(s)?;
+    let (s, f) = opt(timeunits_declaration)(s)?;
+    let (s, g) = many0(program_item)(s)?;
+    let (s, h) = symbol("endprogram")(s)?;
+    let (s, i) = opt(pair(symbol(":"), program_identifier))(s)?;
     Ok((
         s,
         ProgramDeclaration::Wildcard(ProgramDeclarationWildcard {
-            nodes: (a, b, c, d, e, f, g, h, i, j, k),
+            nodes: (a, b, c, d, e, f, g, h, i),
         }),
     ))
 }
@@ -831,7 +811,7 @@ pub fn program_ansi_header(s: Span) -> IResult<Span, ProgramAnsiHeader> {
 pub fn checker_declaration(s: Span) -> IResult<Span, CheckerDeclaration> {
     let (s, a) = symbol("checker")(s)?;
     let (s, b) = checker_identifier(s)?;
-    let (s, c) = opt(triple(symbol("("), opt(checker_port_list), symbol(")")))(s)?;
+    let (s, c) = opt(paren2(opt(checker_port_list)))(s)?;
     let (s, d) = symbol(";")(s)?;
     let (s, e) = many0(pair(many0(attribute_instance), checker_or_generate_item))(s)?;
     let (s, f) = symbol("endchecker")(s)?;
@@ -853,12 +833,11 @@ pub fn class_declaration(s: Span) -> IResult<Span, ClassDeclaration> {
     let (s, f) = opt(triple(
         symbol("extends"),
         class_type,
-        opt(triple(symbol("("), list_of_arguments, symbol(")"))),
+        opt(paren2(list_of_arguments)),
     ))(s)?;
-    let (s, g) = opt(triple(
+    let (s, g) = opt(pair(
         symbol("implements"),
-        interface_class_type,
-        many0(pair(symbol(","), interface_class_type)),
+        list(symbol(","), interface_class_type),
     ))(s)?;
     let (s, h) = symbol(";")(s)?;
     let (s, i) = many0(class_item)(s)?;
@@ -883,10 +862,9 @@ pub fn interface_class_declaration(s: Span) -> IResult<Span, InterfaceClassDecla
     let (s, b) = symbol("class")(s)?;
     let (s, c) = class_identifier(s)?;
     let (s, d) = opt(parameter_port_list)(s)?;
-    let (s, e) = opt(triple(
+    let (s, e) = opt(pair(
         symbol("extends"),
-        interface_class_type,
-        many0(pair(symbol(","), interface_class_type)),
+        list(symbol(","), interface_class_type),
     ))(s)?;
     let (s, f) = symbol(";")(s)?;
     let (s, g) = many0(interface_class_item)(s)?;

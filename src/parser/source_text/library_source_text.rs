@@ -25,13 +25,8 @@ pub struct LibraryDeclaration<'a> {
     pub nodes: (
         Symbol<'a>,
         LibraryIdentifier<'a>,
-        FilePathSpec<'a>,
-        Vec<(Symbol<'a>, FilePathSpec<'a>)>,
-        Option<(
-            Symbol<'a>,
-            FilePathSpec<'a>,
-            Vec<(Symbol<'a>, FilePathSpec<'a>)>,
-        )>,
+        List<Symbol<'a>, FilePathSpec<'a>>,
+        Option<(Symbol<'a>, List<Symbol<'a>, FilePathSpec<'a>>)>,
         Symbol<'a>,
     ),
 }
@@ -71,18 +66,13 @@ pub fn library_description(s: Span) -> IResult<Span, LibraryDescription> {
 pub fn library_declaration(s: Span) -> IResult<Span, LibraryDeclaration> {
     let (s, a) = symbol("library")(s)?;
     let (s, b) = library_identifier(s)?;
-    let (s, c) = file_path_spec(s)?;
-    let (s, d) = many0(pair(symbol(","), file_path_spec))(s)?;
-    let (s, e) = opt(triple(
-        symbol("-incdir"),
-        file_path_spec,
-        many0(pair(symbol(","), file_path_spec)),
-    ))(s)?;
-    let (s, f) = symbol(";")(s)?;
+    let (s, c) = list(symbol(","), file_path_spec)(s)?;
+    let (s, d) = opt(pair(symbol("-incdir"), list(symbol(","), file_path_spec)))(s)?;
+    let (s, e) = symbol(";")(s)?;
     Ok((
         s,
         LibraryDeclaration {
-            nodes: (a, b, c, d, e, f),
+            nodes: (a, b, c, d, e),
         },
     ))
 }

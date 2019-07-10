@@ -34,7 +34,7 @@ pub struct ConstantPrimaryPsParameter<'a> {
 pub struct ConstantPrimarySpecparam<'a> {
     pub nodes: (
         SpecparamIdentifier<'a>,
-        Option<(Symbol<'a>, ConstantRangeExpression<'a>, Symbol<'a>)>,
+        Option<Bracket<'a, ConstantRangeExpression<'a>>>,
     ),
 }
 
@@ -52,7 +52,7 @@ pub struct ConstantPrimaryEnum<'a> {
 pub struct ConstantPrimaryConcatenation<'a> {
     pub nodes: (
         ConstantConcatenation<'a>,
-        Option<(Symbol<'a>, ConstantRangeExpression<'a>, Symbol<'a>)>,
+        Option<Bracket<'a, ConstantRangeExpression<'a>>>,
     ),
 }
 
@@ -60,13 +60,13 @@ pub struct ConstantPrimaryConcatenation<'a> {
 pub struct ConstantPrimaryMultipleConcatenation<'a> {
     pub nodes: (
         ConstantMultipleConcatenation<'a>,
-        Option<(Symbol<'a>, ConstantRangeExpression<'a>, Symbol<'a>)>,
+        Option<Bracket<'a, ConstantRangeExpression<'a>>>,
     ),
 }
 
 #[derive(Debug)]
 pub struct ConstantPrimaryMintypmaxExpression<'a> {
-    pub nodes: (Symbol<'a>, ConstantMintypmaxExpression<'a>, Symbol<'a>),
+    pub nodes: (Paren<'a, ConstantMintypmaxExpression<'a>>,),
 }
 
 #[derive(Debug)]
@@ -81,7 +81,7 @@ pub enum ModulePathPrimary<'a> {
 
 #[derive(Debug)]
 pub struct ModulePathPrimaryMintypmax<'a> {
-    pub nodes: (Symbol<'a>, ModulePathMintypmaxExpression<'a>, Symbol<'a>),
+    pub nodes: (Paren<'a, ModulePathMintypmaxExpression<'a>>,),
 }
 
 #[derive(Debug)]
@@ -114,23 +114,20 @@ pub struct PrimaryHierarchical<'a> {
 
 #[derive(Debug)]
 pub struct PrimaryConcatenation<'a> {
-    pub nodes: (
-        Concatenation<'a>,
-        Option<(Symbol<'a>, RangeExpression<'a>, Symbol<'a>)>,
-    ),
+    pub nodes: (Concatenation<'a>, Option<Bracket<'a, RangeExpression<'a>>>),
 }
 
 #[derive(Debug)]
 pub struct PrimaryMultipleConcatenation<'a> {
     pub nodes: (
         MultipleConcatenation<'a>,
-        Option<(Symbol<'a>, RangeExpression<'a>, Symbol<'a>)>,
+        Option<Bracket<'a, RangeExpression<'a>>>,
     ),
 }
 
 #[derive(Debug)]
 pub struct PrimaryMintypmaxExpression<'a> {
-    pub nodes: (Symbol<'a>, MintypmaxExpression<'a>, Symbol<'a>),
+    pub nodes: (Paren<'a, MintypmaxExpression<'a>>,),
 }
 
 #[derive(Debug)]
@@ -201,7 +198,7 @@ pub enum ImplicitClassHandle<'a> {
 
 #[derive(Debug)]
 pub struct BitSelect<'a> {
-    nodes: (Vec<(Symbol<'a>, Expression<'a>, Symbol<'a>)>,),
+    nodes: (Vec<Bracket<'a, Expression<'a>>>,),
 }
 
 #[derive(Debug)]
@@ -213,7 +210,7 @@ pub struct Select<'a> {
             MemberIdentifier<'a>,
         )>,
         BitSelect<'a>,
-        Option<(Symbol<'a>, PartSelectRange<'a>, Symbol<'a>)>,
+        Option<Bracket<'a, PartSelectRange<'a>>>,
     ),
 }
 
@@ -231,7 +228,7 @@ pub struct NonrangeSelect<'a> {
 
 #[derive(Debug)]
 pub struct ConstantBitSelect<'a> {
-    nodes: (Vec<(Symbol<'a>, ConstantExpression<'a>, Symbol<'a>)>,),
+    nodes: (Vec<Bracket<'a, ConstantExpression<'a>>>,),
 }
 
 #[derive(Debug)]
@@ -243,7 +240,7 @@ pub struct ConstantSelect<'a> {
             MemberIdentifier<'a>,
         )>,
         ConstantBitSelect<'a>,
-        Option<(Symbol<'a>, ConstantPartSelectRange<'a>, Symbol<'a>)>,
+        Option<Bracket<'a, ConstantPartSelectRange<'a>>>,
     ),
 }
 
@@ -252,9 +249,7 @@ pub struct ConstantCast<'a> {
     pub nodes: (
         CastingType<'a>,
         Symbol<'a>,
-        Symbol<'a>,
-        ConstantExpression<'a>,
-        Symbol<'a>,
+        Paren<'a, ConstantExpression<'a>>,
     ),
 }
 
@@ -265,13 +260,7 @@ pub struct ConstantLetExpression<'a> {
 
 #[derive(Debug)]
 pub struct Cast<'a> {
-    pub nodes: (
-        CastingType<'a>,
-        Symbol<'a>,
-        Symbol<'a>,
-        Expression<'a>,
-        Symbol<'a>,
-    ),
+    pub nodes: (CastingType<'a>, Symbol<'a>, Paren<'a, Expression<'a>>),
 }
 
 // -----------------------------------------------------------------------------
@@ -362,7 +351,7 @@ pub fn constant_primary_mintypmax_expression(s: Span) -> IResult<Span, ConstantP
     let (s, a) = paren2(constant_mintypmax_expression)(s)?;
     Ok((
         s,
-        ConstantPrimary::MintypmaxExpression(ConstantPrimaryMintypmaxExpression { nodes: a }),
+        ConstantPrimary::MintypmaxExpression(ConstantPrimaryMintypmaxExpression { nodes: (a,) }),
     ))
 }
 
@@ -387,7 +376,7 @@ pub fn module_path_primary_mintypmax_expression(s: Span) -> IResult<Span, Module
     let (s, a) = paren2(module_path_mintypmax_expression)(s)?;
     Ok((
         s,
-        ModulePathPrimary::Mintypmax(ModulePathPrimaryMintypmax { nodes: a }),
+        ModulePathPrimary::Mintypmax(ModulePathPrimaryMintypmax { nodes: (a,) }),
     ))
 }
 
@@ -450,7 +439,7 @@ pub fn primary_mintypmax_expression(s: Span) -> IResult<Span, Primary> {
     let (s, a) = paren2(mintypmax_expression)(s)?;
     Ok((
         s,
-        Primary::MintypmaxExpression(PrimaryMintypmaxExpression { nodes: a }),
+        Primary::MintypmaxExpression(PrimaryMintypmaxExpression { nodes: (a,) }),
     ))
 }
 
@@ -583,13 +572,8 @@ pub fn constant_select(s: Span) -> IResult<Span, ConstantSelect> {
 pub fn constant_cast(s: Span) -> IResult<Span, ConstantCast> {
     let (s, a) = casting_type(s)?;
     let (s, b) = symbol("'")(s)?;
-    let (s, (c, d, e)) = paren2(constant_expression)(s)?;
-    Ok((
-        s,
-        ConstantCast {
-            nodes: (a, b, c, d, e),
-        },
-    ))
+    let (s, c) = paren2(constant_expression)(s)?;
+    Ok((s, ConstantCast { nodes: (a, b, c) }))
 }
 
 pub fn constant_let_expression(s: Span) -> IResult<Span, ConstantLetExpression> {
@@ -600,13 +584,8 @@ pub fn constant_let_expression(s: Span) -> IResult<Span, ConstantLetExpression> 
 pub fn cast(s: Span) -> IResult<Span, Cast> {
     let (s, a) = casting_type(s)?;
     let (s, b) = symbol("'")(s)?;
-    let (s, (c, d, e)) = paren2(expression)(s)?;
-    Ok((
-        s,
-        Cast {
-            nodes: (a, b, c, d, e),
-        },
-    ))
+    let (s, c) = paren2(expression)(s)?;
+    Ok((s, Cast { nodes: (a, b, c) }))
 }
 
 // -----------------------------------------------------------------------------

@@ -20,6 +20,31 @@ pub enum WhiteSpace<'a> {
     Comment(Comment<'a>),
 }
 
+#[derive(Debug)]
+pub struct Paren<'a, T: 'a> {
+    pub nodes: (Symbol<'a>, T, Symbol<'a>),
+}
+
+#[derive(Debug)]
+pub struct Brace<'a, T: 'a> {
+    pub nodes: (Symbol<'a>, T, Symbol<'a>),
+}
+
+#[derive(Debug)]
+pub struct Bracket<'a, T: 'a> {
+    pub nodes: (Symbol<'a>, T, Symbol<'a>),
+}
+
+#[derive(Debug)]
+pub struct ApostropheBrace<'a, T: 'a> {
+    pub nodes: (Symbol<'a>, T, Symbol<'a>),
+}
+
+#[derive(Debug)]
+pub struct List<U, T> {
+    pub nodes: (T, Vec<(U, T)>),
+}
+
 // -----------------------------------------------------------------------------
 
 pub fn ws<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, (O, Vec<WhiteSpace<'a>>)>
@@ -37,7 +62,7 @@ pub fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol<'
     move |s: Span<'a>| map(ws(tag(t.clone())), |x| Symbol { nodes: x })(s)
 }
 
-pub fn paren2<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, (Symbol<'a>, O, Symbol<'a>)>
+pub fn paren2<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Paren<O>>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
@@ -45,13 +70,11 @@ where
         let (s, a) = symbol("(")(s)?;
         let (s, b) = f(s)?;
         let (s, c) = symbol(")")(s)?;
-        Ok((s, (a, b, c)))
+        Ok((s, Paren { nodes: (a, b, c) }))
     }
 }
 
-pub fn bracket2<'a, O, F>(
-    f: F,
-) -> impl Fn(Span<'a>) -> IResult<Span<'a>, (Symbol<'a>, O, Symbol<'a>)>
+pub fn bracket2<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Bracket<O>>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
@@ -59,7 +82,55 @@ where
         let (s, a) = symbol("[")(s)?;
         let (s, b) = f(s)?;
         let (s, c) = symbol("]")(s)?;
-        Ok((s, (a, b, c)))
+        Ok((s, Bracket { nodes: (a, b, c) }))
+    }
+}
+
+pub fn brace2<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Brace<O>>
+where
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+{
+    move |s: Span<'a>| {
+        let (s, a) = symbol("{")(s)?;
+        let (s, b) = f(s)?;
+        let (s, c) = symbol("}")(s)?;
+        Ok((s, Brace { nodes: (a, b, c) }))
+    }
+}
+
+pub fn apostrophe_brace2<'a, O, F>(
+    f: F,
+) -> impl Fn(Span<'a>) -> IResult<Span<'a>, ApostropheBrace<O>>
+where
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+{
+    move |s: Span<'a>| {
+        let (s, a) = symbol("'{")(s)?;
+        let (s, b) = f(s)?;
+        let (s, c) = symbol("}")(s)?;
+        Ok((s, ApostropheBrace { nodes: (a, b, c) }))
+    }
+}
+
+pub fn list<'a, O1, O2, F, G>(f: F, g: G) -> impl Fn(Span<'a>) -> IResult<Span<'a>, List<O1, O2>>
+where
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O1>,
+    G: Fn(Span<'a>) -> IResult<Span<'a>, O2>,
+{
+    move |s: Span<'a>| {
+        let (s, a) = g(s)?;
+        let mut s = s.clone();
+        let mut ret = Vec::new();
+        loop {
+            if let Ok((t, b)) = f(s) {
+                let (u, c) = g(t)?;
+                s = u;
+                ret.push((b, c));
+            } else {
+                break;
+            }
+        }
+        Ok((s, List { nodes: (a, ret) }))
     }
 }
 

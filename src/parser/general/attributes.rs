@@ -1,6 +1,5 @@
 use crate::parser::*;
 use nom::combinator::*;
-use nom::multi::*;
 use nom::sequence::*;
 use nom::IResult;
 
@@ -8,12 +7,7 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub struct AttributeInstance<'a> {
-    pub nodes: (
-        Symbol<'a>,
-        AttrSpec<'a>,
-        Vec<(Symbol<'a>, AttrSpec<'a>)>,
-        Symbol<'a>,
-    ),
+    pub nodes: (Symbol<'a>, List<Symbol<'a>, AttrSpec<'a>>, Symbol<'a>),
 }
 
 #[derive(Debug)]
@@ -25,15 +19,9 @@ pub struct AttrSpec<'a> {
 
 pub fn attribute_instance(s: Span) -> IResult<Span, AttributeInstance> {
     let (s, a) = symbol("(*")(s)?;
-    let (s, b) = attr_spec(s)?;
-    let (s, c) = many0(pair(symbol(","), attr_spec))(s)?;
-    let (s, d) = symbol("*)")(s)?;
-    Ok((
-        s,
-        AttributeInstance {
-            nodes: (a, b, c, d),
-        },
-    ))
+    let (s, b) = list(symbol(","), attr_spec)(s)?;
+    let (s, c) = symbol("*)")(s)?;
+    Ok((s, AttributeInstance { nodes: (a, b, c) }))
 }
 
 pub fn attr_spec(s: Span) -> IResult<Span, AttrSpec> {

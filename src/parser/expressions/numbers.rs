@@ -1,4 +1,6 @@
+use crate::node::*;
 use crate::parser::*;
+use node_derive::Node;
 use nom::branch::*;
 use nom::bytes::complete::*;
 use nom::character::complete::*;
@@ -9,13 +11,13 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum Number<'a> {
     IntegralNumber(IntegralNumber<'a>),
     RealNumber(RealNumber<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum IntegralNumber<'a> {
     DecimalNumber(DecimalNumber<'a>),
     OctalNumber(OctalNumber<'a>),
@@ -23,7 +25,7 @@ pub enum IntegralNumber<'a> {
     HexNumber(HexNumber<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum DecimalNumber<'a> {
     UnsignedNumber(UnsignedNumber<'a>),
     BaseUnsigned(DecimalNumberBaseUnsigned<'a>),
@@ -31,59 +33,59 @@ pub enum DecimalNumber<'a> {
     BaseZNumber(DecimalNumberBaseZNumber<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DecimalNumberBaseUnsigned<'a> {
     pub nodes: (Option<Size<'a>>, DecimalBase<'a>, UnsignedNumber<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DecimalNumberBaseXNumber<'a> {
     pub nodes: (Option<Size<'a>>, DecimalBase<'a>, XNumber<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DecimalNumberBaseZNumber<'a> {
     pub nodes: (Option<Size<'a>>, DecimalBase<'a>, ZNumber<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct BinaryNumber<'a> {
     pub nodes: (Option<Size<'a>>, BinaryBase<'a>, BinaryValue<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct OctalNumber<'a> {
     pub nodes: (Option<Size<'a>>, OctalBase<'a>, OctalValue<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct HexNumber<'a> {
     pub nodes: (Option<Size<'a>>, HexBase<'a>, HexValue<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum Sign<'a> {
     Plus(Symbol<'a>),
     Minus(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct Size<'a> {
     pub nodes: (NonZeroUnsignedNumber<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NonZeroUnsignedNumber<'a> {
     pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum RealNumber<'a> {
     FixedPointNumber(FixedPointNumber<'a>),
     Floating(RealNumberFloating<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct RealNumberFloating<'a> {
     pub nodes: (
         UnsignedNumber<'a>,
@@ -94,67 +96,67 @@ pub struct RealNumberFloating<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct FixedPointNumber<'a> {
     pub nodes: (UnsignedNumber<'a>, Symbol<'a>, UnsignedNumber<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct Exp<'a> {
     pub nodes: (Symbol<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct UnsignedNumber<'a> {
     pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct BinaryValue<'a> {
     pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct OctalValue<'a> {
     pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct HexValue<'a> {
     pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DecimalBase<'a> {
     pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct BinaryBase<'a> {
     pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct OctalBase<'a> {
     pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct HexBase<'a> {
     pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct XNumber<'a> {
     pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ZNumber<'a> {
     pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct UnbasedUnsizedLiteral<'a> {
     pub nodes: (Symbol<'a>,),
 }
@@ -546,5 +548,17 @@ mod tests {
         parser_test!(unbased_unsized_literal, "'1", Ok((_, _)));
         parser_test!(unbased_unsized_literal, "'x", Ok((_, _)));
         parser_test!(unbased_unsized_literal, "'z", Ok((_, _)));
+    }
+
+    #[test]
+    fn test_node() {
+        if let Ok((_, x)) = all_consuming(number)(Span::new_extra("10", 0)) {
+            //assert_eq!(x.test(), "aaaa");
+            //let y: AnyNode = (&x).into();
+            for a in &x {
+                dbg!(a);
+                //assert_eq!(format!("{:?}", a), "aaa");
+            }
+        }
     }
 }

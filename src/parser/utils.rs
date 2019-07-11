@@ -1,4 +1,6 @@
+use crate::node::*;
 use crate::parser::*;
+use node_derive::Node;
 use nom::branch::*;
 use nom::bytes::complete::*;
 use nom::character::complete::*;
@@ -9,12 +11,12 @@ use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct Symbol<'a> {
     pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum WhiteSpace<'a> {
     Space(Span<'a>),
     Comment(Comment<'a>),

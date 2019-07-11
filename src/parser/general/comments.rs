@@ -1,11 +1,13 @@
+use crate::node::*;
 use crate::parser::*;
+use node_derive::Node;
 use nom::branch::*;
 use nom::bytes::complete::*;
 use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct Comment<'a> {
     nodes: (Span<'a>,),
 }

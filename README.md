@@ -54,7 +54,7 @@ A parser library for System Verilog.
 | behavioral_statements             | case_statements                       |      |        |      |
 | behavioral_statements             | patterns                              |      |        |      |
 | behavioral_statements             | looping_statements                    |      |        |      |
-| behavioral_statements             | subroutine_call_statements            |      |        |      |
+| behavioral_statements             | subroutine_call_statements            | x    | x      |      |
 | behavioral_statements             | assertion_statements                  |      |        |      |
 | behavioral_statements             | clocking_block                        |      |        |      |
 | behavioral_statements             | randsequence                          |      |        |      |

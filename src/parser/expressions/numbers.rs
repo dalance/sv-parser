@@ -551,7 +551,7 @@ mod tests {
 
     #[test]
     fn test_node() {
-        if let Ok((_, x)) = all_consuming(number)(Span::new_extra("10", 0)) {
+        if let Ok((_, x)) = all_consuming(number)(Span::new_extra("10.00", 0)) {
             //assert_eq!(x.test(), "aaaa");
             //let y: AnyNode = (&x).into();
             for a in &x {

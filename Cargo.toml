@@ -9,9 +9,14 @@ license = "MIT"
 readme = "README.md"
 description = ""
 edition = "2018"
+build = "build.rs"
 
 [dependencies]
 nom = "5.0.0"
 nom_locate = { git = "https://github.com/fflorent/nom_locate" }
 str-concat = "*"
 node_derive = { path = "./node_derive" }
+
+[build-dependencies]
+walkdir = "2"
+regex = "1"

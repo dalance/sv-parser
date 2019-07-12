@@ -9,38 +9,63 @@ use nom::{Err, IResult};
 
 #[derive(Debug, Node)]
 pub enum UnpackedDimension<'a> {
-    Range(ConstantRange<'a>),
-    Expression(ConstantExpression<'a>),
+    Range(UnpackedDimensionRange<'a>),
+    Expression(UnpackedDimensionExpression<'a>),
+}
+
+#[derive(Debug, Node)]
+pub struct UnpackedDimensionRange<'a> {
+    pub nodes: (Bracket<'a, ConstantRange<'a>>,),
+}
+
+#[derive(Debug, Node)]
+pub struct UnpackedDimensionExpression<'a> {
+    pub nodes: (Bracket<'a, ConstantExpression<'a>>,),
 }
 
 #[derive(Debug, Node)]
 pub enum PackedDimension<'a> {
-    Range(ConstantRange<'a>),
+    Range(PackedDimensionRange<'a>),
     Unsized(UnsizedDimension<'a>),
+}
+
+#[derive(Debug, Node)]
+pub struct PackedDimensionRange<'a> {
+    pub nodes: (Bracket<'a, ConstantRange<'a>>,),
 }
 
 #[derive(Debug, Node)]
 pub enum AssociativeDimension<'a> {
-    DataType(DataType<'a>),
-    Asterisk(Symbol<'a>),
+    DataType(AssociativeDimensionDataType<'a>),
+    Asterisk(AssociativeDimensionAsterisk<'a>),
+}
+
+#[derive(Debug, Node)]
+pub struct AssociativeDimensionDataType<'a> {
+    pub nodes: (Bracket<'a, DataType<'a>>,),
+}
+
+#[derive(Debug, Node)]
+pub struct AssociativeDimensionAsterisk<'a> {
+    pub nodes: (Bracket<'a, Symbol<'a>>,),
 }
 
 #[derive(Debug, Node)]
 pub enum VariableDimension<'a> {
-    Unsized(UnsizedDimension<'a>),
-    Unpacked(UnpackedDimension<'a>),
-    Associative(AssociativeDimension<'a>),
-    Queue(QueueDimension<'a>),
+    UnsizedDimension(UnsizedDimension<'a>),
+    UnpackedDimension(UnpackedDimension<'a>),
+    AssociativeDimension(AssociativeDimension<'a>),
+    QueueDimension(QueueDimension<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct QueueDimension<'a> {
-    pub nodes: (Option<ConstantExpression<'a>>,),
+    pub nodes: (Bracket<'a, (Symbol<'a>, Option<(Symbol<'a>, ConstantExpression<'a>)>)>,),
 }
 
 #[derive(Debug, Node)]
 pub struct UnsizedDimension<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: ((Symbol<'a>, Symbol<'a>),),
 }
 
 // -----------------------------------------------------------------------------

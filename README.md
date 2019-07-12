@@ -15,27 +15,27 @@ A parser library for System Verilog.
 | source_text                       | checker_items                         |      |        |      |
 | source_text                       | class_items                           |      |        |      |
 | source_text                       | constraints                           |      |        |      |
-| source_text                       | package_items                         |      |        |      |
+| source_text                       | package_items                         | x    | x      |      |
 | declaration                       | module_parameter_declarations         | x    | x      |      |
 | declaration                       | port_declarations                     | x    | x      |      |
 | declaration                       | type_declarations                     | x    | x      |      |
-| declaration                       | net_and_variable_types                |      |        |      |
+| declaration                       | net_and_variable_types                | x    |        |      |
 | declaration                       | strengths                             | x    | x      | x    |
 | declaration                       | delays                                | x    | x      |      |
-| declaration                       | declaration_lists                     |      |        |      |
-| declaration                       | declaration_assignments               |      |        |      |
-| declaration                       | declaration_ranges                    |      |        |      |
-| declaration                       | function_declarations                 |      |        |      |
-| declaration                       | task_declarations                     |      |        |      |
+| declaration                       | declaration_lists                     | x    |        |      |
+| declaration                       | declaration_assignments               | x    |        |      |
+| declaration                       | declaration_ranges                    | x    |        |      |
+| declaration                       | function_declarations                 | x    |        |      |
+| declaration                       | task_declarations                     | x    |        |      |
 | declaration                       | block_item_declarations               | x    | x      |      |
-| declaration                       | interface_declarations                |      |        |      |
-| declaration                       | assertion_declarations                |      |        |      |
+| declaration                       | interface_declarations                | x    |        |      |
+| declaration                       | assertion_declarations                | x    |        |      |
 | declaration                       | covergroup_declarations               |      |        |      |
 | declaration                       | let_declarations                      |      |        |      |
-| primitive_instance                | primitive_instantiation_and_instances |      |        |      |
-| primitive_instance                | primitive_strengths                   |      |        |      |
-| primitive_instance                | primitive_terminals                   |      |        |      |
-| primitive_instance                | primitive_gate_and_switch_types       |      |        |      |
+| primitive_instance                | primitive_instantiation_and_instances | x    | x      |      |
+| primitive_instance                | primitive_strengths                   | x    | x      | x    |
+| primitive_instance                | primitive_terminals                   | x    | x      |      |
+| primitive_instance                | primitive_gate_and_switch_types       | x    | x      | x    |
 | instantiations                    | module_instantiation                  | x    | x      |      |
 | instantiations                    | interface_instantiation               | x    | x      |      |
 | instantiations                    | program_instantiation                 | x    | x      |      |

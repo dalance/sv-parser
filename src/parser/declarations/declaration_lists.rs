@@ -9,78 +9,84 @@ use nom::{Err, IResult};
 
 #[derive(Debug, Node)]
 pub struct ListOfDefparamAssignments<'a> {
-    pub nodes: (Vec<DefparamAssignment<'a>>,),
+    pub nodes: (List<Symbol<'a>, DefparamAssignment<'a>>,),
 }
 
 #[derive(Debug, Node)]
 pub struct ListOfGenvarIdentifiers<'a> {
-    pub nodes: (Vec<Identifier<'a>>,),
+    pub nodes: (List<Symbol<'a>, GenvarIdentifier<'a>>,),
 }
 
 #[derive(Debug, Node)]
 pub struct ListOfInterfaceIdentifiers<'a> {
-    pub nodes: (Vec<(Identifier<'a>, Vec<UnpackedDimension<'a>>)>,),
+    pub nodes: (List<Symbol<'a>, (InterfaceIdentifier<'a>, Vec<UnpackedDimension<'a>>)>,),
 }
 
 #[derive(Debug, Node)]
 pub struct ListOfNetDeclAssignments<'a> {
-    pub nodes: (Vec<NetDeclAssignment<'a>>,),
+    pub nodes: (List<Symbol<'a>, NetDeclAssignment<'a>>,),
 }
 
 #[derive(Debug, Node)]
 pub struct ListOfParamAssignments<'a> {
-    pub nodes: (Vec<ParamAssignment<'a>>,),
+    pub nodes: (List<Symbol<'a>, ParamAssignment<'a>>,),
 }
 
 #[derive(Debug, Node)]
 pub struct ListOfPortIdentifiers<'a> {
-    pub nodes: (Vec<(Identifier<'a>, Vec<UnpackedDimension<'a>>)>,),
+    pub nodes: (List<Symbol<'a>, (PortIdentifier<'a>, Vec<UnpackedDimension<'a>>)>,),
 }
 
 #[derive(Debug, Node)]
 pub struct ListOfUdpPortIdentifiers<'a> {
-    pub nodes: (Vec<Identifier<'a>>,),
+    pub nodes: (List<Symbol<'a>, PortIdentifier<'a>>,),
 }
 
 #[derive(Debug, Node)]
 pub struct ListOfSpecparamAssignments<'a> {
-    pub nodes: (Vec<SpecparamAssignment<'a>>,),
+    pub nodes: (List<Symbol<'a>, SpecparamAssignment<'a>>,),
 }
 
 #[derive(Debug, Node)]
 pub struct ListOfTfVariableIdentifiers<'a> {
     pub nodes: (
-        Vec<(
-            Identifier<'a>,
-            Vec<VariableDimension<'a>>,
-            Option<Expression<'a>>,
-        )>,
+        List<
+            Symbol<'a>,
+            (
+                PortIdentifier<'a>,
+                Vec<VariableDimension<'a>>,
+                Option<(Symbol<'a>, Expression<'a>)>,
+            ),
+        >,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct ListOfTypeAssignments<'a> {
-    pub nodes: (Vec<TypeAssignment<'a>>,),
+    pub nodes: (List<Symbol<'a>, TypeAssignment<'a>>,),
 }
 
 #[derive(Debug, Node)]
 pub struct ListOfVariableDeclAssignments<'a> {
-    pub nodes: (Vec<VariableDeclAssignment<'a>>,),
+    pub nodes: (List<Symbol<'a>, VariableDeclAssignment<'a>>,),
 }
 
 #[derive(Debug, Node)]
 pub struct ListOfVariableIdentifiers<'a> {
-    pub nodes: (Vec<(Identifier<'a>, Vec<VariableDimension<'a>>)>,),
+    pub nodes: (List<Symbol<'a>, (VariableIdentifier<'a>, Vec<VariableDimension<'a>>)>,),
 }
 
 #[derive(Debug, Node)]
 pub struct ListOfVariablePortIdentifiers<'a> {
     pub nodes: (
-        Vec<(
-            Identifier<'a>,
-            Vec<VariableDimension<'a>>,
-            Option<ConstantExpression<'a>>,
-        )>,
+        List<
+            Symbol<'a>,
+            (
+                PortIdentifier<'a>,
+                Vec<VariableDimension<'a>>,
+                Option<(Symbol<'a>, ConstantExpression<'a>)>,
+            ),
+        >,
     ),
 }
 

@@ -21,7 +21,7 @@ pub enum DataType<'a> {
     Vector(DataTypeVector<'a>),
     Atom(DataTypeAtom<'a>),
     NonIntegerType(NonIntegerType<'a>),
-    Union(DataTypeUnion<'a>),
+    Union(Box<DataTypeUnion<'a>>),
     Enum(DataTypeEnum<'a>),
     String(Symbol<'a>),
     Chandle(Symbol<'a>),
@@ -52,7 +52,8 @@ pub struct DataTypeUnion<'a> {
     pub nodes: (
         StructUnion<'a>,
         Option<(Packed<'a>, Option<Signing<'a>>)>,
-        Vec<StructUnionMember<'a>>,
+        Brace<'a, (StructUnionMember<'a>, Vec<StructUnionMember<'a>>)>,
+        Vec<PackedDimension<'a>>,
     ),
 }
 
@@ -64,8 +65,9 @@ pub struct Packed<'a> {
 #[derive(Debug, Node)]
 pub struct DataTypeEnum<'a> {
     pub nodes: (
+        Symbol<'a>,
         Option<EnumBaseType<'a>>,
-        Vec<EnumNameDeclaration<'a>>,
+        Brace<'a, List<Symbol<'a>, EnumNameDeclaration<'a>>>,
         Vec<PackedDimension<'a>>,
     ),
 }
@@ -73,10 +75,11 @@ pub struct DataTypeEnum<'a> {
 #[derive(Debug, Node)]
 pub struct DataTypeVirtual<'a> {
     pub nodes: (
+        Symbol<'a>,
         Option<Interface<'a>>,
         InterfaceIdentifier<'a>,
         Option<ParameterValueAssignment<'a>>,
-        Option<ModportIdentifier<'a>>,
+        Option<(Symbol<'a>, ModportIdentifier<'a>)>,
     ),
 }
 
@@ -134,30 +137,34 @@ pub struct EnumBaseTypeType<'a> {
 #[derive(Debug, Node)]
 pub struct EnumNameDeclaration<'a> {
     pub nodes: (
-        Identifier<'a>,
-        Option<(IntegralNumber<'a>, Option<IntegralNumber<'a>>)>,
-        Option<ConstantExpression<'a>>,
+        EnumIdentifier<'a>,
+        Option<Bracket<'a, (IntegralNumber<'a>, Option<(Symbol<'a>, IntegralNumber<'a>)>)>>,
+        Option<(Symbol<'a>, ConstantExpression<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct ClassScope<'a> {
-    pub nodes: (ClassType<'a>,),
+    pub nodes: (ClassType<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ClassType<'a> {
     pub nodes: (
-        Identifier<'a>,
+        PsClassIdentifier<'a>,
         Option<ParameterValueAssignment<'a>>,
-        Vec<(Identifier<'a>, Option<ParameterValueAssignment<'a>>)>,
+        Vec<(
+            Symbol<'a>,
+            Identifier<'a>,
+            Option<ParameterValueAssignment<'a>>,
+        )>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub enum IntegerType<'a> {
-    Vector(IntegerVectorType<'a>),
-    Atom(IntegerAtomType<'a>),
+    IntegerVectorType(IntegerVectorType<'a>),
+    IntegerAtomType(IntegerAtomType<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -203,13 +210,18 @@ pub enum NetType<'a> {
 #[derive(Debug, Node)]
 pub enum NetPortType<'a> {
     DataType(NetPortTypeDataType<'a>),
-    NetType(Identifier<'a>),
-    Interconnect(ImplicitDataType<'a>),
+    NetTypeIdentifier(NetTypeIdentifier<'a>),
+    Interconnect(NetPortTypeInterconnect<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct NetPortTypeDataType<'a> {
     pub nodes: (Option<NetType<'a>>, DataTypeOrImplicit<'a>),
+}
+
+#[derive(Debug, Node)]
+pub struct NetPortTypeInterconnect<'a> {
+    pub nodes: (Symbol<'a>, ImplicitDataType<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -220,7 +232,12 @@ pub struct VariablePortType<'a> {
 #[derive(Debug, Node)]
 pub enum VarDataType<'a> {
     DataType(DataType<'a>),
-    DataTypeOrImplicit(DataTypeOrImplicit<'a>),
+    Var(VarDataTypeVar<'a>),
+}
+
+#[derive(Debug, Node)]
+pub struct VarDataTypeVar<'a> {
+    pub nodes: (Symbol<'a>, DataTypeOrImplicit<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -233,8 +250,8 @@ pub enum Signing<'a> {
 pub enum SimpleType<'a> {
     IntegerType(IntegerType<'a>),
     NonNonIntegerType(IntegerType<'a>),
-    TypeIdentifier(Identifier<'a>),
-    ParameterIdentifier(Identifier<'a>),
+    PsTypeIdentifier(PsTypeIdentifier<'a>),
+    PsParameterIdentifier(PsParameterIdentifier<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -244,6 +261,7 @@ pub struct StructUnionMember<'a> {
         Option<RandomQualifier<'a>>,
         DataTypeOrVoid<'a>,
         ListOfVariableDeclAssignments<'a>,
+        Symbol<'a>,
     ),
 }
 
@@ -257,13 +275,23 @@ pub enum DataTypeOrVoid<'a> {
 pub enum StructUnion<'a> {
     Struct(Symbol<'a>),
     Union(Symbol<'a>),
-    UnionTagged(Symbol<'a>),
+    UnionTagged((Symbol<'a>, Symbol<'a>)),
 }
 
 #[derive(Debug, Node)]
 pub enum TypeReference<'a> {
-    Expression(Expression<'a>),
-    DataType(DataType<'a>),
+    Expression(TypeReferenceExpression<'a>),
+    DataType(TypeReferenceDataType<'a>),
+}
+
+#[derive(Debug, Node)]
+pub struct TypeReferenceExpression<'a> {
+    pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>),
+}
+
+#[derive(Debug, Node)]
+pub struct TypeReferenceDataType<'a> {
+    pub nodes: (Symbol<'a>, Paren<'a, DataType<'a>>),
 }
 
 // -----------------------------------------------------------------------------

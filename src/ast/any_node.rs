@@ -67,70 +67,118 @@ where
     }
 }
 
-impl<'a, T: 'a, U: 'a> From<&'a (T, U)> for AnyNodes<'a>
+impl<'a, T0: 'a, T1: 'a> From<&'a (T0, T1)> for AnyNodes<'a>
 where
-    &'a T: Into<AnyNodes<'a>>,
-    &'a U: Into<AnyNodes<'a>>,
+    &'a T0: Into<AnyNodes<'a>>,
+    &'a T1: Into<AnyNodes<'a>>,
 {
-    fn from(x: &'a (T, U)) -> Self {
+    fn from(x: &'a (T0, T1)) -> Self {
         let mut ret = Vec::new();
-        let (t, u) = x;
-        ret.append(&mut t.into().0);
-        ret.append(&mut u.into().0);
+        let (t0, t1) = x;
+        ret.append(&mut t0.into().0);
+        ret.append(&mut t1.into().0);
         ret.into()
     }
 }
 
-impl<'a, T: 'a, U: 'a, V: 'a> From<&'a (T, U, V)> for AnyNodes<'a>
+impl<'a, T0: 'a, T1: 'a, T2: 'a> From<&'a (T0, T1, T2)> for AnyNodes<'a>
 where
-    &'a T: Into<AnyNodes<'a>>,
-    &'a U: Into<AnyNodes<'a>>,
-    &'a V: Into<AnyNodes<'a>>,
+    &'a T0: Into<AnyNodes<'a>>,
+    &'a T1: Into<AnyNodes<'a>>,
+    &'a T2: Into<AnyNodes<'a>>,
 {
-    fn from(x: &'a (T, U, V)) -> Self {
+    fn from(x: &'a (T0, T1, T2)) -> Self {
         let mut ret = Vec::new();
-        let (t, u, v) = x;
-        ret.append(&mut t.into().0);
-        ret.append(&mut u.into().0);
-        ret.append(&mut v.into().0);
+        let (t0, t1, t2) = x;
+        ret.append(&mut t0.into().0);
+        ret.append(&mut t1.into().0);
+        ret.append(&mut t2.into().0);
         ret.into()
     }
 }
 
-impl<'a, T: 'a, U: 'a, V: 'a, W: 'a> From<&'a (T, U, V, W)> for AnyNodes<'a>
+impl<'a, T0: 'a, T1: 'a, T2: 'a, T3: 'a> From<&'a (T0, T1, T2, T3)> for AnyNodes<'a>
 where
-    &'a T: Into<AnyNodes<'a>>,
-    &'a U: Into<AnyNodes<'a>>,
-    &'a V: Into<AnyNodes<'a>>,
-    &'a W: Into<AnyNodes<'a>>,
+    &'a T0: Into<AnyNodes<'a>>,
+    &'a T1: Into<AnyNodes<'a>>,
+    &'a T2: Into<AnyNodes<'a>>,
+    &'a T3: Into<AnyNodes<'a>>,
 {
-    fn from(x: &'a (T, U, V, W)) -> Self {
+    fn from(x: &'a (T0, T1, T2, T3)) -> Self {
         let mut ret = Vec::new();
-        let (t, u, v, w) = x;
-        ret.append(&mut t.into().0);
-        ret.append(&mut u.into().0);
-        ret.append(&mut v.into().0);
-        ret.append(&mut w.into().0);
+        let (t0, t1, t2, t3) = x;
+        ret.append(&mut t0.into().0);
+        ret.append(&mut t1.into().0);
+        ret.append(&mut t2.into().0);
+        ret.append(&mut t3.into().0);
         ret.into()
     }
 }
 
-impl<'a, T: 'a, U: 'a, V: 'a, W: 'a, S: 'a> From<&'a (T, U, V, W, S)> for AnyNodes<'a>
+impl<'a, T0: 'a, T1: 'a, T2: 'a, T3: 'a, T4: 'a> From<&'a (T0, T1, T2, T3, T4)> for AnyNodes<'a>
 where
-    &'a T: Into<AnyNodes<'a>>,
-    &'a U: Into<AnyNodes<'a>>,
-    &'a V: Into<AnyNodes<'a>>,
-    &'a W: Into<AnyNodes<'a>>,
-    &'a S: Into<AnyNodes<'a>>,
+    &'a T0: Into<AnyNodes<'a>>,
+    &'a T1: Into<AnyNodes<'a>>,
+    &'a T2: Into<AnyNodes<'a>>,
+    &'a T3: Into<AnyNodes<'a>>,
+    &'a T4: Into<AnyNodes<'a>>,
 {
-    fn from(x: &'a (T, U, V, W, S)) -> Self {
+    fn from(x: &'a (T0, T1, T2, T3, T4)) -> Self {
         let mut ret = Vec::new();
-        let (t, u, v, w, s) = x;
-        ret.append(&mut t.into().0);
-        ret.append(&mut u.into().0);
-        ret.append(&mut v.into().0);
-        ret.append(&mut w.into().0);
-        ret.append(&mut s.into().0);
+        let (t0, t1, t2, t3, t4) = x;
+        ret.append(&mut t0.into().0);
+        ret.append(&mut t1.into().0);
+        ret.append(&mut t2.into().0);
+        ret.append(&mut t3.into().0);
+        ret.append(&mut t4.into().0);
+        ret.into()
+    }
+}
+
+impl<'a, T0: 'a, T1: 'a, T2: 'a, T3: 'a, T4: 'a, T5: 'a> From<&'a (T0, T1, T2, T3, T4, T5)>
+    for AnyNodes<'a>
+where
+    &'a T0: Into<AnyNodes<'a>>,
+    &'a T1: Into<AnyNodes<'a>>,
+    &'a T2: Into<AnyNodes<'a>>,
+    &'a T3: Into<AnyNodes<'a>>,
+    &'a T4: Into<AnyNodes<'a>>,
+    &'a T5: Into<AnyNodes<'a>>,
+{
+    fn from(x: &'a (T0, T1, T2, T3, T4, T5)) -> Self {
+        let mut ret = Vec::new();
+        let (t0, t1, t2, t3, t4, t5) = x;
+        ret.append(&mut t0.into().0);
+        ret.append(&mut t1.into().0);
+        ret.append(&mut t2.into().0);
+        ret.append(&mut t3.into().0);
+        ret.append(&mut t4.into().0);
+        ret.append(&mut t5.into().0);
+        ret.into()
+    }
+}
+
+impl<'a, T0: 'a, T1: 'a, T2: 'a, T3: 'a, T4: 'a, T5: 'a, T6: 'a>
+    From<&'a (T0, T1, T2, T3, T4, T5, T6)> for AnyNodes<'a>
+where
+    &'a T0: Into<AnyNodes<'a>>,
+    &'a T1: Into<AnyNodes<'a>>,
+    &'a T2: Into<AnyNodes<'a>>,
+    &'a T3: Into<AnyNodes<'a>>,
+    &'a T4: Into<AnyNodes<'a>>,
+    &'a T5: Into<AnyNodes<'a>>,
+    &'a T6: Into<AnyNodes<'a>>,
+{
+    fn from(x: &'a (T0, T1, T2, T3, T4, T5, T6)) -> Self {
+        let mut ret = Vec::new();
+        let (t0, t1, t2, t3, t4, t5, t6) = x;
+        ret.append(&mut t0.into().0);
+        ret.append(&mut t1.into().0);
+        ret.append(&mut t2.into().0);
+        ret.append(&mut t3.into().0);
+        ret.append(&mut t4.into().0);
+        ret.append(&mut t5.into().0);
+        ret.append(&mut t6.into().0);
         ret.into()
     }
 }

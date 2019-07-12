@@ -9,12 +9,15 @@ use nom::{Err, IResult};
 
 #[derive(Debug, Node)]
 pub struct ModportDeclaration<'a> {
-    pub nodes: (Vec<ModportItem<'a>>,),
+    pub nodes: (Symbol<'a>, List<Symbol<'a>, ModportItem<'a>>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ModportItem<'a> {
-    pub nodes: (Identifier<'a>, Vec<ModportPortsDeclaraton<'a>>),
+    pub nodes: (
+        ModportIdentifier<'a>,
+        Paren<'a, List<Symbol<'a>, ModportPortsDeclaraton<'a>>>,
+    ),
 }
 
 #[derive(Debug, Node)]
@@ -44,12 +47,12 @@ pub struct ModportPortsDeclaratonClocking<'a> {
 
 #[derive(Debug, Node)]
 pub struct ModportClockingDeclaration<'a> {
-    pub nodes: (Identifier<'a>),
+    pub nodes: (Symbol<'a>, ClockingIdentifier<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ModportSimplePortsDeclaration<'a> {
-    pub nodes: (PortDirection<'a>, Vec<ModportSimplePort<'a>>),
+    pub nodes: (PortDirection<'a>, List<Symbol<'a>, ModportSimplePort<'a>>),
 }
 
 #[derive(Debug, Node)]
@@ -60,23 +63,27 @@ pub enum ModportSimplePort<'a> {
 
 #[derive(Debug, Node)]
 pub struct ModportSimplePortOrdered<'a> {
-    pub nodes: (Identifier<'a>,),
+    pub nodes: (PortIdentifier<'a>,),
 }
 
 #[derive(Debug, Node)]
 pub struct ModportSimplePortNamed<'a> {
-    pub nodes: (Identifier<'a>, Option<Expression<'a>>),
+    pub nodes: (
+        Symbol<'a>,
+        PortIdentifier<'a>,
+        Paren<'a, Option<Expression<'a>>>,
+    ),
 }
 
 #[derive(Debug, Node)]
 pub struct ModportTfPortsDeclaration<'a> {
-    pub nodes: (ImportExport<'a>, Vec<ModportTfPort<'a>>),
+    pub nodes: (ImportExport<'a>, List<Symbol<'a>, ModportTfPort<'a>>),
 }
 
 #[derive(Debug, Node)]
 pub enum ModportTfPort<'a> {
-    Prototype(MethodPrototype<'a>),
-    Identifier(Identifier<'a>),
+    MethodPrototype(MethodPrototype<'a>),
+    TfIdentifier(TfIdentifier<'a>),
 }
 
 #[derive(Debug, Node)]

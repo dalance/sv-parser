@@ -9,20 +9,28 @@ use nom::{Err, IResult};
 
 #[derive(Debug, Node)]
 pub struct DefparamAssignment<'a> {
-    pub nodes: (HierarchicalIdentifier<'a>, ConstantMintypmaxExpression<'a>),
+    pub nodes: (
+        HierarchicalParameterIdentifier<'a>,
+        Symbol<'a>,
+        ConstantMintypmaxExpression<'a>,
+    ),
 }
 
 #[derive(Debug, Node)]
 pub struct NetDeclAssignment<'a> {
-    pub nodes: (Identifier<'a>, Vec<UnpackedDimension<'a>>, Expression<'a>),
+    pub nodes: (
+        NetIdentifier<'a>,
+        Vec<UnpackedDimension<'a>>,
+        Option<(Symbol<'a>, Expression<'a>)>,
+    ),
 }
 
 #[derive(Debug, Node)]
 pub struct ParamAssignment<'a> {
     pub nodes: (
-        Identifier<'a>,
+        ParameterIdentifier<'a>,
         Vec<UnpackedDimension<'a>>,
-        ConstantParamExpression<'a>,
+        Option<(Symbol<'a>, ConstantParamExpression<'a>)>,
     ),
 }
 
@@ -34,23 +42,54 @@ pub enum SpecparamAssignment<'a> {
 
 #[derive(Debug, Node)]
 pub struct SpecparamAssignmentMintypmax<'a> {
-    pub nodes: (Identifier<'a>, ConstantMintypmaxExpression<'a>),
+    pub nodes: (
+        SpecparamIdentifier<'a>,
+        Symbol<'a>,
+        ConstantMintypmaxExpression<'a>,
+    ),
 }
 
 #[derive(Debug, Node)]
 pub struct TypeAssignment<'a> {
-    pub nodes: (Identifier<'a>, Option<DataType<'a>>),
+    pub nodes: (TypeIdentifier<'a>, Option<(Symbol<'a>, DataType<'a>)>),
 }
 
 #[derive(Debug, Node)]
-pub struct PulseControlSpecparam<'a> {
+pub enum PulseControlSpecparam<'a> {
+    WithoutDescriptor(PulseControlSpecparamWithoutDescriptor<'a>),
+    WithDescriptor(PulseControlSpecparamWithDescriptor<'a>),
+}
+
+#[derive(Debug, Node)]
+pub struct PulseControlSpecparamWithoutDescriptor<'a> {
     pub nodes: (
-        Option<(
-            SpecifyInputTerminalDescriptor<'a>,
-            SpecifyOutputTerminalDescriptor<'a>,
-        )>,
-        RejectLimitValue<'a>,
-        Option<ErrorLimitValue<'a>>,
+        Symbol<'a>,
+        Symbol<'a>,
+        Paren<
+            'a,
+            (
+                RejectLimitValue<'a>,
+                Option<(Symbol<'a>, ErrorLimitValue<'a>)>,
+            ),
+        >,
+    ),
+}
+
+#[derive(Debug, Node)]
+pub struct PulseControlSpecparamWithDescriptor<'a> {
+    pub nodes: (
+        Symbol<'a>,
+        SpecifyInputTerminalDescriptor<'a>,
+        Symbol<'a>,
+        SpecifyOutputTerminalDescriptor<'a>,
+        Symbol<'a>,
+        Paren<
+            'a,
+            (
+                RejectLimitValue<'a>,
+                Option<(Symbol<'a>, ErrorLimitValue<'a>)>,
+            ),
+        >,
     ),
 }
 
@@ -79,41 +118,57 @@ pub enum VariableDeclAssignment<'a> {
 #[derive(Debug, Node)]
 pub struct VariableDeclAssignmentVariable<'a> {
     pub nodes: (
-        Identifier<'a>,
+        VariableIdentifier<'a>,
         Vec<VariableDimension<'a>>,
-        Option<Expression<'a>>,
+        Option<(Symbol<'a>, Expression<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct VariableDeclAssignmentDynamicArray<'a> {
     pub nodes: (
-        Identifier<'a>,
+        DynamicArrayVariableIdentifier<'a>,
         UnsizedDimension<'a>,
         Vec<VariableDimension<'a>>,
-        Option<DynamicArrayNew<'a>>,
+        Option<(Symbol<'a>, DynamicArrayNew<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct VariableDeclAssignmentClass<'a> {
-    pub nodes: (Identifier<'a>, Option<ClassNew<'a>>),
+    pub nodes: (
+        ClassVariableIdentifier<'a>,
+        Option<(Symbol<'a>, ClassNew<'a>)>,
+    ),
 }
 
 #[derive(Debug, Node)]
 pub enum ClassNew<'a> {
     Argument(ClassNewArgument<'a>),
-    Expression(Expression<'a>),
+    Expression(ClassNewExpression<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ClassNewArgument<'a> {
-    pub nodes: (Option<ClassScope<'a>>, Option<ListOfArguments<'a>>),
+    pub nodes: (
+        Option<ClassScope<'a>>,
+        Symbol<'a>,
+        Option<Paren<'a, ListOfArguments<'a>>>,
+    ),
+}
+
+#[derive(Debug, Node)]
+pub struct ClassNewExpression<'a> {
+    pub nodes: (Symbol<'a>, Expression<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct DynamicArrayNew<'a> {
-    pub nodes: (Expression<'a>, Option<Expression<'a>>),
+    pub nodes: (
+        Symbol<'a>,
+        Bracket<'a, Expression<'a>>,
+        Option<Bracket<'a, Expression<'a>>>,
+    ),
 }
 
 // -----------------------------------------------------------------------------

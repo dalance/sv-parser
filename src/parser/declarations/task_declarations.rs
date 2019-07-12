@@ -9,7 +9,7 @@ use nom::{Err, IResult};
 
 #[derive(Debug, Node)]
 pub struct TaskDeclaration<'a> {
-    pub nodes: (Option<Lifetime<'a>>, TaskBodyDeclaration<'a>),
+    pub nodes: (Symbol<'a>, Option<Lifetime<'a>>, TaskBodyDeclaration<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -22,10 +22,12 @@ pub enum TaskBodyDeclaration<'a> {
 pub struct TaskBodyDeclarationWithoutPort<'a> {
     pub nodes: (
         Option<InterfaceIdentifierOrClassScope<'a>>,
-        Identifier<'a>,
+        TaskIdentifier<'a>,
+        Symbol<'a>,
         Vec<TfItemDeclaration<'a>>,
-        Vec<FunctionStatementOrNull<'a>>,
-        Option<Identifier<'a>>,
+        Vec<StatementOrNull<'a>>,
+        Symbol<'a>,
+        Option<(Symbol<'a>, TaskIdentifier<'a>)>,
     ),
 }
 
@@ -33,29 +35,30 @@ pub struct TaskBodyDeclarationWithoutPort<'a> {
 pub struct TaskBodyDeclarationWithPort<'a> {
     pub nodes: (
         Option<InterfaceIdentifierOrClassScope<'a>>,
-        Identifier<'a>,
-        Option<TfPortList<'a>>,
+        TaskIdentifier<'a>,
+        Paren<'a, Option<TfPortList<'a>>>,
+        Symbol<'a>,
         Vec<BlockItemDeclaration<'a>>,
-        Vec<FunctionStatementOrNull<'a>>,
-        Option<Identifier<'a>>,
+        Vec<StatementOrNull<'a>>,
+        Option<(Symbol<'a>, TaskIdentifier<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub enum InterfaceIdentifierOrClassScope<'a> {
-    InterfaceIdentifier(InterfaceIdentifier<'a>),
+    InterfaceIdentifier((InterfaceIdentifier<'a>, Symbol<'a>)),
     ClassScope(ClassScope<'a>),
 }
 
 #[derive(Debug, Node)]
 pub enum TfItemDeclaration<'a> {
-    Block(BlockItemDeclaration<'a>),
-    Port(TfPortDeclaration<'a>),
+    BlockItemDeclaration(BlockItemDeclaration<'a>),
+    TfPortDeclaration(TfPortDeclaration<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct TfPortList<'a> {
-    pub nodes: (Vec<TfPortItem<'a>>,),
+    pub nodes: (List<Symbol<'a>, TfPortItem<'a>>,),
 }
 
 #[derive(Debug, Node)]
@@ -66,9 +69,9 @@ pub struct TfPortItem<'a> {
         Option<Var<'a>>,
         DataTypeOrImplicit<'a>,
         Option<(
-            Identifier<'a>,
+            PortIdentifier<'a>,
             Vec<VariableDimension<'a>>,
-            Option<Expression<'a>>,
+            Option<(Symbol<'a>, Expression<'a>)>,
         )>,
     ),
 }
@@ -76,7 +79,7 @@ pub struct TfPortItem<'a> {
 #[derive(Debug, Node)]
 pub enum TfPortDirection<'a> {
     PortDirection(PortDirection<'a>),
-    ConstRef(Symbol<'a>),
+    ConstRef((Symbol<'a>, Symbol<'a>)),
 }
 
 #[derive(Debug, Node)]
@@ -87,12 +90,17 @@ pub struct TfPortDeclaration<'a> {
         Option<Var<'a>>,
         DataTypeOrImplicit<'a>,
         ListOfTfVariableIdentifiers<'a>,
+        Symbol<'a>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct TaskPrototype<'a> {
-    pub nodes: (Identifier<'a>, Option<TfPortList<'a>>),
+    pub nodes: (
+        Symbol<'a>,
+        TaskIdentifier<'a>,
+        Option<Paren<'a, Option<TfPortList<'a>>>>,
+    ),
 }
 
 // -----------------------------------------------------------------------------

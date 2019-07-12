@@ -9,13 +9,17 @@ use nom::{Err, IResult};
 
 #[derive(Debug, Node)]
 pub enum FunctionDataTypeOrImplicit<'a> {
-    DataType(DataTypeOrVoid<'a>),
-    Implicit(ImplicitDataType<'a>),
+    DataTypeOrVoid(DataTypeOrVoid<'a>),
+    ImplicitDataType(ImplicitDataType<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct FunctionDeclaration<'a> {
-    pub nodes: (Option<Lifetime<'a>>, FunctionBodyDeclaration<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        Option<Lifetime<'a>>,
+        FunctionBodyDeclaration<'a>,
+    ),
 }
 
 #[derive(Debug, Node)]
@@ -29,10 +33,12 @@ pub struct FunctionBodyDeclarationWithoutPort<'a> {
     pub nodes: (
         FunctionDataTypeOrImplicit<'a>,
         Option<InterfaceIdentifierOrClassScope<'a>>,
-        Identifier<'a>,
+        FunctionIdentifier<'a>,
+        Symbol<'a>,
         Vec<TfItemDeclaration<'a>>,
         Vec<FunctionStatementOrNull<'a>>,
-        Option<Identifier<'a>>,
+        Symbol<'a>,
+        Option<(Symbol<'a>, FunctionIdentifier<'a>)>,
     ),
 }
 
@@ -41,17 +47,24 @@ pub struct FunctionBodyDeclarationWithPort<'a> {
     pub nodes: (
         FunctionDataTypeOrImplicit<'a>,
         Option<InterfaceIdentifierOrClassScope<'a>>,
-        Identifier<'a>,
-        Option<TfPortList<'a>>,
+        FunctionIdentifier<'a>,
+        Paren<'a, Option<TfPortList<'a>>>,
+        Symbol<'a>,
         Vec<BlockItemDeclaration<'a>>,
         Vec<FunctionStatementOrNull<'a>>,
-        Option<Identifier<'a>>,
+        Symbol<'a>,
+        Option<(Symbol<'a>, FunctionIdentifier<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct FunctionPrototype<'a> {
-    pub nodes: (DataTypeOrVoid<'a>, Identifier<'a>, Option<TfPortList<'a>>),
+    pub nodes: (
+        Symbol<'a>,
+        DataTypeOrVoid<'a>,
+        FunctionIdentifier<'a>,
+        Option<Paren<'a, Option<TfPortList<'a>>>>,
+    ),
 }
 
 #[derive(Debug, Node)]
@@ -65,31 +78,47 @@ pub enum DpiImportExport<'a> {
 #[derive(Debug, Node)]
 pub struct DpiImportExportImportFunction<'a> {
     pub nodes: (
+        Symbol<'a>,
         DpiSpecString<'a>,
         Option<DpiFunctionImportProperty<'a>>,
-        Option<Identifier<'a>>,
+        Option<(CIdentifier<'a>, Symbol<'a>)>,
         DpiFunctionProto<'a>,
+        Symbol<'a>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct DpiImportExportImportTask<'a> {
     pub nodes: (
+        Symbol<'a>,
         DpiSpecString<'a>,
         Option<DpiTaskImportProperty<'a>>,
-        Option<Identifier<'a>>,
+        Option<(CIdentifier<'a>, Symbol<'a>)>,
         DpiTaskProto<'a>,
+        Symbol<'a>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct DpiImportExportExportFunction<'a> {
-    pub nodes: (DpiSpecString<'a>, Option<Identifier<'a>>, Identifier<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        DpiSpecString<'a>,
+        Option<(CIdentifier<'a>, Symbol<'a>)>,
+        Symbol<'a>,
+        FunctionIdentifier<'a>,
+    ),
 }
 
 #[derive(Debug, Node)]
 pub struct DpiImportExportExportTask<'a> {
-    pub nodes: (DpiSpecString<'a>, Option<Identifier<'a>>, Identifier<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        DpiSpecString<'a>,
+        Option<(CIdentifier<'a>, Symbol<'a>)>,
+        Symbol<'a>,
+        TaskIdentifier<'a>,
+    ),
 }
 
 #[derive(Debug, Node)]

@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -15,7 +16,7 @@ pub enum AssertionItem<'a> {
 #[derive(Debug)]
 pub struct DeferredImmediateAssetionItem<'a> {
     pub nodes: (
-        Option<BlockIdentifier<'a>>,
+        Option<(BlockIdentifier<'a>, Symbol<'a>)>,
         DeferredImmediateAssertionStatement<'a>,
     ),
 }
@@ -42,17 +43,17 @@ pub enum SimpleImmediateAssertionStatement<'a> {
 
 #[derive(Debug)]
 pub struct SimpleImmediateAssertStatement<'a> {
-    pub nodes: (Expression<'a>, ActionBlock<'a>),
+    pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>, ActionBlock<'a>),
 }
 
 #[derive(Debug)]
 pub struct SimpleImmediateAssumeStatement<'a> {
-    pub nodes: (Expression<'a>, ActionBlock<'a>),
+    pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>, ActionBlock<'a>),
 }
 
 #[derive(Debug)]
 pub struct SimpleImmediateCoverStatement<'a> {
-    pub nodes: (Expression<'a>, StatementOrNull<'a>),
+    pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>, StatementOrNull<'a>),
 }
 
 #[derive(Debug)]
@@ -64,23 +65,38 @@ pub enum DeferredImmediateAssertionStatement<'a> {
 
 #[derive(Debug)]
 pub struct DeferredImmediateAssertStatement<'a> {
-    pub nodes: (AssertTiming, Expression<'a>, ActionBlock<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        AssertTiming<'a>,
+        Paren<'a, Expression<'a>>,
+        ActionBlock<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct DeferredImmediateAssumeStatement<'a> {
-    pub nodes: (AssertTiming, Expression<'a>, ActionBlock<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        AssertTiming<'a>,
+        Paren<'a, Expression<'a>>,
+        ActionBlock<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct DeferredImmediateCoverStatement<'a> {
-    pub nodes: (AssertTiming, Expression<'a>, StatementOrNull<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        AssertTiming<'a>,
+        Paren<'a, Expression<'a>>,
+        StatementOrNull<'a>,
+    ),
 }
 
-#[derive(Debug)]
-pub enum AssertTiming {
-    Zero,
-    Final,
+#[derive(Debug, Node)]
+pub enum AssertTiming<'a> {
+    Zero(Symbol<'a>),
+    Final(Symbol<'a>),
 }
 
 // -----------------------------------------------------------------------------
@@ -95,9 +111,9 @@ pub fn assertion_item(s: Span) -> IResult<Span, AssertionItem> {
 }
 
 pub fn deferred_immediate_assertion_item(s: Span) -> IResult<Span, DeferredImmediateAssetionItem> {
-    let (s, x) = opt(terminated(block_identifier, symbol(":")))(s)?;
-    let (s, y) = deferred_immediate_assertion_statement(s)?;
-    Ok((s, DeferredImmediateAssetionItem { nodes: (x, y) }))
+    let (s, a) = opt(pair(block_identifier, symbol(":")))(s)?;
+    let (s, b) = deferred_immediate_assertion_statement(s)?;
+    Ok((s, DeferredImmediateAssetionItem { nodes: (a, b) }))
 }
 
 pub fn procedural_assertion_statement(s: Span) -> IResult<Span, ProceduralAssertionStatement> {
@@ -142,30 +158,24 @@ pub fn simple_immediate_assertion_statement(
 }
 
 pub fn simple_immediate_assert_statement(s: Span) -> IResult<Span, SimpleImmediateAssertStatement> {
-    let (s, _) = symbol("assert")(s)?;
-    let (s, _) = symbol("(")(s)?;
-    let (s, x) = expression(s)?;
-    let (s, _) = symbol(")")(s)?;
-    let (s, y) = action_block(s)?;
-    Ok((s, SimpleImmediateAssertStatement { nodes: (x, y) }))
+    let (s, a) = symbol("assert")(s)?;
+    let (s, b) = paren2(expression)(s)?;
+    let (s, c) = action_block(s)?;
+    Ok((s, SimpleImmediateAssertStatement { nodes: (a, b, c) }))
 }
 
 pub fn simple_immediate_assume_statement(s: Span) -> IResult<Span, SimpleImmediateAssumeStatement> {
-    let (s, _) = symbol("assume")(s)?;
-    let (s, _) = symbol("(")(s)?;
-    let (s, x) = expression(s)?;
-    let (s, _) = symbol(")")(s)?;
-    let (s, y) = action_block(s)?;
-    Ok((s, SimpleImmediateAssumeStatement { nodes: (x, y) }))
+    let (s, a) = symbol("assume")(s)?;
+    let (s, b) = paren2(expression)(s)?;
+    let (s, c) = action_block(s)?;
+    Ok((s, SimpleImmediateAssumeStatement { nodes: (a, b, c) }))
 }
 
 pub fn simple_immediate_cover_statement(s: Span) -> IResult<Span, SimpleImmediateCoverStatement> {
-    let (s, _) = symbol("cover")(s)?;
-    let (s, _) = symbol("(")(s)?;
-    let (s, x) = expression(s)?;
-    let (s, _) = symbol(")")(s)?;
-    let (s, y) = statement_or_null(s)?;
-    Ok((s, SimpleImmediateCoverStatement { nodes: (x, y) }))
+    let (s, a) = symbol("cover")(s)?;
+    let (s, b) = paren2(expression)(s)?;
+    let (s, c) = statement_or_null(s)?;
+    Ok((s, SimpleImmediateCoverStatement { nodes: (a, b, c) }))
 }
 
 pub fn deferred_immediate_assertion_statement(
@@ -187,43 +197,52 @@ pub fn deferred_immediate_assertion_statement(
 pub fn deferred_immediate_assert_statement(
     s: Span,
 ) -> IResult<Span, DeferredImmediateAssertStatement> {
-    let (s, _) = symbol("assert")(s)?;
-    let (s, x) = assert_timing(s)?;
-    let (s, _) = symbol("(")(s)?;
-    let (s, y) = expression(s)?;
-    let (s, _) = symbol(")")(s)?;
-    let (s, z) = action_block(s)?;
-    Ok((s, DeferredImmediateAssertStatement { nodes: (x, y, z) }))
+    let (s, a) = symbol("assert")(s)?;
+    let (s, b) = assert_timing(s)?;
+    let (s, c) = paren2(expression)(s)?;
+    let (s, d) = action_block(s)?;
+    Ok((
+        s,
+        DeferredImmediateAssertStatement {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn deferred_immediate_assume_statement(
     s: Span,
 ) -> IResult<Span, DeferredImmediateAssumeStatement> {
-    let (s, _) = symbol("assume")(s)?;
-    let (s, x) = assert_timing(s)?;
-    let (s, _) = symbol("(")(s)?;
-    let (s, y) = expression(s)?;
-    let (s, _) = symbol(")")(s)?;
-    let (s, z) = action_block(s)?;
-    Ok((s, DeferredImmediateAssumeStatement { nodes: (x, y, z) }))
+    let (s, a) = symbol("assume")(s)?;
+    let (s, b) = assert_timing(s)?;
+    let (s, c) = paren2(expression)(s)?;
+    let (s, d) = action_block(s)?;
+    Ok((
+        s,
+        DeferredImmediateAssumeStatement {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn deferred_immediate_cover_statement(
     s: Span,
 ) -> IResult<Span, DeferredImmediateCoverStatement> {
-    let (s, _) = symbol("cover")(s)?;
-    let (s, x) = assert_timing(s)?;
-    let (s, _) = symbol("(")(s)?;
-    let (s, y) = expression(s)?;
-    let (s, _) = symbol(")")(s)?;
-    let (s, z) = statement_or_null(s)?;
-    Ok((s, DeferredImmediateCoverStatement { nodes: (x, y, z) }))
+    let (s, a) = symbol("cover")(s)?;
+    let (s, b) = assert_timing(s)?;
+    let (s, c) = paren2(expression)(s)?;
+    let (s, d) = statement_or_null(s)?;
+    Ok((
+        s,
+        DeferredImmediateCoverStatement {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn assert_timing(s: Span) -> IResult<Span, AssertTiming> {
     alt((
-        map(symbol("#0"), |_| AssertTiming::Zero),
-        map(symbol("final"), |_| AssertTiming::Final),
+        map(symbol("#0"), |x| AssertTiming::Zero(x)),
+        map(symbol("final"), |x| AssertTiming::Final(x)),
     ))(s)
 }
 

@@ -9,7 +9,13 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub struct RandsequenceStatement<'a> {
-    pub nodes: (Option<ProductionIdentifier<'a>>, Vec<Production<'a>>),
+    pub nodes: (
+        Symbol<'a>,
+        Paren<'a, Option<ProductionIdentifier<'a>>>,
+        Production<'a>,
+        Vec<Production<'a>>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug)]
@@ -17,8 +23,10 @@ pub struct Production<'a> {
     pub nodes: (
         Option<DataTypeOrVoid<'a>>,
         ProductionIdentifier<'a>,
-        Option<TfPortList<'a>>,
-        Vec<RsRule<'a>>,
+        Option<Paren<'a, TfPortList<'a>>>,
+        Symbol<'a>,
+        List<Symbol<'a>, RsRule<'a>>,
+        Symbol<'a>,
     ),
 }
 
@@ -26,60 +34,91 @@ pub struct Production<'a> {
 pub struct RsRule<'a> {
     pub nodes: (
         RsProductionList<'a>,
-        Option<WeightSpecification<'a>>,
-        Option<RsCodeBlock<'a>>,
+        Option<(Symbol<'a>, WeightSpecification<'a>, Option<RsCodeBlock<'a>>)>,
     ),
 }
 
 #[derive(Debug)]
 pub enum RsProductionList<'a> {
-    Prod(Vec<RsProd<'a>>),
-    Join((Option<Expression<'a>>, Vec<ProductionItem<'a>>)),
+    Prod(RsProductionListProd<'a>),
+    Join(RsProductionListJoin<'a>),
+}
+
+#[derive(Debug)]
+pub struct RsProductionListProd<'a> {
+    pub nodes: (RsProd<'a>, Vec<RsProd<'a>>),
+}
+
+#[derive(Debug)]
+pub struct RsProductionListJoin<'a> {
+    pub nodes: (
+        Symbol<'a>,
+        Symbol<'a>,
+        Option<Paren<'a, Expression<'a>>>,
+        ProductionItem<'a>,
+        ProductionItem<'a>,
+        Vec<ProductionItem<'a>>,
+    ),
 }
 
 #[derive(Debug)]
 pub enum WeightSpecification<'a> {
     IntegralNumber(IntegralNumber<'a>),
     PsIdentifier(PsIdentifier<'a>),
-    Expression(Expression<'a>),
+    Expression(WeightSpecificationExpression<'a>),
+}
+
+#[derive(Debug)]
+pub struct WeightSpecificationExpression<'a> {
+    pub nodes: (Paren<'a, Expression<'a>>,),
 }
 
 #[derive(Debug)]
 pub struct RsCodeBlock<'a> {
-    pub nodes: (Vec<DataDeclaration<'a>>, Vec<StatementOrNull<'a>>),
+    pub nodes: (Brace<'a, (Vec<DataDeclaration<'a>>, Vec<StatementOrNull<'a>>)>,),
 }
 
 #[derive(Debug)]
 pub enum RsProd<'a> {
-    Item(ProductionItem<'a>),
-    CodeBlock(RsCodeBlock<'a>),
-    IfElse(RsIfElse<'a>),
-    Repeat(RsRepeat<'a>),
-    Case(RsCase<'a>),
+    ProductionItem(ProductionItem<'a>),
+    RsCodeBlock(RsCodeBlock<'a>),
+    RsIfElse(RsIfElse<'a>),
+    RsRepeat(RsRepeat<'a>),
+    RsCase(RsCase<'a>),
 }
 
 #[derive(Debug)]
 pub struct ProductionItem<'a> {
-    pub nodes: (ProductionIdentifier<'a>, Option<ListOfArguments<'a>>),
+    pub nodes: (
+        ProductionIdentifier<'a>,
+        Option<Paren<'a, ListOfArguments<'a>>>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct RsIfElse<'a> {
     pub nodes: (
-        Expression<'a>,
+        Symbol<'a>,
+        Paren<'a, Expression<'a>>,
         ProductionItem<'a>,
-        Option<ProductionItem<'a>>,
+        Option<(Symbol<'a>, ProductionItem<'a>)>,
     ),
 }
 
 #[derive(Debug)]
 pub struct RsRepeat<'a> {
-    pub nodes: (Expression<'a>, ProductionItem<'a>),
+    pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>, ProductionItem<'a>),
 }
 
 #[derive(Debug)]
 pub struct RsCase<'a> {
-    pub nodes: (CaseExpression<'a>, Vec<RsCaseItem<'a>>),
+    pub nodes: (
+        Symbol<'a>,
+        Paren<'a, CaseExpression<'a>>,
+        RsCaseItem<'a>,
+        Vec<RsCaseItem<'a>>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug)]
@@ -89,55 +128,64 @@ pub enum RsCaseItem<'a> {
 }
 
 #[derive(Debug)]
-pub struct RsCaseItemDefault<'a> {
-    pub nodes: (ProductionItem<'a>,),
+pub struct RsCaseItemNondefault<'a> {
+    pub nodes: (
+        List<Symbol<'a>, CaseItemExpression<'a>>,
+        Symbol<'a>,
+        ProductionItem<'a>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug)]
-pub struct RsCaseItemNondefault<'a> {
-    pub nodes: (Vec<CaseItemExpression<'a>>, ProductionItem<'a>),
+pub struct RsCaseItemDefault<'a> {
+    pub nodes: (
+        Symbol<'a>,
+        Option<Symbol<'a>>,
+        ProductionItem<'a>,
+        Symbol<'a>,
+    ),
 }
 
 // -----------------------------------------------------------------------------
 
 pub fn randsequence_statement(s: Span) -> IResult<Span, RandsequenceStatement> {
-    let (s, _) = symbol("randsequence")(s)?;
-    let (s, _) = symbol("(")(s)?;
-    let (s, x) = opt(production_identifier)(s)?;
-    let (s, _) = symbol(")")(s)?;
-    let (s, y) = many1(production)(s)?;
-    let (s, _) = symbol("endsequence")(s)?;
-    Ok((s, RandsequenceStatement { nodes: (x, y) }))
+    let (s, a) = symbol("randsequence")(s)?;
+    let (s, b) = paren2(opt(production_identifier))(s)?;
+    let (s, c) = production(s)?;
+    let (s, d) = many0(production)(s)?;
+    let (s, e) = symbol("endsequence")(s)?;
+    Ok((
+        s,
+        RandsequenceStatement {
+            nodes: (a, b, c, d, e),
+        },
+    ))
 }
 
 pub fn production(s: Span) -> IResult<Span, Production> {
-    let (s, x) = opt(data_type_or_void)(s)?;
-    let (s, y) = production_identifier(s)?;
-    let (s, z) = opt(paren(tf_port_list))(s)?;
-    let (s, _) = symbol(":")(s)?;
-    let (s, v) = separated_nonempty_list(symbol("|"), rs_rule)(s)?;
-    let (s, _) = symbol(";")(s)?;
+    let (s, a) = opt(data_type_or_void)(s)?;
+    let (s, b) = production_identifier(s)?;
+    let (s, c) = opt(paren2(tf_port_list))(s)?;
+    let (s, d) = symbol(":")(s)?;
+    let (s, e) = list(symbol("|"), rs_rule)(s)?;
+    let (s, f) = symbol(";")(s)?;
     Ok((
         s,
         Production {
-            nodes: (x, y, z, v),
+            nodes: (a, b, c, d, e, f),
         },
     ))
 }
 
 pub fn rs_rule(s: Span) -> IResult<Span, RsRule> {
-    let (s, x) = rs_production_list(s)?;
-    let (s, y) = opt(preceded(
+    let (s, a) = rs_production_list(s)?;
+    let (s, b) = opt(triple(
         symbol(":="),
-        pair(weight_specification, opt(rs_code_block)),
+        weight_specification,
+        opt(rs_code_block),
     ))(s)?;
-
-    let (y, z) = if let Some((y, z)) = y {
-        (Some(y), z)
-    } else {
-        (None, None)
-    };
-    Ok((s, RsRule { nodes: (x, y, z) }))
+    Ok((s, RsRule { nodes: (a, b) }))
 }
 
 pub fn rs_production_list(s: Span) -> IResult<Span, RsProductionList> {
@@ -145,76 +193,98 @@ pub fn rs_production_list(s: Span) -> IResult<Span, RsProductionList> {
 }
 
 pub fn rs_production_list_prod(s: Span) -> IResult<Span, RsProductionList> {
-    let (s, x) = many1(rs_prod)(s)?;
-    Ok((s, RsProductionList::Prod(x)))
+    let (s, a) = rs_prod(s)?;
+    let (s, b) = many0(rs_prod)(s)?;
+    Ok((
+        s,
+        RsProductionList::Prod(RsProductionListProd { nodes: (a, b) }),
+    ))
 }
 
 pub fn rs_production_list_join(s: Span) -> IResult<Span, RsProductionList> {
-    let (s, _) = symbol("rand")(s)?;
-    let (s, _) = symbol("join")(s)?;
-    let (s, x) = opt(paren(expression))(s)?;
-    let (s, y) = production_item(s)?;
-    let (s, z) = many1(production_item)(s)?;
-
-    let mut y = vec![y];
-    for z in z {
-        y.push(z);
-    }
-    Ok((s, RsProductionList::Join((x, y))))
+    let (s, a) = symbol("rand")(s)?;
+    let (s, b) = symbol("join")(s)?;
+    let (s, c) = opt(paren2(expression))(s)?;
+    let (s, d) = production_item(s)?;
+    let (s, e) = production_item(s)?;
+    let (s, f) = many0(production_item)(s)?;
+    Ok((
+        s,
+        RsProductionList::Join(RsProductionListJoin {
+            nodes: (a, b, c, d, e, f),
+        }),
+    ))
 }
 
 pub fn weight_specification(s: Span) -> IResult<Span, WeightSpecification> {
     alt((
         map(integral_number, |x| WeightSpecification::IntegralNumber(x)),
         map(ps_identifier, |x| WeightSpecification::PsIdentifier(x)),
-        map(paren(expression), |x| WeightSpecification::Expression(x)),
+        weight_specification_expression,
     ))(s)
 }
 
+pub fn weight_specification_expression(s: Span) -> IResult<Span, WeightSpecification> {
+    let (s, a) = paren2(expression)(s)?;
+    Ok((
+        s,
+        WeightSpecification::Expression(WeightSpecificationExpression { nodes: (a,) }),
+    ))
+}
+
 pub fn rs_code_block(s: Span) -> IResult<Span, RsCodeBlock> {
-    let (s, _) = symbol("{")(s)?;
-    let (s, x) = many0(data_declaration)(s)?;
-    let (s, y) = many0(statement_or_null)(s)?;
-    let (s, _) = symbol("}")(s)?;
-    Ok((s, RsCodeBlock { nodes: (x, y) }))
+    let (s, a) = brace2(pair(many0(data_declaration), many0(statement_or_null)))(s)?;
+    Ok((s, RsCodeBlock { nodes: (a,) }))
 }
 
 pub fn rs_prod(s: Span) -> IResult<Span, RsProd> {
     alt((
-        map(production_item, |x| RsProd::Item(x)),
-        map(rs_code_block, |x| RsProd::CodeBlock(x)),
-        map(rs_if_else, |x| RsProd::IfElse(x)),
-        map(rs_repeat, |x| RsProd::Repeat(x)),
-        map(rs_case, |x| RsProd::Case(x)),
+        map(production_item, |x| RsProd::ProductionItem(x)),
+        map(rs_code_block, |x| RsProd::RsCodeBlock(x)),
+        map(rs_if_else, |x| RsProd::RsIfElse(x)),
+        map(rs_repeat, |x| RsProd::RsRepeat(x)),
+        map(rs_case, |x| RsProd::RsCase(x)),
     ))(s)
 }
 
 pub fn production_item(s: Span) -> IResult<Span, ProductionItem> {
-    let (s, x) = production_identifier(s)?;
-    let (s, y) = opt(paren(list_of_arguments))(s)?;
-    Ok((s, ProductionItem { nodes: (x, y) }))
+    let (s, a) = production_identifier(s)?;
+    let (s, b) = opt(paren2(list_of_arguments))(s)?;
+    Ok((s, ProductionItem { nodes: (a, b) }))
 }
 
 pub fn rs_if_else(s: Span) -> IResult<Span, RsIfElse> {
-    let (s, _) = symbol("if")(s)?;
-    let (s, x) = paren(expression)(s)?;
-    let (s, y) = production_item(s)?;
-    let (s, z) = opt(preceded(symbol("else"), production_item))(s)?;
-    Ok((s, RsIfElse { nodes: (x, y, z) }))
+    let (s, a) = symbol("if")(s)?;
+    let (s, b) = paren2(expression)(s)?;
+    let (s, c) = production_item(s)?;
+    let (s, d) = opt(pair(symbol("else"), production_item))(s)?;
+    Ok((
+        s,
+        RsIfElse {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn rs_repeat(s: Span) -> IResult<Span, RsRepeat> {
-    let (s, _) = symbol("repeat")(s)?;
-    let (s, x) = paren(expression)(s)?;
-    let (s, y) = production_item(s)?;
-    Ok((s, RsRepeat { nodes: (x, y) }))
+    let (s, a) = symbol("repeat")(s)?;
+    let (s, b) = paren2(expression)(s)?;
+    let (s, c) = production_item(s)?;
+    Ok((s, RsRepeat { nodes: (a, b, c) }))
 }
 
 pub fn rs_case(s: Span) -> IResult<Span, RsCase> {
-    let (s, _) = symbol("case")(s)?;
-    let (s, x) = paren(case_expression)(s)?;
-    let (s, y) = many1(rs_case_item)(s)?;
-    Ok((s, RsCase { nodes: (x, y) }))
+    let (s, a) = symbol("case")(s)?;
+    let (s, b) = paren2(case_expression)(s)?;
+    let (s, c) = rs_case_item(s)?;
+    let (s, d) = many0(rs_case_item)(s)?;
+    let (s, e) = symbol("endcase")(s)?;
+    Ok((
+        s,
+        RsCase {
+            nodes: (a, b, c, d, e),
+        },
+    ))
 }
 
 pub fn rs_case_item(s: Span) -> IResult<Span, RsCaseItem> {
@@ -222,20 +292,27 @@ pub fn rs_case_item(s: Span) -> IResult<Span, RsCaseItem> {
 }
 
 pub fn rs_case_item_nondefault(s: Span) -> IResult<Span, RsCaseItem> {
-    let (s, x) = separated_nonempty_list(symbol(","), case_item_expression)(s)?;
-    let (s, _) = symbol(":")(s)?;
-    let (s, y) = production_item(s)?;
-    let (s, _) = symbol(";")(s)?;
+    let (s, a) = list(symbol(","), case_item_expression)(s)?;
+    let (s, b) = symbol(":")(s)?;
+    let (s, c) = production_item(s)?;
+    let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        RsCaseItem::NonDefault(RsCaseItemNondefault { nodes: (x, y) }),
+        RsCaseItem::NonDefault(RsCaseItemNondefault {
+            nodes: (a, b, c, d),
+        }),
     ))
 }
 
 pub fn rs_case_item_default(s: Span) -> IResult<Span, RsCaseItem> {
-    let (s, _) = symbol("default")(s)?;
-    let (s, _) = opt(symbol(":"))(s)?;
-    let (s, x) = production_item(s)?;
-    let (s, _) = symbol(";")(s)?;
-    Ok((s, RsCaseItem::Default(RsCaseItemDefault { nodes: (x,) })))
+    let (s, a) = symbol("default")(s)?;
+    let (s, b) = opt(symbol(":"))(s)?;
+    let (s, c) = production_item(s)?;
+    let (s, d) = symbol(";")(s)?;
+    Ok((
+        s,
+        RsCaseItem::Default(RsCaseItemDefault {
+            nodes: (a, b, c, d),
+        }),
+    ))
 }

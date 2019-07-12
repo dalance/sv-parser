@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -10,28 +11,30 @@ use nom::IResult;
 #[derive(Debug)]
 pub struct ConditionalStatement<'a> {
     pub nodes: (
-        Option<UniquePriority>,
-        ConditionalStatementBody<'a>,
-        Vec<ConditionalStatementBody<'a>>,
-        Option<StatementOrNull<'a>>,
+        Option<UniquePriority<'a>>,
+        Symbol<'a>,
+        Paren<'a, CondPredicate<'a>>,
+        StatementOrNull<'a>,
+        Vec<(
+            Symbol<'a>,
+            Symbol<'a>,
+            Paren<'a, CondPredicate<'a>>,
+            StatementOrNull<'a>,
+        )>,
+        Option<(Symbol<'a>, StatementOrNull<'a>)>,
     ),
 }
 
-#[derive(Debug)]
-pub enum UniquePriority {
-    Unique,
-    Unique0,
-    Priority,
-}
-
-#[derive(Debug)]
-pub struct ConditionalStatementBody<'a> {
-    pub nodes: (CondPredicate<'a>, StatementOrNull<'a>),
+#[derive(Debug, Node)]
+pub enum UniquePriority<'a> {
+    Unique(Symbol<'a>),
+    Unique0(Symbol<'a>),
+    Priority(Symbol<'a>),
 }
 
 #[derive(Debug)]
 pub struct CondPredicate<'a> {
-    pub nodes: (Vec<ExpressionOrCondPattern<'a>>,),
+    pub nodes: (List<Symbol<'a>, ExpressionOrCondPattern<'a>>,),
 }
 
 #[derive(Debug)]
@@ -42,49 +45,43 @@ pub enum ExpressionOrCondPattern<'a> {
 
 #[derive(Debug)]
 pub struct CondPattern<'a> {
-    pub nodes: (Expression<'a>, Pattern<'a>),
+    pub nodes: (Expression<'a>, Symbol<'a>, Pattern<'a>),
 }
 
 // -----------------------------------------------------------------------------
 
 pub fn conditional_statement(s: Span) -> IResult<Span, ConditionalStatement> {
-    let (s, x) = opt(unique_priority)(s)?;
-    let (s, _) = symbol("if")(s)?;
-    let (s, y) = conditional_statement_body(s)?;
-    let (s, z) = many0(preceded(
-        pair(symbol("else"), symbol("if")),
-        conditional_statement_body,
-    ))(s)?;
-    let (s, v) = opt(preceded(symbol("else"), statement_or_null))(s)?;
+    let (s, a) = opt(unique_priority)(s)?;
+    let (s, b) = symbol("if")(s)?;
+    let (s, c) = paren2(cond_predicate)(s)?;
+    let (s, d) = statement_or_null(s)?;
+    let (s, e) = many0(tuple((
+        symbol("else"),
+        symbol("if"),
+        paren2(cond_predicate),
+        statement_or_null,
+    )))(s)?;
+    let (s, f) = opt(pair(symbol("else"), statement_or_null))(s)?;
 
     Ok((
         s,
         ConditionalStatement {
-            nodes: (x, y, z, v),
+            nodes: (a, b, c, d, e, f),
         },
     ))
 }
 
-pub fn conditional_statement_body(s: Span) -> IResult<Span, ConditionalStatementBody> {
-    let (s, _) = symbol("(")(s)?;
-    let (s, x) = cond_predicate(s)?;
-    let (s, _) = symbol(")")(s)?;
-    let (s, y) = statement_or_null(s)?;
-
-    Ok((s, ConditionalStatementBody { nodes: (x, y) }))
-}
-
 pub fn unique_priority(s: Span) -> IResult<Span, UniquePriority> {
     alt((
-        map(symbol("unique0"), |_| UniquePriority::Unique0),
-        map(symbol("unique"), |_| UniquePriority::Unique),
-        map(symbol("priority"), |_| UniquePriority::Priority),
+        map(symbol("unique0"), |x| UniquePriority::Unique0(x)),
+        map(symbol("unique"), |x| UniquePriority::Unique(x)),
+        map(symbol("priority"), |x| UniquePriority::Priority(x)),
     ))(s)
 }
 
 pub fn cond_predicate(s: Span) -> IResult<Span, CondPredicate> {
-    let (s, x) = separated_nonempty_list(symbol("&&&"), expression_or_cond_pattern)(s)?;
-    Ok((s, CondPredicate { nodes: (x,) }))
+    let (s, a) = list(symbol("&&&"), expression_or_cond_pattern)(s)?;
+    Ok((s, CondPredicate { nodes: (a,) }))
 }
 
 pub fn expression_or_cond_pattern(s: Span) -> IResult<Span, ExpressionOrCondPattern> {
@@ -95,8 +92,8 @@ pub fn expression_or_cond_pattern(s: Span) -> IResult<Span, ExpressionOrCondPatt
 }
 
 pub fn cond_pattern(s: Span) -> IResult<Span, CondPattern> {
-    let (s, x) = expression(s)?;
-    let (s, _) = symbol("matches")(s)?;
-    let (s, y) = pattern(s)?;
-    Ok((s, CondPattern { nodes: (x, y) }))
+    let (s, a) = expression(s)?;
+    let (s, b) = symbol("matches")(s)?;
+    let (s, c) = pattern(s)?;
+    Ok((s, CondPattern { nodes: (a, b, c) }))
 }

@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::bytes::complete::*;
 use nom::combinator::*;
@@ -7,7 +8,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct StringLiteral<'a> {
     pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
 }

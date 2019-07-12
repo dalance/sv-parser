@@ -1,4 +1,3 @@
-use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -174,7 +173,7 @@ pub struct TaggedUnionExpression<'a> {
 
 #[derive(Debug)]
 pub struct InsideExpression<'a> {
-    pub nodes: (Expression<'a>, Symbol<'a>, Brace<'a, Vec<ValueRange<'a>>>),
+    pub nodes: (Expression<'a>, Symbol<'a>, Brace<'a, OpenRangeList<'a>>),
 }
 
 #[derive(Debug)]

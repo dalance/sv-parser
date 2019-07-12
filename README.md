@@ -49,11 +49,11 @@ A parser library for System Verilog.
 | behavioral_statements             | procedural_blocks_and_assignments     | x    | x      |      |
 | behavioral_statements             | parallel_and_sequential_blocks        | x    | x      |      |
 | behavioral_statements             | statements                            | x    | x      |      |
-| behavioral_statements             | timing_control_statements             |      |        |      |
-| behavioral_statements             | conditional_statements                |      |        |      |
-| behavioral_statements             | case_statements                       |      |        |      |
-| behavioral_statements             | patterns                              |      |        |      |
-| behavioral_statements             | looping_statements                    |      |        |      |
+| behavioral_statements             | timing_control_statements             | x    | x      |      |
+| behavioral_statements             | conditional_statements                | x    | x      |      |
+| behavioral_statements             | case_statements                       | x    | x      |      |
+| behavioral_statements             | patterns                              | x    | x      |      |
+| behavioral_statements             | looping_statements                    | x    | x      |      |
 | behavioral_statements             | subroutine_call_statements            | x    | x      |      |
 | behavioral_statements             | assertion_statements                  |      |        |      |
 | behavioral_statements             | clocking_block                        |      |        |      |

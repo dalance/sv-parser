@@ -62,7 +62,7 @@ pub struct TfPortItem<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
         Option<TfPortDirection>,
-        Option<Var>,
+        Option<Var<'a>>,
         DataTypeOrImplicit<'a>,
         Option<(
             Identifier<'a>,
@@ -83,7 +83,7 @@ pub struct TfPortDeclaration<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
         TfPortDirection,
-        Option<Var>,
+        Option<Var<'a>>,
         DataTypeOrImplicit<'a>,
         ListOfTfVariableIdentifiers<'a>,
     ),

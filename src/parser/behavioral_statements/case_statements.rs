@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -17,38 +18,51 @@ pub enum CaseStatement<'a> {
 #[derive(Debug)]
 pub struct CaseStatementNormal<'a> {
     pub nodes: (
-        Option<UniquePriority>,
-        CaseKeyword,
-        Expression<'a>,
+        Option<UniquePriority<'a>>,
+        CaseKeyword<'a>,
+        Paren<'a, CaseExpression<'a>>,
+        CaseItem<'a>,
         Vec<CaseItem<'a>>,
+        Symbol<'a>,
     ),
 }
 
 #[derive(Debug)]
 pub struct CaseStatementMatches<'a> {
     pub nodes: (
-        Option<UniquePriority>,
-        CaseKeyword,
-        Expression<'a>,
+        Option<UniquePriority<'a>>,
+        CaseKeyword<'a>,
+        Paren<'a, CaseExpression<'a>>,
+        Symbol<'a>,
+        CasePatternItem<'a>,
         Vec<CasePatternItem<'a>>,
+        Symbol<'a>,
     ),
 }
 
 #[derive(Debug)]
 pub struct CaseStatementInside<'a> {
     pub nodes: (
-        Option<UniquePriority>,
-        CaseKeyword,
-        Expression<'a>,
+        Option<UniquePriority<'a>>,
+        Symbol<'a>,
+        Paren<'a, CaseExpression<'a>>,
+        Symbol<'a>,
+        CaseInsideItem<'a>,
         Vec<CaseInsideItem<'a>>,
+        Symbol<'a>,
     ),
 }
 
+#[derive(Debug, Node)]
+pub enum CaseKeyword<'a> {
+    Case(Symbol<'a>),
+    Casez(Symbol<'a>),
+    Casex(Symbol<'a>),
+}
+
 #[derive(Debug)]
-pub enum CaseKeyword {
-    Case,
-    Casez,
-    Casex,
+pub struct CaseExpression<'a> {
+    pub nodes: (Expression<'a>,),
 }
 
 #[derive(Debug)]
@@ -58,9 +72,33 @@ pub enum CaseItem<'a> {
 }
 
 #[derive(Debug)]
+pub struct CaseItemNondefault<'a> {
+    pub nodes: (
+        List<Symbol<'a>, CaseItemExpression<'a>>,
+        Symbol<'a>,
+        StatementOrNull<'a>,
+    ),
+}
+
+#[derive(Debug)]
+pub struct CaseItemDefault<'a> {
+    pub nodes: (Symbol<'a>, Option<Symbol<'a>>, StatementOrNull<'a>),
+}
+
+#[derive(Debug)]
 pub enum CasePatternItem<'a> {
     NonDefault(CasePatternItemNondefault<'a>),
     Default(CaseItemDefault<'a>),
+}
+
+#[derive(Debug)]
+pub struct CasePatternItemNondefault<'a> {
+    pub nodes: (
+        Pattern<'a>,
+        Option<(Symbol<'a>, Expression<'a>)>,
+        Symbol<'a>,
+        StatementOrNull<'a>,
+    ),
 }
 
 #[derive(Debug)]
@@ -70,42 +108,37 @@ pub enum CaseInsideItem<'a> {
 }
 
 #[derive(Debug)]
-pub struct CaseItemDefault<'a> {
-    pub nodes: (StatementOrNull<'a>,),
-}
-
-#[derive(Debug)]
-pub struct CaseItemNondefault<'a> {
-    pub nodes: (Vec<Expression<'a>>, StatementOrNull<'a>),
-}
-
-#[derive(Debug)]
-pub struct CasePatternItemNondefault<'a> {
-    pub nodes: (Pattern<'a>, Option<Expression<'a>>, StatementOrNull<'a>),
-}
-
-#[derive(Debug)]
 pub struct CaseInsideItemNondefault<'a> {
-    pub nodes: (Vec<ValueRange<'a>>, StatementOrNull<'a>),
+    pub nodes: (OpenRangeList<'a>, Symbol<'a>, StatementOrNull<'a>),
+}
+
+#[derive(Debug)]
+pub struct CaseItemExpression<'a> {
+    pub nodes: (Expression<'a>,),
 }
 
 #[derive(Debug)]
 pub struct RandcaseStatement<'a> {
-    pub nodes: (Vec<RandcaseItem<'a>>,),
+    pub nodes: (
+        Symbol<'a>,
+        RandcaseItem<'a>,
+        Vec<RandcaseItem<'a>>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct RandcaseItem<'a> {
-    pub nodes: (Expression<'a>, StatementOrNull<'a>),
+    pub nodes: (Expression<'a>, Symbol<'a>, StatementOrNull<'a>),
 }
 
 #[derive(Debug)]
 pub struct OpenRangeList<'a> {
-    pub nodes: (Vec<OpenRangeValue<'a>>,),
+    pub nodes: (List<Symbol<'a>, OpenValueRange<'a>>,),
 }
 
 #[derive(Debug)]
-pub struct OpenRangeValue<'a> {
+pub struct OpenValueRange<'a> {
     pub nodes: (ValueRange<'a>,),
 }
 
@@ -120,65 +153,63 @@ pub fn case_statement(s: Span) -> IResult<Span, CaseStatement> {
 }
 
 pub fn case_statement_normal(s: Span) -> IResult<Span, CaseStatement> {
-    let (s, x) = opt(unique_priority)(s)?;
-    let (s, y) = case_keyword(s)?;
-    let (s, _) = symbol("(")(s)?;
-    let (s, z) = case_expression(s)?;
-    let (s, _) = symbol(")")(s)?;
-    let (s, v) = many1(case_item)(s)?;
-    let (s, _) = symbol("endcase")(s)?;
+    let (s, a) = opt(unique_priority)(s)?;
+    let (s, b) = case_keyword(s)?;
+    let (s, c) = paren2(case_expression)(s)?;
+    let (s, d) = case_item(s)?;
+    let (s, e) = many0(case_item)(s)?;
+    let (s, f) = symbol("endcase")(s)?;
     Ok((
         s,
         CaseStatement::Normal(CaseStatementNormal {
-            nodes: (x, y, z, v),
+            nodes: (a, b, c, d, e, f),
         }),
     ))
 }
 
 pub fn case_statement_matches(s: Span) -> IResult<Span, CaseStatement> {
-    let (s, x) = opt(unique_priority)(s)?;
-    let (s, y) = case_keyword(s)?;
-    let (s, _) = symbol("(")(s)?;
-    let (s, z) = case_expression(s)?;
-    let (s, _) = symbol(")")(s)?;
-    let (s, _) = symbol("matches")(s)?;
-    let (s, v) = many1(case_pattern_item)(s)?;
-    let (s, _) = symbol("endcase")(s)?;
+    let (s, a) = opt(unique_priority)(s)?;
+    let (s, b) = case_keyword(s)?;
+    let (s, c) = paren2(case_expression)(s)?;
+    let (s, d) = symbol("matches")(s)?;
+    let (s, e) = case_pattern_item(s)?;
+    let (s, f) = many0(case_pattern_item)(s)?;
+    let (s, g) = symbol("endcase")(s)?;
     Ok((
         s,
         CaseStatement::Matches(CaseStatementMatches {
-            nodes: (x, y, z, v),
+            nodes: (a, b, c, d, e, f, g),
         }),
     ))
 }
 
 pub fn case_statement_inside(s: Span) -> IResult<Span, CaseStatement> {
-    let (s, x) = opt(unique_priority)(s)?;
-    let (s, y) = case_keyword(s)?;
-    let (s, _) = symbol("(")(s)?;
-    let (s, z) = case_expression(s)?;
-    let (s, _) = symbol(")")(s)?;
-    let (s, _) = symbol("inside")(s)?;
-    let (s, v) = many1(case_inside_item)(s)?;
-    let (s, _) = symbol("endcase")(s)?;
+    let (s, a) = opt(unique_priority)(s)?;
+    let (s, b) = symbol("case")(s)?;
+    let (s, c) = paren2(case_expression)(s)?;
+    let (s, d) = symbol("inside")(s)?;
+    let (s, e) = case_inside_item(s)?;
+    let (s, f) = many0(case_inside_item)(s)?;
+    let (s, g) = symbol("endcase")(s)?;
     Ok((
         s,
         CaseStatement::Inside(CaseStatementInside {
-            nodes: (x, y, z, v),
+            nodes: (a, b, c, d, e, f, g),
         }),
     ))
 }
 
 pub fn case_keyword(s: Span) -> IResult<Span, CaseKeyword> {
     alt((
-        map(symbol("casez"), |_| CaseKeyword::Casez),
-        map(symbol("casex"), |_| CaseKeyword::Casex),
-        map(symbol("case"), |_| CaseKeyword::Case),
+        map(symbol("casez"), |x| CaseKeyword::Casez(x)),
+        map(symbol("casex"), |x| CaseKeyword::Casex(x)),
+        map(symbol("case"), |x| CaseKeyword::Case(x)),
     ))(s)
 }
 
-pub fn case_expression(s: Span) -> IResult<Span, Expression> {
-    expression(s)
+pub fn case_expression(s: Span) -> IResult<Span, CaseExpression> {
+    let (s, a) = expression(s)?;
+    Ok((s, CaseExpression { nodes: (a,) }))
 }
 
 pub fn case_item(s: Span) -> IResult<Span, CaseItem> {
@@ -189,20 +220,20 @@ pub fn case_item(s: Span) -> IResult<Span, CaseItem> {
 }
 
 pub fn case_item_nondefault(s: Span) -> IResult<Span, CaseItem> {
-    let (s, x) = separated_nonempty_list(symbol(","), case_item_expression)(s)?;
-    let (s, _) = symbol(":")(s)?;
-    let (s, y) = statement_or_null(s)?;
+    let (s, a) = list(symbol(","), case_item_expression)(s)?;
+    let (s, b) = symbol(":")(s)?;
+    let (s, c) = statement_or_null(s)?;
     Ok((
         s,
-        CaseItem::NonDefault(CaseItemNondefault { nodes: (x, y) }),
+        CaseItem::NonDefault(CaseItemNondefault { nodes: (a, b, c) }),
     ))
 }
 
 pub fn case_item_default(s: Span) -> IResult<Span, CaseItemDefault> {
-    let (s, _) = symbol("default")(s)?;
-    let (s, _) = opt(symbol(":"))(s)?;
-    let (s, x) = statement_or_null(s)?;
-    Ok((s, CaseItemDefault { nodes: (x,) }))
+    let (s, a) = symbol("default")(s)?;
+    let (s, b) = opt(symbol(":"))(s)?;
+    let (s, c) = statement_or_null(s)?;
+    Ok((s, CaseItemDefault { nodes: (a, b, c) }))
 }
 
 pub fn case_pattern_item(s: Span) -> IResult<Span, CasePatternItem> {
@@ -213,13 +244,15 @@ pub fn case_pattern_item(s: Span) -> IResult<Span, CasePatternItem> {
 }
 
 pub fn case_pattern_item_nondefault(s: Span) -> IResult<Span, CasePatternItem> {
-    let (s, x) = pattern(s)?;
-    let (s, y) = opt(preceded(symbol("&&&"), expression))(s)?;
-    let (s, _) = symbol(":")(s)?;
-    let (s, z) = statement_or_null(s)?;
+    let (s, a) = pattern(s)?;
+    let (s, b) = opt(pair(symbol("&&&"), expression))(s)?;
+    let (s, c) = symbol(":")(s)?;
+    let (s, d) = statement_or_null(s)?;
     Ok((
         s,
-        CasePatternItem::NonDefault(CasePatternItemNondefault { nodes: (x, y, z) }),
+        CasePatternItem::NonDefault(CasePatternItemNondefault {
+            nodes: (a, b, c, d),
+        }),
     ))
 }
 
@@ -231,37 +264,46 @@ pub fn case_inside_item(s: Span) -> IResult<Span, CaseInsideItem> {
 }
 
 pub fn case_inside_item_nondefault(s: Span) -> IResult<Span, CaseInsideItem> {
-    let (s, x) = open_range_list(s)?;
-    let (s, _) = symbol(":")(s)?;
-    let (s, y) = statement_or_null(s)?;
+    let (s, a) = open_range_list(s)?;
+    let (s, b) = symbol(":")(s)?;
+    let (s, c) = statement_or_null(s)?;
     Ok((
         s,
-        CaseInsideItem::NonDefault(CaseInsideItemNondefault { nodes: (x, y) }),
+        CaseInsideItem::NonDefault(CaseInsideItemNondefault { nodes: (a, b, c) }),
     ))
 }
 
-pub fn case_item_expression(s: Span) -> IResult<Span, Expression> {
-    expression(s)
+pub fn case_item_expression(s: Span) -> IResult<Span, CaseItemExpression> {
+    let (s, a) = expression(s)?;
+    Ok((s, CaseItemExpression { nodes: (a,) }))
 }
 
 pub fn randcase_statement(s: Span) -> IResult<Span, RandcaseStatement> {
-    let (s, _) = symbol("randcase")(s)?;
-    let (s, x) = many1(randcase_item)(s)?;
-    let (s, _) = symbol("endcase")(s)?;
-    Ok((s, RandcaseStatement { nodes: (x,) }))
+    let (s, a) = symbol("randcase")(s)?;
+    let (s, b) = randcase_item(s)?;
+    let (s, c) = many0(randcase_item)(s)?;
+    let (s, d) = symbol("endcase")(s)?;
+    Ok((
+        s,
+        RandcaseStatement {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn randcase_item(s: Span) -> IResult<Span, RandcaseItem> {
-    let (s, x) = expression(s)?;
-    let (s, _) = symbol(":")(s)?;
-    let (s, y) = statement_or_null(s)?;
-    Ok((s, RandcaseItem { nodes: (x, y) }))
+    let (s, a) = expression(s)?;
+    let (s, b) = symbol(":")(s)?;
+    let (s, c) = statement_or_null(s)?;
+    Ok((s, RandcaseItem { nodes: (a, b, c) }))
 }
 
-pub fn open_range_list(s: Span) -> IResult<Span, Vec<ValueRange>> {
-    separated_nonempty_list(symbol(","), open_value_range)(s)
+pub fn open_range_list(s: Span) -> IResult<Span, OpenRangeList> {
+    let (s, a) = list(symbol(","), open_value_range)(s)?;
+    Ok((s, OpenRangeList { nodes: (a,) }))
 }
 
-pub fn open_value_range(s: Span) -> IResult<Span, ValueRange> {
-    value_range(s)
+pub fn open_value_range(s: Span) -> IResult<Span, OpenValueRange> {
+    let (s, a) = value_range(s)?;
+    Ok((s, OpenValueRange { nodes: (a,) }))
 }

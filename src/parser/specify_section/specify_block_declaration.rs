@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 //use nom::branch::*;
 //use nom::combinator::*;
@@ -6,7 +7,7 @@ use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SpecifyBlock<'a> {
     pub nodes: (Identifier<'a>,),
 }

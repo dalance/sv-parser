@@ -9,7 +9,7 @@ use nom::IResult;
 pub enum NetLvalue<'a> {
     Identifier(NetLvalueIdentifier<'a>),
     Lvalue(Box<NetLvalueLvalue<'a>>),
-    Pattern(NetLvaluePattern<'a>),
+    Pattern(Box<NetLvaluePattern<'a>>),
 }
 
 #[derive(Debug)]
@@ -34,7 +34,7 @@ pub struct NetLvaluePattern<'a> {
 pub enum VariableLvalue<'a> {
     Identifier(VariableLvalueIdentifier<'a>),
     Lvalue(Box<VariableLvalueLvalue<'a>>),
-    Pattern(VariableLvaluePattern<'a>),
+    Pattern(Box<VariableLvaluePattern<'a>>),
     StreamingConcatenation(StreamingConcatenation<'a>),
 }
 
@@ -87,7 +87,10 @@ pub fn net_lvalue_identifier(s: Span) -> IResult<Span, NetLvalue> {
 pub fn net_lvalue_pattern(s: Span) -> IResult<Span, NetLvalue> {
     let (s, a) = opt(assignment_pattern_expression_type)(s)?;
     let (s, b) = assignment_pattern_net_lvalue(s)?;
-    Ok((s, NetLvalue::Pattern(NetLvaluePattern { nodes: (a, b) })))
+    Ok((
+        s,
+        NetLvalue::Pattern(Box::new(NetLvaluePattern { nodes: (a, b) })),
+    ))
 }
 
 pub fn net_lvalue_lvalue(s: Span) -> IResult<Span, NetLvalue> {
@@ -124,7 +127,7 @@ pub fn variable_lvalue_pattern(s: Span) -> IResult<Span, VariableLvalue> {
     let (s, b) = assignment_pattern_variable_lvalue(s)?;
     Ok((
         s,
-        VariableLvalue::Pattern(VariableLvaluePattern { nodes: (a, b) }),
+        VariableLvalue::Pattern(Box::new(VariableLvaluePattern { nodes: (a, b) })),
     ))
 }
 

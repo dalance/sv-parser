@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -145,11 +146,6 @@ pub struct ClassQualifier<'a> {
 }
 
 #[derive(Debug)]
-pub struct Local<'a> {
-    pub nodes: (Symbol<'a>,),
-}
-
-#[derive(Debug)]
 pub enum RangeExpression<'a> {
     Expression(Expression<'a>),
     PartSelectRange(PartSelectRange<'a>),
@@ -163,23 +159,23 @@ pub enum PrimaryLiteral<'a> {
     StringLiteral(StringLiteral<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum TimeLiteral<'a> {
     Unsigned(TimeLiteralUnsigned<'a>),
     FixedPoint(TimeLiteralFixedPoint<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct TimeLiteralUnsigned<'a> {
     pub nodes: (UnsignedNumber<'a>, TimeUnit<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct TimeLiteralFixedPoint<'a> {
     pub nodes: (FixedPointNumber<'a>, TimeUnit<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum TimeUnit<'a> {
     S(Symbol<'a>),
     MS(Symbol<'a>),
@@ -189,7 +185,7 @@ pub enum TimeUnit<'a> {
     FS(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ImplicitClassHandle<'a> {
     This(Symbol<'a>),
     Super(Symbol<'a>),
@@ -267,6 +263,7 @@ pub struct Cast<'a> {
 
 pub fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
     alt((
+        map(symbol("null"), |x| ConstantPrimary::Null(x)),
         map(primary_literal, |x| ConstantPrimary::PrimaryLiteral(x)),
         constant_primary_ps_parameter,
         constant_primary_specparam,
@@ -287,7 +284,6 @@ pub fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
             ConstantPrimary::ConstantAssignmentPatternExpression(x)
         }),
         map(type_reference, |x| ConstantPrimary::TypeReference(x)),
-        map(symbol("null"), |x| ConstantPrimary::Null(x)),
     ))(s)
 }
 
@@ -382,6 +378,9 @@ pub fn module_path_primary_mintypmax_expression(s: Span) -> IResult<Span, Module
 
 pub fn primary(s: Span) -> IResult<Span, Primary> {
     alt((
+        map(symbol("this"), |x| Primary::This(x)),
+        map(symbol("$"), |x| Primary::Dollar(x)),
+        map(symbol("null"), |x| Primary::Null(x)),
         map(primary_literal, |x| Primary::PrimaryLiteral(x)),
         primary_hierarchical,
         map(empty_unpacked_array_concatenation, |x| {
@@ -401,9 +400,6 @@ pub fn primary(s: Span) -> IResult<Span, Primary> {
             Primary::StreamingConcatenation(x)
         }),
         map(sequence_method_call, |x| Primary::SequenceMethodCall(x)),
-        map(symbol("this"), |x| Primary::This(x)),
-        map(symbol("$"), |x| Primary::Dollar(x)),
-        map(symbol("null"), |x| Primary::Null(x)),
     ))(s)
 }
 
@@ -455,14 +451,9 @@ pub fn class_qualifier_or_package_scope(s: Span) -> IResult<Span, ClassQualifier
 }
 
 pub fn class_qualifier(s: Span) -> IResult<Span, ClassQualifier> {
-    let (s, a) = opt(symbol("local::"))(s)?;
+    let (s, a) = opt(local)(s)?;
     let (s, b) = opt(implicit_class_handle_or_class_scope)(s)?;
-    Ok((
-        s,
-        ClassQualifier {
-            nodes: (a.map(|x| Local { nodes: (x,) }), b),
-        },
-    ))
+    Ok((s, ClassQualifier { nodes: (a, b) }))
 }
 
 pub fn range_expression(s: Span) -> IResult<Span, RangeExpression> {

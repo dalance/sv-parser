@@ -79,7 +79,7 @@ pub struct RsRepeat<'a> {
 
 #[derive(Debug)]
 pub struct RsCase<'a> {
-    pub nodes: (Expression<'a>, Vec<RsCaseItem<'a>>),
+    pub nodes: (CaseExpression<'a>, Vec<RsCaseItem<'a>>),
 }
 
 #[derive(Debug)]
@@ -95,7 +95,7 @@ pub struct RsCaseItemDefault<'a> {
 
 #[derive(Debug)]
 pub struct RsCaseItemNondefault<'a> {
-    pub nodes: (Vec<Expression<'a>>, ProductionItem<'a>),
+    pub nodes: (Vec<CaseItemExpression<'a>>, ProductionItem<'a>),
 }
 
 // -----------------------------------------------------------------------------

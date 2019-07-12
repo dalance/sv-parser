@@ -1,30 +1,31 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct UnaryOperator<'a> {
     pub nodes: (Symbol<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct BinaryOperator<'a> {
     pub nodes: (Symbol<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct IncOrDecOperator<'a> {
     pub nodes: (Symbol<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct UnaryModulePathOperator<'a> {
     pub nodes: (Symbol<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct BinaryModulePathOperator<'a> {
     pub nodes: (Symbol<'a>,),
 }

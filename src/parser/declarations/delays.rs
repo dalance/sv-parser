@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 //use nom::branch::*;
 //use nom::combinator::*;
@@ -12,7 +13,7 @@ pub enum Delay3<'a> {
     Mintypmax(Delay3Mintypmax<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct Delay3Single<'a> {
     pub nodes: (Symbol<'a>, DelayValue<'a>),
 }
@@ -37,7 +38,7 @@ pub enum Delay2<'a> {
     Mintypmax(Delay2Mintypmax<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct Delay2Single<'a> {
     pub nodes: (Symbol<'a>, DelayValue<'a>),
 }
@@ -50,7 +51,7 @@ pub struct Delay2Mintypmax<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum DelayValue<'a> {
     UnsignedNumber(UnsignedNumber<'a>),
     RealNumber(RealNumber<'a>),

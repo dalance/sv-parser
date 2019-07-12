@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 //use nom::branch::*;
 //use nom::combinator::*;
@@ -16,26 +17,26 @@ pub struct SpecifyOutputTerminalDescriptor<'a> {
     pub nodes: (OutputIdentifier<'a>, Option<ConstantRangeExpression<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum InputIdentifier<'a> {
     InputPortIdentifier(InputPortIdentifier<'a>),
     InoutPortIdentifier(InoutPortIdentifier<'a>),
     Interface(InputIdentifierInterface<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct InputIdentifierInterface<'a> {
     pub nodes: (InterfaceIdentifier<'a>, PortIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum OutputIdentifier<'a> {
     OutputPortIdentifier(OutputPortIdentifier<'a>),
     InoutPortIdentifier(InoutPortIdentifier<'a>),
     Interface(OutputIdentifierInterface<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct OutputIdentifierInterface<'a> {
     pub nodes: (InterfaceIdentifier<'a>, PortIdentifier<'a>),
 }

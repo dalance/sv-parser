@@ -133,22 +133,22 @@ pub struct GenvarIdentifier<'a> {
     pub nodes: (Identifier<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct HierarchicalArrayIdentifier<'a> {
     pub nodes: (HierarchicalIdentifier<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct HierarchicalBlockIdentifier<'a> {
     pub nodes: (HierarchicalIdentifier<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct HierarchicalEventIdentifier<'a> {
     pub nodes: (HierarchicalIdentifier<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct HierarchicalIdentifier<'a> {
     pub nodes: (
         Option<Root<'a>>,
@@ -162,37 +162,37 @@ pub struct Root<'a> {
     pub nodes: (Symbol<'a>, Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct HierarchicalNetIdentifier<'a> {
     pub nodes: (HierarchicalIdentifier<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct HierarchicalParameterIdentifier<'a> {
     pub nodes: (HierarchicalIdentifier<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct HierarchicalPropertyIdentifier<'a> {
     pub nodes: (HierarchicalIdentifier<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct HierarchicalSequenceIdentifier<'a> {
     pub nodes: (HierarchicalIdentifier<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct HierarchicalTaskIdentifier<'a> {
     pub nodes: (HierarchicalIdentifier<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct HierarchicalTfIdentifier<'a> {
     pub nodes: (HierarchicalIdentifier<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct HierarchicalVariableIdentifier<'a> {
     pub nodes: (HierarchicalIdentifier<'a>,),
 }
@@ -339,7 +339,7 @@ pub struct PsIdentifier<'a> {
     pub nodes: (Option<PackageScope<'a>>, Identifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PsOrHierarchicalArrayIdentifier<'a> {
     pub nodes: (
         Option<ImplicitClassHandleOrClassScopeOrPackageScope<'a>>,
@@ -347,7 +347,7 @@ pub struct PsOrHierarchicalArrayIdentifier<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum PsOrHierarchicalNetIdentifier<'a> {
     PackageScope(PsOrHierarchicalNetIdentifierPackageScope<'a>),
     HierarchicalNetIdentifier(HierarchicalNetIdentifier<'a>),
@@ -358,66 +358,66 @@ pub struct PsOrHierarchicalNetIdentifierPackageScope<'a> {
     pub nodes: (Option<PackageScope<'a>>, NetIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PsOrHierarchicalNetIdentifierHierarchical<'a> {
     pub nodes: (HierarchicalNetIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum PsOrHierarchicalPropertyIdentifier<'a> {
     PackageScope(PsOrHierarchicalPropertyIdentifierPackageScope<'a>),
     HierarchicalPropertyIdentifier(HierarchicalPropertyIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PsOrHierarchicalPropertyIdentifierPackageScope<'a> {
     pub nodes: (Option<PackageScope<'a>>, PropertyIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PsOrHierarchicalPropertyIdentifierHierarchical<'a> {
     pub nodes: (HierarchicalPropertyIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum PsOrHierarchicalSequenceIdentifier<'a> {
     PackageScope(PsOrHierarchicalSequenceIdentifierPackageScope<'a>),
     HierarchicalSequenceIdentifier(HierarchicalSequenceIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PsOrHierarchicalSequenceIdentifierPackageScope<'a> {
     pub nodes: (Option<PackageScope<'a>>, SequenceIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PsOrHierarchicalSequenceIdentifierHierarchical<'a> {
     pub nodes: (HierarchicalSequenceIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum PsOrHierarchicalTfIdentifier<'a> {
     PackageScope(PsOrHierarchicalTfIdentifierPackageScope<'a>),
     HierarchicalTfIdentifier(HierarchicalTfIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PsOrHierarchicalTfIdentifierPackageScope<'a> {
     pub nodes: (Option<PackageScope<'a>>, TfIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PsOrHierarchicalTfIdentifierHierarchical<'a> {
     pub nodes: (HierarchicalTfIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum PsParameterIdentifier<'a> {
     Scope(PsParameterIdentifierScope<'a>),
     Generate(PsParameterIdentifierGenerate<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PsParameterIdentifierScope<'a> {
     pub nodes: (
         Option<PackageScopeOrClassScope<'a>>,
@@ -425,7 +425,7 @@ pub struct PsParameterIdentifierScope<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PsParameterIdentifierGenerate<'a> {
     pub nodes: (
         Vec<(
@@ -437,7 +437,7 @@ pub struct PsParameterIdentifierGenerate<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PsTypeIdentifier<'a> {
     pub nodes: (
         Option<LocalOrPackageScopeOrClassScope<'a>>,
@@ -445,7 +445,7 @@ pub struct PsTypeIdentifier<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum LocalOrPackageScopeOrClassScope<'a> {
     Local(Local<'a>),
     PackageScope(PackageScope<'a>),
@@ -517,26 +517,26 @@ pub struct VariableIdentifier<'a> {
     pub nodes: (Identifier<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ImplicitClassHandleOrClassScopeOrPackageScope<'a> {
     ImplicitClassHandle((ImplicitClassHandle<'a>, Symbol<'a>)),
     ClassScope(ClassScope<'a>),
     PackageScope(PackageScope<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ImplicitClassHandleOrPackageScope<'a> {
     ImplicitClassHandle((ImplicitClassHandle<'a>, Symbol<'a>)),
     PackageScope(PackageScope<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ImplicitClassHandleOrClassScope<'a> {
     ImplicitClassHandle((ImplicitClassHandle<'a>, Symbol<'a>)),
     ClassScope(ClassScope<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum PackageScopeOrClassScope<'a> {
     PackageScope(PackageScope<'a>),
     ClassScope(ClassScope<'a>),

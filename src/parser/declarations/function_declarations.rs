@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 //use nom::branch::*;
 //use nom::combinator::*;
@@ -6,24 +7,24 @@ use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum FunctionDataTypeOrImplicit<'a> {
     DataType(DataTypeOrVoid<'a>),
     Implicit(ImplicitDataType<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct FunctionDeclaration<'a> {
     pub nodes: (Option<Lifetime<'a>>, FunctionBodyDeclaration<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum FunctionBodyDeclaration<'a> {
     WithoutPort(FunctionBodyDeclarationWithoutPort<'a>),
     WithPort(FunctionBodyDeclarationWithPort<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct FunctionBodyDeclarationWithoutPort<'a> {
     pub nodes: (
         FunctionDataTypeOrImplicit<'a>,
@@ -35,7 +36,7 @@ pub struct FunctionBodyDeclarationWithoutPort<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct FunctionBodyDeclarationWithPort<'a> {
     pub nodes: (
         FunctionDataTypeOrImplicit<'a>,
@@ -48,12 +49,12 @@ pub struct FunctionBodyDeclarationWithPort<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct FunctionPrototype<'a> {
     pub nodes: (DataTypeOrVoid<'a>, Identifier<'a>, Option<TfPortList<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum DpiImportExport<'a> {
     ImportFunction(DpiImportExportImportFunction<'a>),
     ImportTask(DpiImportExportImportTask<'a>),
@@ -61,59 +62,59 @@ pub enum DpiImportExport<'a> {
     ExportTask(DpiImportExportExportTask<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DpiImportExportImportFunction<'a> {
     pub nodes: (
-        DpiSpecString,
-        Option<DpiFunctionImportProperty>,
+        DpiSpecString<'a>,
+        Option<DpiFunctionImportProperty<'a>>,
         Option<Identifier<'a>>,
         DpiFunctionProto<'a>,
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DpiImportExportImportTask<'a> {
     pub nodes: (
-        DpiSpecString,
-        Option<DpiTaskImportProperty>,
+        DpiSpecString<'a>,
+        Option<DpiTaskImportProperty<'a>>,
         Option<Identifier<'a>>,
         DpiTaskProto<'a>,
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DpiImportExportExportFunction<'a> {
-    pub nodes: (DpiSpecString, Option<Identifier<'a>>, Identifier<'a>),
+    pub nodes: (DpiSpecString<'a>, Option<Identifier<'a>>, Identifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DpiImportExportExportTask<'a> {
-    pub nodes: (DpiSpecString, Option<Identifier<'a>>, Identifier<'a>),
+    pub nodes: (DpiSpecString<'a>, Option<Identifier<'a>>, Identifier<'a>),
 }
 
-#[derive(Debug)]
-pub enum DpiSpecString {
-    DpiC,
-    Dpi,
+#[derive(Debug, Node)]
+pub enum DpiSpecString<'a> {
+    DpiC(Symbol<'a>),
+    Dpi(Symbol<'a>),
 }
 
-#[derive(Debug)]
-pub enum DpiFunctionImportProperty {
-    Context,
-    Pure,
+#[derive(Debug, Node)]
+pub enum DpiFunctionImportProperty<'a> {
+    Context(Symbol<'a>),
+    Pure(Symbol<'a>),
 }
 
-#[derive(Debug)]
-pub enum DpiTaskImportProperty {
-    Context,
+#[derive(Debug, Node)]
+pub enum DpiTaskImportProperty<'a> {
+    Context(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DpiFunctionProto<'a> {
     pub nodes: (FunctionPrototype<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DpiTaskProto<'a> {
     pub nodes: (TaskPrototype<'a>,),
 }

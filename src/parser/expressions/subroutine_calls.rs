@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -7,12 +8,12 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantFunctionCall<'a> {
     pub nodes: (FunctionSubroutineCall<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct TfCall<'a> {
     pub nodes: (
         PsOrHierarchicalTfIdentifier<'a>,
@@ -21,14 +22,14 @@ pub struct TfCall<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum SystemTfCall<'a> {
     ArgOptionl(SystemTfCallArgOptional<'a>),
     ArgDataType(SystemTfCallArgDataType<'a>),
     ArgExpression(SystemTfCallArgExpression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SystemTfCallArgOptional<'a> {
     pub nodes: (
         SystemTfIdentifier<'a>,
@@ -36,7 +37,7 @@ pub struct SystemTfCallArgOptional<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SystemTfCallArgDataType<'a> {
     pub nodes: (
         SystemTfIdentifier<'a>,
@@ -44,7 +45,7 @@ pub struct SystemTfCallArgDataType<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SystemTfCallArgExpression<'a> {
     pub nodes: (
         SystemTfIdentifier<'a>,
@@ -58,7 +59,7 @@ pub struct SystemTfCallArgExpression<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum SubroutineCall<'a> {
     TfCall(Box<TfCall<'a>>),
     SystemTfCall(Box<SystemTfCall<'a>>),
@@ -66,23 +67,23 @@ pub enum SubroutineCall<'a> {
     Randomize(Box<SubroutineCallRandomize<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SubroutineCallRandomize<'a> {
     pub nodes: (Option<(Symbol<'a>, Symbol<'a>)>, RandomizeCall<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct FunctionSubroutineCall<'a> {
     pub nodes: (SubroutineCall<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ListOfArguments<'a> {
     Ordered(ListOfArgumentsOrdered<'a>),
     Named(ListOfArgumentsNamed<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfArgumentsOrdered<'a> {
     pub nodes: (
         List<Symbol<'a>, Option<Expression<'a>>>,
@@ -95,7 +96,7 @@ pub struct ListOfArgumentsOrdered<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfArgumentsNamed<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -110,18 +111,18 @@ pub struct ListOfArgumentsNamed<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct MethodCall<'a> {
     pub nodes: (MethodCallRoot<'a>, Symbol<'a>, MethodCallBody<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum MethodCallBody<'a> {
     User(MethodCallBodyUser<'a>),
     BuiltInMethodCall(BuiltInMethodCall<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct MethodCallBodyUser<'a> {
     pub nodes: (
         MethodIdentifier<'a>,
@@ -130,13 +131,13 @@ pub struct MethodCallBodyUser<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum BuiltInMethodCall<'a> {
     ArrayManipulationCall(ArrayManipulationCall<'a>),
     RandomizeCall(RandomizeCall<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ArrayManipulationCall<'a> {
     pub nodes: (
         ArrayMethodName<'a>,
@@ -146,7 +147,7 @@ pub struct ArrayManipulationCall<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct RandomizeCall<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -160,19 +161,19 @@ pub struct RandomizeCall<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum VariableIdentifierListOrNull<'a> {
     VariableIdentifierList(VariableIdentifierList<'a>),
     Null(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum MethodCallRoot<'a> {
     Primary(Primary<'a>),
     ImplicitClassHandle(ImplicitClassHandle<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ArrayMethodName<'a> {
     MethodIdentifier(MethodIdentifier<'a>),
     Unique(Symbol<'a>),

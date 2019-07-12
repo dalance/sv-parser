@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -6,7 +7,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CheckerInstantiation<'a> {
     pub nodes: (
         PsCheckerIdentifier<'a>,
@@ -16,34 +17,34 @@ pub struct CheckerInstantiation<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ListOfCheckerPortConnections<'a> {
     Ordered(ListOfCheckerPortConnectionsOrdered<'a>),
     Named(ListOfCheckerPortConnectionsNamed<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfCheckerPortConnectionsOrdered<'a> {
     pub nodes: (List<Symbol<'a>, OrderedCheckerPortConnection<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfCheckerPortConnectionsNamed<'a> {
     pub nodes: (List<Symbol<'a>, NamedCheckerPortConnection<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct OrderedCheckerPortConnection<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, Option<PropertyActualArg<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum NamedCheckerPortConnection<'a> {
     Identifier(NamedCheckerPortConnectionIdentifier<'a>),
     Asterisk(NamedCheckerPortConnectionAsterisk<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NamedCheckerPortConnectionIdentifier<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
@@ -53,7 +54,7 @@ pub struct NamedCheckerPortConnectionIdentifier<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NamedCheckerPortConnectionAsterisk<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, Symbol<'a>),
 }

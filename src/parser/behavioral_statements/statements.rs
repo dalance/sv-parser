@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -7,18 +8,18 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum StatementOrNull<'a> {
     Statement(Statement<'a>),
     Attribute(StatementOrNullAttribute<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct StatementOrNullAttribute<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct Statement<'a> {
     pub nodes: (
         Option<(BlockIdentifier<'a>, Symbol<'a>)>,
@@ -27,7 +28,7 @@ pub struct Statement<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum StatementItem<'a> {
     BlockingAssignment(Box<(BlockingAssignment<'a>, Symbol<'a>)>),
     NonblockingAssignment(Box<(NonblockingAssignment<'a>, Symbol<'a>)>),
@@ -51,23 +52,23 @@ pub enum StatementItem<'a> {
     ExpectPropertyStatement(Box<ExpectPropertyStatement<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct FunctionStatement<'a> {
     pub nodes: (Statement<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum FunctionStatementOrNull<'a> {
     Statement(FunctionStatement<'a>),
     Attribute(FunctionStatementOrNullAttribute<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct FunctionStatementOrNullAttribute<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct VariableIdentifierList<'a> {
     pub nodes: (List<Symbol<'a>, VariableIdentifier<'a>>,),
 }

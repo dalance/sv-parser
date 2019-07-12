@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::multi::*;
@@ -5,7 +6,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum BlockItemDeclaration<'a> {
     Data(BlockItemDeclarationData<'a>),
     LocalParameter(BlockItemDeclarationLocalParameter<'a>),
@@ -13,12 +14,12 @@ pub enum BlockItemDeclaration<'a> {
     Let(BlockItemDeclarationLet<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct BlockItemDeclarationData<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, DataDeclaration<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct BlockItemDeclarationLocalParameter<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
@@ -27,7 +28,7 @@ pub struct BlockItemDeclarationLocalParameter<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct BlockItemDeclarationParameter<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
@@ -36,7 +37,7 @@ pub struct BlockItemDeclarationParameter<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct BlockItemDeclarationLet<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, LetDeclaration<'a>),
 }

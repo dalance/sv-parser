@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -6,13 +7,13 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum SubroutineCallStatement<'a> {
     SubroutineCall((SubroutineCall<'a>, Symbol<'a>)),
     Function(SubroutineCallStatementFunction<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SubroutineCallStatementFunction<'a> {
     pub nodes: (
         Symbol<'a>,

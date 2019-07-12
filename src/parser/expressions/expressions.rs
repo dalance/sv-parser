@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -6,13 +7,13 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum IncOrDecExpression<'a> {
     Prefix(IncOrDecExpressionPrefix<'a>),
     Suffix(IncOrDecExpressionSuffix<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct IncOrDecExpressionPrefix<'a> {
     pub nodes: (
         IncOrDecOperator<'a>,
@@ -21,7 +22,7 @@ pub struct IncOrDecExpressionPrefix<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct IncOrDecExpressionSuffix<'a> {
     pub nodes: (
         VariableLvalue<'a>,
@@ -30,7 +31,7 @@ pub struct IncOrDecExpressionSuffix<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConditionalExpression<'a> {
     pub nodes: (
         CondPredicate<'a>,
@@ -42,7 +43,7 @@ pub struct ConditionalExpression<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ConstantExpression<'a> {
     ConstantPrimary(Box<ConstantPrimary<'a>>),
     Unary(Box<ConstantExpressionUnary<'a>>),
@@ -50,7 +51,7 @@ pub enum ConstantExpression<'a> {
     Ternary(Box<ConstantExpressionTernary<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantExpressionUnary<'a> {
     pub nodes: (
         UnaryOperator<'a>,
@@ -59,7 +60,7 @@ pub struct ConstantExpressionUnary<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantExpressionBinary<'a> {
     pub nodes: (
         ConstantExpression<'a>,
@@ -69,7 +70,7 @@ pub struct ConstantExpressionBinary<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantExpressionTernary<'a> {
     pub nodes: (
         ConstantExpression<'a>,
@@ -81,13 +82,13 @@ pub struct ConstantExpressionTernary<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ConstantMintypmaxExpression<'a> {
     Unary(ConstantExpression<'a>),
     Ternary(ConstantMintypmaxExpressionTernary<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantMintypmaxExpressionTernary<'a> {
     pub nodes: (
         ConstantExpression<'a>,
@@ -98,43 +99,43 @@ pub struct ConstantMintypmaxExpressionTernary<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ConstantParamExpression<'a> {
     ConstantMintypmaxExpression(ConstantMintypmaxExpression<'a>),
     DataType(DataType<'a>),
     Dollar(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ParamExpression<'a> {
     MintypmaxExpression(MintypmaxExpression<'a>),
     DataType(Box<DataType<'a>>),
     Dollar(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ConstantRangeExpression<'a> {
     ConstantExpression(ConstantExpression<'a>),
     ConstantPartSelectRange(ConstantPartSelectRange<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ConstantPartSelectRange<'a> {
     ConstantRange(ConstantRange<'a>),
     ConstantIndexedRange(ConstantIndexedRange<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantRange<'a> {
     pub nodes: (ConstantExpression<'a>, Symbol<'a>, ConstantExpression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantIndexedRange<'a> {
     pub nodes: (ConstantExpression<'a>, Symbol<'a>, ConstantExpression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum Expression<'a> {
     Primary(Box<Primary<'a>>),
     Unary(Box<ExpressionUnary<'a>>),
@@ -146,17 +147,17 @@ pub enum Expression<'a> {
     TaggedUnionExpression(Box<TaggedUnionExpression<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ExpressionUnary<'a> {
     pub nodes: (UnaryOperator<'a>, Vec<AttributeInstance<'a>>, Primary<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ExpressionOperatorAssignment<'a> {
     pub nodes: (Paren<'a, OperatorAssignment<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ExpressionBinary<'a> {
     pub nodes: (
         Expression<'a>,
@@ -166,34 +167,34 @@ pub struct ExpressionBinary<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct TaggedUnionExpression<'a> {
     pub nodes: (Symbol<'a>, MemberIdentifier<'a>, Option<Expression<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct InsideExpression<'a> {
     pub nodes: (Expression<'a>, Symbol<'a>, Brace<'a, OpenRangeList<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ValueRange<'a> {
     Expression(Expression<'a>),
     Binary(ValueRangeBinary<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ValueRangeBinary<'a> {
     pub nodes: (Bracket<'a, (Expression<'a>, Symbol<'a>, Expression<'a>)>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum MintypmaxExpression<'a> {
     Expression(Expression<'a>),
     Ternary(MintypmaxExpressionTernary<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct MintypmaxExpressionTernary<'a> {
     pub nodes: (
         Expression<'a>,
@@ -204,7 +205,7 @@ pub struct MintypmaxExpressionTernary<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModulePathConditionalExpression<'a> {
     pub nodes: (
         ModulePathExpression<'a>,
@@ -216,7 +217,7 @@ pub struct ModulePathConditionalExpression<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ModulePathExpression<'a> {
     ModulePathPrimary(Box<ModulePathPrimary<'a>>),
     Unary(Box<ModulePathExpressionUnary<'a>>),
@@ -224,7 +225,7 @@ pub enum ModulePathExpression<'a> {
     ModulePathConditionalExpression(Box<ModulePathConditionalExpression<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModulePathExpressionUnary<'a> {
     pub nodes: (
         UnaryModulePathOperator<'a>,
@@ -233,7 +234,7 @@ pub struct ModulePathExpressionUnary<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModulePathExpressionBinary<'a> {
     pub nodes: (
         ModulePathExpression<'a>,
@@ -243,13 +244,13 @@ pub struct ModulePathExpressionBinary<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ModulePathMintypmaxExpression<'a> {
     ModulePathExpression(ModulePathExpression<'a>),
     Ternary(ModulePathMintypmaxExpressionTernary<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModulePathMintypmaxExpressionTernary<'a> {
     pub nodes: (
         ModulePathExpression<'a>,
@@ -260,18 +261,18 @@ pub struct ModulePathMintypmaxExpressionTernary<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum PartSelectRange<'a> {
     ConstantRange(ConstantRange<'a>),
     IndexedRange(IndexedRange<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct IndexedRange<'a> {
     pub nodes: (Expression<'a>, Symbol<'a>, ConstantExpression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct GenvarExpression<'a> {
     pub nodes: (ConstantExpression<'a>,),
 }

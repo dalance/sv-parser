@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -7,12 +8,12 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct LibraryText<'a> {
     pub nodes: (Vec<LibraryDescription<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum LibraryDescription<'a> {
     LibraryDeclaration(LibraryDeclaration<'a>),
     IncludeStatement(IncludeStatement<'a>),
@@ -20,7 +21,7 @@ pub enum LibraryDescription<'a> {
     Null(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct LibraryDeclaration<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -31,12 +32,12 @@ pub struct LibraryDeclaration<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct IncludeStatement<'a> {
     pub nodes: (Symbol<'a>, FilePathSpec<'a>, Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct FilePathSpec<'a> {
     pub nodes: (StringLiteral<'a>,),
 }

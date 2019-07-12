@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 //use nom::branch::*;
 //use nom::combinator::*;
@@ -6,22 +7,22 @@ use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct LetDeclaration<'a> {
     pub nodes: (LetIdentifier<'a>, Option<LetPortList<'a>>, Expression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct LetIdentifier<'a> {
     pub nodes: (Identifier<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct LetPortList<'a> {
     pub nodes: (Vec<LetPortItem<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct LetPortItem<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
@@ -32,13 +33,13 @@ pub struct LetPortItem<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum LetFormalType<'a> {
     DataTypeOrImplicit(DataTypeOrImplicit<'a>),
-    Untyped,
+    Untyped(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct LetExpression<'a> {
     pub nodes: (
         Option<PackageScope<'a>>,
@@ -47,13 +48,13 @@ pub struct LetExpression<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum LetListOfArguments<'a> {
     Ordered(LetListOfArgumentsOrdered<'a>),
     Named(LetListOfArgumentsNamed<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct LetListOfArgumentsOrdered<'a> {
     pub nodes: (
         Vec<LetActualArg<'a>>,
@@ -61,12 +62,12 @@ pub struct LetListOfArgumentsOrdered<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct LetListOfArgumentsNamed<'a> {
     pub nodes: (Vec<(Identifier<'a>, LetActualArg<'a>)>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct LetActualArg<'a> {
     pub nodes: (Expression<'a>,),
 }

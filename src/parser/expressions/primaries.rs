@@ -7,7 +7,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ConstantPrimary<'a> {
     PrimaryLiteral(PrimaryLiteral<'a>),
     PsParameter(ConstantPrimaryPsParameter<'a>),
@@ -26,12 +26,12 @@ pub enum ConstantPrimary<'a> {
     Null(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantPrimaryPsParameter<'a> {
     pub nodes: (PsParameterIdentifier<'a>, ConstantSelect<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantPrimarySpecparam<'a> {
     pub nodes: (
         SpecparamIdentifier<'a>,
@@ -39,17 +39,17 @@ pub struct ConstantPrimarySpecparam<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantPrimaryFormalPort<'a> {
     pub nodes: (FormalPortIdentifier<'a>, ConstantSelect<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantPrimaryEnum<'a> {
     pub nodes: (PackageScopeOrClassScope<'a>, EnumIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantPrimaryConcatenation<'a> {
     pub nodes: (
         ConstantConcatenation<'a>,
@@ -57,7 +57,7 @@ pub struct ConstantPrimaryConcatenation<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantPrimaryMultipleConcatenation<'a> {
     pub nodes: (
         ConstantMultipleConcatenation<'a>,
@@ -65,12 +65,12 @@ pub struct ConstantPrimaryMultipleConcatenation<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantPrimaryMintypmaxExpression<'a> {
     pub nodes: (Paren<'a, ConstantMintypmaxExpression<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ModulePathPrimary<'a> {
     Number(Number<'a>),
     Identifier(Identifier<'a>),
@@ -80,12 +80,12 @@ pub enum ModulePathPrimary<'a> {
     Mintypmax(ModulePathPrimaryMintypmax<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModulePathPrimaryMintypmax<'a> {
     pub nodes: (Paren<'a, ModulePathMintypmaxExpression<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum Primary<'a> {
     PrimaryLiteral(PrimaryLiteral<'a>),
     Hierarchical(PrimaryHierarchical<'a>),
@@ -104,7 +104,7 @@ pub enum Primary<'a> {
     Null(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PrimaryHierarchical<'a> {
     pub nodes: (
         Option<ClassQualifierOrPackageScope<'a>>,
@@ -113,12 +113,12 @@ pub struct PrimaryHierarchical<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PrimaryConcatenation<'a> {
     pub nodes: (Concatenation<'a>, Option<Bracket<'a, RangeExpression<'a>>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PrimaryMultipleConcatenation<'a> {
     pub nodes: (
         MultipleConcatenation<'a>,
@@ -126,18 +126,18 @@ pub struct PrimaryMultipleConcatenation<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PrimaryMintypmaxExpression<'a> {
     pub nodes: (Paren<'a, MintypmaxExpression<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ClassQualifierOrPackageScope<'a> {
     ClassQualifier(ClassQualifier<'a>),
     PackageScope(PackageScope<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClassQualifier<'a> {
     pub nodes: (
         Option<Local<'a>>,
@@ -145,13 +145,13 @@ pub struct ClassQualifier<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum RangeExpression<'a> {
     Expression(Expression<'a>),
     PartSelectRange(PartSelectRange<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum PrimaryLiteral<'a> {
     Number(Number<'a>),
     TimeLiteral(TimeLiteral<'a>),
@@ -192,12 +192,12 @@ pub enum ImplicitClassHandle<'a> {
     ThisSuper((Symbol<'a>, Symbol<'a>, Symbol<'a>)),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct BitSelect<'a> {
     nodes: (Vec<Bracket<'a, Expression<'a>>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct Select<'a> {
     pub nodes: (
         Option<(
@@ -210,7 +210,7 @@ pub struct Select<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NonrangeSelect<'a> {
     pub nodes: (
         Option<(
@@ -222,12 +222,12 @@ pub struct NonrangeSelect<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantBitSelect<'a> {
     nodes: (Vec<Bracket<'a, ConstantExpression<'a>>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantSelect<'a> {
     pub nodes: (
         Option<(
@@ -240,7 +240,7 @@ pub struct ConstantSelect<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantCast<'a> {
     pub nodes: (
         CastingType<'a>,
@@ -249,12 +249,12 @@ pub struct ConstantCast<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantLetExpression<'a> {
     pub nodes: (LetExpression<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct Cast<'a> {
     pub nodes: (CastingType<'a>, Symbol<'a>, Paren<'a, Expression<'a>>),
 }

@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -5,17 +6,17 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct InitialConstruct<'a> {
     pub nodes: (Symbol<'a>, StatementOrNull<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct AlwaysConstruct<'a> {
     pub nodes: (AlwaysKeyword<'a>, Statement<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum AlwaysKeyword<'a> {
     Always(Symbol<'a>),
     AlwaysComb(Symbol<'a>),
@@ -23,12 +24,12 @@ pub enum AlwaysKeyword<'a> {
     AlwaysFf(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct FinalConstruct<'a> {
     pub nodes: (Symbol<'a>, FunctionStatement<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum BlockingAssignment<'a> {
     Variable(BlockingAssignmentVariable<'a>),
     NonrangeVariable(BlockingAssignmentNonrangeVariable<'a>),
@@ -36,7 +37,7 @@ pub enum BlockingAssignment<'a> {
     OperatorAssignment(OperatorAssignment<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct BlockingAssignmentVariable<'a> {
     pub nodes: (
         VariableLvalue<'a>,
@@ -46,12 +47,12 @@ pub struct BlockingAssignmentVariable<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct BlockingAssignmentNonrangeVariable<'a> {
     pub nodes: (NonrangeVariableLvalue<'a>, Symbol<'a>, DynamicArrayNew<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct BlockingAssignmentHierarchicalVariable<'a> {
     pub nodes: (
         Option<ImplicitClassHandleOrClassScopeOrPackageScope<'a>>,
@@ -62,17 +63,17 @@ pub struct BlockingAssignmentHierarchicalVariable<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct OperatorAssignment<'a> {
     pub nodes: (VariableLvalue<'a>, AssignmentOperator<'a>, Expression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct AssignmentOperator<'a> {
     pub nodes: (Symbol<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NonblockingAssignment<'a> {
     pub nodes: (
         VariableLvalue<'a>,
@@ -82,7 +83,7 @@ pub struct NonblockingAssignment<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ProceduralContinuousAssignment<'a> {
     Assign(ProceduralContinuousAssignmentAssign<'a>),
     Deassign(ProceduralContinuousAssignmentDeassign<'a>),
@@ -92,37 +93,37 @@ pub enum ProceduralContinuousAssignment<'a> {
     ReleaseNet(ProceduralContinuousAssignmentReleaseNet<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ProceduralContinuousAssignmentAssign<'a> {
     pub nodes: (Symbol<'a>, VariableAssignment<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ProceduralContinuousAssignmentDeassign<'a> {
     pub nodes: (Symbol<'a>, VariableLvalue<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ProceduralContinuousAssignmentForceVariable<'a> {
     pub nodes: (Symbol<'a>, VariableAssignment<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ProceduralContinuousAssignmentForceNet<'a> {
     pub nodes: (Symbol<'a>, NetAssignment<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ProceduralContinuousAssignmentReleaseVariable<'a> {
     pub nodes: (Symbol<'a>, VariableLvalue<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ProceduralContinuousAssignmentReleaseNet<'a> {
     pub nodes: (Symbol<'a>, NetLvalue<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct VariableAssignment<'a> {
     pub nodes: (VariableLvalue<'a>, Symbol<'a>, Expression<'a>),
 }

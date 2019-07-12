@@ -7,7 +7,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum Delay3<'a> {
     Single(Delay3Single<'a>),
     Mintypmax(Delay3Mintypmax<'a>),
@@ -18,7 +18,7 @@ pub struct Delay3Single<'a> {
     pub nodes: (Symbol<'a>, DelayValue<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct Delay3Mintypmax<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -36,7 +36,7 @@ pub struct Delay3Mintypmax<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum Delay2<'a> {
     Single(Delay2Single<'a>),
     Mintypmax(Delay2Mintypmax<'a>),
@@ -47,7 +47,7 @@ pub struct Delay2Single<'a> {
     pub nodes: (Symbol<'a>, DelayValue<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct Delay2Mintypmax<'a> {
     pub nodes: (
         Symbol<'a>,

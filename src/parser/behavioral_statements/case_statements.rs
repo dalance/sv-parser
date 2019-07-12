@@ -8,14 +8,14 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum CaseStatement<'a> {
     Normal(CaseStatementNormal<'a>),
     Matches(CaseStatementMatches<'a>),
     Inside(CaseStatementInside<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CaseStatementNormal<'a> {
     pub nodes: (
         Option<UniquePriority<'a>>,
@@ -27,7 +27,7 @@ pub struct CaseStatementNormal<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CaseStatementMatches<'a> {
     pub nodes: (
         Option<UniquePriority<'a>>,
@@ -40,7 +40,7 @@ pub struct CaseStatementMatches<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CaseStatementInside<'a> {
     pub nodes: (
         Option<UniquePriority<'a>>,
@@ -60,18 +60,18 @@ pub enum CaseKeyword<'a> {
     Casex(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CaseExpression<'a> {
     pub nodes: (Expression<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum CaseItem<'a> {
     NonDefault(CaseItemNondefault<'a>),
     Default(CaseItemDefault<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CaseItemNondefault<'a> {
     pub nodes: (
         List<Symbol<'a>, CaseItemExpression<'a>>,
@@ -80,18 +80,18 @@ pub struct CaseItemNondefault<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CaseItemDefault<'a> {
     pub nodes: (Symbol<'a>, Option<Symbol<'a>>, StatementOrNull<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum CasePatternItem<'a> {
     NonDefault(CasePatternItemNondefault<'a>),
     Default(CaseItemDefault<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CasePatternItemNondefault<'a> {
     pub nodes: (
         Pattern<'a>,
@@ -101,23 +101,23 @@ pub struct CasePatternItemNondefault<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum CaseInsideItem<'a> {
     NonDefault(CaseInsideItemNondefault<'a>),
     Default(CaseItemDefault<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CaseInsideItemNondefault<'a> {
     pub nodes: (OpenRangeList<'a>, Symbol<'a>, StatementOrNull<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CaseItemExpression<'a> {
     pub nodes: (Expression<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct RandcaseStatement<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -127,17 +127,17 @@ pub struct RandcaseStatement<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct RandcaseItem<'a> {
     pub nodes: (Expression<'a>, Symbol<'a>, StatementOrNull<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct OpenRangeList<'a> {
     pub nodes: (List<Symbol<'a>, OpenValueRange<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct OpenValueRange<'a> {
     pub nodes: (ValueRange<'a>,),
 }

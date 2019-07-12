@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -5,24 +6,24 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum NetLvalue<'a> {
     Identifier(NetLvalueIdentifier<'a>),
     Lvalue(Box<NetLvalueLvalue<'a>>),
     Pattern(Box<NetLvaluePattern<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NetLvalueIdentifier<'a> {
     pub nodes: (PsOrHierarchicalNetIdentifier<'a>, ConstantSelect<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NetLvalueLvalue<'a> {
     pub nodes: (Brace<'a, List<Symbol<'a>, NetLvalue<'a>>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NetLvaluePattern<'a> {
     pub nodes: (
         Option<AssignmentPatternExpressionType<'a>>,
@@ -30,7 +31,7 @@ pub struct NetLvaluePattern<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum VariableLvalue<'a> {
     Identifier(VariableLvalueIdentifier<'a>),
     Lvalue(Box<VariableLvalueLvalue<'a>>),
@@ -38,7 +39,7 @@ pub enum VariableLvalue<'a> {
     StreamingConcatenation(StreamingConcatenation<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct VariableLvalueIdentifier<'a> {
     pub nodes: (
         Option<ImplicitClassHandleOrPackageScope<'a>>,
@@ -47,12 +48,12 @@ pub struct VariableLvalueIdentifier<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct VariableLvalueLvalue<'a> {
     pub nodes: (Brace<'a, List<Symbol<'a>, VariableLvalue<'a>>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct VariableLvaluePattern<'a> {
     pub nodes: (
         Option<AssignmentPatternExpressionType<'a>>,
@@ -60,7 +61,7 @@ pub struct VariableLvaluePattern<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NonrangeVariableLvalue<'a> {
     pub nodes: (
         Option<ImplicitClassHandleOrPackageScope<'a>>,

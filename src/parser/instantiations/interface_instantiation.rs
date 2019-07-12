@@ -1,10 +1,11 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::combinator::*;
 use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct InterfaceInstantiation<'a> {
     pub nodes: (
         InterfaceIdentifier<'a>,

@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 //use nom::branch::*;
 //use nom::combinator::*;
@@ -6,7 +7,7 @@ use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ClassItem<'a> {
     Property(ClassItemProperty<'a>),
     Method(ClassItemMethod<'a>),
@@ -15,56 +16,56 @@ pub enum ClassItem<'a> {
     Covergroup(ClassItemCovergroup<'a>),
     LocalParameterDeclaration(LocalParameterDeclaration<'a>),
     ParameterDeclaration(ParameterDeclaration<'a>),
-    Empty,
+    Empty(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClassItemProperty<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, ClassProperty<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClassItemMethod<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, ClassMethod<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClassItemConstraint<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, ClassConstraint<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClassItemDeclaration<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, ClassDeclaration<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClassItemCovergroup<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, CovergroupDeclaration<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ClassProperty<'a> {
     NonConst(ClassPropertyNonConst<'a>),
     Const(ClassPropertyConst<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClassPropertyNonConst<'a> {
-    pub nodes: (Vec<PropertyQualifier>, DataDeclaration<'a>),
+    pub nodes: (Vec<PropertyQualifier<'a>>, DataDeclaration<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClassPropertyConst<'a> {
     pub nodes: (
-        Vec<ClassItemQualifier>,
+        Vec<ClassItemQualifier<'a>>,
         DataType<'a>,
         ConstIdentifier<'a>,
         Option<ConstantExpression<'a>>,
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ClassMethod<'a> {
     Task(ClassMethodTask<'a>),
     Function(ClassMethodFunction<'a>),
@@ -74,80 +75,80 @@ pub enum ClassMethod<'a> {
     ExternConstructor(ClassMethodExternConstructor<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClassMethodTask<'a> {
-    pub nodes: (Vec<MethodQualifier>, TaskDeclaration<'a>),
+    pub nodes: (Vec<MethodQualifier<'a>>, TaskDeclaration<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClassMethodFunction<'a> {
-    pub nodes: (Vec<MethodQualifier>, FunctionDeclaration<'a>),
+    pub nodes: (Vec<MethodQualifier<'a>>, FunctionDeclaration<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClassMethodPureVirtual<'a> {
-    pub nodes: (Vec<ClassItemQualifier>, MethodPrototype<'a>),
+    pub nodes: (Vec<ClassItemQualifier<'a>>, MethodPrototype<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClassMethodExternMethod<'a> {
-    pub nodes: (Vec<MethodQualifier>, MethodPrototype<'a>),
+    pub nodes: (Vec<MethodQualifier<'a>>, MethodPrototype<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClassMethodConstructor<'a> {
-    pub nodes: (Vec<MethodQualifier>, ClassConstructorPrototype<'a>),
+    pub nodes: (Vec<MethodQualifier<'a>>, ClassConstructorPrototype<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClassMethodExternConstructor<'a> {
-    pub nodes: (Vec<MethodQualifier>, ClassConstructorPrototype<'a>),
+    pub nodes: (Vec<MethodQualifier<'a>>, ClassConstructorPrototype<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClassConstructorPrototype<'a> {
     pub nodes: (Option<TfPortList<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ClassConstraint<'a> {
     ConstraintPrototype(ConstraintPrototype<'a>),
     ConstraintDeclaration(ConstraintDeclaration<'a>),
 }
 
-#[derive(Debug)]
-pub enum ClassItemQualifier {
-    Static,
-    Protected,
-    Local,
+#[derive(Debug, Node)]
+pub enum ClassItemQualifier<'a> {
+    Static(Symbol<'a>),
+    Protected(Symbol<'a>),
+    Local(Symbol<'a>),
 }
 
-#[derive(Debug)]
-pub enum PropertyQualifier {
-    RandomQualifier(RandomQualifier),
-    ClassItemQualifier(ClassItemQualifier),
+#[derive(Debug, Node)]
+pub enum PropertyQualifier<'a> {
+    RandomQualifier(RandomQualifier<'a>),
+    ClassItemQualifier(ClassItemQualifier<'a>),
 }
 
-#[derive(Debug)]
-pub enum RandomQualifier {
-    Rand,
-    Randc,
+#[derive(Debug, Node)]
+pub enum RandomQualifier<'a> {
+    Rand(Symbol<'a>),
+    Randc(Symbol<'a>),
 }
 
-#[derive(Debug)]
-pub enum MethodQualifier {
-    Virtual,
-    PureVirtual,
-    ClassItemQualifier(ClassItemQualifier),
+#[derive(Debug, Node)]
+pub enum MethodQualifier<'a> {
+    Virtual(Symbol<'a>),
+    PureVirtual(Symbol<'a>),
+    ClassItemQualifier(ClassItemQualifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum MethodPrototype<'a> {
     TaskPrototype(TaskPrototype<'a>),
     FunctionPrototype(FunctionPrototype<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClassConstructorDeclaration<'a> {
     pub nodes: (
         Option<ClassScope<'a>>,
@@ -155,12 +156,14 @@ pub struct ClassConstructorDeclaration<'a> {
         Vec<BlockItemDeclaration<'a>>,
         Option<Option<ListOfArguments<'a>>>,
         Vec<FunctionStatementOrNull<'a>>,
-        Option<New>,
+        Option<New<'a>>,
     ),
 }
 
-#[derive(Debug)]
-pub struct New {}
+#[derive(Debug, Node)]
+pub struct New<'a> {
+    pub nodes: (Symbol<'a>,),
+}
 
 // -----------------------------------------------------------------------------
 

@@ -7,12 +7,12 @@ use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SpecifyInputTerminalDescriptor<'a> {
     pub nodes: (InputIdentifier<'a>, Option<ConstantRangeExpression<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SpecifyOutputTerminalDescriptor<'a> {
     pub nodes: (OutputIdentifier<'a>, Option<ConstantRangeExpression<'a>>),
 }

@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 //use nom::branch::*;
 //use nom::combinator::*;
@@ -6,47 +7,47 @@ use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfDefparamAssignments<'a> {
     pub nodes: (Vec<DefparamAssignment<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfGenvarIdentifiers<'a> {
     pub nodes: (Vec<Identifier<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfInterfaceIdentifiers<'a> {
     pub nodes: (Vec<(Identifier<'a>, Vec<UnpackedDimension<'a>>)>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfNetDeclAssignments<'a> {
     pub nodes: (Vec<NetDeclAssignment<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfParamAssignments<'a> {
     pub nodes: (Vec<ParamAssignment<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfPortIdentifiers<'a> {
     pub nodes: (Vec<(Identifier<'a>, Vec<UnpackedDimension<'a>>)>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfUdpPortIdentifiers<'a> {
     pub nodes: (Vec<Identifier<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfSpecparamAssignments<'a> {
     pub nodes: (Vec<SpecparamAssignment<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfTfVariableIdentifiers<'a> {
     pub nodes: (
         Vec<(
@@ -57,22 +58,22 @@ pub struct ListOfTfVariableIdentifiers<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfTypeAssignments<'a> {
     pub nodes: (Vec<TypeAssignment<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfVariableDeclAssignments<'a> {
     pub nodes: (Vec<VariableDeclAssignment<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfVariableIdentifiers<'a> {
     pub nodes: (Vec<(Identifier<'a>, Vec<VariableDimension<'a>>)>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfVariablePortIdentifiers<'a> {
     pub nodes: (
         Vec<(

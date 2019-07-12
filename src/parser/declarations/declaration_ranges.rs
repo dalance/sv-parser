@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 //use nom::branch::*;
 //use nom::combinator::*;
@@ -6,40 +7,40 @@ use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum UnpackedDimension<'a> {
     Range(ConstantRange<'a>),
     Expression(ConstantExpression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum PackedDimension<'a> {
     Range(ConstantRange<'a>),
-    Unsized(UnsizedDimension),
+    Unsized(UnsizedDimension<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum AssociativeDimension<'a> {
     DataType(DataType<'a>),
-    Asterisk,
+    Asterisk(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum VariableDimension<'a> {
-    Unsized(UnsizedDimension),
+    Unsized(UnsizedDimension<'a>),
     Unpacked(UnpackedDimension<'a>),
     Associative(AssociativeDimension<'a>),
     Queue(QueueDimension<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct QueueDimension<'a> {
     pub nodes: (Option<ConstantExpression<'a>>,),
 }
 
-#[derive(Debug)]
-pub struct UnsizedDimension {
-    pub nodes: (),
+#[derive(Debug, Node)]
+pub struct UnsizedDimension<'a> {
+    pub nodes: (Symbol<'a>,),
 }
 
 // -----------------------------------------------------------------------------

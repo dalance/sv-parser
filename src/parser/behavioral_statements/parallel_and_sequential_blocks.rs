@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -7,18 +8,18 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ActionBlock<'a> {
     StatementOrNull(StatementOrNull<'a>),
     Else(ActionBlockElse<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ActionBlockElse<'a> {
     pub nodes: (Option<Statement<'a>>, Symbol<'a>, StatementOrNull<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SeqBlock<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -30,7 +31,7 @@ pub struct SeqBlock<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ParBlock<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -42,7 +43,7 @@ pub struct ParBlock<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum JoinKeyword<'a> {
     Join(Symbol<'a>),
     JoinAny(Symbol<'a>),

@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 //use nom::branch::*;
 //use nom::combinator::*;
@@ -6,18 +7,18 @@ use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct TaskDeclaration<'a> {
     pub nodes: (Option<Lifetime<'a>>, TaskBodyDeclaration<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum TaskBodyDeclaration<'a> {
     WithoutPort(TaskBodyDeclarationWithoutPort<'a>),
     WithPort(TaskBodyDeclarationWithPort<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct TaskBodyDeclarationWithoutPort<'a> {
     pub nodes: (
         Option<InterfaceIdentifierOrClassScope<'a>>,
@@ -28,7 +29,7 @@ pub struct TaskBodyDeclarationWithoutPort<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct TaskBodyDeclarationWithPort<'a> {
     pub nodes: (
         Option<InterfaceIdentifierOrClassScope<'a>>,
@@ -40,28 +41,28 @@ pub struct TaskBodyDeclarationWithPort<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum InterfaceIdentifierOrClassScope<'a> {
     InterfaceIdentifier(InterfaceIdentifier<'a>),
     ClassScope(ClassScope<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum TfItemDeclaration<'a> {
     Block(BlockItemDeclaration<'a>),
     Port(TfPortDeclaration<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct TfPortList<'a> {
     pub nodes: (Vec<TfPortItem<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct TfPortItem<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Option<TfPortDirection>,
+        Option<TfPortDirection<'a>>,
         Option<Var<'a>>,
         DataTypeOrImplicit<'a>,
         Option<(
@@ -72,24 +73,24 @@ pub struct TfPortItem<'a> {
     ),
 }
 
-#[derive(Debug)]
-pub enum TfPortDirection {
-    PortDirection(PortDirection),
-    ConstRef,
+#[derive(Debug, Node)]
+pub enum TfPortDirection<'a> {
+    PortDirection(PortDirection<'a>),
+    ConstRef(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct TfPortDeclaration<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        TfPortDirection,
+        TfPortDirection<'a>,
         Option<Var<'a>>,
         DataTypeOrImplicit<'a>,
         ListOfTfVariableIdentifiers<'a>,
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct TaskPrototype<'a> {
     pub nodes: (Identifier<'a>, Option<TfPortList<'a>>),
 }

@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -7,12 +8,12 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct GenerateRegion<'a> {
     pub nodes: (Symbol<'a>, Vec<GenerateItem<'a>>, Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct LoopGenerateConstruct<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -30,7 +31,7 @@ pub struct LoopGenerateConstruct<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct GenvarInitialization<'a> {
     pub nodes: (
         Option<Genvar<'a>>,
@@ -40,19 +41,19 @@ pub struct GenvarInitialization<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct Genvar<'a> {
     pub nodes: (Symbol<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum GenvarIteration<'a> {
     Assignment(GenvarIterationAssignment<'a>),
     Prefix(GenvarIterationPrefix<'a>),
     Suffix(GenvarIterationSuffix<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct GenvarIterationAssignment<'a> {
     pub nodes: (
         GenvarIdentifier<'a>,
@@ -61,23 +62,23 @@ pub struct GenvarIterationAssignment<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct GenvarIterationPrefix<'a> {
     pub nodes: (IncOrDecOperator<'a>, GenvarIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct GenvarIterationSuffix<'a> {
     pub nodes: (GenvarIdentifier<'a>, IncOrDecOperator<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ConditionalGenerateConstruct<'a> {
     If(IfGenerateConstruct<'a>),
     Case(CaseGenerateConstruct<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct IfGenerateConstruct<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -87,7 +88,7 @@ pub struct IfGenerateConstruct<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CaseGenerateConstruct<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -97,13 +98,13 @@ pub struct CaseGenerateConstruct<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum CaseGenerateItem<'a> {
     Nondefault(CaseGenerateItemNondefault<'a>),
     Default(CaseGenerateItemDefault<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CaseGenerateItemNondefault<'a> {
     pub nodes: (
         List<Symbol<'a>, ConstantExpression<'a>>,
@@ -112,18 +113,18 @@ pub struct CaseGenerateItemNondefault<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CaseGenerateItemDefault<'a> {
     pub nodes: (Symbol<'a>, Option<Symbol<'a>>, GenerateBlock<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum GenerateBlock<'a> {
     GenerateItem(GenerateItem<'a>),
     Multiple(GenerateBlockMultiple<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct GenerateBlockMultiple<'a> {
     pub nodes: (
         Option<(GenerateBlockIdentifier<'a>, Symbol<'a>)>,
@@ -135,7 +136,7 @@ pub struct GenerateBlockMultiple<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum GenerateItem<'a> {
     ModuleOrGenerateItem(ModuleOrGenerateItem<'a>),
     InterfaceOrGenerateItem(InterfaceOrGenerateItem<'a>),

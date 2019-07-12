@@ -7,24 +7,24 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ProceduralTimingControlStatement<'a> {
     pub nodes: (ProceduralTimingControl<'a>, StatementOrNull<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum DelayOrEventControl<'a> {
     Delay(DelayControl<'a>),
     Event(EventControl<'a>),
     Repeat(DelayOrEventControlRepeat<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DelayOrEventControlRepeat<'a> {
     pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>, EventControl<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum DelayControl<'a> {
     Delay(DelayControlDelay<'a>),
     Mintypmax(DelayControlMintypmax<'a>),
@@ -35,12 +35,12 @@ pub struct DelayControlDelay<'a> {
     pub nodes: (Symbol<'a>, DelayValue<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DelayControlMintypmax<'a> {
     pub nodes: (Symbol<'a>, Paren<'a, MintypmaxExpression<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum EventControl<'a> {
     EventIdentifier(EventControlEventIdentifier<'a>),
     EventExpression(EventControlEventExpression<'a>),
@@ -49,12 +49,12 @@ pub enum EventControl<'a> {
     SequenceIdentifier(EventControlSequenceIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct EventControlEventIdentifier<'a> {
     pub nodes: (Symbol<'a>, HierarchicalEventIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct EventControlEventExpression<'a> {
     pub nodes: (Symbol<'a>, Paren<'a, EventExpression<'a>>),
 }
@@ -69,12 +69,12 @@ pub struct EventControlParenAsterisk<'a> {
     pub nodes: (Symbol<'a>, Paren<'a, Symbol<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct EventControlSequenceIdentifier<'a> {
     pub nodes: (Symbol<'a>, PsOrHierarchicalSequenceIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum EventExpression<'a> {
     Expression(Box<EventExpressionExpression<'a>>),
     Sequence(Box<EventExpressionSequence<'a>>),
@@ -83,7 +83,7 @@ pub enum EventExpression<'a> {
     Paren(Box<EventExpressionParen<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct EventExpressionExpression<'a> {
     pub nodes: (
         Option<EdgeIdentifier<'a>>,
@@ -92,41 +92,41 @@ pub struct EventExpressionExpression<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct EventExpressionSequence<'a> {
     pub nodes: (SequenceInstance<'a>, Option<(Symbol<'a>, Expression<'a>)>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct EventExpressionOr<'a> {
     pub nodes: (EventExpression<'a>, Symbol<'a>, EventExpression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct EventExpressionComma<'a> {
     pub nodes: (EventExpression<'a>, Symbol<'a>, EventExpression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct EventExpressionParen<'a> {
     pub nodes: (Paren<'a, EventExpression<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ProceduralTimingControl<'a> {
     DelayControl(DelayControl<'a>),
     EventControl(EventControl<'a>),
     CycleDelay(CycleDelay<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum JumpStatement<'a> {
     Return(JumpStatementReturn<'a>),
     Break(JumpStatementBreak<'a>),
     Continue(JumpStatementContinue<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct JumpStatementReturn<'a> {
     pub nodes: (Symbol<'a>, Option<Expression<'a>>, Symbol<'a>),
 }
@@ -141,14 +141,14 @@ pub struct JumpStatementContinue<'a> {
     pub nodes: (Symbol<'a>, Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum WaitStatement<'a> {
     Wait(WaitStatementWait<'a>),
     Fork(WaitStatementFork<'a>),
     Order(WaitStatementOrder<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct WaitStatementWait<'a> {
     pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>, StatementOrNull<'a>),
 }
@@ -158,7 +158,7 @@ pub struct WaitStatementFork<'a> {
     pub nodes: (Symbol<'a>, Symbol<'a>, Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct WaitStatementOrder<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -167,18 +167,18 @@ pub struct WaitStatementOrder<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum EventTrigger<'a> {
     Named(EventTriggerNamed<'a>),
     Nonblocking(EventTriggerNonblocking<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct EventTriggerNamed<'a> {
     pub nodes: (Symbol<'a>, HierarchicalEventIdentifier<'a>, Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct EventTriggerNonblocking<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -188,19 +188,19 @@ pub struct EventTriggerNonblocking<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum DisableStatement<'a> {
     Task(DisableStatementTask<'a>),
     Block(DisableStatementBlock<'a>),
     Fork(DisableStatementFork<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DisableStatementTask<'a> {
     pub nodes: (Symbol<'a>, HierarchicalTaskIdentifier<'a>, Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DisableStatementBlock<'a> {
     pub nodes: (Symbol<'a>, HierarchicalBlockIdentifier<'a>, Symbol<'a>),
 }

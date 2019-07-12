@@ -7,7 +7,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum Pattern<'a> {
     Variable(Box<PatternVariable<'a>>),
     Asterisk(Symbol<'a>),
@@ -22,23 +22,23 @@ pub struct PatternVariable<'a> {
     pub nodes: (Symbol<'a>, VariableIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PatternTagged<'a> {
     pub nodes: (Symbol<'a>, MemberIdentifier<'a>, Option<Pattern<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PatternList<'a> {
     pub nodes: (ApostropheBrace<'a, List<Symbol<'a>, Pattern<'a>>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PatternIdentifierList<'a> {
     pub nodes:
         (ApostropheBrace<'a, List<Symbol<'a>, (MemberIdentifier<'a>, Symbol<'a>, Pattern<'a>)>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum AssignmentPattern<'a> {
     List(AssignmentPatternList<'a>),
     Structure(AssignmentPatternStructure<'a>),
@@ -46,12 +46,12 @@ pub enum AssignmentPattern<'a> {
     Repeat(AssignmentPatternRepeat<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct AssignmentPatternList<'a> {
     pub nodes: (ApostropheBrace<'a, List<Symbol<'a>, Expression<'a>>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct AssignmentPatternStructure<'a> {
     pub nodes: (
         ApostropheBrace<
@@ -61,14 +61,14 @@ pub struct AssignmentPatternStructure<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct AssignmentPatternArray<'a> {
     pub nodes: (
         ApostropheBrace<'a, List<Symbol<'a>, (ArrayPatternKey<'a>, Symbol<'a>, Expression<'a>)>>,
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct AssignmentPatternRepeat<'a> {
     pub nodes: (
         ApostropheBrace<
@@ -81,25 +81,25 @@ pub struct AssignmentPatternRepeat<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum StructurePatternKey<'a> {
     MemberIdentifier(MemberIdentifier<'a>),
     AssignmentPatternKey(AssignmentPatternKey<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ArrayPatternKey<'a> {
     ConstantExpression(ConstantExpression<'a>),
     AssignmentPatternKey(AssignmentPatternKey<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum AssignmentPatternKey<'a> {
     SimpleType(SimpleType<'a>),
     Default(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct AssignmentPatternExpression<'a> {
     pub nodes: (
         Option<AssignmentPatternExpressionType<'a>>,
@@ -107,25 +107,25 @@ pub struct AssignmentPatternExpression<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum AssignmentPatternExpressionType<'a> {
     PsTypeIdentifier(PsTypeIdentifier<'a>),
     PsParameterIdentifier(PsParameterIdentifier<'a>),
-    IntegerAtomType(IntegerAtomType),
+    IntegerAtomType(IntegerAtomType<'a>),
     TypeReference(TypeReference<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantAssignmentPatternExpression<'a> {
     pub nodes: (AssignmentPatternExpression<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct AssignmentPatternNetLvalue<'a> {
     pub nodes: (ApostropheBrace<'a, List<Symbol<'a>, NetLvalue<'a>>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct AssignmentPatternVariableLvalue<'a> {
     pub nodes: (ApostropheBrace<'a, List<Symbol<'a>, VariableLvalue<'a>>>,),
 }

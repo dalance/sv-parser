@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 //use nom::branch::*;
 //use nom::combinator::*;
@@ -6,16 +7,16 @@ use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CheckerPortList<'a> {
     pub nodes: (Vec<CheckerPortItem<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CheckerPortItem<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Option<CheckerPortDirection>,
+        Option<CheckerPortDirection<'a>>,
         PropertyFormalType<'a>,
         FormalPortIdentifier<'a>,
         Vec<VariableDimension<'a>>,
@@ -23,13 +24,13 @@ pub struct CheckerPortItem<'a> {
     ),
 }
 
-#[derive(Debug)]
-pub enum CheckerPortDirection {
-    Input,
-    Output,
+#[derive(Debug, Node)]
+pub enum CheckerPortDirection<'a> {
+    Input(Symbol<'a>),
+    Output(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum CheckerOrGenerateItem<'a> {
     CheckerOrGenerateItemDeclaration(CheckerOrGenerateItemDeclaration<'a>),
     InitialConstruct(InitialConstruct<'a>),
@@ -40,7 +41,7 @@ pub enum CheckerOrGenerateItem<'a> {
     CheckerGenerateItem(CheckerGenerateItem<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum CheckerOrGenerateItemDeclaration<'a> {
     Data(CheckerOrGenerateItemDeclarationData<'a>),
     FunctionDeclaration(FunctionDeclaration<'a>),
@@ -51,28 +52,30 @@ pub enum CheckerOrGenerateItemDeclaration<'a> {
     ClockingDeclaration(ClockingDeclaration<'a>),
     Clocking(CheckerOrGenerateItemDeclarationClocking<'a>),
     Expression(CheckerOrGenerateItemDeclarationExpression<'a>),
-    Empty,
+    Empty(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CheckerOrGenerateItemDeclarationData<'a> {
-    pub nodes: (Option<Rand>, DataDeclaration<'a>),
+    pub nodes: (Option<Rand<'a>>, DataDeclaration<'a>),
 }
 
-#[derive(Debug)]
-pub struct Rand {}
+#[derive(Debug, Node)]
+pub struct Rand<'a> {
+    pub nodes: (Symbol<'a>),
+}
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CheckerOrGenerateItemDeclarationClocking<'a> {
     pub nodes: (ClockingIdentifier<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CheckerOrGenerateItemDeclarationExpression<'a> {
     pub nodes: (ExpressionOrDist<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum CheckerGenerateItem<'a> {
     LoopGenerateConstruct(Box<LoopGenerateConstruct<'a>>),
     ConditionalGenerateConstruct(Box<ConditionalGenerateConstruct<'a>>),

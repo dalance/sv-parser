@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 //use nom::branch::*;
 //use nom::combinator::*;
@@ -6,7 +7,7 @@ use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum PackageItem<'a> {
     PackageOrGenerateItemDeclaration(PackageOrGenerateItemDeclaration<'a>),
     AnonymousProgram(AnonymousProgram<'a>),
@@ -14,7 +15,7 @@ pub enum PackageItem<'a> {
     TimeunitsDeclaration(TimeunitsDeclaration<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum PackageOrGenerateItemDeclaration<'a> {
     NetDeclaration(NetDeclaration<'a>),
     DataDeclaration(DataDeclaration<'a>),
@@ -29,22 +30,22 @@ pub enum PackageOrGenerateItemDeclaration<'a> {
     ParameterDeclaration(ParameterDeclaration<'a>),
     CovergroupDeclaration(CovergroupDeclaration<'a>),
     AssertionItemDeclaration(AssertionItemDeclaration<'a>),
-    Empty,
+    Empty(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct AnonymousProgram<'a> {
     pub nodes: (Vec<AnonymousProgramItem<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum AnonymousProgramItem<'a> {
     TaskDeclaration(TaskDeclaration<'a>),
     FunctionDeclaration(FunctionDeclaration<'a>),
     ClassDeclaration(ClassDeclaration<'a>),
     CovergroupDeclaration(CovergroupDeclaration<'a>),
     ClassConstructorDeclaration(ClassConstructorDeclaration<'a>),
-    Empty,
+    Empty(Symbol<'a>),
 }
 
 // -----------------------------------------------------------------------------

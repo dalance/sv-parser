@@ -115,6 +115,26 @@ where
     }
 }
 
+impl<'a, T: 'a, U: 'a, V: 'a, W: 'a, S: 'a> From<&'a (T, U, V, W, S)> for AnyNodes<'a>
+where
+    &'a T: Into<AnyNodes<'a>>,
+    &'a U: Into<AnyNodes<'a>>,
+    &'a V: Into<AnyNodes<'a>>,
+    &'a W: Into<AnyNodes<'a>>,
+    &'a S: Into<AnyNodes<'a>>,
+{
+    fn from(x: &'a (T, U, V, W, S)) -> Self {
+        let mut ret = Vec::new();
+        let (t, u, v, w, s) = x;
+        ret.append(&mut t.into().0);
+        ret.append(&mut u.into().0);
+        ret.append(&mut v.into().0);
+        ret.append(&mut w.into().0);
+        ret.append(&mut s.into().0);
+        ret.into()
+    }
+}
+
 impl<'a, T> From<&'a Paren<'a, T>> for AnyNodes<'a>
 where
     &'a T: Into<AnyNodes<'a>>,
@@ -190,6 +210,18 @@ where
         let mut u: AnyNodes<'a> = u.into();
         ret.append(&mut t.into().0);
         ret.append(&mut u.0);
+        ret.into()
+    }
+}
+
+impl<'a, T: 'a> From<&'a Box<T>> for AnyNodes<'a>
+where
+    &'a T: Into<AnyNodes<'a>>,
+{
+    fn from(x: &'a Box<T>) -> Self {
+        let mut ret = Vec::new();
+        let mut x: AnyNodes<'a> = x.into();
+        ret.append(&mut x.0);
         ret.into()
     }
 }

@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 //use nom::branch::*;
 //use nom::combinator::*;
@@ -6,13 +7,13 @@ use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ProgramItem<'a> {
     PortDeclaration(PortDeclaration<'a>),
     NonPortProgramItem(NonPortProgramItem<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum NonPortProgramItem<'a> {
     Assign(NonPortProgramItemAssign<'a>),
     Module(NonPortProgramItemModule<'a>),
@@ -23,12 +24,12 @@ pub enum NonPortProgramItem<'a> {
     ProgramGenerateItem(ProgramGenerateItem<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NonPortProgramItemAssign<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, ContinuousAssign<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NonPortProgramItemModule<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
@@ -36,22 +37,22 @@ pub struct NonPortProgramItemModule<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NonPortProgramItemInitial<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, InitialConstruct<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NonPortProgramItemFinal<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, FinalConstruct<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NonPortProgramItemAssertion<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, ConcurrentAssertionItem<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ProgramGenerateItem<'a> {
     LoopGenerateConstuct(LoopGenerateConstruct<'a>),
     ConditionalGenerateConstruct(ConditionalGenerateConstruct<'a>),

@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 //use nom::branch::*;
 //use nom::combinator::*;
@@ -6,17 +7,17 @@ use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DefparamAssignment<'a> {
     pub nodes: (HierarchicalIdentifier<'a>, ConstantMintypmaxExpression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NetDeclAssignment<'a> {
     pub nodes: (Identifier<'a>, Vec<UnpackedDimension<'a>>, Expression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ParamAssignment<'a> {
     pub nodes: (
         Identifier<'a>,
@@ -25,23 +26,23 @@ pub struct ParamAssignment<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum SpecparamAssignment<'a> {
     Mintypmax(SpecparamAssignmentMintypmax<'a>),
     PulseControl(PulseControlSpecparam<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SpecparamAssignmentMintypmax<'a> {
     pub nodes: (Identifier<'a>, ConstantMintypmaxExpression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct TypeAssignment<'a> {
     pub nodes: (Identifier<'a>, Option<DataType<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PulseControlSpecparam<'a> {
     pub nodes: (
         Option<(
@@ -53,29 +54,29 @@ pub struct PulseControlSpecparam<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ErrorLimitValue<'a> {
     pub nodes: (LimitValue<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct RejectLimitValue<'a> {
     pub nodes: (LimitValue<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct LimitValue<'a> {
     pub nodes: (ConstantMintypmaxExpression<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum VariableDeclAssignment<'a> {
     Variable(VariableDeclAssignmentVariable<'a>),
     DynamicArray(VariableDeclAssignmentDynamicArray<'a>),
     Class(VariableDeclAssignmentClass<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct VariableDeclAssignmentVariable<'a> {
     pub nodes: (
         Identifier<'a>,
@@ -84,33 +85,33 @@ pub struct VariableDeclAssignmentVariable<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct VariableDeclAssignmentDynamicArray<'a> {
     pub nodes: (
         Identifier<'a>,
-        UnsizedDimension,
+        UnsizedDimension<'a>,
         Vec<VariableDimension<'a>>,
         Option<DynamicArrayNew<'a>>,
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct VariableDeclAssignmentClass<'a> {
     pub nodes: (Identifier<'a>, Option<ClassNew<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ClassNew<'a> {
     Argument(ClassNewArgument<'a>),
     Expression(Expression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClassNewArgument<'a> {
     pub nodes: (Option<ClassScope<'a>>, Option<ListOfArguments<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DynamicArrayNew<'a> {
     pub nodes: (Expression<'a>, Option<Expression<'a>>),
 }

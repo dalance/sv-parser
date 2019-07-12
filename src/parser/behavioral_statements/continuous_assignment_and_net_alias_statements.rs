@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -5,13 +6,13 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ContinuousAssign<'a> {
     Net(ContinuousAssignNet<'a>),
     Variable(ContinuousAssignVariable<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ContinuousAssignNet<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -22,7 +23,7 @@ pub struct ContinuousAssignNet<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ContinuousAssignVariable<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -32,17 +33,17 @@ pub struct ContinuousAssignVariable<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfNetAssignments<'a> {
     pub nodes: (List<Symbol<'a>, NetAssignment<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfVariableAssignments<'a> {
     pub nodes: (List<Symbol<'a>, VariableAssignment<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NetAlias<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -53,7 +54,7 @@ pub struct NetAlias<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NetAssignment<'a> {
     pub nodes: (NetLvalue<'a>, Symbol<'a>, Expression<'a>),
 }

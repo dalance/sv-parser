@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 //use nom::branch::*;
 //use nom::combinator::*;
@@ -6,24 +7,24 @@ use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModportDeclaration<'a> {
     pub nodes: (Vec<ModportItem<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModportItem<'a> {
     pub nodes: (Identifier<'a>, Vec<ModportPortsDeclaraton<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ModportPortsDeclaraton<'a> {
     Simple(ModportPortsDeclaratonSimple<'a>),
     Tf(ModportPortsDeclaratonTf<'a>),
     Clocing(ModportPortsDeclaratonClocking<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModportPortsDeclaratonSimple<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
@@ -31,57 +32,57 @@ pub struct ModportPortsDeclaratonSimple<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModportPortsDeclaratonTf<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, ModportTfPortsDeclaration<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModportPortsDeclaratonClocking<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, ModportClockingDeclaration<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModportClockingDeclaration<'a> {
     pub nodes: (Identifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModportSimplePortsDeclaration<'a> {
-    pub nodes: (PortDirection, Vec<ModportSimplePort<'a>>),
+    pub nodes: (PortDirection<'a>, Vec<ModportSimplePort<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ModportSimplePort<'a> {
     Ordered(ModportSimplePortOrdered<'a>),
     Named(ModportSimplePortNamed<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModportSimplePortOrdered<'a> {
     pub nodes: (Identifier<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModportSimplePortNamed<'a> {
     pub nodes: (Identifier<'a>, Option<Expression<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModportTfPortsDeclaration<'a> {
-    pub nodes: (ImportExport, Vec<ModportTfPort<'a>>),
+    pub nodes: (ImportExport<'a>, Vec<ModportTfPort<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ModportTfPort<'a> {
     Prototype(MethodPrototype<'a>),
     Identifier(Identifier<'a>),
 }
 
-#[derive(Debug)]
-pub enum ImportExport {
-    Import,
-    Export,
+#[derive(Debug, Node)]
+pub enum ImportExport<'a> {
+    Import(Symbol<'a>),
+    Export(Symbol<'a>),
 }
 
 // -----------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::combinator::*;
 use nom::sequence::*;
@@ -5,12 +6,12 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct AttributeInstance<'a> {
     pub nodes: (Symbol<'a>, List<Symbol<'a>, AttrSpec<'a>>, Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct AttrSpec<'a> {
     pub nodes: (Identifier<'a>, Option<(Symbol<'a>, ConstantExpression<'a>)>),
 }

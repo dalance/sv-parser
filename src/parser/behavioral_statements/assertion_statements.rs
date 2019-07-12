@@ -7,13 +7,13 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum AssertionItem<'a> {
     Concurrent(ConcurrentAssertionItem<'a>),
     Immediate(DeferredImmediateAssetionItem<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DeferredImmediateAssetionItem<'a> {
     pub nodes: (
         Option<(BlockIdentifier<'a>, Symbol<'a>)>,
@@ -21,49 +21,49 @@ pub struct DeferredImmediateAssetionItem<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ProceduralAssertionStatement<'a> {
     Concurrent(ConcurrentAssertionStatement<'a>),
     Immediate(ImmediateAssetionStatement<'a>),
     Checker(CheckerInstantiation<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ImmediateAssetionStatement<'a> {
     Simple(SimpleImmediateAssertionStatement<'a>),
     Deferred(DeferredImmediateAssertionStatement<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum SimpleImmediateAssertionStatement<'a> {
     Assert(SimpleImmediateAssertStatement<'a>),
     Assume(SimpleImmediateAssumeStatement<'a>),
     Cover(SimpleImmediateCoverStatement<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SimpleImmediateAssertStatement<'a> {
     pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>, ActionBlock<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SimpleImmediateAssumeStatement<'a> {
     pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>, ActionBlock<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SimpleImmediateCoverStatement<'a> {
     pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>, StatementOrNull<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum DeferredImmediateAssertionStatement<'a> {
     Assert(DeferredImmediateAssertStatement<'a>),
     Assume(DeferredImmediateAssumeStatement<'a>),
     Cover(DeferredImmediateCoverStatement<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DeferredImmediateAssertStatement<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -73,7 +73,7 @@ pub struct DeferredImmediateAssertStatement<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DeferredImmediateAssumeStatement<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -83,7 +83,7 @@ pub struct DeferredImmediateAssumeStatement<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DeferredImmediateCoverStatement<'a> {
     pub nodes: (
         Symbol<'a>,

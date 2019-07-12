@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -7,7 +8,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct RandsequenceStatement<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -18,7 +19,7 @@ pub struct RandsequenceStatement<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct Production<'a> {
     pub nodes: (
         Option<DataTypeOrVoid<'a>>,
@@ -30,7 +31,7 @@ pub struct Production<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct RsRule<'a> {
     pub nodes: (
         RsProductionList<'a>,
@@ -38,18 +39,18 @@ pub struct RsRule<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum RsProductionList<'a> {
     Prod(RsProductionListProd<'a>),
     Join(RsProductionListJoin<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct RsProductionListProd<'a> {
     pub nodes: (RsProd<'a>, Vec<RsProd<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct RsProductionListJoin<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -61,24 +62,24 @@ pub struct RsProductionListJoin<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum WeightSpecification<'a> {
     IntegralNumber(IntegralNumber<'a>),
     PsIdentifier(PsIdentifier<'a>),
     Expression(WeightSpecificationExpression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct WeightSpecificationExpression<'a> {
     pub nodes: (Paren<'a, Expression<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct RsCodeBlock<'a> {
     pub nodes: (Brace<'a, (Vec<DataDeclaration<'a>>, Vec<StatementOrNull<'a>>)>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum RsProd<'a> {
     ProductionItem(ProductionItem<'a>),
     RsCodeBlock(RsCodeBlock<'a>),
@@ -87,7 +88,7 @@ pub enum RsProd<'a> {
     RsCase(RsCase<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ProductionItem<'a> {
     pub nodes: (
         ProductionIdentifier<'a>,
@@ -95,7 +96,7 @@ pub struct ProductionItem<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct RsIfElse<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -105,12 +106,12 @@ pub struct RsIfElse<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct RsRepeat<'a> {
     pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>, ProductionItem<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct RsCase<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -121,13 +122,13 @@ pub struct RsCase<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum RsCaseItem<'a> {
     NonDefault(RsCaseItemNondefault<'a>),
     Default(RsCaseItemDefault<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct RsCaseItemNondefault<'a> {
     pub nodes: (
         List<Symbol<'a>, CaseItemExpression<'a>>,
@@ -137,7 +138,7 @@ pub struct RsCaseItemNondefault<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct RsCaseItemDefault<'a> {
     pub nodes: (
         Symbol<'a>,

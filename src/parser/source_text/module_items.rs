@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 //use nom::branch::*;
 //use nom::combinator::*;
@@ -6,7 +7,7 @@ use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ElaborationSystemTask<'a> {
     Fatal(ElaborationSystemTaskFatal<'a>),
     Error(ElaborationSystemTaskError<'a>),
@@ -14,34 +15,34 @@ pub enum ElaborationSystemTask<'a> {
     Info(ElaborationSystemTaskInfo<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ElaborationSystemTaskFatal<'a> {
-    pub nodes: (Option<(FinishNumber, Option<ListOfArguments<'a>>)>,),
+    pub nodes: (Option<(FinishNumber<'a>, Option<ListOfArguments<'a>>)>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ElaborationSystemTaskError<'a> {
     pub nodes: (Option<Option<ListOfArguments<'a>>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ElaborationSystemTaskWarning<'a> {
     pub nodes: (Option<Option<ListOfArguments<'a>>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ElaborationSystemTaskInfo<'a> {
     pub nodes: (Option<Option<ListOfArguments<'a>>>,),
 }
 
-#[derive(Debug)]
-pub enum FinishNumber {
-    Zero,
-    One,
-    Two,
+#[derive(Debug, Node)]
+pub enum FinishNumber<'a> {
+    Zero(Symbol<'a>),
+    One(Symbol<'a>),
+    Two(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ModuleCommonItem<'a> {
     ModuleOrGenerateItemDeclaration(ModuleOrGenerateItemDeclaration<'a>),
     InterfaceInstantiation(InterfaceInstantiation<'a>),
@@ -58,13 +59,13 @@ pub enum ModuleCommonItem<'a> {
     ElaborationSystemTask(ElaborationSystemTask<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ModuleItem<'a> {
     PortDeclaratoin(PortDeclaration<'a>),
     NonPortModuleItem(NonPortModuleItem<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ModuleOrGenerateItem<'a> {
     Parameter(ModuleOrGenerateItemParameter<'a>),
     Gate(ModuleOrGenerateItemGate<'a>),
@@ -73,32 +74,32 @@ pub enum ModuleOrGenerateItem<'a> {
     ModuleItem(Box<ModuleOrGenerateItemModuleItem<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModuleOrGenerateItemParameter<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, ParameterOverride<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModuleOrGenerateItemGate<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, GateInstantiation<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModuleOrGenerateItemUdp<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, UdpInstantiation<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModuleOrGenerateItemModule<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, ModuleInstantiation<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModuleOrGenerateItemModuleItem<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, ModuleCommonItem<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ModuleOrGenerateItemDeclaration<'a> {
     PackageOrGenerateItemDeclaration(PackageOrGenerateItemDeclaration<'a>),
     GenvarDeclaration(GenvarDeclaration<'a>),
@@ -107,17 +108,17 @@ pub enum ModuleOrGenerateItemDeclaration<'a> {
     Expression(ModuleOrGenerateItemDeclarationExpression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModuleOrGenerateItemDeclarationClocking<'a> {
     pub nodes: (ClockingIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModuleOrGenerateItemDeclarationExpression<'a> {
     pub nodes: (ExpressionOrDist<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum NonPortModuleItem<'a> {
     GenerateRegion(GenerateRegion<'a>),
     ModuleOrGenerateItem(ModuleOrGenerateItem<'a>),
@@ -129,23 +130,23 @@ pub enum NonPortModuleItem<'a> {
     TimeunitsDeclaration(TimeunitsDeclaration<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NonPortModuleItemSpecparam<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, SpecparamDeclaration<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ParameterOverride<'a> {
     pub nodes: (ListOfDefparamAssignments<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum BindDirective<'a> {
     Scope(BindDirectiveScope<'a>),
     Instance(BindDirectiveInstance<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct BindDirectiveScope<'a> {
     pub nodes: (
         BindTargetScope<'a>,
@@ -154,28 +155,28 @@ pub struct BindDirectiveScope<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct BindDirectiveInstance<'a> {
     pub nodes: (BindTargetInstanceList<'a>, BindInstantiation<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum BindTargetScope<'a> {
     ModuleIdentifier(ModuleIdentifier<'a>),
     InterfaceIdentifier(InterfaceIdentifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct BindTargetInstance<'a> {
     pub nodes: (HierarchicalIdentifier<'a>, ConstantBitSelect<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct BindTargetInstanceList<'a> {
     pub nodes: (Vec<BindTargetInstance<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum BindInstantiation<'a> {
     ProgramInstantiation(ProgramInstantiation<'a>),
     ModuleInstantiation(ModuleInstantiation<'a>),

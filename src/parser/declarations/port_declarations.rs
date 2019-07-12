@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -6,23 +7,23 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct InoutDeclaration<'a> {
     pub nodes: (Symbol<'a>, NetPortType<'a>, ListOfPortIdentifiers<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum InputDeclaration<'a> {
     Net(InputDeclarationNet<'a>),
     Variable(InputDeclarationVariable<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct InputDeclarationNet<'a> {
     pub nodes: (Symbol<'a>, NetPortType<'a>, ListOfPortIdentifiers<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct InputDeclarationVariable<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -31,18 +32,18 @@ pub struct InputDeclarationVariable<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum OutputDeclaration<'a> {
     Net(OutputDeclarationNet<'a>),
     Variable(OutputDeclarationVariable<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct OutputDeclarationNet<'a> {
     pub nodes: (Symbol<'a>, NetPortType<'a>, ListOfPortIdentifiers<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct OutputDeclarationVariable<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -51,7 +52,7 @@ pub struct OutputDeclarationVariable<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct InterfacePortDeclaration<'a> {
     pub nodes: (
         InterfaceIdentifier<'a>,
@@ -60,7 +61,7 @@ pub struct InterfacePortDeclaration<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct RefDeclaration<'a> {
     pub nodes: (
         Symbol<'a>,

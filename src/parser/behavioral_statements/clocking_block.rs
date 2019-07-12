@@ -8,13 +8,13 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ClockingDeclaration<'a> {
     Local(ClockingDeclarationLocal<'a>),
     Global(ClockingDeclarationGlobal<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClockingDeclarationLocal<'a> {
     pub nodes: (
         Option<Default<'a>>,
@@ -33,7 +33,7 @@ pub struct Default<'a> {
     pub nodes: (Symbol<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClockingDeclarationGlobal<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -46,7 +46,7 @@ pub struct ClockingDeclarationGlobal<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ClockingEvent<'a> {
     Identifier(ClockingEventIdentifier<'a>),
     Expression(ClockingEventExpression<'a>),
@@ -57,24 +57,24 @@ pub struct ClockingEventIdentifier<'a> {
     pub nodes: (Symbol<'a>, Identifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClockingEventExpression<'a> {
     pub nodes: (Symbol<'a>, Paren<'a, EventExpression<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ClockingItem<'a> {
     Default(ClockingItemDefault<'a>),
     Direction(ClockingItemDirection<'a>),
     Assertion(ClockingItemAssertion<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClockingItemDefault<'a> {
     pub nodes: (Symbol<'a>, DefaultSkew<'a>, Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClockingItemDirection<'a> {
     pub nodes: (
         ClockingDirection<'a>,
@@ -83,34 +83,34 @@ pub struct ClockingItemDirection<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClockingItemAssertion<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, AssertionItemDeclaration<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum DefaultSkew<'a> {
     Input(DefaultSkewInput<'a>),
     Output(DefaultSkewOutput<'a>),
     InputOutput(DefaultSkewInputOutput<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DefaultSkewInput<'a> {
     pub nodes: (Symbol<'a>, ClockingSkew<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DefaultSkewOutput<'a> {
     pub nodes: (Symbol<'a>, ClockingSkew<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DefaultSkewInputOutput<'a> {
     pub nodes: (Symbol<'a>, ClockingSkew<'a>, Symbol<'a>, ClockingSkew<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ClockingDirection<'a> {
     Input(ClockingDirectionInput<'a>),
     Output(ClockingDirectionOutput<'a>),
@@ -118,17 +118,17 @@ pub enum ClockingDirection<'a> {
     Inout(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClockingDirectionInput<'a> {
     pub nodes: (Symbol<'a>, Option<ClockingSkew<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClockingDirectionOutput<'a> {
     pub nodes: (Symbol<'a>, Option<ClockingSkew<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClockingDirectionInputOutput<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -138,28 +138,28 @@ pub struct ClockingDirectionInputOutput<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ListOfClockingDeclAssign<'a> {
     pub nodes: (List<Symbol<'a>, ClockingDeclAssign<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClockingDeclAssign<'a> {
     pub nodes: (SignalIdentifier<'a>, Option<(Symbol<'a>, Expression<'a>)>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ClockingSkew<'a> {
     Edge(ClockingSkewEdge<'a>),
     DelayControl(DelayControl<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClockingSkewEdge<'a> {
     pub nodes: (EdgeIdentifier<'a>, Option<DelayControl<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClockingDrive<'a> {
     pub nodes: (
         ClockvarExpression<'a>,
@@ -169,7 +169,7 @@ pub struct ClockingDrive<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum CycleDelay<'a> {
     Integral(CycleDelayIntegral<'a>),
     Identifier(CycleDelayIdentifier<'a>),
@@ -186,17 +186,17 @@ pub struct CycleDelayIdentifier<'a> {
     pub nodes: (Symbol<'a>, Identifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CycleDelayExpression<'a> {
     pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct Clockvar<'a> {
     pub nodes: (HierarchicalIdentifier<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ClockvarExpression<'a> {
     pub nodes: (Clockvar<'a>, Select<'a>),
 }

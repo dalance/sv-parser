@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -5,13 +6,13 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum LocalParameterDeclaration<'a> {
     Param(LocalParameterDeclarationParam<'a>),
     Type(LocalParameterDeclarationType<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct LocalParameterDeclarationParam<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -20,18 +21,18 @@ pub struct LocalParameterDeclarationParam<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct LocalParameterDeclarationType<'a> {
     pub nodes: (Symbol<'a>, Symbol<'a>, ListOfTypeAssignments<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ParameterDeclaration<'a> {
     Param(ParameterDeclarationParam<'a>),
     Type(ParameterDeclarationType<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ParameterDeclarationParam<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -40,12 +41,12 @@ pub struct ParameterDeclarationParam<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ParameterDeclarationType<'a> {
     pub nodes: (Symbol<'a>, Symbol<'a>, ListOfTypeAssignments<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SpecparamDeclaration<'a> {
     pub nodes: (
         Symbol<'a>,

@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 //use nom::branch::*;
 //use nom::combinator::*;
@@ -6,45 +7,45 @@ use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum InterfaceOrGenerateItem<'a> {
     Module(InterfaceOrGenerateItemModule<'a>),
     Extern(InterfaceOrGenerateItemExtern<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct InterfaceOrGenerateItemModule<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, ModuleCommonItem<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct InterfaceOrGenerateItemExtern<'a> {
     pub nodes: (Vec<AttributeInstance<'a>>, ExternTfDeclaration<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ExternTfDeclaration<'a> {
     Method(ExternTfDeclarationMethod<'a>),
     Task(ExternTfDeclarationTask<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ExternTfDeclarationMethod<'a> {
     pub nodes: (MethodPrototype<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ExternTfDeclarationTask<'a> {
     pub nodes: (TaskPrototype<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum InterfaceItem<'a> {
     PortDeclaration(PortDeclaration<'a>),
     NonPortInterfaceItem(NonPortInterfaceItem<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum NonPortInterfaceItem<'a> {
     GenerateRegion(GenerateRegion<'a>),
     InterfaceOrGenerateItem(InterfaceOrGenerateItem<'a>),

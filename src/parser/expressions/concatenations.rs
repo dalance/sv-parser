@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -6,37 +7,37 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct Concatenation<'a> {
     pub nodes: (Brace<'a, List<Symbol<'a>, Expression<'a>>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantConcatenation<'a> {
     pub nodes: (Brace<'a, List<Symbol<'a>, ConstantExpression<'a>>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConstantMultipleConcatenation<'a> {
     pub nodes: (Brace<'a, (ConstantExpression<'a>, ConstantConcatenation<'a>)>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModulePathConcatenation<'a> {
     pub nodes: (Brace<'a, List<Symbol<'a>, ModulePathExpression<'a>>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ModulePathMultipleConcatenation<'a> {
     pub nodes: (Brace<'a, (ConstantExpression<'a>, ModulePathConcatenation<'a>)>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct MultipleConcatenation<'a> {
     pub nodes: (Brace<'a, (Expression<'a>, Concatenation<'a>)>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct StreamingConcatenation<'a> {
     pub nodes: (
         Brace<
@@ -50,23 +51,23 @@ pub struct StreamingConcatenation<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct StreamOperator<'a> {
     pub nodes: (Symbol<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum SliceSize<'a> {
     SimpleType(SimpleType<'a>),
     ConstantExpression(ConstantExpression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct StreamConcatenation<'a> {
     pub nodes: (Brace<'a, List<Symbol<'a>, StreamExpression<'a>>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct StreamExpression<'a> {
     pub nodes: (
         Expression<'a>,
@@ -74,7 +75,7 @@ pub struct StreamExpression<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ArrayRangeExpression<'a> {
     Expression(Expression<'a>),
     Colon(ArrayRangeExpressionColon<'a>),
@@ -82,22 +83,22 @@ pub enum ArrayRangeExpression<'a> {
     MinusColon(ArrayRangeExpressionMinusColon<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ArrayRangeExpressionColon<'a> {
     pub nodes: (Expression<'a>, Symbol<'a>, Expression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ArrayRangeExpressionPlusColon<'a> {
     pub nodes: (Expression<'a>, Symbol<'a>, Expression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ArrayRangeExpressionMinusColon<'a> {
     pub nodes: (Expression<'a>, Symbol<'a>, Expression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct EmptyUnpackedArrayConcatenation<'a> {
     pub nodes: (Symbol<'a>, Symbol<'a>),
 }

@@ -8,7 +8,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum DataDeclaration<'a> {
     Variable(DataDeclarationVariable<'a>),
     TypeDeclaration(TypeDeclaration<'a>),
@@ -16,7 +16,7 @@ pub enum DataDeclaration<'a> {
     NetTypeDeclaration(NetTypeDeclaration<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct DataDeclarationVariable<'a> {
     pub nodes: (
         Option<Const<'a>>,
@@ -33,7 +33,7 @@ pub struct Const<'a> {
     pub nodes: (Symbol<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PackageImportDeclaration<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -78,19 +78,19 @@ pub struct PackageExportDeclarationItem<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct GenvarDeclaration<'a> {
     pub nodes: (Symbol<'a>, ListOfGenvarIdentifiers<'a>, Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum NetDeclaration<'a> {
     NetType(NetDeclarationNetType<'a>),
     NetTypeIdentifier(NetDeclarationNetTypeIdentifier<'a>),
     Interconnect(NetDeclarationInterconnect<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NetDeclarationNetType<'a> {
     pub nodes: (
         NetType<'a>,
@@ -103,7 +103,7 @@ pub struct NetDeclarationNetType<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum Strength<'a> {
     Drive(DriveStrength<'a>),
     Charge(ChargeStrength<'a>),
@@ -115,7 +115,7 @@ pub enum VectorScalar<'a> {
     Scalared(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NetDeclarationNetTypeIdentifier<'a> {
     pub nodes: (
         NetTypeIdentifier<'a>,
@@ -125,7 +125,7 @@ pub struct NetDeclarationNetTypeIdentifier<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NetDeclarationInterconnect<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -138,14 +138,14 @@ pub struct NetDeclarationInterconnect<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum TypeDeclaration<'a> {
     DataType(TypeDeclarationDataType<'a>),
     Interface(TypeDeclarationInterface<'a>),
     Reserved(TypeDeclarationReserved<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct TypeDeclarationDataType<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -156,7 +156,7 @@ pub struct TypeDeclarationDataType<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct TypeDeclarationInterface<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -169,7 +169,7 @@ pub struct TypeDeclarationInterface<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct TypeDeclarationReserved<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -188,13 +188,13 @@ pub enum TypeDeclarationKeyword<'a> {
     InterfaceClass((Symbol<'a>, Symbol<'a>)),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum NetTypeDeclaration<'a> {
     DataType(NetTypeDeclarationDataType<'a>),
     NetType(NetTypeDeclarationNetType<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NetTypeDeclarationDataType<'a> {
     pub nodes: (
         Symbol<'a>,
@@ -209,7 +209,7 @@ pub struct NetTypeDeclarationDataType<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NetTypeDeclarationNetType<'a> {
     pub nodes: (
         Symbol<'a>,

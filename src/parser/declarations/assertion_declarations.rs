@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 //use nom::branch::*;
 //use nom::combinator::*;
@@ -6,18 +7,18 @@ use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ConcurrentAssertionItem<'a> {
     Statement(ConcurrentAssertionItemStatement<'a>),
     CheckerInstantiation(CheckerInstantiation<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ConcurrentAssertionItemStatement<'a> {
     pub nodes: (Identifier<'a>, ConcurrentAssertionStatement<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ConcurrentAssertionStatement<'a> {
     AssertProperty(AssertPropertyStatement<'a>),
     AssumeProperty(AssumePropertyStatement<'a>),
@@ -26,27 +27,27 @@ pub enum ConcurrentAssertionStatement<'a> {
     RestrictProperty(RestrictPropertyStatement<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct AssertPropertyStatement<'a> {
     pub nodes: (PropertySpec<'a>, ActionBlock<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct AssumePropertyStatement<'a> {
     pub nodes: (PropertySpec<'a>, ActionBlock<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CoverPropertyStatement<'a> {
     pub nodes: (PropertySpec<'a>, StatementOrNull<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ExpectPropertyStatement<'a> {
     pub nodes: (PropertySpec<'a>, ActionBlock<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CoverSequenceStatement<'a> {
     pub nodes: (
         Option<ClockingEvent<'a>>,
@@ -56,23 +57,23 @@ pub struct CoverSequenceStatement<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct RestrictPropertyStatement<'a> {
     pub nodes: (PropertySpec<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyInstance<'a> {
     pub nodes: (Identifier<'a>, Option<PropertyListOfArguments<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum PropertyListOfArguments<'a> {
     Ordered(PropertyListOfArgumentsOrdered<'a>),
     Named(PropertyListOfArgumentsNamed<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyListOfArgumentsOrdered<'a> {
     pub nodes: (
         Vec<PropertyActualArg<'a>>,
@@ -80,25 +81,25 @@ pub struct PropertyListOfArgumentsOrdered<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyListOfArgumentsNamed<'a> {
     pub nodes: (Vec<(Identifier<'a>, Option<PropertyActualArg<'a>>)>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum PropertyActualArg<'a> {
     PropertyExpr(PropertyExpr<'a>),
     SequenceActualArg(SequenceActualArg<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum AssertionItemDeclaration<'a> {
     PropertyDeclaration(PropertyDeclaration<'a>),
     SequenceDeclaration(SequenceDeclaration<'a>),
     LetDeclaration(LetDeclaration<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyDeclaration<'a> {
     pub nodes: (
         Identifier<'a>,
@@ -108,16 +109,16 @@ pub struct PropertyDeclaration<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyPortList<'a> {
     pub nodes: (Vec<PropertyPortItem<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyPortItem<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Option<PropertyLvarPortDirection>,
+        Option<PropertyLvarPortDirection<'a>>,
         PropertyFormalType<'a>,
         Identifier<'a>,
         Vec<VariableDimension<'a>>,
@@ -125,18 +126,18 @@ pub struct PropertyPortItem<'a> {
     ),
 }
 
-#[derive(Debug)]
-pub enum PropertyLvarPortDirection {
-    Input,
+#[derive(Debug, Node)]
+pub enum PropertyLvarPortDirection<'a> {
+    Input(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum PropertyFormalType<'a> {
     SequenceFormalType(SequenceFormalType<'a>),
-    Property,
+    Property(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertySpec<'a> {
     pub nodes: (
         Option<ClockingEvent<'a>>,
@@ -145,7 +146,7 @@ pub struct PropertySpec<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum PropertyExpr<'a> {
     SequenceExpr(SequenceExpr<'a>),
     Strong(PropertyExprStrong<'a>),
@@ -180,47 +181,47 @@ pub enum PropertyExpr<'a> {
     ClockingEvent(Box<PropertyExprClockingEvent<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprStrong<'a> {
     pub nodes: (SequenceExpr<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprWeak<'a> {
     pub nodes: (SequenceExpr<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprParen<'a> {
     pub nodes: (PropertyExpr<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprNot<'a> {
     pub nodes: (PropertyExpr<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprOr<'a> {
     pub nodes: (PropertyExpr<'a>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprAnd<'a> {
     pub nodes: (PropertyExpr<'a>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprImplicationOverlapped<'a> {
     pub nodes: (SequenceExpr<'a>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprImplicationNonoverlapped<'a> {
     pub nodes: (SequenceExpr<'a>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprIf<'a> {
     pub nodes: (
         ExpressionOrDist<'a>,
@@ -229,123 +230,123 @@ pub struct PropertyExprIf<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprCase<'a> {
     pub nodes: (ExpressionOrDist<'a>, Vec<PropertyCaseItem<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprFollowedByOverlapped<'a> {
     pub nodes: (SequenceExpr<'a>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprFollowedByNonoverlapped<'a> {
     pub nodes: (SequenceExpr<'a>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprNexttime<'a> {
     pub nodes: (Option<ConstantExpression<'a>>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprSNexttime<'a> {
     pub nodes: (Option<ConstantExpression<'a>>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprAlways<'a> {
     pub nodes: (Option<CycleDelayConstRangeExpression<'a>>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprSAlways<'a> {
     pub nodes: (Option<CycleDelayConstRangeExpression<'a>>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprEventually<'a> {
     pub nodes: (ConstantRange<'a>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprSEventually<'a> {
     pub nodes: (Option<CycleDelayConstRangeExpression<'a>>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprUntil<'a> {
     pub nodes: (PropertyExpr<'a>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprSUntil<'a> {
     pub nodes: (PropertyExpr<'a>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprUntilWith<'a> {
     pub nodes: (PropertyExpr<'a>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprSUntilWith<'a> {
     pub nodes: (PropertyExpr<'a>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprImplies<'a> {
     pub nodes: (PropertyExpr<'a>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprIff<'a> {
     pub nodes: (PropertyExpr<'a>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprAcceptOn<'a> {
     pub nodes: (ExpressionOrDist<'a>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprRejectOn<'a> {
     pub nodes: (ExpressionOrDist<'a>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprSyncAcceptOn<'a> {
     pub nodes: (ExpressionOrDist<'a>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprSyncRejectOn<'a> {
     pub nodes: (ExpressionOrDist<'a>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyExprClockingEvent<'a> {
     pub nodes: (ClockingEvent<'a>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum PropertyCaseItem<'a> {
     Nondefault(PropertyCaseItemNondefault<'a>),
     Default(PropertyCaseItemDefault<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyCaseItemNondefault<'a> {
     pub nodes: (Vec<ExpressionOrDist<'a>>, PropertyExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PropertyCaseItemDefault<'a> {
     pub nodes: (PropertyExpr<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequenceDeclaration<'a> {
     pub nodes: (
         Identifier<'a>,
@@ -356,16 +357,16 @@ pub struct SequenceDeclaration<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequencePortList<'a> {
     pub nodes: (Vec<SequencePortItem<'a>>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequencePortItem<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Option<SequenceLvarPortDirection>,
+        Option<SequenceLvarPortDirection<'a>>,
         SequenceFormalType<'a>,
         Identifier<'a>,
         Vec<VariableDimension<'a>>,
@@ -373,21 +374,21 @@ pub struct SequencePortItem<'a> {
     ),
 }
 
-#[derive(Debug)]
-pub enum SequenceLvarPortDirection {
-    Input,
-    Inout,
-    Output,
+#[derive(Debug, Node)]
+pub enum SequenceLvarPortDirection<'a> {
+    Input(Symbol<'a>),
+    Inout(Symbol<'a>),
+    Output(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum SequenceFormalType<'a> {
     DataTypeOrImplicit(DataTypeOrImplicit<'a>),
-    Sequence,
-    Untyped,
+    Sequence(Symbol<'a>),
+    Untyped(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum SequenceExpr<'a> {
     CycleDelayExpr(SequenceExprCycleDelayExpr<'a>),
     ExprCycleDelayExpr(Box<SequenceExprExprCycleDelayExpr<'a>>),
@@ -403,12 +404,12 @@ pub enum SequenceExpr<'a> {
     ClockingEvent(Box<SequenceExprClockingEvent<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequenceExprCycleDelayExpr<'a> {
     pub nodes: (Vec<(CycleDelayRange<'a>, SequenceExpr<'a>)>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequenceExprExprCycleDelayExpr<'a> {
     pub nodes: (
         SequenceExpr<'a>,
@@ -416,17 +417,17 @@ pub struct SequenceExprExprCycleDelayExpr<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequenceExprExpression<'a> {
     pub nodes: (ExpressionOrDist<'a>, Option<BooleanAbbrev<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequenceExprInstance<'a> {
     pub nodes: (SequenceInstance<'a>, Option<SequenceAbbrev<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequenceExprParen<'a> {
     pub nodes: (
         SequenceExpr<'a>,
@@ -435,73 +436,73 @@ pub struct SequenceExprParen<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequenceExprAnd<'a> {
     pub nodes: (SequenceExpr<'a>, SequenceExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequenceExprIntersect<'a> {
     pub nodes: (SequenceExpr<'a>, SequenceExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequenceExprOr<'a> {
     pub nodes: (SequenceExpr<'a>, SequenceExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequenceExprFirstMatch<'a> {
     pub nodes: (SequenceExpr<'a>, Vec<SequenceMatchItem<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequenceExprThroughout<'a> {
     pub nodes: (ExpressionOrDist<'a>, SequenceExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequenceExprWithin<'a> {
     pub nodes: (SequenceExpr<'a>, SequenceExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequenceExprClockingEvent<'a> {
     pub nodes: (ClockingEvent<'a>, SequenceExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum CycleDelayRange<'a> {
     ConstantPrimary(ConstantPrimary<'a>),
     CycleDelayConstRangeExpression(CycleDelayConstRangeExpression<'a>),
-    Asterisk,
-    Plus,
+    Asterisk(Symbol<'a>),
+    Plus(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequenceMethodCall<'a> {
     pub nodes: (SequenceInstance<'a>, Identifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum SequenceMatchItem<'a> {
     OperatorAssignment(OperatorAssignment<'a>),
     IncOrDecExpression(IncOrDecExpression<'a>),
     SubroutineCall(SubroutineCall<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequenceInstance<'a> {
     pub nodes: (Identifier<'a>, Option<SequenceListOfArguments<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum SequenceListOfArguments<'a> {
     Ordered(SequenceListOfArgumentsOrdered<'a>),
     Named(SequenceListOfArgumentsNamed<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequenceListOfArgumentsOrdered<'a> {
     pub nodes: (
         Vec<SequenceActualArg<'a>>,
@@ -509,74 +510,74 @@ pub struct SequenceListOfArgumentsOrdered<'a> {
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequenceListOfArgumentsNamed<'a> {
     pub nodes: (Vec<(Identifier<'a>, Option<SequenceActualArg<'a>>)>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum SequenceActualArg<'a> {
     EventExpression(EventExpression<'a>),
     SequenceExpr(SequenceExpr<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum BooleanAbbrev<'a> {
     ConsecutiveRepetition(ConsecutiveRepetition<'a>),
     NonConsecutiveRepetition(NonConsecutiveRepetition<'a>),
     GotoRepetition(GotoRepetition<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct SequenceAbbrev<'a> {
     pub nodes: (ConsecutiveRepetition<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ConsecutiveRepetition<'a> {
     ConstOrRangeExpression(ConstOrRangeExpression<'a>),
-    Asterisk,
-    Plus,
+    Asterisk(Symbol<'a>),
+    Plus(Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct NonConsecutiveRepetition<'a> {
     pub nodes: (ConstOrRangeExpression<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct GotoRepetition<'a> {
     pub nodes: (ConstOrRangeExpression<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum ConstOrRangeExpression<'a> {
     ConstantExpression(ConstantExpression<'a>),
     CycleDelayConstRangeExpression(CycleDelayConstRangeExpression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum CycleDelayConstRangeExpression<'a> {
     Binary(CycleDelayConstRangeExpressionBinary<'a>),
     Dollar(CycleDelayConstRangeExpressionDollar<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CycleDelayConstRangeExpressionBinary<'a> {
     pub nodes: (ConstantExpression<'a>, ConstantExpression<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct CycleDelayConstRangeExpressionDollar<'a> {
     pub nodes: (ConstantExpression<'a>,),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct ExpressionOrDist<'a> {
     pub nodes: (Expression<'a>, Option<DistList<'a>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct AssertionVariableDeclaration<'a> {
     pub nodes: (VarDataType<'a>, ListOfVariableDeclAssignments<'a>),
 }

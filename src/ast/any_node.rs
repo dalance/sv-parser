@@ -1,9 +1,33 @@
 use crate::ast::*;
 use crate::parser::*;
 
+// -----------------------------------------------------------------------------
+
 include!(concat!(env!("OUT_DIR"), "/any_node.rs"));
 
 pub struct AnyNodes<'a>(pub Vec<AnyNode<'a>>);
+
+// -----------------------------------------------------------------------------
+
+pub struct Iter<'a> {
+    pub next: AnyNodes<'a>,
+}
+
+impl<'a> Iterator for Iter<'a> {
+    type Item = AnyNode<'a>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let ret = self.next.0.pop();
+        if let Some(x) = ret.clone() {
+            let mut x = x.next();
+            x.0.reverse();
+            self.next.0.append(&mut x.0);
+        }
+        ret
+    }
+}
+
+// -----------------------------------------------------------------------------
 
 impl<'a> From<Vec<AnyNode<'a>>> for AnyNodes<'a> {
     fn from(x: Vec<AnyNode<'a>>) -> Self {
@@ -91,20 +115,81 @@ where
     }
 }
 
-pub struct Iter<'a> {
-    pub next: AnyNodes<'a>,
+impl<'a, T> From<&'a Paren<'a, T>> for AnyNodes<'a>
+where
+    &'a T: Into<AnyNodes<'a>>,
+{
+    fn from(x: &'a Paren<'a, T>) -> Self {
+        let mut ret = Vec::new();
+        let (a, b, c) = &x.nodes;
+        let mut a: AnyNodes<'a> = a.into();
+        let mut c: AnyNodes<'a> = c.into();
+        ret.append(&mut a.0);
+        ret.append(&mut b.into().0);
+        ret.append(&mut c.0);
+        ret.into()
+    }
 }
 
-impl<'a> Iterator for Iter<'a> {
-    type Item = AnyNode<'a>;
+impl<'a, T> From<&'a Brace<'a, T>> for AnyNodes<'a>
+where
+    &'a T: Into<AnyNodes<'a>>,
+{
+    fn from(x: &'a Brace<'a, T>) -> Self {
+        let mut ret = Vec::new();
+        let (a, b, c) = &x.nodes;
+        let mut a: AnyNodes<'a> = a.into();
+        let mut c: AnyNodes<'a> = c.into();
+        ret.append(&mut a.0);
+        ret.append(&mut b.into().0);
+        ret.append(&mut c.0);
+        ret.into()
+    }
+}
 
-    fn next(&mut self) -> Option<Self::Item> {
-        let ret = self.next.0.pop();
-        if let Some(x) = ret.clone() {
-            let mut x = x.next();
-            x.0.reverse();
-            self.next.0.append(&mut x.0);
-        }
-        ret
+impl<'a, T> From<&'a Bracket<'a, T>> for AnyNodes<'a>
+where
+    &'a T: Into<AnyNodes<'a>>,
+{
+    fn from(x: &'a Bracket<'a, T>) -> Self {
+        let mut ret = Vec::new();
+        let (a, b, c) = &x.nodes;
+        let mut a: AnyNodes<'a> = a.into();
+        let mut c: AnyNodes<'a> = c.into();
+        ret.append(&mut a.0);
+        ret.append(&mut b.into().0);
+        ret.append(&mut c.0);
+        ret.into()
+    }
+}
+
+impl<'a, T> From<&'a ApostropheBrace<'a, T>> for AnyNodes<'a>
+where
+    &'a T: Into<AnyNodes<'a>>,
+{
+    fn from(x: &'a ApostropheBrace<'a, T>) -> Self {
+        let mut ret = Vec::new();
+        let (a, b, c) = &x.nodes;
+        let mut a: AnyNodes<'a> = a.into();
+        let mut c: AnyNodes<'a> = c.into();
+        ret.append(&mut a.0);
+        ret.append(&mut b.into().0);
+        ret.append(&mut c.0);
+        ret.into()
+    }
+}
+
+impl<'a, T, U> From<&'a List<T, U>> for AnyNodes<'a>
+where
+    &'a T: Into<AnyNodes<'a>>,
+    &'a U: Into<AnyNodes<'a>>,
+{
+    fn from(x: &'a List<T, U>) -> Self {
+        let mut ret = Vec::new();
+        let (t, u) = &x.nodes;
+        let mut u: AnyNodes<'a> = u.into();
+        ret.append(&mut t.into().0);
+        ret.append(&mut u.0);
+        ret.into()
     }
 }

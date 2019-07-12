@@ -42,8 +42,8 @@ pub struct ApostropheBrace<'a, T: 'a> {
 }
 
 #[derive(Debug)]
-pub struct List<U, T> {
-    pub nodes: (T, Vec<(U, T)>),
+pub struct List<T, U> {
+    pub nodes: (U, Vec<(T, U)>),
 }
 
 // -----------------------------------------------------------------------------

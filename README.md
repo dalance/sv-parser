@@ -20,8 +20,8 @@ A parser library for System Verilog.
 | declaration                       | port_declarations                     | x    | x      |      |
 | declaration                       | type_declarations                     | x    | x      |      |
 | declaration                       | net_and_variable_types                |      |        |      |
-| declaration                       | strengths                             |      |        |      |
-| declaration                       | delays                                | x    |        |      |
+| declaration                       | strengths                             | x    | x      | x    |
+| declaration                       | delays                                | x    | x      |      |
 | declaration                       | declaration_lists                     |      |        |      |
 | declaration                       | declaration_assignments               |      |        |      |
 | declaration                       | declaration_ranges                    |      |        |      |

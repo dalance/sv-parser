@@ -176,19 +176,19 @@ pub enum NonIntegerType {
 }
 
 #[derive(Debug)]
-pub enum NetType {
-    Supply0,
-    Supply1,
-    Tri,
-    Triand,
-    Trior,
-    Trireg,
-    Tri0,
-    Tri1,
-    Uwire,
-    Wire,
-    Wand,
-    Wor,
+pub enum NetType<'a> {
+    Supply0(Symbol<'a>),
+    Supply1(Symbol<'a>),
+    Tri(Symbol<'a>),
+    Triand(Symbol<'a>),
+    Trior(Symbol<'a>),
+    Trireg(Symbol<'a>),
+    Tri0(Symbol<'a>),
+    Tri1(Symbol<'a>),
+    Uwire(Symbol<'a>),
+    Wire(Symbol<'a>),
+    Wand(Symbol<'a>),
+    Wor(Symbol<'a>),
 }
 
 #[derive(Debug)]
@@ -200,7 +200,7 @@ pub enum NetPortType<'a> {
 
 #[derive(Debug)]
 pub struct NetPortTypeDataType<'a> {
-    pub nodes: (Option<NetType>, DataTypeOrImplicit<'a>),
+    pub nodes: (Option<NetType<'a>>, DataTypeOrImplicit<'a>),
 }
 
 #[derive(Debug)]

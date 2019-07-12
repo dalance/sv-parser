@@ -13,12 +13,16 @@ pub enum LocalParameterDeclaration<'a> {
 
 #[derive(Debug)]
 pub struct LocalParameterDeclarationParam<'a> {
-    pub nodes: (DataTypeOrImplicit<'a>, ListOfParamAssignments<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        DataTypeOrImplicit<'a>,
+        ListOfParamAssignments<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct LocalParameterDeclarationType<'a> {
-    pub nodes: (ListOfTypeAssignments<'a>,),
+    pub nodes: (Symbol<'a>, Symbol<'a>, ListOfTypeAssignments<'a>),
 }
 
 #[derive(Debug)]
@@ -29,17 +33,26 @@ pub enum ParameterDeclaration<'a> {
 
 #[derive(Debug)]
 pub struct ParameterDeclarationParam<'a> {
-    pub nodes: (DataTypeOrImplicit<'a>, ListOfParamAssignments<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        DataTypeOrImplicit<'a>,
+        ListOfParamAssignments<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct ParameterDeclarationType<'a> {
-    pub nodes: (ListOfTypeAssignments<'a>,),
+    pub nodes: (Symbol<'a>, Symbol<'a>, ListOfTypeAssignments<'a>),
 }
 
 #[derive(Debug)]
 pub struct SpecparamDeclaration<'a> {
-    pub nodes: (Option<PackedDimension<'a>>, ListOfSpecparamAssignments<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        Option<PackedDimension<'a>>,
+        ListOfSpecparamAssignments<'a>,
+        Symbol<'a>,
+    ),
 }
 
 // -----------------------------------------------------------------------------
@@ -52,22 +65,22 @@ pub fn local_parameter_declaration(s: Span) -> IResult<Span, LocalParameterDecla
 }
 
 pub fn local_parameter_declaration_param(s: Span) -> IResult<Span, LocalParameterDeclaration> {
-    let (s, _) = symbol("localparam")(s)?;
-    let (s, x) = data_type_or_implicit(s)?;
-    let (s, y) = list_of_param_assignments(s)?;
+    let (s, a) = symbol("localparam")(s)?;
+    let (s, b) = data_type_or_implicit(s)?;
+    let (s, c) = list_of_param_assignments(s)?;
     Ok((
         s,
-        LocalParameterDeclaration::Param(LocalParameterDeclarationParam { nodes: (x, y) }),
+        LocalParameterDeclaration::Param(LocalParameterDeclarationParam { nodes: (a, b, c) }),
     ))
 }
 
 pub fn local_parameter_declaration_type(s: Span) -> IResult<Span, LocalParameterDeclaration> {
-    let (s, _) = symbol("localparam")(s)?;
-    let (s, _) = symbol("type")(s)?;
-    let (s, x) = list_of_type_assignments(s)?;
+    let (s, a) = symbol("localparam")(s)?;
+    let (s, b) = symbol("type")(s)?;
+    let (s, c) = list_of_type_assignments(s)?;
     Ok((
         s,
-        LocalParameterDeclaration::Type(LocalParameterDeclarationType { nodes: (x,) }),
+        LocalParameterDeclaration::Type(LocalParameterDeclarationType { nodes: (a, b, c) }),
     ))
 }
 
@@ -76,29 +89,34 @@ pub fn parameter_declaration(s: Span) -> IResult<Span, ParameterDeclaration> {
 }
 
 pub fn parameter_declaration_param(s: Span) -> IResult<Span, ParameterDeclaration> {
-    let (s, _) = symbol("parameter")(s)?;
-    let (s, x) = data_type_or_implicit(s)?;
-    let (s, y) = list_of_param_assignments(s)?;
+    let (s, a) = symbol("parameter")(s)?;
+    let (s, b) = data_type_or_implicit(s)?;
+    let (s, c) = list_of_param_assignments(s)?;
     Ok((
         s,
-        ParameterDeclaration::Param(ParameterDeclarationParam { nodes: (x, y) }),
+        ParameterDeclaration::Param(ParameterDeclarationParam { nodes: (a, b, c) }),
     ))
 }
 
 pub fn parameter_declaration_type(s: Span) -> IResult<Span, ParameterDeclaration> {
-    let (s, _) = symbol("parameter")(s)?;
-    let (s, _) = symbol("type")(s)?;
-    let (s, x) = list_of_type_assignments(s)?;
+    let (s, a) = symbol("parameter")(s)?;
+    let (s, b) = symbol("type")(s)?;
+    let (s, c) = list_of_type_assignments(s)?;
     Ok((
         s,
-        ParameterDeclaration::Type(ParameterDeclarationType { nodes: (x,) }),
+        ParameterDeclaration::Type(ParameterDeclarationType { nodes: (a, b, c) }),
     ))
 }
 
 pub fn specparam_declaration(s: Span) -> IResult<Span, SpecparamDeclaration> {
-    let (s, _) = symbol("specparam")(s)?;
-    let (s, x) = opt(packed_dimension)(s)?;
-    let (s, y) = list_of_specparam_assignments(s)?;
-    let (s, _) = symbol(";")(s)?;
-    Ok((s, SpecparamDeclaration { nodes: (x, y) }))
+    let (s, a) = symbol("specparam")(s)?;
+    let (s, b) = opt(packed_dimension)(s)?;
+    let (s, c) = list_of_specparam_assignments(s)?;
+    let (s, d) = symbol(";")(s)?;
+    Ok((
+        s,
+        SpecparamDeclaration {
+            nodes: (a, b, c, d),
+        },
+    ))
 }

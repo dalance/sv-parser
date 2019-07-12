@@ -7,36 +7,36 @@ use nom::{Err, IResult};
 // -----------------------------------------------------------------------------
 
 #[derive(Debug)]
-pub enum DriveStrength {
-    Strength01(Strength0, Strength1),
-    Strength10(Strength1, Strength0),
-    Strength0z(Strength0),
-    Strength1z(Strength1),
-    Strengthz0(Strength0),
-    Strengthz1(Strength1),
+pub enum DriveStrength<'a> {
+    Strength01(Strength0<'a>, Strength1<'a>),
+    Strength10(Strength1<'a>, Strength0<'a>),
+    Strength0z(Strength0<'a>),
+    Strength1z(Strength1<'a>),
+    Strengthz0(Strength0<'a>),
+    Strengthz1(Strength1<'a>),
 }
 
 #[derive(Debug)]
-pub enum Strength0 {
-    Supply0,
-    Strong0,
-    Pull0,
-    Weak0,
+pub enum Strength0<'a> {
+    Supply0(Symbol<'a>),
+    Strong0(Symbol<'a>),
+    Pull0(Symbol<'a>),
+    Weak0(Symbol<'a>),
 }
 
 #[derive(Debug)]
-pub enum Strength1 {
-    Supply1,
-    Strong1,
-    Pull1,
-    Weak1,
+pub enum Strength1<'a> {
+    Supply1(Symbol<'a>),
+    Strong1(Symbol<'a>),
+    Pull1(Symbol<'a>),
+    Weak1(Symbol<'a>),
 }
 
 #[derive(Debug)]
-pub enum ChargeStrength {
-    Small,
-    Medium,
-    Large,
+pub enum ChargeStrength<'a> {
+    Small(Symbol<'a>),
+    Medium(Symbol<'a>),
+    Large(Symbol<'a>),
 }
 
 // -----------------------------------------------------------------------------

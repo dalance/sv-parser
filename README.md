@@ -16,9 +16,9 @@ A parser library for System Verilog.
 | source_text                       | class_items                           |      |        |      |
 | source_text                       | constraints                           |      |        |      |
 | source_text                       | package_items                         |      |        |      |
-| declaration                       | module_parameter_declarations         |      |        |      |
-| declaration                       | port_declarations                     |      |        |      |
-| declaration                       | type_declarations                     |      |        |      |
+| declaration                       | module_parameter_declarations         | x    | x      |      |
+| declaration                       | port_declarations                     | x    | x      |      |
+| declaration                       | type_declarations                     | x    | x      |      |
 | declaration                       | net_and_variable_types                |      |        |      |
 | declaration                       | strengths                             |      |        |      |
 | declaration                       | delays                                | x    |        |      |

@@ -8,7 +8,7 @@ use nom::IResult;
 
 #[derive(Debug)]
 pub struct InoutDeclaration<'a> {
-    pub nodes: (NetPortType<'a>, ListOfPortIdentifiers<'a>),
+    pub nodes: (Symbol<'a>, NetPortType<'a>, ListOfPortIdentifiers<'a>),
 }
 
 #[derive(Debug)]
@@ -19,12 +19,16 @@ pub enum InputDeclaration<'a> {
 
 #[derive(Debug)]
 pub struct InputDeclarationNet<'a> {
-    pub nodes: (NetPortType<'a>, ListOfPortIdentifiers<'a>),
+    pub nodes: (Symbol<'a>, NetPortType<'a>, ListOfPortIdentifiers<'a>),
 }
 
 #[derive(Debug)]
 pub struct InputDeclarationVariable<'a> {
-    pub nodes: (VariablePortType<'a>, ListOfVariableIdentifiers<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        VariablePortType<'a>,
+        ListOfVariableIdentifiers<'a>,
+    ),
 }
 
 #[derive(Debug)]
@@ -35,35 +39,43 @@ pub enum OutputDeclaration<'a> {
 
 #[derive(Debug)]
 pub struct OutputDeclarationNet<'a> {
-    pub nodes: (NetPortType<'a>, ListOfPortIdentifiers<'a>),
+    pub nodes: (Symbol<'a>, NetPortType<'a>, ListOfPortIdentifiers<'a>),
 }
 
 #[derive(Debug)]
 pub struct OutputDeclarationVariable<'a> {
-    pub nodes: (VariablePortType<'a>, ListOfVariableIdentifiers<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        VariablePortType<'a>,
+        ListOfVariableIdentifiers<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct InterfacePortDeclaration<'a> {
     pub nodes: (
         InterfaceIdentifier<'a>,
-        Option<ModportIdentifier<'a>>,
+        Option<(Symbol<'a>, ModportIdentifier<'a>)>,
         ListOfInterfaceIdentifiers<'a>,
     ),
 }
 
 #[derive(Debug)]
 pub struct RefDeclaration<'a> {
-    pub nodes: (VariablePortType<'a>, ListOfVariableIdentifiers<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        VariablePortType<'a>,
+        ListOfVariableIdentifiers<'a>,
+    ),
 }
 
 // -----------------------------------------------------------------------------
 
 pub fn inout_declaratrion(s: Span) -> IResult<Span, InoutDeclaration> {
-    let (s, _) = symbol("inout")(s)?;
-    let (s, x) = net_port_type(s)?;
-    let (s, y) = list_of_port_identifiers(s)?;
-    Ok((s, InoutDeclaration { nodes: (x, y) }))
+    let (s, a) = symbol("inout")(s)?;
+    let (s, b) = net_port_type(s)?;
+    let (s, c) = list_of_port_identifiers(s)?;
+    Ok((s, InoutDeclaration { nodes: (a, b, c) }))
 }
 
 pub fn input_declaratrion(s: Span) -> IResult<Span, InputDeclaration> {
@@ -71,22 +83,22 @@ pub fn input_declaratrion(s: Span) -> IResult<Span, InputDeclaration> {
 }
 
 pub fn input_declaration_net(s: Span) -> IResult<Span, InputDeclaration> {
-    let (s, _) = symbol("input")(s)?;
-    let (s, x) = net_port_type(s)?;
-    let (s, y) = list_of_port_identifiers(s)?;
+    let (s, a) = symbol("input")(s)?;
+    let (s, b) = net_port_type(s)?;
+    let (s, c) = list_of_port_identifiers(s)?;
     Ok((
         s,
-        InputDeclaration::Net(InputDeclarationNet { nodes: (x, y) }),
+        InputDeclaration::Net(InputDeclarationNet { nodes: (a, b, c) }),
     ))
 }
 
 pub fn input_declaration_variable(s: Span) -> IResult<Span, InputDeclaration> {
-    let (s, _) = symbol("input")(s)?;
-    let (s, x) = variable_port_type(s)?;
-    let (s, y) = list_of_variable_identifiers(s)?;
+    let (s, a) = symbol("input")(s)?;
+    let (s, b) = variable_port_type(s)?;
+    let (s, c) = list_of_variable_identifiers(s)?;
     Ok((
         s,
-        InputDeclaration::Variable(InputDeclarationVariable { nodes: (x, y) }),
+        InputDeclaration::Variable(InputDeclarationVariable { nodes: (a, b, c) }),
     ))
 }
 
@@ -95,35 +107,35 @@ pub fn output_declaratrion(s: Span) -> IResult<Span, OutputDeclaration> {
 }
 
 pub fn output_declaration_net(s: Span) -> IResult<Span, OutputDeclaration> {
-    let (s, _) = symbol("output")(s)?;
-    let (s, x) = net_port_type(s)?;
-    let (s, y) = list_of_port_identifiers(s)?;
+    let (s, a) = symbol("output")(s)?;
+    let (s, b) = net_port_type(s)?;
+    let (s, c) = list_of_port_identifiers(s)?;
     Ok((
         s,
-        OutputDeclaration::Net(OutputDeclarationNet { nodes: (x, y) }),
+        OutputDeclaration::Net(OutputDeclarationNet { nodes: (a, b, c) }),
     ))
 }
 
 pub fn output_declaration_variable(s: Span) -> IResult<Span, OutputDeclaration> {
-    let (s, _) = symbol("output")(s)?;
-    let (s, x) = variable_port_type(s)?;
-    let (s, y) = list_of_variable_identifiers(s)?;
+    let (s, a) = symbol("output")(s)?;
+    let (s, b) = variable_port_type(s)?;
+    let (s, c) = list_of_variable_identifiers(s)?;
     Ok((
         s,
-        OutputDeclaration::Variable(OutputDeclarationVariable { nodes: (x, y) }),
+        OutputDeclaration::Variable(OutputDeclarationVariable { nodes: (a, b, c) }),
     ))
 }
 
 pub fn interface_port_declaration(s: Span) -> IResult<Span, InterfacePortDeclaration> {
-    let (s, x) = interface_identifier(s)?;
-    let (s, y) = opt(preceded(symbol("."), modport_identifier))(s)?;
-    let (s, z) = list_of_interface_identifiers(s)?;
-    Ok((s, InterfacePortDeclaration { nodes: (x, y, z) }))
+    let (s, a) = interface_identifier(s)?;
+    let (s, b) = opt(pair(symbol("."), modport_identifier))(s)?;
+    let (s, c) = list_of_interface_identifiers(s)?;
+    Ok((s, InterfacePortDeclaration { nodes: (a, b, c) }))
 }
 
 pub fn ref_declaration(s: Span) -> IResult<Span, RefDeclaration> {
-    let (s, _) = symbol("ref")(s)?;
-    let (s, x) = variable_port_type(s)?;
-    let (s, y) = list_of_variable_identifiers(s)?;
-    Ok((s, RefDeclaration { nodes: (x, y) }))
+    let (s, a) = symbol("ref")(s)?;
+    let (s, b) = variable_port_type(s)?;
+    let (s, c) = list_of_variable_identifiers(s)?;
+    Ok((s, RefDeclaration { nodes: (a, b, c) }))
 }

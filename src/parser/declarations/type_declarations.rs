@@ -1,3 +1,4 @@
+use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
@@ -10,58 +11,76 @@ use nom::IResult;
 #[derive(Debug)]
 pub enum DataDeclaration<'a> {
     Variable(DataDeclarationVariable<'a>),
-    Type(TypeDeclaration<'a>),
-    PackageImport(PackageImportDeclaration<'a>),
-    NetType(NetTypeDeclaration<'a>),
+    TypeDeclaration(TypeDeclaration<'a>),
+    PackageImportDeclaration(PackageImportDeclaration<'a>),
+    NetTypeDeclaration(NetTypeDeclaration<'a>),
 }
 
 #[derive(Debug)]
 pub struct DataDeclarationVariable<'a> {
     pub nodes: (
-        Option<Const>,
-        Option<Var>,
+        Option<Const<'a>>,
+        Option<Var<'a>>,
         Option<Lifetime<'a>>,
         DataTypeOrImplicit<'a>,
         ListOfVariableDeclAssignments<'a>,
+        Symbol<'a>,
     ),
 }
 
-#[derive(Debug)]
-pub struct Const {}
-
-#[derive(Debug)]
-pub struct Var {}
-
-#[derive(Debug)]
-pub struct PackageImportDeclaration<'a> {
-    pub nodes: (Vec<PackageImportItem<'a>>,),
+#[derive(Debug, Node)]
+pub struct Const<'a> {
+    pub nodes: (Symbol<'a>,),
 }
 
 #[derive(Debug)]
+pub struct PackageImportDeclaration<'a> {
+    pub nodes: (
+        Symbol<'a>,
+        List<Symbol<'a>, PackageImportItem<'a>>,
+        Symbol<'a>,
+    ),
+}
+
+#[derive(Debug, Node)]
 pub enum PackageImportItem<'a> {
     Identifier(PackageImportItemIdentifier<'a>),
     Asterisk(PackageImportItemAsterisk<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PackageImportItemIdentifier<'a> {
-    pub nodes: (PackageIdentifier<'a>, Identifier<'a>),
+    pub nodes: (PackageIdentifier<'a>, Symbol<'a>, Identifier<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub struct PackageImportItemAsterisk<'a> {
-    pub nodes: (PackageIdentifier<'a>,),
+    pub nodes: (PackageIdentifier<'a>, Symbol<'a>, Symbol<'a>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum PackageExportDeclaration<'a> {
-    Asterisk,
-    Item(Vec<PackageImportItem<'a>>),
+    Asterisk(PackageExportDeclarationAsterisk<'a>),
+    Item(PackageExportDeclarationItem<'a>),
+}
+
+#[derive(Debug, Node)]
+pub struct PackageExportDeclarationAsterisk<'a> {
+    pub nodes: (Symbol<'a>, Symbol<'a>, Symbol<'a>),
+}
+
+#[derive(Debug, Node)]
+pub struct PackageExportDeclarationItem<'a> {
+    pub nodes: (
+        Symbol<'a>,
+        List<Symbol<'a>, PackageImportItem<'a>>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct GenvarDeclaration<'a> {
-    pub nodes: (ListOfGenvarIdentifiers<'a>,),
+    pub nodes: (Symbol<'a>, ListOfGenvarIdentifiers<'a>, Symbol<'a>),
 }
 
 #[derive(Debug)]
@@ -74,25 +93,26 @@ pub enum NetDeclaration<'a> {
 #[derive(Debug)]
 pub struct NetDeclarationNetType<'a> {
     pub nodes: (
-        NetType,
-        Option<Strength>,
-        Option<VectorScalar>,
+        NetType<'a>,
+        Option<Strength<'a>>,
+        Option<VectorScalar<'a>>,
         DataTypeOrImplicit<'a>,
         Option<Delay3<'a>>,
         ListOfNetDeclAssignments<'a>,
+        Symbol<'a>,
     ),
 }
 
 #[derive(Debug)]
-pub enum Strength {
-    Drive(DriveStrength),
-    Charge(ChargeStrength),
+pub enum Strength<'a> {
+    Drive(DriveStrength<'a>),
+    Charge(ChargeStrength<'a>),
 }
 
-#[derive(Debug)]
-pub enum VectorScalar {
-    Vectored,
-    Scalared,
+#[derive(Debug, Node)]
+pub enum VectorScalar<'a> {
+    Vectored(Symbol<'a>),
+    Scalared(Symbol<'a>),
 }
 
 #[derive(Debug)]
@@ -101,17 +121,20 @@ pub struct NetDeclarationNetTypeIdentifier<'a> {
         NetTypeIdentifier<'a>,
         Option<DelayControl<'a>>,
         ListOfNetDeclAssignments<'a>,
+        Symbol<'a>,
     ),
 }
 
 #[derive(Debug)]
 pub struct NetDeclarationInterconnect<'a> {
     pub nodes: (
+        Symbol<'a>,
         ImplicitDataType<'a>,
-        Option<DelayValue<'a>>,
+        Option<(Symbol<'a>, DelayValue<'a>)>,
         NetIdentifier<'a>,
         Vec<UnpackedDimension<'a>>,
-        Option<(NetIdentifier<'a>, Vec<UnpackedDimension<'a>>)>,
+        Option<(Symbol<'a>, NetIdentifier<'a>, Vec<UnpackedDimension<'a>>)>,
+        Symbol<'a>,
     ),
 }
 
@@ -124,31 +147,45 @@ pub enum TypeDeclaration<'a> {
 
 #[derive(Debug)]
 pub struct TypeDeclarationDataType<'a> {
-    pub nodes: (DataType<'a>, TypeIdentifier<'a>, Vec<VariableDimension<'a>>),
+    pub nodes: (
+        Symbol<'a>,
+        DataType<'a>,
+        TypeIdentifier<'a>,
+        Vec<VariableDimension<'a>>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug)]
 pub struct TypeDeclarationInterface<'a> {
     pub nodes: (
+        Symbol<'a>,
         InterfaceInstanceIdentifier<'a>,
         ConstantBitSelect<'a>,
+        Symbol<'a>,
         TypeIdentifier<'a>,
         TypeIdentifier<'a>,
+        Symbol<'a>,
     ),
 }
 
 #[derive(Debug)]
 pub struct TypeDeclarationReserved<'a> {
-    pub nodes: (TypeDeclarationKeyword, TypeIdentifier<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        TypeDeclarationKeyword<'a>,
+        TypeIdentifier<'a>,
+        Symbol<'a>,
+    ),
 }
 
-#[derive(Debug)]
-pub enum TypeDeclarationKeyword {
-    Enum,
-    Struct,
-    Union,
-    Class,
-    InterfaceClass,
+#[derive(Debug, Node)]
+pub enum TypeDeclarationKeyword<'a> {
+    Enum(Symbol<'a>),
+    Struct(Symbol<'a>),
+    Union(Symbol<'a>),
+    Class(Symbol<'a>),
+    InterfaceClass((Symbol<'a>, Symbol<'a>)),
 }
 
 #[derive(Debug)]
@@ -160,22 +197,30 @@ pub enum NetTypeDeclaration<'a> {
 #[derive(Debug)]
 pub struct NetTypeDeclarationDataType<'a> {
     pub nodes: (
+        Symbol<'a>,
         DataType<'a>,
         NetTypeIdentifier<'a>,
-        Option<(Option<PackageScopeOrClassScope<'a>>, TfIdentifier<'a>)>,
+        Option<(
+            Symbol<'a>,
+            Option<PackageScopeOrClassScope<'a>>,
+            TfIdentifier<'a>,
+        )>,
+        Symbol<'a>,
     ),
 }
 
 #[derive(Debug)]
 pub struct NetTypeDeclarationNetType<'a> {
     pub nodes: (
+        Symbol<'a>,
         Option<PackageScopeOrClassScope<'a>>,
         NetTypeIdentifier<'a>,
         NetTypeIdentifier<'a>,
+        Symbol<'a>,
     ),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Node)]
 pub enum Lifetime<'a> {
     Static(Symbol<'a>),
     Automatic(Symbol<'a>),
@@ -186,34 +231,41 @@ pub enum Lifetime<'a> {
 pub fn data_declaration(s: Span) -> IResult<Span, DataDeclaration> {
     alt((
         data_declaration_variable,
-        map(type_declaration, |x| DataDeclaration::Type(x)),
+        map(type_declaration, |x| DataDeclaration::TypeDeclaration(x)),
         map(package_import_declaration, |x| {
-            DataDeclaration::PackageImport(x)
+            DataDeclaration::PackageImportDeclaration(x)
         }),
-        map(net_type_declaration, |x| DataDeclaration::NetType(x)),
+        map(net_type_declaration, |x| {
+            DataDeclaration::NetTypeDeclaration(x)
+        }),
     ))(s)
 }
 
 pub fn data_declaration_variable(s: Span) -> IResult<Span, DataDeclaration> {
-    let (s, x) = opt(symbol("const"))(s)?;
-    let (s, y) = opt(symbol("var"))(s)?;
-    let (s, z) = opt(lifetime)(s)?;
-    let (s, v) = data_type_or_implicit(s)?;
-    let (s, w) = list_of_variable_decl_assignments(s)?;
-    let (s, _) = symbol(";")(s)?;
+    let (s, a) = opt(r#const)(s)?;
+    let (s, b) = opt(var)(s)?;
+    let (s, c) = opt(lifetime)(s)?;
+    let (s, d) = data_type_or_implicit(s)?;
+    let (s, e) = list_of_variable_decl_assignments(s)?;
+    let (s, f) = symbol(";")(s)?;
     Ok((
         s,
         DataDeclaration::Variable(DataDeclarationVariable {
-            nodes: (x.map(|_| Const {}), y.map(|_| Var {}), z, v, w),
+            nodes: (a, b, c, d, e, f),
         }),
     ))
 }
 
+pub fn r#const(s: Span) -> IResult<Span, Const> {
+    let (s, a) = symbol("const")(s)?;
+    Ok((s, Const { nodes: (a,) }))
+}
+
 pub fn package_import_declaration(s: Span) -> IResult<Span, PackageImportDeclaration> {
-    let (s, _) = symbol("import")(s)?;
-    let (s, x) = separated_nonempty_list(symbol(","), package_import_item)(s)?;
-    let (s, _) = symbol(";")(s)?;
-    Ok((s, PackageImportDeclaration { nodes: (x,) }))
+    let (s, a) = symbol("import")(s)?;
+    let (s, b) = list(symbol(","), package_import_item)(s)?;
+    let (s, c) = symbol(";")(s)?;
+    Ok((s, PackageImportDeclaration { nodes: (a, b, c) }))
 }
 
 pub fn package_import_item(s: Span) -> IResult<Span, PackageImportItem> {
@@ -221,22 +273,22 @@ pub fn package_import_item(s: Span) -> IResult<Span, PackageImportItem> {
 }
 
 pub fn package_import_item_identifier(s: Span) -> IResult<Span, PackageImportItem> {
-    let (s, x) = package_identifier(s)?;
-    let (s, _) = symbol("::")(s)?;
-    let (s, y) = identifier(s)?;
+    let (s, a) = package_identifier(s)?;
+    let (s, b) = symbol("::")(s)?;
+    let (s, c) = identifier(s)?;
     Ok((
         s,
-        PackageImportItem::Identifier(PackageImportItemIdentifier { nodes: (x, y) }),
+        PackageImportItem::Identifier(PackageImportItemIdentifier { nodes: (a, b, c) }),
     ))
 }
 
 pub fn package_import_item_asterisk(s: Span) -> IResult<Span, PackageImportItem> {
-    let (s, x) = package_identifier(s)?;
-    let (s, _) = symbol("::")(s)?;
-    let (s, _) = symbol("*")(s)?;
+    let (s, a) = package_identifier(s)?;
+    let (s, b) = symbol("::")(s)?;
+    let (s, c) = symbol("*")(s)?;
     Ok((
         s,
-        PackageImportItem::Asterisk(PackageImportItemAsterisk { nodes: (x,) }),
+        PackageImportItem::Asterisk(PackageImportItemAsterisk { nodes: (a, b, c) }),
     ))
 }
 
@@ -248,23 +300,30 @@ pub fn package_export_declaration(s: Span) -> IResult<Span, PackageExportDeclara
 }
 
 pub fn package_export_declaration_asterisk(s: Span) -> IResult<Span, PackageExportDeclaration> {
-    let (s, _) = symbol("export")(s)?;
-    let (s, _) = symbol("*::*")(s)?;
-    let (s, _) = symbol(";")(s)?;
-    Ok((s, PackageExportDeclaration::Asterisk))
+    let (s, a) = symbol("export")(s)?;
+    let (s, b) = symbol("*::*")(s)?;
+    let (s, c) = symbol(";")(s)?;
+    Ok((
+        s,
+        PackageExportDeclaration::Asterisk(PackageExportDeclarationAsterisk { nodes: (a, b, c) }),
+    ))
 }
 
 pub fn package_export_declaration_item(s: Span) -> IResult<Span, PackageExportDeclaration> {
-    let (s, _) = symbol("export")(s)?;
-    let (s, x) = separated_nonempty_list(symbol(","), package_import_item)(s)?;
-    let (s, _) = symbol(";")(s)?;
-    Ok((s, PackageExportDeclaration::Item(x)))
+    let (s, a) = symbol("export")(s)?;
+    let (s, b) = list(symbol(","), package_import_item)(s)?;
+    let (s, c) = symbol(";")(s)?;
+    Ok((
+        s,
+        PackageExportDeclaration::Item(PackageExportDeclarationItem { nodes: (a, b, c) }),
+    ))
 }
 
 pub fn genvar_declaration(s: Span) -> IResult<Span, GenvarDeclaration> {
-    let (s, _) = symbol("genvar")(s)?;
-    let (s, x) = list_of_genvar_identifiers(s)?;
-    Ok((s, GenvarDeclaration { nodes: (x,) }))
+    let (s, a) = symbol("genvar")(s)?;
+    let (s, b) = list_of_genvar_identifiers(s)?;
+    let (s, c) = symbol(";")(s)?;
+    Ok((s, GenvarDeclaration { nodes: (a, b, c) }))
 }
 
 pub fn net_declaration(s: Span) -> IResult<Span, NetDeclaration> {
@@ -276,17 +335,17 @@ pub fn net_declaration(s: Span) -> IResult<Span, NetDeclaration> {
 }
 
 pub fn net_declaration_net_type(s: Span) -> IResult<Span, NetDeclaration> {
-    let (s, x) = net_type(s)?;
-    let (s, y) = opt(strength)(s)?;
-    let (s, z) = opt(vector_scalar)(s)?;
-    let (s, v) = data_type_or_implicit(s)?;
-    let (s, w) = opt(delay3)(s)?;
-    let (s, u) = list_of_net_decl_assignments(s)?;
-    let (s, _) = symbol(";")(s)?;
+    let (s, a) = net_type(s)?;
+    let (s, b) = opt(strength)(s)?;
+    let (s, c) = opt(vector_scalar)(s)?;
+    let (s, d) = data_type_or_implicit(s)?;
+    let (s, e) = opt(delay3)(s)?;
+    let (s, f) = list_of_net_decl_assignments(s)?;
+    let (s, g) = symbol(";")(s)?;
     Ok((
         s,
         NetDeclaration::NetType(NetDeclarationNetType {
-            nodes: (x, y, z, v, w, u),
+            nodes: (a, b, c, d, e, f, g),
         }),
     ))
 }
@@ -300,36 +359,40 @@ pub fn strength(s: Span) -> IResult<Span, Strength> {
 
 pub fn vector_scalar(s: Span) -> IResult<Span, VectorScalar> {
     alt((
-        map(symbol("vectored"), |_| VectorScalar::Vectored),
-        map(symbol("scalared"), |_| VectorScalar::Scalared),
+        map(symbol("vectored"), |x| VectorScalar::Vectored(x)),
+        map(symbol("scalared"), |x| VectorScalar::Scalared(x)),
     ))(s)
 }
 
 pub fn net_declaration_net_type_identifier(s: Span) -> IResult<Span, NetDeclaration> {
-    let (s, x) = net_type_identifier(s)?;
-    let (s, y) = opt(delay_control)(s)?;
-    let (s, z) = list_of_net_decl_assignments(s)?;
-    let (s, _) = symbol(";")(s)?;
+    let (s, a) = net_type_identifier(s)?;
+    let (s, b) = opt(delay_control)(s)?;
+    let (s, c) = list_of_net_decl_assignments(s)?;
+    let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        NetDeclaration::NetTypeIdentifier(NetDeclarationNetTypeIdentifier { nodes: (x, y, z) }),
+        NetDeclaration::NetTypeIdentifier(NetDeclarationNetTypeIdentifier {
+            nodes: (a, b, c, d),
+        }),
     ))
 }
 
 pub fn net_declaration_interconnect(s: Span) -> IResult<Span, NetDeclaration> {
-    let (s, _) = symbol("interconnect")(s)?;
-    let (s, x) = implicit_data_type(s)?;
-    let (s, y) = opt(preceded(symbol("#"), delay_value))(s)?;
-    let (s, z) = net_identifier(s)?;
-    let (s, v) = many0(unpacked_dimension)(s)?;
-    let (s, w) = opt(preceded(
+    let (s, a) = symbol("interconnect")(s)?;
+    let (s, b) = implicit_data_type(s)?;
+    let (s, c) = opt(pair(symbol("#"), delay_value))(s)?;
+    let (s, d) = net_identifier(s)?;
+    let (s, e) = many0(unpacked_dimension)(s)?;
+    let (s, f) = opt(triple(
         symbol(","),
-        pair(net_identifier, many0(unpacked_dimension)),
+        net_identifier,
+        many0(unpacked_dimension),
     ))(s)?;
+    let (s, g) = symbol(";")(s)?;
     Ok((
         s,
         NetDeclaration::Interconnect(NetDeclarationInterconnect {
-            nodes: (x, y, z, v, w),
+            nodes: (a, b, c, d, e, f, g),
         }),
     ))
 }
@@ -343,52 +406,56 @@ pub fn type_declaration(s: Span) -> IResult<Span, TypeDeclaration> {
 }
 
 pub fn type_declaration_data_type(s: Span) -> IResult<Span, TypeDeclaration> {
-    let (s, _) = symbol("typedef")(s)?;
-    let (s, x) = data_type(s)?;
-    let (s, y) = type_identifier(s)?;
-    let (s, z) = many0(variable_dimension)(s)?;
-    let (s, _) = symbol(";")(s)?;
+    let (s, a) = symbol("typedef")(s)?;
+    let (s, b) = data_type(s)?;
+    let (s, c) = type_identifier(s)?;
+    let (s, d) = many0(variable_dimension)(s)?;
+    let (s, e) = symbol(";")(s)?;
     Ok((
         s,
-        TypeDeclaration::DataType(TypeDeclarationDataType { nodes: (x, y, z) }),
+        TypeDeclaration::DataType(TypeDeclarationDataType {
+            nodes: (a, b, c, d, e),
+        }),
     ))
 }
 
 pub fn type_declaration_interface(s: Span) -> IResult<Span, TypeDeclaration> {
-    let (s, _) = symbol("typedef")(s)?;
-    let (s, x) = interface_instance_identifier(s)?;
-    let (s, y) = constant_bit_select(s)?;
-    let (s, _) = symbol(".")(s)?;
-    let (s, z) = type_identifier(s)?;
-    let (s, v) = type_identifier(s)?;
-    let (s, _) = symbol(";")(s)?;
+    let (s, a) = symbol("typedef")(s)?;
+    let (s, b) = interface_instance_identifier(s)?;
+    let (s, c) = constant_bit_select(s)?;
+    let (s, d) = symbol(".")(s)?;
+    let (s, e) = type_identifier(s)?;
+    let (s, f) = type_identifier(s)?;
+    let (s, g) = symbol(";")(s)?;
     Ok((
         s,
         TypeDeclaration::Interface(TypeDeclarationInterface {
-            nodes: (x, y, z, v),
+            nodes: (a, b, c, d, e, f, g),
         }),
     ))
 }
 
 pub fn type_declaration_reserved(s: Span) -> IResult<Span, TypeDeclaration> {
-    let (s, _) = symbol("typedef")(s)?;
-    let (s, x) = type_declaration_keyword(s)?;
-    let (s, y) = type_identifier(s)?;
-    let (s, _) = symbol(";")(s)?;
+    let (s, a) = symbol("typedef")(s)?;
+    let (s, b) = type_declaration_keyword(s)?;
+    let (s, c) = type_identifier(s)?;
+    let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        TypeDeclaration::Reserved(TypeDeclarationReserved { nodes: (x, y) }),
+        TypeDeclaration::Reserved(TypeDeclarationReserved {
+            nodes: (a, b, c, d),
+        }),
     ))
 }
 
 pub fn type_declaration_keyword(s: Span) -> IResult<Span, TypeDeclarationKeyword> {
     alt((
-        map(symbol("enum"), |_| TypeDeclarationKeyword::Enum),
-        map(symbol("struct"), |_| TypeDeclarationKeyword::Struct),
-        map(symbol("union"), |_| TypeDeclarationKeyword::Union),
-        map(symbol("class"), |_| TypeDeclarationKeyword::Class),
-        map(pair(symbol("interface"), symbol("class")), |_| {
-            TypeDeclarationKeyword::InterfaceClass
+        map(symbol("enum"), |x| TypeDeclarationKeyword::Enum(x)),
+        map(symbol("struct"), |x| TypeDeclarationKeyword::Struct(x)),
+        map(symbol("union"), |x| TypeDeclarationKeyword::Union(x)),
+        map(symbol("class"), |x| TypeDeclarationKeyword::Class(x)),
+        map(pair(symbol("interface"), symbol("class")), |x| {
+            TypeDeclarationKeyword::InterfaceClass(x)
         }),
     ))(s)
 }
@@ -401,29 +468,34 @@ pub fn net_type_declaration(s: Span) -> IResult<Span, NetTypeDeclaration> {
 }
 
 pub fn net_type_declaration_data_type(s: Span) -> IResult<Span, NetTypeDeclaration> {
-    let (s, _) = symbol("nettype")(s)?;
-    let (s, x) = data_type(s)?;
-    let (s, y) = net_type_identifier(s)?;
-    let (s, z) = opt(preceded(
+    let (s, a) = symbol("nettype")(s)?;
+    let (s, b) = data_type(s)?;
+    let (s, c) = net_type_identifier(s)?;
+    let (s, d) = opt(triple(
         symbol("with"),
-        pair(opt(package_scope_or_class_scope), tf_identifier),
+        opt(package_scope_or_class_scope),
+        tf_identifier,
     ))(s)?;
-    let (s, _) = symbol(";")(s)?;
+    let (s, e) = symbol(";")(s)?;
     Ok((
         s,
-        NetTypeDeclaration::DataType(NetTypeDeclarationDataType { nodes: (x, y, z) }),
+        NetTypeDeclaration::DataType(NetTypeDeclarationDataType {
+            nodes: (a, b, c, d, e),
+        }),
     ))
 }
 
 pub fn net_type_declaration_net_type(s: Span) -> IResult<Span, NetTypeDeclaration> {
-    let (s, _) = symbol("nettype")(s)?;
-    let (s, x) = opt(package_scope_or_class_scope)(s)?;
-    let (s, y) = net_type_identifier(s)?;
-    let (s, z) = net_type_identifier(s)?;
-    let (s, _) = symbol(";")(s)?;
+    let (s, a) = symbol("nettype")(s)?;
+    let (s, b) = opt(package_scope_or_class_scope)(s)?;
+    let (s, c) = net_type_identifier(s)?;
+    let (s, d) = net_type_identifier(s)?;
+    let (s, e) = symbol(";")(s)?;
     Ok((
         s,
-        NetTypeDeclaration::NetType(NetTypeDeclarationNetType { nodes: (x, y, z) }),
+        NetTypeDeclaration::NetType(NetTypeDeclarationNetType {
+            nodes: (a, b, c, d, e),
+        }),
     ))
 }
 

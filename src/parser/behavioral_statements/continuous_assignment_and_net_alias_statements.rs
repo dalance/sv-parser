@@ -15,7 +15,7 @@ pub enum ContinuousAssign<'a> {
 pub struct ContinuousAssignNet<'a> {
     pub nodes: (
         Symbol<'a>,
-        Option<DriveStrength>,
+        Option<DriveStrength<'a>>,
         Option<Delay3<'a>>,
         ListOfNetAssignments<'a>,
         Symbol<'a>,

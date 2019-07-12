@@ -105,39 +105,39 @@ pub struct EmptyUnpackedArrayConcatenation<'a> {
 // -----------------------------------------------------------------------------
 
 pub fn concatenation(s: Span) -> IResult<Span, Concatenation> {
-    let (s, a) = brace2(list(symbol(","), expression))(s)?;
+    let (s, a) = brace(list(symbol(","), expression))(s)?;
     Ok((s, Concatenation { nodes: (a,) }))
 }
 
 pub fn constant_concatenation(s: Span) -> IResult<Span, ConstantConcatenation> {
-    let (s, a) = brace2(list(symbol(","), constant_expression))(s)?;
+    let (s, a) = brace(list(symbol(","), constant_expression))(s)?;
     Ok((s, ConstantConcatenation { nodes: (a,) }))
 }
 
 pub fn constant_multiple_concatenation(s: Span) -> IResult<Span, ConstantMultipleConcatenation> {
-    let (s, a) = brace2(pair(constant_expression, constant_concatenation))(s)?;
+    let (s, a) = brace(pair(constant_expression, constant_concatenation))(s)?;
     Ok((s, ConstantMultipleConcatenation { nodes: (a,) }))
 }
 
 pub fn module_path_concatenation(s: Span) -> IResult<Span, ModulePathConcatenation> {
-    let (s, a) = brace2(list(symbol(","), module_path_expression))(s)?;
+    let (s, a) = brace(list(symbol(","), module_path_expression))(s)?;
     Ok((s, ModulePathConcatenation { nodes: (a,) }))
 }
 
 pub fn module_path_multiple_concatenation(
     s: Span,
 ) -> IResult<Span, ModulePathMultipleConcatenation> {
-    let (s, a) = brace2(pair(constant_expression, module_path_concatenation))(s)?;
+    let (s, a) = brace(pair(constant_expression, module_path_concatenation))(s)?;
     Ok((s, ModulePathMultipleConcatenation { nodes: (a,) }))
 }
 
 pub fn multiple_concatenation(s: Span) -> IResult<Span, MultipleConcatenation> {
-    let (s, a) = brace2(pair(expression, concatenation))(s)?;
+    let (s, a) = brace(pair(expression, concatenation))(s)?;
     Ok((s, MultipleConcatenation { nodes: (a,) }))
 }
 
 pub fn streaming_concatenation(s: Span) -> IResult<Span, StreamingConcatenation> {
-    let (s, a) = brace2(triple(
+    let (s, a) = brace(triple(
         stream_operator,
         opt(slice_size),
         stream_concatenation,
@@ -160,13 +160,13 @@ pub fn slice_size(s: Span) -> IResult<Span, SliceSize> {
 }
 
 pub fn stream_concatenation(s: Span) -> IResult<Span, StreamConcatenation> {
-    let (s, a) = brace2(list(symbol(","), stream_expression))(s)?;
+    let (s, a) = brace(list(symbol(","), stream_expression))(s)?;
     Ok((s, StreamConcatenation { nodes: (a,) }))
 }
 
 pub fn stream_expression(s: Span) -> IResult<Span, StreamExpression> {
     let (s, a) = expression(s)?;
-    let (s, b) = opt(pair(symbol("with"), bracket2(array_range_expression)))(s)?;
+    let (s, b) = opt(pair(symbol("with"), bracket(array_range_expression)))(s)?;
     Ok((s, StreamExpression { nodes: (a, b) }))
 }
 

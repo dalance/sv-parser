@@ -298,7 +298,7 @@ pub fn constant_primary_ps_parameter(s: Span) -> IResult<Span, ConstantPrimary> 
 
 pub fn constant_primary_specparam(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = specparam_identifier(s)?;
-    let (s, b) = opt(bracket2(constant_range_expression))(s)?;
+    let (s, b) = opt(bracket(constant_range_expression))(s)?;
     Ok((
         s,
         ConstantPrimary::Specparam(ConstantPrimarySpecparam { nodes: (a, b) }),
@@ -325,7 +325,7 @@ pub fn constant_primary_enum(s: Span) -> IResult<Span, ConstantPrimary> {
 
 pub fn constant_primary_concatenation(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = constant_concatenation(s)?;
-    let (s, b) = opt(bracket2(constant_range_expression))(s)?;
+    let (s, b) = opt(bracket(constant_range_expression))(s)?;
     Ok((
         s,
         ConstantPrimary::Concatenation(ConstantPrimaryConcatenation { nodes: (a, b) }),
@@ -334,7 +334,7 @@ pub fn constant_primary_concatenation(s: Span) -> IResult<Span, ConstantPrimary>
 
 pub fn constant_primary_multiple_concatenation(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = constant_multiple_concatenation(s)?;
-    let (s, b) = opt(bracket2(constant_range_expression))(s)?;
+    let (s, b) = opt(bracket(constant_range_expression))(s)?;
     Ok((
         s,
         ConstantPrimary::MultipleConcatenation(ConstantPrimaryMultipleConcatenation {
@@ -344,7 +344,7 @@ pub fn constant_primary_multiple_concatenation(s: Span) -> IResult<Span, Constan
 }
 
 pub fn constant_primary_mintypmax_expression(s: Span) -> IResult<Span, ConstantPrimary> {
-    let (s, a) = paren2(constant_mintypmax_expression)(s)?;
+    let (s, a) = paren(constant_mintypmax_expression)(s)?;
     Ok((
         s,
         ConstantPrimary::MintypmaxExpression(ConstantPrimaryMintypmaxExpression { nodes: (a,) }),
@@ -369,7 +369,7 @@ pub fn module_path_primary(s: Span) -> IResult<Span, ModulePathPrimary> {
 }
 
 pub fn module_path_primary_mintypmax_expression(s: Span) -> IResult<Span, ModulePathPrimary> {
-    let (s, a) = paren2(module_path_mintypmax_expression)(s)?;
+    let (s, a) = paren(module_path_mintypmax_expression)(s)?;
     Ok((
         s,
         ModulePathPrimary::Mintypmax(ModulePathPrimaryMintypmax { nodes: (a,) }),
@@ -415,7 +415,7 @@ pub fn primary_hierarchical(s: Span) -> IResult<Span, Primary> {
 
 pub fn primary_concatenation(s: Span) -> IResult<Span, Primary> {
     let (s, a) = concatenation(s)?;
-    let (s, b) = opt(bracket2(range_expression))(s)?;
+    let (s, b) = opt(bracket(range_expression))(s)?;
     Ok((
         s,
         Primary::Concatenation(PrimaryConcatenation { nodes: (a, b) }),
@@ -424,7 +424,7 @@ pub fn primary_concatenation(s: Span) -> IResult<Span, Primary> {
 
 pub fn primary_multiple_concatenation(s: Span) -> IResult<Span, Primary> {
     let (s, a) = multiple_concatenation(s)?;
-    let (s, b) = opt(bracket2(range_expression))(s)?;
+    let (s, b) = opt(bracket(range_expression))(s)?;
     Ok((
         s,
         Primary::MultipleConcatenation(PrimaryMultipleConcatenation { nodes: (a, b) }),
@@ -432,7 +432,7 @@ pub fn primary_multiple_concatenation(s: Span) -> IResult<Span, Primary> {
 }
 
 pub fn primary_mintypmax_expression(s: Span) -> IResult<Span, Primary> {
-    let (s, a) = paren2(mintypmax_expression)(s)?;
+    let (s, a) = paren(mintypmax_expression)(s)?;
     Ok((
         s,
         Primary::MintypmaxExpression(PrimaryMintypmaxExpression { nodes: (a,) }),
@@ -519,7 +519,7 @@ pub fn implicit_class_handle(s: Span) -> IResult<Span, ImplicitClassHandle> {
 }
 
 pub fn bit_select(s: Span) -> IResult<Span, BitSelect> {
-    let (s, a) = many0(bracket2(expression))(s)?;
+    let (s, a) = many0(bracket(expression))(s)?;
     Ok((s, BitSelect { nodes: (a,) }))
 }
 
@@ -530,7 +530,7 @@ pub fn select(s: Span) -> IResult<Span, Select> {
         member_identifier,
     ))(s)?;
     let (s, b) = bit_select(s)?;
-    let (s, c) = opt(bracket2(part_select_range))(s)?;
+    let (s, c) = opt(bracket(part_select_range))(s)?;
     Ok((s, Select { nodes: (a, b, c) }))
 }
 
@@ -545,7 +545,7 @@ pub fn nonrange_select(s: Span) -> IResult<Span, NonrangeSelect> {
 }
 
 pub fn constant_bit_select(s: Span) -> IResult<Span, ConstantBitSelect> {
-    let (s, a) = many0(bracket2(constant_expression))(s)?;
+    let (s, a) = many0(bracket(constant_expression))(s)?;
     Ok((s, ConstantBitSelect { nodes: (a,) }))
 }
 
@@ -556,14 +556,14 @@ pub fn constant_select(s: Span) -> IResult<Span, ConstantSelect> {
         member_identifier,
     ))(s)?;
     let (s, b) = constant_bit_select(s)?;
-    let (s, c) = opt(bracket2(constant_part_select_range))(s)?;
+    let (s, c) = opt(bracket(constant_part_select_range))(s)?;
     Ok((s, ConstantSelect { nodes: (a, b, c) }))
 }
 
 pub fn constant_cast(s: Span) -> IResult<Span, ConstantCast> {
     let (s, a) = casting_type(s)?;
     let (s, b) = symbol("'")(s)?;
-    let (s, c) = paren2(constant_expression)(s)?;
+    let (s, c) = paren(constant_expression)(s)?;
     Ok((s, ConstantCast { nodes: (a, b, c) }))
 }
 
@@ -575,7 +575,7 @@ pub fn constant_let_expression(s: Span) -> IResult<Span, ConstantLetExpression> 
 pub fn cast(s: Span) -> IResult<Span, Cast> {
     let (s, a) = casting_type(s)?;
     let (s, b) = symbol("'")(s)?;
-    let (s, c) = paren2(expression)(s)?;
+    let (s, c) = paren(expression)(s)?;
     Ok((s, Cast { nodes: (a, b, c) }))
 }
 

@@ -191,7 +191,7 @@ pub fn constant_function_call(s: Span) -> IResult<Span, ConstantFunctionCall> {
 pub fn tf_call(s: Span) -> IResult<Span, TfCall> {
     let (s, a) = ps_or_hierarchical_tf_identifier(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
-    let (s, c) = opt(paren2(list_of_arguments))(s)?;
+    let (s, c) = opt(paren(list_of_arguments))(s)?;
     Ok((s, TfCall { nodes: (a, b, c) }))
 }
 
@@ -205,7 +205,7 @@ pub fn system_tf_call(s: Span) -> IResult<Span, SystemTfCall> {
 
 pub fn system_tf_call_arg_optional(s: Span) -> IResult<Span, SystemTfCall> {
     let (s, a) = system_tf_identifier(s)?;
-    let (s, b) = opt(paren2(list_of_arguments))(s)?;
+    let (s, b) = opt(paren(list_of_arguments))(s)?;
     Ok((
         s,
         SystemTfCall::ArgOptionl(SystemTfCallArgOptional { nodes: (a, b) }),
@@ -214,7 +214,7 @@ pub fn system_tf_call_arg_optional(s: Span) -> IResult<Span, SystemTfCall> {
 
 pub fn system_tf_call_arg_data_type(s: Span) -> IResult<Span, SystemTfCall> {
     let (s, a) = system_tf_identifier(s)?;
-    let (s, b) = paren2(pair(data_type, opt(pair(symbol(","), expression))))(s)?;
+    let (s, b) = paren(pair(data_type, opt(pair(symbol(","), expression))))(s)?;
     Ok((
         s,
         SystemTfCall::ArgDataType(SystemTfCallArgDataType { nodes: (a, b) }),
@@ -223,7 +223,7 @@ pub fn system_tf_call_arg_data_type(s: Span) -> IResult<Span, SystemTfCall> {
 
 pub fn system_tf_call_arg_expression(s: Span) -> IResult<Span, SystemTfCall> {
     let (s, a) = system_tf_identifier(s)?;
-    let (s, b) = paren2(pair(
+    let (s, b) = paren(pair(
         list(symbol(","), opt(expression)),
         opt(pair(symbol(","), opt(clocking_event))),
     ))(s)?;
@@ -267,7 +267,7 @@ pub fn list_of_arguments_ordered(s: Span) -> IResult<Span, ListOfArguments> {
         symbol(","),
         symbol("."),
         identifier,
-        paren2(opt(expression)),
+        paren(opt(expression)),
     )))(s)?;
     Ok((
         s,
@@ -278,12 +278,12 @@ pub fn list_of_arguments_ordered(s: Span) -> IResult<Span, ListOfArguments> {
 pub fn list_of_arguments_named(s: Span) -> IResult<Span, ListOfArguments> {
     let (s, a) = symbol(".")(s)?;
     let (s, b) = identifier(s)?;
-    let (s, c) = paren2(opt(expression))(s)?;
+    let (s, c) = paren(opt(expression))(s)?;
     let (s, d) = many0(tuple((
         symbol(","),
         symbol("."),
         identifier,
-        paren2(opt(expression)),
+        paren(opt(expression)),
     )))(s)?;
     Ok((
         s,
@@ -313,7 +313,7 @@ pub fn method_call_body(s: Span) -> IResult<Span, MethodCallBody> {
 pub fn method_call_body_user(s: Span) -> IResult<Span, MethodCallBody> {
     let (s, a) = method_identifier(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
-    let (s, c) = opt(paren2(list_of_arguments))(s)?;
+    let (s, c) = opt(paren(list_of_arguments))(s)?;
     Ok((
         s,
         MethodCallBody::User(MethodCallBodyUser { nodes: (a, b, c) }),
@@ -332,8 +332,8 @@ pub fn built_in_method_call(s: Span) -> IResult<Span, BuiltInMethodCall> {
 pub fn array_manipulation_call(s: Span) -> IResult<Span, ArrayManipulationCall> {
     let (s, a) = array_method_name(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
-    let (s, c) = opt(paren2(list_of_arguments))(s)?;
-    let (s, d) = opt(pair(symbol("with"), paren2(expression)))(s)?;
+    let (s, c) = opt(paren(list_of_arguments))(s)?;
+    let (s, d) = opt(pair(symbol("with"), paren(expression)))(s)?;
     Ok((
         s,
         ArrayManipulationCall {
@@ -345,10 +345,10 @@ pub fn array_manipulation_call(s: Span) -> IResult<Span, ArrayManipulationCall> 
 pub fn randomize_call(s: Span) -> IResult<Span, RandomizeCall> {
     let (s, a) = symbol("randomize")(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
-    let (s, c) = opt(paren2(opt(variable_identifier_list_or_null)))(s)?;
+    let (s, c) = opt(paren(opt(variable_identifier_list_or_null)))(s)?;
     let (s, d) = opt(triple(
         symbol("with"),
-        opt(paren2(opt(identifier_list))),
+        opt(paren(opt(identifier_list))),
         constraint_block,
     ))(s)?;
     Ok((

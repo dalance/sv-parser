@@ -126,7 +126,7 @@ pub fn module_instantiation(s: Span) -> IResult<Span, ModuleInstantiation> {
 
 pub fn parameter_value_assignment(s: Span) -> IResult<Span, ParameterValueAssignment> {
     let (s, a) = symbol("#")(s)?;
-    let (s, b) = paren2(opt(list_of_parameter_assignments))(s)?;
+    let (s, b) = paren(opt(list_of_parameter_assignments))(s)?;
     Ok((s, ParameterValueAssignment { nodes: (a, b) }))
 }
 
@@ -161,13 +161,13 @@ pub fn ordered_parameter_assignment(s: Span) -> IResult<Span, OrderedParameterAs
 pub fn named_parameter_assignment(s: Span) -> IResult<Span, NamedParameterAssignment> {
     let (s, a) = symbol(".")(s)?;
     let (s, b) = parameter_identifier(s)?;
-    let (s, c) = paren2(opt(param_expression))(s)?;
+    let (s, c) = paren(opt(param_expression))(s)?;
     Ok((s, NamedParameterAssignment { nodes: (a, b, c) }))
 }
 
 pub fn hierarchical_instance(s: Span) -> IResult<Span, HierarchicalInstance> {
     let (s, a) = name_of_instance(s)?;
-    let (s, b) = paren2(opt(list_of_port_connections))(s)?;
+    let (s, b) = paren(opt(list_of_port_connections))(s)?;
     Ok((s, HierarchicalInstance { nodes: (a, b) }))
 }
 
@@ -217,7 +217,7 @@ pub fn named_port_connection_identifier(s: Span) -> IResult<Span, NamedPortConne
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = symbol(".")(s)?;
     let (s, c) = port_identifier(s)?;
-    let (s, d) = opt(paren2(opt(expression)))(s)?;
+    let (s, d) = opt(paren(opt(expression)))(s)?;
     Ok((
         s,
         NamedPortConnection::Identifier(NamedPortConnectionIdentifier {

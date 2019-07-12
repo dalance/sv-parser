@@ -63,7 +63,7 @@ pub fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol<'
     move |s: Span<'a>| map(ws(tag(t.clone())), |x| Symbol { nodes: x })(s)
 }
 
-pub fn paren2<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Paren<O>>
+pub fn paren<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Paren<O>>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
@@ -75,7 +75,7 @@ where
     }
 }
 
-pub fn bracket2<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Bracket<O>>
+pub fn bracket<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Bracket<O>>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
@@ -87,7 +87,7 @@ where
     }
 }
 
-pub fn brace2<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Brace<O>>
+pub fn brace<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Brace<O>>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
@@ -99,7 +99,7 @@ where
     }
 }
 
-pub fn apostrophe_brace2<'a, O, F>(
+pub fn apostrophe_brace<'a, O, F>(
     f: F,
 ) -> impl Fn(Span<'a>) -> IResult<Span<'a>, ApostropheBrace<O>>
 where
@@ -132,54 +132,6 @@ where
             }
         }
         Ok((s, List { nodes: (a, ret) }))
-    }
-}
-
-pub fn paren<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
-where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
-{
-    move |s: Span<'a>| {
-        let (s, _) = symbol("(")(s)?;
-        let (s, b) = f(s)?;
-        let (s, _) = symbol(")")(s)?;
-        Ok((s, b))
-    }
-}
-
-pub fn bracket<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
-where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
-{
-    move |s: Span<'a>| {
-        let (s, _) = symbol("[")(s)?;
-        let (s, b) = f(s)?;
-        let (s, _) = symbol("]")(s)?;
-        Ok((s, b))
-    }
-}
-
-pub fn brace<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
-where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
-{
-    move |s: Span<'a>| {
-        let (s, _) = symbol("{")(s)?;
-        let (s, x) = f(s)?;
-        let (s, _) = symbol("}")(s)?;
-        Ok((s, x))
-    }
-}
-
-pub fn apostrophe_brace<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
-where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
-{
-    move |s: Span<'a>| {
-        let (s, _) = symbol("'{")(s)?;
-        let (s, x) = f(s)?;
-        let (s, _) = symbol("}")(s)?;
-        Ok((s, x))
     }
 }
 

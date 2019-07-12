@@ -230,7 +230,7 @@ pub fn delay_or_event_control(s: Span) -> IResult<Span, DelayOrEventControl> {
 
 pub fn delay_or_event_control_repeat(s: Span) -> IResult<Span, DelayOrEventControl> {
     let (s, a) = symbol("repeat")(s)?;
-    let (s, b) = paren2(expression)(s)?;
+    let (s, b) = paren(expression)(s)?;
     let (s, c) = event_control(s)?;
     Ok((
         s,
@@ -250,7 +250,7 @@ pub fn delay_control_delay(s: Span) -> IResult<Span, DelayControl> {
 
 pub fn delay_control_mintypmax(s: Span) -> IResult<Span, DelayControl> {
     let (s, a) = symbol("#")(s)?;
-    let (s, b) = paren2(mintypmax_expression)(s)?;
+    let (s, b) = paren(mintypmax_expression)(s)?;
     Ok((
         s,
         DelayControl::Mintypmax(DelayControlMintypmax { nodes: (a, b) }),
@@ -278,7 +278,7 @@ pub fn event_control_event_identifier(s: Span) -> IResult<Span, EventControl> {
 
 pub fn event_control_event_expression(s: Span) -> IResult<Span, EventControl> {
     let (s, a) = symbol("@")(s)?;
-    let (s, b) = paren2(event_expression)(s)?;
+    let (s, b) = paren(event_expression)(s)?;
     Ok((
         s,
         EventControl::EventExpression(EventControlEventExpression { nodes: (a, b) }),
@@ -295,7 +295,7 @@ pub fn event_control_asterisk(s: Span) -> IResult<Span, EventControl> {
 
 pub fn event_control_paren_asterisk(s: Span) -> IResult<Span, EventControl> {
     let (s, a) = symbol("@")(s)?;
-    let (s, b) = paren2(symbol("*"))(s)?;
+    let (s, b) = paren(symbol("*"))(s)?;
     Ok((
         s,
         EventControl::ParenAsterisk(EventControlParenAsterisk { nodes: (a, b) }),
@@ -361,7 +361,7 @@ pub fn event_expression_comma(s: Span) -> IResult<Span, EventExpression> {
 }
 
 pub fn event_expression_paren(s: Span) -> IResult<Span, EventExpression> {
-    let (s, a) = paren2(event_expression)(s)?;
+    let (s, a) = paren(event_expression)(s)?;
     Ok((
         s,
         EventExpression::Paren(Box::new(EventExpressionParen { nodes: (a,) })),
@@ -422,7 +422,7 @@ pub fn wait_statement(s: Span) -> IResult<Span, WaitStatement> {
 
 pub fn wait_statement_wait(s: Span) -> IResult<Span, WaitStatement> {
     let (s, a) = symbol("wait")(s)?;
-    let (s, b) = paren2(expression)(s)?;
+    let (s, b) = paren(expression)(s)?;
     let (s, c) = statement_or_null(s)?;
     Ok((
         s,
@@ -442,7 +442,7 @@ pub fn wait_statement_fork(s: Span) -> IResult<Span, WaitStatement> {
 
 pub fn wait_statement_order(s: Span) -> IResult<Span, WaitStatement> {
     let (s, a) = symbol("wait_order")(s)?;
-    let (s, b) = paren2(list(symbol(","), hierarchical_identifier))(s)?;
+    let (s, b) = paren(list(symbol(","), hierarchical_identifier))(s)?;
     let (s, c) = action_block(s)?;
     Ok((
         s,

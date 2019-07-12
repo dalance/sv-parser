@@ -479,7 +479,7 @@ pub fn expression_unary(s: Span) -> IResult<Span, Expression> {
 }
 
 pub fn expression_operator_assignment(s: Span) -> IResult<Span, Expression> {
-    let (s, a) = paren2(operator_assignment)(s)?;
+    let (s, a) = paren(operator_assignment)(s)?;
     Ok((
         s,
         Expression::OperatorAssignment(Box::new(ExpressionOperatorAssignment { nodes: (a,) })),
@@ -509,7 +509,7 @@ pub fn tagged_union_expression(s: Span) -> IResult<Span, TaggedUnionExpression> 
 pub fn inside_expression(s: Span) -> IResult<Span, InsideExpression> {
     let (s, a) = expression(s)?;
     let (s, b) = symbol("inside")(s)?;
-    let (s, c) = brace2(open_range_list)(s)?;
+    let (s, c) = brace(open_range_list)(s)?;
     Ok((s, InsideExpression { nodes: (a, b, c) }))
 }
 
@@ -521,7 +521,7 @@ pub fn value_range(s: Span) -> IResult<Span, ValueRange> {
 }
 
 pub fn value_range_binary(s: Span) -> IResult<Span, ValueRange> {
-    let (s, a) = bracket2(triple(expression, symbol(":"), expression))(s)?;
+    let (s, a) = bracket(triple(expression, symbol(":"), expression))(s)?;
     Ok((s, ValueRange::Binary(ValueRangeBinary { nodes: (a,) })))
 }
 

@@ -259,7 +259,7 @@ pub fn clocking_event_identifier(s: Span) -> IResult<Span, ClockingEvent> {
 
 pub fn clocking_event_expression(s: Span) -> IResult<Span, ClockingEvent> {
     let (s, a) = symbol("@")(s)?;
-    let (s, b) = paren2(event_expression)(s)?;
+    let (s, b) = paren(event_expression)(s)?;
     Ok((
         s,
         ClockingEvent::Expression(ClockingEventExpression { nodes: (a, b) }),
@@ -446,7 +446,7 @@ pub fn cycle_delay_identifier(s: Span) -> IResult<Span, CycleDelay> {
 
 pub fn cycle_delay_expression(s: Span) -> IResult<Span, CycleDelay> {
     let (s, a) = symbol("##")(s)?;
-    let (s, b) = paren2(expression)(s)?;
+    let (s, b) = paren(expression)(s)?;
     Ok((
         s,
         CycleDelay::Expression(CycleDelayExpression { nodes: (a, b) }),

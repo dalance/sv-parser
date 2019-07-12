@@ -552,7 +552,7 @@ pub fn module_declaration_wildcard(s: Span) -> IResult<Span, ModuleDeclaration> 
     let (s, b) = module_keyword(s)?;
     let (s, c) = opt(lifetime)(s)?;
     let (s, d) = module_identifier(s)?;
-    let (s, e) = paren2(symbol(".*"))(s)?;
+    let (s, e) = paren(symbol(".*"))(s)?;
     let (s, f) = symbol(";")(s)?;
     let (s, g) = opt(timeunits_declaration)(s)?;
     let (s, h) = many0(module_item)(s)?;
@@ -634,7 +634,7 @@ pub fn interface_declaration_wildcard(s: Span) -> IResult<Span, InterfaceDeclara
     let (s, b) = symbol("interface")(s)?;
     let (s, c) = opt(lifetime)(s)?;
     let (s, d) = interface_identifier(s)?;
-    let (s, e) = paren2(symbol(".*"))(s)?;
+    let (s, e) = paren(symbol(".*"))(s)?;
     let (s, f) = symbol(";")(s)?;
     let (s, g) = opt(timeunits_declaration)(s)?;
     let (s, h) = many0(interface_item)(s)?;
@@ -742,7 +742,7 @@ pub fn program_declaration_wildcard(s: Span) -> IResult<Span, ProgramDeclaration
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = symbol("program")(s)?;
     let (s, c) = program_identifier(s)?;
-    let (s, d) = paren2(symbol(".*"))(s)?;
+    let (s, d) = paren(symbol(".*"))(s)?;
     let (s, e) = symbol(";")(s)?;
     let (s, f) = opt(timeunits_declaration)(s)?;
     let (s, g) = many0(program_item)(s)?;
@@ -811,7 +811,7 @@ pub fn program_ansi_header(s: Span) -> IResult<Span, ProgramAnsiHeader> {
 pub fn checker_declaration(s: Span) -> IResult<Span, CheckerDeclaration> {
     let (s, a) = symbol("checker")(s)?;
     let (s, b) = checker_identifier(s)?;
-    let (s, c) = opt(paren2(opt(checker_port_list)))(s)?;
+    let (s, c) = opt(paren(opt(checker_port_list)))(s)?;
     let (s, d) = symbol(";")(s)?;
     let (s, e) = many0(pair(many0(attribute_instance), checker_or_generate_item))(s)?;
     let (s, f) = symbol("endchecker")(s)?;
@@ -833,7 +833,7 @@ pub fn class_declaration(s: Span) -> IResult<Span, ClassDeclaration> {
     let (s, f) = opt(triple(
         symbol("extends"),
         class_type,
-        opt(paren2(list_of_arguments)),
+        opt(paren(list_of_arguments)),
     ))(s)?;
     let (s, g) = opt(pair(
         symbol("implements"),

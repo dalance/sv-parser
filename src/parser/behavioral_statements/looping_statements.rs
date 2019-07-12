@@ -142,7 +142,7 @@ pub fn loop_statement_forever(s: Span) -> IResult<Span, LoopStatement> {
 
 pub fn loop_statement_repeat(s: Span) -> IResult<Span, LoopStatement> {
     let (s, a) = symbol("repeat")(s)?;
-    let (s, b) = paren2(expression)(s)?;
+    let (s, b) = paren(expression)(s)?;
     let (s, c) = statement_or_null(s)?;
     Ok((
         s,
@@ -152,7 +152,7 @@ pub fn loop_statement_repeat(s: Span) -> IResult<Span, LoopStatement> {
 
 pub fn loop_statement_while(s: Span) -> IResult<Span, LoopStatement> {
     let (s, a) = symbol("while")(s)?;
-    let (s, b) = paren2(expression)(s)?;
+    let (s, b) = paren(expression)(s)?;
     let (s, c) = statement_or_null(s)?;
     Ok((
         s,
@@ -162,7 +162,7 @@ pub fn loop_statement_while(s: Span) -> IResult<Span, LoopStatement> {
 
 pub fn loop_statement_for(s: Span) -> IResult<Span, LoopStatement> {
     let (s, a) = symbol("for")(s)?;
-    let (s, b) = paren2(tuple((
+    let (s, b) = paren(tuple((
         opt(for_initialization),
         symbol(":"),
         opt(expression),
@@ -177,7 +177,7 @@ pub fn loop_statement_do_while(s: Span) -> IResult<Span, LoopStatement> {
     let (s, a) = symbol("do")(s)?;
     let (s, b) = statement_or_null(s)?;
     let (s, c) = symbol("while")(s)?;
-    let (s, d) = paren2(expression)(s)?;
+    let (s, d) = paren(expression)(s)?;
     let (s, e) = symbol(";")(s)?;
     Ok((
         s,
@@ -189,9 +189,9 @@ pub fn loop_statement_do_while(s: Span) -> IResult<Span, LoopStatement> {
 
 pub fn loop_statement_foreach(s: Span) -> IResult<Span, LoopStatement> {
     let (s, a) = symbol("foreach")(s)?;
-    let (s, b) = paren2(pair(
+    let (s, b) = paren(pair(
         ps_or_hierarchical_array_identifier,
-        bracket2(loop_variables),
+        bracket(loop_variables),
     ))(s)?;
     let (s, c) = statement(s)?;
     Ok((

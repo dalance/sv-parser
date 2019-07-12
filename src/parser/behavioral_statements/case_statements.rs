@@ -155,7 +155,7 @@ pub fn case_statement(s: Span) -> IResult<Span, CaseStatement> {
 pub fn case_statement_normal(s: Span) -> IResult<Span, CaseStatement> {
     let (s, a) = opt(unique_priority)(s)?;
     let (s, b) = case_keyword(s)?;
-    let (s, c) = paren2(case_expression)(s)?;
+    let (s, c) = paren(case_expression)(s)?;
     let (s, d) = case_item(s)?;
     let (s, e) = many0(case_item)(s)?;
     let (s, f) = symbol("endcase")(s)?;
@@ -170,7 +170,7 @@ pub fn case_statement_normal(s: Span) -> IResult<Span, CaseStatement> {
 pub fn case_statement_matches(s: Span) -> IResult<Span, CaseStatement> {
     let (s, a) = opt(unique_priority)(s)?;
     let (s, b) = case_keyword(s)?;
-    let (s, c) = paren2(case_expression)(s)?;
+    let (s, c) = paren(case_expression)(s)?;
     let (s, d) = symbol("matches")(s)?;
     let (s, e) = case_pattern_item(s)?;
     let (s, f) = many0(case_pattern_item)(s)?;
@@ -186,7 +186,7 @@ pub fn case_statement_matches(s: Span) -> IResult<Span, CaseStatement> {
 pub fn case_statement_inside(s: Span) -> IResult<Span, CaseStatement> {
     let (s, a) = opt(unique_priority)(s)?;
     let (s, b) = symbol("case")(s)?;
-    let (s, c) = paren2(case_expression)(s)?;
+    let (s, c) = paren(case_expression)(s)?;
     let (s, d) = symbol("inside")(s)?;
     let (s, e) = case_inside_item(s)?;
     let (s, f) = many0(case_inside_item)(s)?;

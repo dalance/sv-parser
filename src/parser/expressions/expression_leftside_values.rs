@@ -94,7 +94,7 @@ pub fn net_lvalue_pattern(s: Span) -> IResult<Span, NetLvalue> {
 }
 
 pub fn net_lvalue_lvalue(s: Span) -> IResult<Span, NetLvalue> {
-    let (s, a) = brace2(list(symbol(","), net_lvalue))(s)?;
+    let (s, a) = brace(list(symbol(","), net_lvalue))(s)?;
     Ok((
         s,
         NetLvalue::Lvalue(Box::new(NetLvalueLvalue { nodes: (a,) })),
@@ -132,7 +132,7 @@ pub fn variable_lvalue_pattern(s: Span) -> IResult<Span, VariableLvalue> {
 }
 
 pub fn variable_lvalue_lvalue(s: Span) -> IResult<Span, VariableLvalue> {
-    let (s, a) = brace2(list(symbol(","), variable_lvalue))(s)?;
+    let (s, a) = brace(list(symbol(","), variable_lvalue))(s)?;
     Ok((
         s,
         VariableLvalue::Lvalue(Box::new(VariableLvalueLvalue { nodes: (a,) })),

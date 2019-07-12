@@ -1016,7 +1016,7 @@ pub fn ps_parameter_identifier_scope(s: Span) -> IResult<Span, PsParameterIdenti
 pub fn ps_parameter_identifier_generate(s: Span) -> IResult<Span, PsParameterIdentifier> {
     let (s, a) = many0(triple(
         generate_block_identifier,
-        opt(bracket2(constant_expression)),
+        opt(bracket(constant_expression)),
         symbol("."),
     ))(s)?;
     let (s, b) = parameter_identifier(s)?;

@@ -53,12 +53,12 @@ pub struct CondPattern<'a> {
 pub fn conditional_statement(s: Span) -> IResult<Span, ConditionalStatement> {
     let (s, a) = opt(unique_priority)(s)?;
     let (s, b) = symbol("if")(s)?;
-    let (s, c) = paren2(cond_predicate)(s)?;
+    let (s, c) = paren(cond_predicate)(s)?;
     let (s, d) = statement_or_null(s)?;
     let (s, e) = many0(tuple((
         symbol("else"),
         symbol("if"),
-        paren2(cond_predicate),
+        paren(cond_predicate),
         statement_or_null,
     )))(s)?;
     let (s, f) = opt(pair(symbol("else"), statement_or_null))(s)?;

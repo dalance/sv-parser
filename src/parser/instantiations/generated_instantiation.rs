@@ -153,7 +153,7 @@ pub fn generate_region(s: Span) -> IResult<Span, GenerateRegion> {
 
 pub fn loop_generate_construct(s: Span) -> IResult<Span, LoopGenerateConstruct> {
     let (s, a) = symbol("for")(s)?;
-    let (s, b) = paren2(tuple((
+    let (s, b) = paren(tuple((
         generate_initialization,
         symbol(";"),
         genvar_expression,
@@ -226,7 +226,7 @@ pub fn conditional_generate_construct(s: Span) -> IResult<Span, ConditionalGener
 
 pub fn if_generate_construct(s: Span) -> IResult<Span, IfGenerateConstruct> {
     let (s, a) = symbol("if")(s)?;
-    let (s, b) = paren2(constant_expression)(s)?;
+    let (s, b) = paren(constant_expression)(s)?;
     let (s, c) = generate_block(s)?;
     let (s, d) = opt(pair(symbol("else"), generate_block))(s)?;
     Ok((
@@ -239,7 +239,7 @@ pub fn if_generate_construct(s: Span) -> IResult<Span, IfGenerateConstruct> {
 
 pub fn case_generate_construct(s: Span) -> IResult<Span, CaseGenerateConstruct> {
     let (s, a) = symbol("case")(s)?;
-    let (s, b) = paren2(constant_expression)(s)?;
+    let (s, b) = paren(constant_expression)(s)?;
     let (s, c) = many1(case_generate_item)(s)?;
     let (s, d) = symbol("endcase")(s)?;
     Ok((

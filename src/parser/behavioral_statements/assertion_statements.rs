@@ -159,21 +159,21 @@ pub fn simple_immediate_assertion_statement(
 
 pub fn simple_immediate_assert_statement(s: Span) -> IResult<Span, SimpleImmediateAssertStatement> {
     let (s, a) = symbol("assert")(s)?;
-    let (s, b) = paren2(expression)(s)?;
+    let (s, b) = paren(expression)(s)?;
     let (s, c) = action_block(s)?;
     Ok((s, SimpleImmediateAssertStatement { nodes: (a, b, c) }))
 }
 
 pub fn simple_immediate_assume_statement(s: Span) -> IResult<Span, SimpleImmediateAssumeStatement> {
     let (s, a) = symbol("assume")(s)?;
-    let (s, b) = paren2(expression)(s)?;
+    let (s, b) = paren(expression)(s)?;
     let (s, c) = action_block(s)?;
     Ok((s, SimpleImmediateAssumeStatement { nodes: (a, b, c) }))
 }
 
 pub fn simple_immediate_cover_statement(s: Span) -> IResult<Span, SimpleImmediateCoverStatement> {
     let (s, a) = symbol("cover")(s)?;
-    let (s, b) = paren2(expression)(s)?;
+    let (s, b) = paren(expression)(s)?;
     let (s, c) = statement_or_null(s)?;
     Ok((s, SimpleImmediateCoverStatement { nodes: (a, b, c) }))
 }
@@ -199,7 +199,7 @@ pub fn deferred_immediate_assert_statement(
 ) -> IResult<Span, DeferredImmediateAssertStatement> {
     let (s, a) = symbol("assert")(s)?;
     let (s, b) = assert_timing(s)?;
-    let (s, c) = paren2(expression)(s)?;
+    let (s, c) = paren(expression)(s)?;
     let (s, d) = action_block(s)?;
     Ok((
         s,
@@ -214,7 +214,7 @@ pub fn deferred_immediate_assume_statement(
 ) -> IResult<Span, DeferredImmediateAssumeStatement> {
     let (s, a) = symbol("assume")(s)?;
     let (s, b) = assert_timing(s)?;
-    let (s, c) = paren2(expression)(s)?;
+    let (s, c) = paren(expression)(s)?;
     let (s, d) = action_block(s)?;
     Ok((
         s,
@@ -229,7 +229,7 @@ pub fn deferred_immediate_cover_statement(
 ) -> IResult<Span, DeferredImmediateCoverStatement> {
     let (s, a) = symbol("cover")(s)?;
     let (s, b) = assert_timing(s)?;
-    let (s, c) = paren2(expression)(s)?;
+    let (s, c) = paren(expression)(s)?;
     let (s, d) = statement_or_null(s)?;
     Ok((
         s,

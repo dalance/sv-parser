@@ -165,12 +165,12 @@ pub fn pattern_tagged(s: Span) -> IResult<Span, Pattern> {
 }
 
 pub fn pattern_list(s: Span) -> IResult<Span, Pattern> {
-    let (s, a) = apostrophe_brace2(list(symbol(","), pattern))(s)?;
+    let (s, a) = apostrophe_brace(list(symbol(","), pattern))(s)?;
     Ok((s, Pattern::List(Box::new(PatternList { nodes: (a,) }))))
 }
 
 pub fn pattern_identifier_list(s: Span) -> IResult<Span, Pattern> {
-    let (s, a) = apostrophe_brace2(list(
+    let (s, a) = apostrophe_brace(list(
         symbol(","),
         triple(member_identifier, symbol(":"), pattern),
     ))(s)?;
@@ -190,7 +190,7 @@ pub fn assignment_pattern(s: Span) -> IResult<Span, AssignmentPattern> {
 }
 
 pub fn assignment_pattern_list(s: Span) -> IResult<Span, AssignmentPattern> {
-    let (s, a) = apostrophe_brace2(list(symbol(","), expression))(s)?;
+    let (s, a) = apostrophe_brace(list(symbol(","), expression))(s)?;
     Ok((
         s,
         AssignmentPattern::List(AssignmentPatternList { nodes: (a,) }),
@@ -198,7 +198,7 @@ pub fn assignment_pattern_list(s: Span) -> IResult<Span, AssignmentPattern> {
 }
 
 pub fn assignment_pattern_structure(s: Span) -> IResult<Span, AssignmentPattern> {
-    let (s, a) = apostrophe_brace2(list(
+    let (s, a) = apostrophe_brace(list(
         symbol(","),
         triple(structure_pattern_key, symbol(":"), expression),
     ))(s)?;
@@ -209,7 +209,7 @@ pub fn assignment_pattern_structure(s: Span) -> IResult<Span, AssignmentPattern>
 }
 
 pub fn assignment_pattern_array(s: Span) -> IResult<Span, AssignmentPattern> {
-    let (s, a) = apostrophe_brace2(list(
+    let (s, a) = apostrophe_brace(list(
         symbol(","),
         triple(array_pattern_key, symbol(":"), expression),
     ))(s)?;
@@ -220,9 +220,9 @@ pub fn assignment_pattern_array(s: Span) -> IResult<Span, AssignmentPattern> {
 }
 
 pub fn assignment_pattern_repeat(s: Span) -> IResult<Span, AssignmentPattern> {
-    let (s, a) = apostrophe_brace2(pair(
+    let (s, a) = apostrophe_brace(pair(
         constant_expression,
-        brace2(list(symbol(","), expression)),
+        brace(list(symbol(","), expression)),
     ))(s)?;
     Ok((
         s,
@@ -292,14 +292,14 @@ pub fn constant_assignment_pattern_expression(
 }
 
 pub fn assignment_pattern_net_lvalue(s: Span) -> IResult<Span, AssignmentPatternNetLvalue> {
-    let (s, a) = apostrophe_brace2(list(symbol(","), net_lvalue))(s)?;
+    let (s, a) = apostrophe_brace(list(symbol(","), net_lvalue))(s)?;
     Ok((s, AssignmentPatternNetLvalue { nodes: (a,) }))
 }
 
 pub fn assignment_pattern_variable_lvalue(
     s: Span,
 ) -> IResult<Span, AssignmentPatternVariableLvalue> {
-    let (s, a) = apostrophe_brace2(list(symbol(","), variable_lvalue))(s)?;
+    let (s, a) = apostrophe_brace(list(symbol(","), variable_lvalue))(s)?;
     Ok((s, AssignmentPatternVariableLvalue { nodes: (a,) }))
 }
 

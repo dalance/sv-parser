@@ -151,7 +151,7 @@ pub struct RsCaseItemDefault<'a> {
 
 pub fn randsequence_statement(s: Span) -> IResult<Span, RandsequenceStatement> {
     let (s, a) = symbol("randsequence")(s)?;
-    let (s, b) = paren2(opt(production_identifier))(s)?;
+    let (s, b) = paren(opt(production_identifier))(s)?;
     let (s, c) = production(s)?;
     let (s, d) = many0(production)(s)?;
     let (s, e) = symbol("endsequence")(s)?;
@@ -166,7 +166,7 @@ pub fn randsequence_statement(s: Span) -> IResult<Span, RandsequenceStatement> {
 pub fn production(s: Span) -> IResult<Span, Production> {
     let (s, a) = opt(data_type_or_void)(s)?;
     let (s, b) = production_identifier(s)?;
-    let (s, c) = opt(paren2(tf_port_list))(s)?;
+    let (s, c) = opt(paren(tf_port_list))(s)?;
     let (s, d) = symbol(":")(s)?;
     let (s, e) = list(symbol("|"), rs_rule)(s)?;
     let (s, f) = symbol(";")(s)?;
@@ -204,7 +204,7 @@ pub fn rs_production_list_prod(s: Span) -> IResult<Span, RsProductionList> {
 pub fn rs_production_list_join(s: Span) -> IResult<Span, RsProductionList> {
     let (s, a) = symbol("rand")(s)?;
     let (s, b) = symbol("join")(s)?;
-    let (s, c) = opt(paren2(expression))(s)?;
+    let (s, c) = opt(paren(expression))(s)?;
     let (s, d) = production_item(s)?;
     let (s, e) = production_item(s)?;
     let (s, f) = many0(production_item)(s)?;
@@ -225,7 +225,7 @@ pub fn weight_specification(s: Span) -> IResult<Span, WeightSpecification> {
 }
 
 pub fn weight_specification_expression(s: Span) -> IResult<Span, WeightSpecification> {
-    let (s, a) = paren2(expression)(s)?;
+    let (s, a) = paren(expression)(s)?;
     Ok((
         s,
         WeightSpecification::Expression(WeightSpecificationExpression { nodes: (a,) }),
@@ -233,7 +233,7 @@ pub fn weight_specification_expression(s: Span) -> IResult<Span, WeightSpecifica
 }
 
 pub fn rs_code_block(s: Span) -> IResult<Span, RsCodeBlock> {
-    let (s, a) = brace2(pair(many0(data_declaration), many0(statement_or_null)))(s)?;
+    let (s, a) = brace(pair(many0(data_declaration), many0(statement_or_null)))(s)?;
     Ok((s, RsCodeBlock { nodes: (a,) }))
 }
 
@@ -249,13 +249,13 @@ pub fn rs_prod(s: Span) -> IResult<Span, RsProd> {
 
 pub fn production_item(s: Span) -> IResult<Span, ProductionItem> {
     let (s, a) = production_identifier(s)?;
-    let (s, b) = opt(paren2(list_of_arguments))(s)?;
+    let (s, b) = opt(paren(list_of_arguments))(s)?;
     Ok((s, ProductionItem { nodes: (a, b) }))
 }
 
 pub fn rs_if_else(s: Span) -> IResult<Span, RsIfElse> {
     let (s, a) = symbol("if")(s)?;
-    let (s, b) = paren2(expression)(s)?;
+    let (s, b) = paren(expression)(s)?;
     let (s, c) = production_item(s)?;
     let (s, d) = opt(pair(symbol("else"), production_item))(s)?;
     Ok((
@@ -268,14 +268,14 @@ pub fn rs_if_else(s: Span) -> IResult<Span, RsIfElse> {
 
 pub fn rs_repeat(s: Span) -> IResult<Span, RsRepeat> {
     let (s, a) = symbol("repeat")(s)?;
-    let (s, b) = paren2(expression)(s)?;
+    let (s, b) = paren(expression)(s)?;
     let (s, c) = production_item(s)?;
     Ok((s, RsRepeat { nodes: (a, b, c) }))
 }
 
 pub fn rs_case(s: Span) -> IResult<Span, RsCase> {
     let (s, a) = symbol("case")(s)?;
-    let (s, b) = paren2(case_expression)(s)?;
+    let (s, b) = paren(case_expression)(s)?;
     let (s, c) = rs_case_item(s)?;
     let (s, d) = many0(rs_case_item)(s)?;
     let (s, e) = symbol("endcase")(s)?;

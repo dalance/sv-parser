@@ -7,8 +7,8 @@ A parser library for System Verilog.
 | --------------------------------- | ------------------------------------- | ---- | ------ | ---- |
 | source_text                       | library_source_text                   | x    | x      | x    |
 | source_text                       | system_verilog_source_text            | x    | x      |      |
-| source_text                       | module_parameters_and_ports           |      |        |      |
-| source_text                       | module_items                          |      |        |      |
+| source_text                       | module_parameters_and_ports           | x    | x      |      |
+| source_text                       | module_items                          | x    | x      |      |
 | source_text                       | configuration_source_text             |      |        |      |
 | source_text                       | interface_items                       |      |        |      |
 | source_text                       | program_items                         |      |        |      |

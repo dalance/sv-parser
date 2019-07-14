@@ -72,14 +72,14 @@ pub struct RefDeclaration<'a> {
 
 // -----------------------------------------------------------------------------
 
-pub fn inout_declaratrion(s: Span) -> IResult<Span, InoutDeclaration> {
+pub fn inout_declaration(s: Span) -> IResult<Span, InoutDeclaration> {
     let (s, a) = symbol("inout")(s)?;
     let (s, b) = net_port_type(s)?;
     let (s, c) = list_of_port_identifiers(s)?;
     Ok((s, InoutDeclaration { nodes: (a, b, c) }))
 }
 
-pub fn input_declaratrion(s: Span) -> IResult<Span, InputDeclaration> {
+pub fn input_declaration(s: Span) -> IResult<Span, InputDeclaration> {
     alt((input_declaration_net, input_declaration_variable))(s)
 }
 
@@ -103,7 +103,7 @@ pub fn input_declaration_variable(s: Span) -> IResult<Span, InputDeclaration> {
     ))
 }
 
-pub fn output_declaratrion(s: Span) -> IResult<Span, OutputDeclaration> {
+pub fn output_declaration(s: Span) -> IResult<Span, OutputDeclaration> {
     alt((output_declaration_net, output_declaration_variable))(s)
 }
 

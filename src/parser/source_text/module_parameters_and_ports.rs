@@ -1,9 +1,10 @@
 use crate::ast::*;
 use crate::parser::*;
-//use nom::branch::*;
-//use nom::combinator::*;
-use nom::error::*;
-use nom::{Err, IResult};
+use nom::branch::*;
+use nom::combinator::*;
+use nom::multi::*;
+use nom::sequence::*;
+use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
@@ -11,20 +12,29 @@ use nom::{Err, IResult};
 pub enum ParameterPortList<'a> {
     Assignment(ParameterPortListAssignment<'a>),
     Declaration(ParameterPortListDeclaration<'a>),
-    Empty(Symbol<'a>),
+    Empty((Symbol<'a>, Symbol<'a>, Symbol<'a>)),
 }
 
 #[derive(Debug, Node)]
 pub struct ParameterPortListAssignment<'a> {
     pub nodes: (
-        ListOfParamAssignments<'a>,
-        Vec<ParameterPortDeclaration<'a>>,
+        Symbol<'a>,
+        Paren<
+            'a,
+            (
+                ListOfParamAssignments<'a>,
+                Vec<(Symbol<'a>, ParameterPortDeclaration<'a>)>,
+            ),
+        >,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct ParameterPortListDeclaration<'a> {
-    pub nodes: (Vec<ParameterPortDeclaration<'a>>,),
+    pub nodes: (
+        Symbol<'a>,
+        Paren<'a, List<Symbol<'a>, ParameterPortDeclaration<'a>>>,
+    ),
 }
 
 #[derive(Debug, Node)]
@@ -42,17 +52,19 @@ pub struct ParameterPortDeclarationParamList<'a> {
 
 #[derive(Debug, Node)]
 pub struct ParameterPortDeclarationTypeList<'a> {
-    pub nodes: (ListOfTypeAssignments<'a>,),
+    pub nodes: (Symbol<'a>, ListOfTypeAssignments<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ListOfPorts<'a> {
-    pub nodes: (Vec<Port<'a>>,),
+    pub nodes: (Paren<'a, List<Symbol<'a>, Port<'a>>>,),
 }
 
 #[derive(Debug, Node)]
 pub struct ListOfPortDeclarations<'a> {
-    pub nodes: (Option<Vec<(Vec<AttributeInstance<'a>>, AnsiPortDeclaration<'a>)>>,),
+    pub nodes: (
+        Paren<'a, Option<List<Symbol<'a>, (Vec<AttributeInstance<'a>>, AnsiPortDeclaration<'a>)>>>,
+    ),
 }
 
 #[derive(Debug, Node)]
@@ -102,18 +114,22 @@ pub struct PortNonNamed<'a> {
 
 #[derive(Debug, Node)]
 pub struct PortNamed<'a> {
-    pub nodes: (PortIdentifier<'a>, Option<PortExpression<'a>>),
+    pub nodes: (
+        Symbol<'a>,
+        PortIdentifier<'a>,
+        Paren<'a, Option<PortExpression<'a>>>,
+    ),
 }
 
 #[derive(Debug, Node)]
 pub enum PortExpression<'a> {
     PortReference(PortReference<'a>),
-    Bracket(PortExpressionBracket<'a>),
+    Brace(PortExpressionBrace<'a>),
 }
 
 #[derive(Debug, Node)]
-pub struct PortExpressionBracket<'a> {
-    pub nodes: (Vec<PortReference<'a>>,),
+pub struct PortExpressionBrace<'a> {
+    pub nodes: (Brace<'a, List<Symbol<'a>, PortReference<'a>>>,),
 }
 
 #[derive(Debug, Node)]
@@ -147,12 +163,15 @@ pub enum InterfacePortHeader<'a> {
 
 #[derive(Debug, Node)]
 pub struct InterfacePortHeaderIdentifier<'a> {
-    pub nodes: (InterfaceIdentifier<'a>, Option<ModportIdentifier<'a>>),
+    pub nodes: (
+        InterfaceIdentifier<'a>,
+        Option<(Symbol<'a>, ModportIdentifier<'a>)>,
+    ),
 }
 
 #[derive(Debug, Node)]
 pub struct InterfacePortHeaderInterface<'a> {
-    pub nodes: (Option<ModportIdentifier<'a>>,),
+    pub nodes: (Symbol<'a>, Option<(Symbol<'a>, ModportIdentifier<'a>)>),
 }
 
 #[derive(Debug, Node)]
@@ -173,7 +192,7 @@ pub struct AnsiPortDeclarationNet<'a> {
         Option<NetPortHeaderOrInterfacePortHeader<'a>>,
         PortIdentifier<'a>,
         Vec<UnpackedDimension<'a>>,
-        Option<ConstantExpression<'a>>,
+        Option<(Symbol<'a>, ConstantExpression<'a>)>,
     ),
 }
 
@@ -183,7 +202,7 @@ pub struct AnsiPortDeclarationVariable<'a> {
         Option<VariablePortHeader<'a>>,
         PortIdentifier<'a>,
         Vec<VariableDimension<'a>>,
-        Option<ConstantExpression<'a>>,
+        Option<(Symbol<'a>, ConstantExpression<'a>)>,
     ),
 }
 
@@ -191,61 +210,288 @@ pub struct AnsiPortDeclarationVariable<'a> {
 pub struct AnsiPortDeclarationParen<'a> {
     pub nodes: (
         Option<PortDirection<'a>>,
+        Symbol<'a>,
         PortIdentifier<'a>,
-        Option<Expression<'a>>,
+        Paren<'a, Option<Expression<'a>>>,
     ),
 }
 
 // -----------------------------------------------------------------------------
 
 pub fn parameter_port_list(s: Span) -> IResult<Span, ParameterPortList> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        parameter_port_list_assignment,
+        parameter_port_list_declaration,
+        parameter_port_list_empty,
+    ))(s)
+}
+
+pub fn parameter_port_list_assignment(s: Span) -> IResult<Span, ParameterPortList> {
+    let (s, a) = symbol("#")(s)?;
+    let (s, b) = paren(pair(
+        list_of_param_assignments,
+        many0(pair(symbol(","), parameter_port_declaration)),
+    ))(s)?;
+    Ok((
+        s,
+        ParameterPortList::Assignment(ParameterPortListAssignment { nodes: (a, b) }),
+    ))
+}
+
+pub fn parameter_port_list_declaration(s: Span) -> IResult<Span, ParameterPortList> {
+    let (s, a) = symbol("#")(s)?;
+    let (s, b) = paren(list(symbol(","), parameter_port_declaration))(s)?;
+    Ok((
+        s,
+        ParameterPortList::Declaration(ParameterPortListDeclaration { nodes: (a, b) }),
+    ))
+}
+
+pub fn parameter_port_list_empty(s: Span) -> IResult<Span, ParameterPortList> {
+    let (s, a) = symbol("#")(s)?;
+    let (s, b) = symbol("(")(s)?;
+    let (s, c) = symbol(")")(s)?;
+    Ok((s, ParameterPortList::Empty((a, b, c))))
 }
 
 pub fn parameter_port_declaration(s: Span) -> IResult<Span, ParameterPortDeclaration> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(parameter_declaration, |x| {
+            ParameterPortDeclaration::ParameterDeclaration(x)
+        }),
+        map(local_parameter_declaration, |x| {
+            ParameterPortDeclaration::LocalParameterDeclaration(x)
+        }),
+        parameter_port_declaration_param_list,
+        parameter_port_declaration_type_list,
+    ))(s)
+}
+
+pub fn parameter_port_declaration_param_list(s: Span) -> IResult<Span, ParameterPortDeclaration> {
+    let (s, a) = data_type(s)?;
+    let (s, b) = list_of_param_assignments(s)?;
+    Ok((
+        s,
+        ParameterPortDeclaration::ParamList(ParameterPortDeclarationParamList { nodes: (a, b) }),
+    ))
+}
+
+pub fn parameter_port_declaration_type_list(s: Span) -> IResult<Span, ParameterPortDeclaration> {
+    let (s, a) = symbol("type")(s)?;
+    let (s, b) = list_of_type_assignments(s)?;
+    Ok((
+        s,
+        ParameterPortDeclaration::TypeList(ParameterPortDeclarationTypeList { nodes: (a, b) }),
+    ))
 }
 
 pub fn list_of_ports(s: Span) -> IResult<Span, ListOfPorts> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = paren(list(symbol(","), port))(s)?;
+    Ok((s, ListOfPorts { nodes: (a,) }))
 }
 
 pub fn list_of_port_declarations(s: Span) -> IResult<Span, ListOfPortDeclarations> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = paren(opt(list(
+        symbol(","),
+        pair(many0(attribute_instance), ansi_port_declaration),
+    )))(s)?;
+    Ok((s, ListOfPortDeclarations { nodes: (a,) }))
 }
 
 pub fn port_declaration(s: Span) -> IResult<Span, PortDeclaration> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        port_declaration_inout,
+        port_declaration_input,
+        port_declaration_output,
+        port_declaration_ref,
+        port_declaration_interface,
+    ))(s)
+}
+
+pub fn port_declaration_inout(s: Span) -> IResult<Span, PortDeclaration> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = inout_declaration(s)?;
+    Ok((
+        s,
+        PortDeclaration::Inout(PortDeclarationInout { nodes: (a, b) }),
+    ))
+}
+
+pub fn port_declaration_input(s: Span) -> IResult<Span, PortDeclaration> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = input_declaration(s)?;
+    Ok((
+        s,
+        PortDeclaration::Input(PortDeclarationInput { nodes: (a, b) }),
+    ))
+}
+
+pub fn port_declaration_output(s: Span) -> IResult<Span, PortDeclaration> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = output_declaration(s)?;
+    Ok((
+        s,
+        PortDeclaration::Output(PortDeclarationOutput { nodes: (a, b) }),
+    ))
+}
+
+pub fn port_declaration_ref(s: Span) -> IResult<Span, PortDeclaration> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = ref_declaration(s)?;
+    Ok((
+        s,
+        PortDeclaration::Ref(PortDeclarationRef { nodes: (a, b) }),
+    ))
+}
+
+pub fn port_declaration_interface(s: Span) -> IResult<Span, PortDeclaration> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = interface_port_declaration(s)?;
+    Ok((
+        s,
+        PortDeclaration::Interface(PortDeclarationInterface { nodes: (a, b) }),
+    ))
 }
 
 pub fn port(s: Span) -> IResult<Span, Port> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((port_non_named, port_named))(s)
+}
+
+pub fn port_non_named(s: Span) -> IResult<Span, Port> {
+    let (s, a) = opt(port_expression)(s)?;
+    Ok((s, Port::NonNamed(PortNonNamed { nodes: (a,) })))
+}
+
+pub fn port_named(s: Span) -> IResult<Span, Port> {
+    let (s, a) = symbol(".")(s)?;
+    let (s, b) = port_identifier(s)?;
+    let (s, c) = paren(opt(port_expression))(s)?;
+    Ok((s, Port::Named(PortNamed { nodes: (a, b, c) })))
 }
 
 pub fn port_expression(s: Span) -> IResult<Span, PortExpression> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(port_reference, |x| PortExpression::PortReference(x)),
+        port_expressio_named,
+    ))(s)
+}
+
+pub fn port_expressio_named(s: Span) -> IResult<Span, PortExpression> {
+    let (s, a) = brace(list(symbol(","), port_reference))(s)?;
+    Ok((
+        s,
+        PortExpression::Brace(PortExpressionBrace { nodes: (a,) }),
+    ))
 }
 
 pub fn port_reference(s: Span) -> IResult<Span, PortReference> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = port_identifier(s)?;
+    let (s, b) = constant_select(s)?;
+    Ok((s, PortReference { nodes: (a, b) }))
 }
 
 pub fn port_direction(s: Span) -> IResult<Span, PortDirection> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(symbol("input"), |x| PortDirection::Input(x)),
+        map(symbol("output"), |x| PortDirection::Output(x)),
+        map(symbol("inout"), |x| PortDirection::Inout(x)),
+        map(symbol("ref"), |x| PortDirection::Ref(x)),
+    ))(s)
 }
 
 pub fn net_port_header(s: Span) -> IResult<Span, NetPortHeader> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = opt(port_direction)(s)?;
+    let (s, b) = net_port_type(s)?;
+    Ok((s, NetPortHeader { nodes: (a, b) }))
 }
 
 pub fn variable_port_header(s: Span) -> IResult<Span, VariablePortHeader> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = opt(port_direction)(s)?;
+    let (s, b) = variable_port_type(s)?;
+    Ok((s, VariablePortHeader { nodes: (a, b) }))
 }
 
 pub fn interface_port_header(s: Span) -> IResult<Span, InterfacePortHeader> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        interface_port_header_identifier,
+        interface_port_header_interface,
+    ))(s)
+}
+
+pub fn interface_port_header_identifier(s: Span) -> IResult<Span, InterfacePortHeader> {
+    let (s, a) = interface_identifier(s)?;
+    let (s, b) = opt(pair(symbol("."), modport_identifier))(s)?;
+    Ok((
+        s,
+        InterfacePortHeader::Identifier(InterfacePortHeaderIdentifier { nodes: (a, b) }),
+    ))
+}
+
+pub fn interface_port_header_interface(s: Span) -> IResult<Span, InterfacePortHeader> {
+    let (s, a) = symbol("interface")(s)?;
+    let (s, b) = opt(pair(symbol("."), modport_identifier))(s)?;
+    Ok((
+        s,
+        InterfacePortHeader::Interface(InterfacePortHeaderInterface { nodes: (a, b) }),
+    ))
 }
 
 pub fn ansi_port_declaration(s: Span) -> IResult<Span, AnsiPortDeclaration> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        ansi_port_declaration_net,
+        ansi_port_declaration_port,
+        ansi_port_declaration_paren,
+    ))(s)
+}
+
+pub fn ansi_port_declaration_net(s: Span) -> IResult<Span, AnsiPortDeclaration> {
+    let (s, a) = opt(net_port_header_or_interface_port_header)(s)?;
+    let (s, b) = port_identifier(s)?;
+    let (s, c) = many0(unpacked_dimension)(s)?;
+    let (s, d) = opt(pair(symbol("="), constant_expression))(s)?;
+    Ok((
+        s,
+        AnsiPortDeclaration::Net(AnsiPortDeclarationNet {
+            nodes: (a, b, c, d),
+        }),
+    ))
+}
+
+pub fn net_port_header_or_interface_port_header(
+    s: Span,
+) -> IResult<Span, NetPortHeaderOrInterfacePortHeader> {
+    alt((
+        map(net_port_header, |x| {
+            NetPortHeaderOrInterfacePortHeader::NetPortHeader(x)
+        }),
+        map(interface_port_header, |x| {
+            NetPortHeaderOrInterfacePortHeader::InterfacePortHeader(x)
+        }),
+    ))(s)
+}
+
+pub fn ansi_port_declaration_port(s: Span) -> IResult<Span, AnsiPortDeclaration> {
+    let (s, a) = opt(variable_port_header)(s)?;
+    let (s, b) = port_identifier(s)?;
+    let (s, c) = many0(variable_dimension)(s)?;
+    let (s, d) = opt(pair(symbol("="), constant_expression))(s)?;
+    Ok((
+        s,
+        AnsiPortDeclaration::Variable(AnsiPortDeclarationVariable {
+            nodes: (a, b, c, d),
+        }),
+    ))
+}
+
+pub fn ansi_port_declaration_paren(s: Span) -> IResult<Span, AnsiPortDeclaration> {
+    let (s, a) = opt(port_direction)(s)?;
+    let (s, b) = symbol(".")(s)?;
+    let (s, c) = port_identifier(s)?;
+    let (s, d) = paren(opt(expression))(s)?;
+    Ok((
+        s,
+        AnsiPortDeclaration::Paren(AnsiPortDeclarationParen {
+            nodes: (a, b, c, d),
+        }),
+    ))
 }

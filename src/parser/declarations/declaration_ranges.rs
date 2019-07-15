@@ -1,9 +1,9 @@
 use crate::ast::*;
 use crate::parser::*;
-//use nom::branch::*;
-//use nom::combinator::*;
-use nom::error::*;
-use nom::{Err, IResult};
+use nom::branch::*;
+use nom::combinator::*;
+use nom::sequence::*;
+use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ pub struct UnpackedDimensionExpression<'a> {
 #[derive(Debug, Node)]
 pub enum PackedDimension<'a> {
     Range(PackedDimensionRange<'a>),
-    Unsized(UnsizedDimension<'a>),
+    UnsizedDimension(UnsizedDimension<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -65,31 +65,94 @@ pub struct QueueDimension<'a> {
 
 #[derive(Debug, Node)]
 pub struct UnsizedDimension<'a> {
-    pub nodes: ((Symbol<'a>, Symbol<'a>),),
+    pub nodes: (Symbol<'a>, Symbol<'a>),
 }
 
 // -----------------------------------------------------------------------------
 
 pub fn unpacked_dimension(s: Span) -> IResult<Span, UnpackedDimension> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((unpacked_dimension_range, unpacked_dimension_expression))(s)
+}
+
+pub fn unpacked_dimension_range(s: Span) -> IResult<Span, UnpackedDimension> {
+    let (s, a) = bracket(constant_range)(s)?;
+    Ok((
+        s,
+        UnpackedDimension::Range(UnpackedDimensionRange { nodes: (a,) }),
+    ))
+}
+
+pub fn unpacked_dimension_expression(s: Span) -> IResult<Span, UnpackedDimension> {
+    let (s, a) = bracket(constant_expression)(s)?;
+    Ok((
+        s,
+        UnpackedDimension::Expression(UnpackedDimensionExpression { nodes: (a,) }),
+    ))
 }
 
 pub fn packed_dimension(s: Span) -> IResult<Span, PackedDimension> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        packed_dimension_range,
+        map(unsized_dimension, |x| PackedDimension::UnsizedDimension(x)),
+    ))(s)
+}
+
+pub fn packed_dimension_range(s: Span) -> IResult<Span, PackedDimension> {
+    let (s, a) = bracket(constant_range)(s)?;
+    Ok((
+        s,
+        PackedDimension::Range(PackedDimensionRange { nodes: (a,) }),
+    ))
 }
 
 pub fn associative_dimension(s: Span) -> IResult<Span, AssociativeDimension> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        associative_dimension_data_type,
+        associative_dimension_asterisk,
+    ))(s)
+}
+
+pub fn associative_dimension_data_type(s: Span) -> IResult<Span, AssociativeDimension> {
+    let (s, a) = bracket(data_type)(s)?;
+    Ok((
+        s,
+        AssociativeDimension::DataType(AssociativeDimensionDataType { nodes: (a,) }),
+    ))
+}
+
+pub fn associative_dimension_asterisk(s: Span) -> IResult<Span, AssociativeDimension> {
+    let (s, a) = bracket(symbol("*"))(s)?;
+    Ok((
+        s,
+        AssociativeDimension::Asterisk(AssociativeDimensionAsterisk { nodes: (a,) }),
+    ))
 }
 
 pub fn variable_dimension(s: Span) -> IResult<Span, VariableDimension> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(unsized_dimension, |x| {
+            VariableDimension::UnsizedDimension(x)
+        }),
+        map(unpacked_dimension, |x| {
+            VariableDimension::UnpackedDimension(x)
+        }),
+        map(associative_dimension, |x| {
+            VariableDimension::AssociativeDimension(x)
+        }),
+        map(queue_dimension, |x| VariableDimension::QueueDimension(x)),
+    ))(s)
 }
 
 pub fn queue_dimension(s: Span) -> IResult<Span, QueueDimension> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = bracket(pair(
+        symbol("$"),
+        opt(pair(symbol(":"), constant_expression)),
+    ))(s)?;
+    Ok((s, QueueDimension { nodes: (a,) }))
 }
 
 pub fn unsized_dimension(s: Span) -> IResult<Span, UnsizedDimension> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = symbol("[")(s)?;
+    let (s, b) = symbol("]")(s)?;
+    Ok((s, UnsizedDimension { nodes: (a, b) }))
 }

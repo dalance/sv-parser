@@ -9,26 +9,26 @@ A parser library for System Verilog.
 | source_text                       | system_verilog_source_text            | x    | x      |      |
 | source_text                       | module_parameters_and_ports           | x    | x      |      |
 | source_text                       | module_items                          | x    | x      |      |
-| source_text                       | configuration_source_text             |      |        |      |
-| source_text                       | interface_items                       |      |        |      |
-| source_text                       | program_items                         |      |        |      |
-| source_text                       | checker_items                         |      |        |      |
-| source_text                       | class_items                           |      |        |      |
-| source_text                       | constraints                           |      |        |      |
+| source_text                       | configuration_source_text             | x    | x      |      |
+| source_text                       | interface_items                       | x    | x      |      |
+| source_text                       | program_items                         | x    | x      |      |
+| source_text                       | checker_items                         | x    | x      |      |
+| source_text                       | class_items                           | x    | x      |      |
+| source_text                       | constraints                           | x    | x      |      |
 | source_text                       | package_items                         | x    | x      |      |
 | declaration                       | module_parameter_declarations         | x    | x      |      |
 | declaration                       | port_declarations                     | x    | x      |      |
 | declaration                       | type_declarations                     | x    | x      |      |
-| declaration                       | net_and_variable_types                | x    |        |      |
+| declaration                       | net_and_variable_types                | x    | x      |      |
 | declaration                       | strengths                             | x    | x      | x    |
 | declaration                       | delays                                | x    | x      |      |
-| declaration                       | declaration_lists                     | x    |        |      |
-| declaration                       | declaration_assignments               | x    |        |      |
-| declaration                       | declaration_ranges                    | x    |        |      |
-| declaration                       | function_declarations                 | x    |        |      |
-| declaration                       | task_declarations                     | x    |        |      |
+| declaration                       | declaration_lists                     | x    | x      |      |
+| declaration                       | declaration_assignments               | x    | x      |      |
+| declaration                       | declaration_ranges                    | x    | x      |      |
+| declaration                       | function_declarations                 | x    | x      |      |
+| declaration                       | task_declarations                     | x    | x      |      |
 | declaration                       | block_item_declarations               | x    | x      |      |
-| declaration                       | interface_declarations                | x    |        |      |
+| declaration                       | interface_declarations                | x    | x      |      |
 | declaration                       | assertion_declarations                | x    |        |      |
 | declaration                       | covergroup_declarations               |      |        |      |
 | declaration                       | let_declarations                      |      |        |      |

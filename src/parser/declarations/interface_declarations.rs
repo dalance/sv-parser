@@ -1,9 +1,9 @@
 use crate::ast::*;
 use crate::parser::*;
-//use nom::branch::*;
-//use nom::combinator::*;
-use nom::error::*;
-use nom::{Err, IResult};
+use nom::branch::*;
+use nom::combinator::*;
+use nom::multi::*;
+use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ pub struct ModportItem<'a> {
 pub enum ModportPortsDeclaraton<'a> {
     Simple(ModportPortsDeclaratonSimple<'a>),
     Tf(ModportPortsDeclaratonTf<'a>),
-    Clocing(ModportPortsDeclaratonClocking<'a>),
+    Clocking(ModportPortsDeclaratonClocking<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -95,37 +95,103 @@ pub enum ImportExport<'a> {
 // -----------------------------------------------------------------------------
 
 pub fn modport_declaration(s: Span) -> IResult<Span, ModportDeclaration> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = symbol("modport")(s)?;
+    let (s, b) = list(symbol(","), modport_item)(s)?;
+    let (s, c) = symbol(";")(s)?;
+    Ok((s, ModportDeclaration { nodes: (a, b, c) }))
 }
 
 pub fn modport_item(s: Span) -> IResult<Span, ModportItem> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = modport_identifier(s)?;
+    let (s, b) = paren(list(symbol(","), modport_ports_declaration))(s)?;
+    Ok((s, ModportItem { nodes: (a, b) }))
 }
 
 pub fn modport_ports_declaration(s: Span) -> IResult<Span, ModportPortsDeclaraton> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        modport_ports_declaration_simple,
+        modport_ports_declaration_tf,
+        modport_ports_declaration_clocking,
+    ))(s)
+}
+
+pub fn modport_ports_declaration_simple(s: Span) -> IResult<Span, ModportPortsDeclaraton> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = modport_simple_ports_declaration(s)?;
+    Ok((
+        s,
+        ModportPortsDeclaraton::Simple(ModportPortsDeclaratonSimple { nodes: (a, b) }),
+    ))
+}
+
+pub fn modport_ports_declaration_tf(s: Span) -> IResult<Span, ModportPortsDeclaraton> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = modport_tf_ports_declaration(s)?;
+    Ok((
+        s,
+        ModportPortsDeclaraton::Tf(ModportPortsDeclaratonTf { nodes: (a, b) }),
+    ))
+}
+
+pub fn modport_ports_declaration_clocking(s: Span) -> IResult<Span, ModportPortsDeclaraton> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = modport_clocking_declaration(s)?;
+    Ok((
+        s,
+        ModportPortsDeclaraton::Clocking(ModportPortsDeclaratonClocking { nodes: (a, b) }),
+    ))
 }
 
 pub fn modport_clocking_declaration(s: Span) -> IResult<Span, ModportClockingDeclaration> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = symbol("clocking")(s)?;
+    let (s, b) = clocking_identifier(s)?;
+    Ok((s, ModportClockingDeclaration { nodes: (a, b) }))
 }
 
 pub fn modport_simple_ports_declaration(s: Span) -> IResult<Span, ModportSimplePortsDeclaration> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = port_direction(s)?;
+    let (s, b) = list(symbol(","), modport_simple_port)(s)?;
+    Ok((s, ModportSimplePortsDeclaration { nodes: (a, b) }))
 }
 
 pub fn modport_simple_port(s: Span) -> IResult<Span, ModportSimplePort> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((modport_simple_port_ordered, modport_simple_port_named))(s)
+}
+
+pub fn modport_simple_port_ordered(s: Span) -> IResult<Span, ModportSimplePort> {
+    let (s, a) = port_identifier(s)?;
+    Ok((
+        s,
+        ModportSimplePort::Ordered(ModportSimplePortOrdered { nodes: (a,) }),
+    ))
+}
+
+pub fn modport_simple_port_named(s: Span) -> IResult<Span, ModportSimplePort> {
+    let (s, a) = symbol(".")(s)?;
+    let (s, b) = port_identifier(s)?;
+    let (s, c) = paren(opt(expression))(s)?;
+    Ok((
+        s,
+        ModportSimplePort::Named(ModportSimplePortNamed { nodes: (a, b, c) }),
+    ))
 }
 
 pub fn modport_tf_ports_declaration(s: Span) -> IResult<Span, ModportTfPortsDeclaration> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = import_export(s)?;
+    let (s, b) = list(symbol(","), modport_tf_port)(s)?;
+    Ok((s, ModportTfPortsDeclaration { nodes: (a, b) }))
 }
 
 pub fn modport_tf_port(s: Span) -> IResult<Span, ModportTfPort> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(method_prototype, |x| ModportTfPort::MethodPrototype(x)),
+        map(tf_identifier, |x| ModportTfPort::TfIdentifier(x)),
+    ))(s)
 }
 
 pub fn import_export(s: Span) -> IResult<Span, ImportExport> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(symbol("import"), |x| ImportExport::Import(x)),
+        map(symbol("export"), |x| ImportExport::Export(x)),
+    ))(s)
 }

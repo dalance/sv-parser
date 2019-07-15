@@ -1,9 +1,10 @@
 use crate::ast::*;
 use crate::parser::*;
-//use nom::branch::*;
-//use nom::combinator::*;
-use nom::error::*;
-use nom::{Err, IResult};
+use nom::branch::*;
+use nom::combinator::*;
+use nom::multi::*;
+use nom::sequence::*;
+use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
@@ -14,8 +15,8 @@ pub enum ClassItem<'a> {
     Constraint(ClassItemConstraint<'a>),
     Declaration(ClassItemDeclaration<'a>),
     Covergroup(ClassItemCovergroup<'a>),
-    LocalParameterDeclaration(LocalParameterDeclaration<'a>),
-    ParameterDeclaration(ParameterDeclaration<'a>),
+    LocalParameterDeclaration((LocalParameterDeclaration<'a>, Symbol<'a>)),
+    ParameterDeclaration((ParameterDeclaration<'a>, Symbol<'a>)),
     Empty(Symbol<'a>),
 }
 
@@ -58,10 +59,12 @@ pub struct ClassPropertyNonConst<'a> {
 #[derive(Debug, Node)]
 pub struct ClassPropertyConst<'a> {
     pub nodes: (
+        Symbol<'a>,
         Vec<ClassItemQualifier<'a>>,
         DataType<'a>,
         ConstIdentifier<'a>,
-        Option<ConstantExpression<'a>>,
+        Option<(Symbol<'a>, ConstantExpression<'a>)>,
+        Symbol<'a>,
     ),
 }
 
@@ -87,27 +90,47 @@ pub struct ClassMethodFunction<'a> {
 
 #[derive(Debug, Node)]
 pub struct ClassMethodPureVirtual<'a> {
-    pub nodes: (Vec<ClassItemQualifier<'a>>, MethodPrototype<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        Symbol<'a>,
+        Vec<ClassItemQualifier<'a>>,
+        MethodPrototype<'a>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug, Node)]
 pub struct ClassMethodExternMethod<'a> {
-    pub nodes: (Vec<MethodQualifier<'a>>, MethodPrototype<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        Vec<MethodQualifier<'a>>,
+        MethodPrototype<'a>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug, Node)]
 pub struct ClassMethodConstructor<'a> {
-    pub nodes: (Vec<MethodQualifier<'a>>, ClassConstructorPrototype<'a>),
+    pub nodes: (Vec<MethodQualifier<'a>>, ClassConstructorDeclaration<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ClassMethodExternConstructor<'a> {
-    pub nodes: (Vec<MethodQualifier<'a>>, ClassConstructorPrototype<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        Vec<MethodQualifier<'a>>,
+        ClassConstructorPrototype<'a>,
+    ),
 }
 
 #[derive(Debug, Node)]
 pub struct ClassConstructorPrototype<'a> {
-    pub nodes: (Option<TfPortList<'a>>,),
+    pub nodes: (
+        Symbol<'a>,
+        Symbol<'a>,
+        Option<Paren<'a, Option<TfPortList<'a>>>>,
+        Symbol<'a>,
+    ),
 }
 
 #[derive(Debug, Node)]
@@ -138,7 +161,7 @@ pub enum RandomQualifier<'a> {
 #[derive(Debug, Node)]
 pub enum MethodQualifier<'a> {
     Virtual(Symbol<'a>),
-    PureVirtual(Symbol<'a>),
+    PureVirtual((Symbol<'a>, Symbol<'a>)),
     ClassItemQualifier(ClassItemQualifier<'a>),
 }
 
@@ -151,12 +174,22 @@ pub enum MethodPrototype<'a> {
 #[derive(Debug, Node)]
 pub struct ClassConstructorDeclaration<'a> {
     pub nodes: (
+        Symbol<'a>,
         Option<ClassScope<'a>>,
-        Option<Option<TfPortList<'a>>>,
+        Symbol<'a>,
+        Option<Paren<'a, Option<TfPortList<'a>>>>,
+        Symbol<'a>,
         Vec<BlockItemDeclaration<'a>>,
-        Option<Option<ListOfArguments<'a>>>,
+        Option<(
+            Symbol<'a>,
+            Symbol<'a>,
+            Symbol<'a>,
+            Option<Paren<'a, ListOfArguments<'a>>>,
+            Symbol<'a>,
+        )>,
         Vec<FunctionStatementOrNull<'a>>,
-        Option<New<'a>>,
+        Symbol<'a>,
+        Option<(Symbol<'a>, New<'a>)>,
     ),
 }
 
@@ -168,45 +201,256 @@ pub struct New<'a> {
 // -----------------------------------------------------------------------------
 
 pub fn class_item(s: Span) -> IResult<Span, ClassItem> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        class_item_property,
+        class_item_method,
+        class_item_constraint,
+        class_item_declaration,
+        class_item_covergroup,
+        map(pair(local_parameter_declaration, symbol(";")), |x| {
+            ClassItem::LocalParameterDeclaration(x)
+        }),
+        map(pair(parameter_declaration, symbol(";")), |x| {
+            ClassItem::ParameterDeclaration(x)
+        }),
+        map(symbol(";"), |x| ClassItem::Empty(x)),
+    ))(s)
+}
+
+pub fn class_item_property(s: Span) -> IResult<Span, ClassItem> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = class_property(s)?;
+    Ok((s, ClassItem::Property(ClassItemProperty { nodes: (a, b) })))
+}
+
+pub fn class_item_method(s: Span) -> IResult<Span, ClassItem> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = class_method(s)?;
+    Ok((s, ClassItem::Method(ClassItemMethod { nodes: (a, b) })))
+}
+
+pub fn class_item_constraint(s: Span) -> IResult<Span, ClassItem> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = class_constraint(s)?;
+    Ok((
+        s,
+        ClassItem::Constraint(ClassItemConstraint { nodes: (a, b) }),
+    ))
+}
+
+pub fn class_item_declaration(s: Span) -> IResult<Span, ClassItem> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = class_declaration(s)?;
+    Ok((
+        s,
+        ClassItem::Declaration(ClassItemDeclaration { nodes: (a, b) }),
+    ))
+}
+
+pub fn class_item_covergroup(s: Span) -> IResult<Span, ClassItem> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = covergroup_declaration(s)?;
+    Ok((
+        s,
+        ClassItem::Covergroup(ClassItemCovergroup { nodes: (a, b) }),
+    ))
 }
 
 pub fn class_property(s: Span) -> IResult<Span, ClassProperty> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((class_property_non_const, class_property_const))(s)
+}
+
+pub fn class_property_non_const(s: Span) -> IResult<Span, ClassProperty> {
+    let (s, a) = many0(property_qualifier)(s)?;
+    let (s, b) = data_declaration(s)?;
+    Ok((
+        s,
+        ClassProperty::NonConst(ClassPropertyNonConst { nodes: (a, b) }),
+    ))
+}
+
+pub fn class_property_const(s: Span) -> IResult<Span, ClassProperty> {
+    let (s, a) = symbol("const")(s)?;
+    let (s, b) = many0(class_item_qualifier)(s)?;
+    let (s, c) = data_type(s)?;
+    let (s, d) = const_identifier(s)?;
+    let (s, e) = opt(pair(symbol("="), constant_expression))(s)?;
+    let (s, f) = symbol(";")(s)?;
+    Ok((
+        s,
+        ClassProperty::Const(ClassPropertyConst {
+            nodes: (a, b, c, d, e, f),
+        }),
+    ))
 }
 
 pub fn class_method(s: Span) -> IResult<Span, ClassMethod> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        class_method_task,
+        class_method_function,
+        class_method_pure_virtual,
+        class_method_extern_method,
+        class_method_constructor,
+        class_method_extern_constructor,
+    ))(s)
+}
+
+pub fn class_method_task(s: Span) -> IResult<Span, ClassMethod> {
+    let (s, a) = many0(method_qualifier)(s)?;
+    let (s, b) = task_declaration(s)?;
+    Ok((s, ClassMethod::Task(ClassMethodTask { nodes: (a, b) })))
+}
+
+pub fn class_method_function(s: Span) -> IResult<Span, ClassMethod> {
+    let (s, a) = many0(method_qualifier)(s)?;
+    let (s, b) = function_declaration(s)?;
+    Ok((
+        s,
+        ClassMethod::Function(ClassMethodFunction { nodes: (a, b) }),
+    ))
+}
+
+pub fn class_method_pure_virtual(s: Span) -> IResult<Span, ClassMethod> {
+    let (s, a) = symbol("pure")(s)?;
+    let (s, b) = symbol("virtual")(s)?;
+    let (s, c) = many0(class_item_qualifier)(s)?;
+    let (s, d) = method_prototype(s)?;
+    let (s, e) = symbol(";")(s)?;
+    Ok((
+        s,
+        ClassMethod::PureVirtual(ClassMethodPureVirtual {
+            nodes: (a, b, c, d, e),
+        }),
+    ))
+}
+
+pub fn class_method_extern_method(s: Span) -> IResult<Span, ClassMethod> {
+    let (s, a) = symbol("extern")(s)?;
+    let (s, b) = many0(method_qualifier)(s)?;
+    let (s, c) = method_prototype(s)?;
+    let (s, d) = symbol(";")(s)?;
+    Ok((
+        s,
+        ClassMethod::ExternMethod(ClassMethodExternMethod {
+            nodes: (a, b, c, d),
+        }),
+    ))
+}
+
+pub fn class_method_constructor(s: Span) -> IResult<Span, ClassMethod> {
+    let (s, a) = many0(method_qualifier)(s)?;
+    let (s, b) = class_constructor_declaration(s)?;
+    Ok((
+        s,
+        ClassMethod::Constructor(ClassMethodConstructor { nodes: (a, b) }),
+    ))
+}
+
+pub fn class_method_extern_constructor(s: Span) -> IResult<Span, ClassMethod> {
+    let (s, a) = symbol("extern")(s)?;
+    let (s, b) = many0(method_qualifier)(s)?;
+    let (s, c) = class_constructor_prototype(s)?;
+    Ok((
+        s,
+        ClassMethod::ExternConstructor(ClassMethodExternConstructor { nodes: (a, b, c) }),
+    ))
 }
 
 pub fn class_constructor_prototype(s: Span) -> IResult<Span, ClassConstructorPrototype> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = symbol("function")(s)?;
+    let (s, b) = symbol("new")(s)?;
+    let (s, c) = opt(paren(opt(tf_port_list)))(s)?;
+    let (s, d) = symbol(";")(s)?;
+    Ok((
+        s,
+        ClassConstructorPrototype {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn class_constraint(s: Span) -> IResult<Span, ClassConstraint> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(constraint_prototype, |x| {
+            ClassConstraint::ConstraintPrototype(x)
+        }),
+        map(constraint_declaration, |x| {
+            ClassConstraint::ConstraintDeclaration(x)
+        }),
+    ))(s)
 }
 
 pub fn class_item_qualifier(s: Span) -> IResult<Span, ClassItemQualifier> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(symbol("static"), |x| ClassItemQualifier::Static(x)),
+        map(symbol("protected"), |x| ClassItemQualifier::Protected(x)),
+        map(symbol("local"), |x| ClassItemQualifier::Local(x)),
+    ))(s)
 }
 
 pub fn property_qualifier(s: Span) -> IResult<Span, PropertyQualifier> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(random_qualifier, |x| PropertyQualifier::RandomQualifier(x)),
+        map(class_item_qualifier, |x| {
+            PropertyQualifier::ClassItemQualifier(x)
+        }),
+    ))(s)
 }
 
 pub fn random_qualifier(s: Span) -> IResult<Span, RandomQualifier> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(symbol("randc"), |x| RandomQualifier::Randc(x)),
+        map(symbol("rand"), |x| RandomQualifier::Rand(x)),
+    ))(s)
 }
 
 pub fn method_qualifier(s: Span) -> IResult<Span, MethodQualifier> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(pair(symbol("pure"), symbol("virtual")), |x| {
+            MethodQualifier::PureVirtual(x)
+        }),
+        map(symbol("virtual"), |x| MethodQualifier::Virtual(x)),
+        map(class_item_qualifier, |x| {
+            MethodQualifier::ClassItemQualifier(x)
+        }),
+    ))(s)
 }
 
 pub fn method_prototype(s: Span) -> IResult<Span, MethodPrototype> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(task_prototype, |x| MethodPrototype::TaskPrototype(x)),
+        map(function_prototype, |x| {
+            MethodPrototype::FunctionPrototype(x)
+        }),
+    ))(s)
 }
 
 pub fn class_constructor_declaration(s: Span) -> IResult<Span, ClassConstructorDeclaration> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = symbol("function")(s)?;
+    let (s, b) = opt(class_scope)(s)?;
+    let (s, c) = symbol("new")(s)?;
+    let (s, d) = opt(paren(opt(tf_port_list)))(s)?;
+    let (s, e) = symbol(";")(s)?;
+    let (s, f) = many0(block_item_declaration)(s)?;
+    let (s, g) = opt(tuple((
+        symbol("super"),
+        symbol("."),
+        symbol("new"),
+        opt(paren(list_of_arguments)),
+        symbol(";"),
+    )))(s)?;
+    let (s, h) = many0(function_statement_or_null)(s)?;
+    let (s, i) = symbol("end")(s)?;
+    let (s, j) = opt(pair(symbol(":"), new))(s)?;
+    Ok((
+        s,
+        ClassConstructorDeclaration {
+            nodes: (a, b, c, d, e, f, g, h, i, j),
+        },
+    ))
+}
+
+pub fn new(s: Span) -> IResult<Span, New> {
+    let (s, a) = symbol("new")(s)?;
+    Ok((s, New { nodes: (a,) }))
 }

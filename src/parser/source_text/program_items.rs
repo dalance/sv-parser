@@ -1,15 +1,16 @@
 use crate::ast::*;
 use crate::parser::*;
-//use nom::branch::*;
-//use nom::combinator::*;
-use nom::error::*;
-use nom::{Err, IResult};
+use nom::branch::*;
+use nom::combinator::*;
+use nom::multi::*;
+use nom::sequence::*;
+use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
 pub enum ProgramItem<'a> {
-    PortDeclaration(PortDeclaration<'a>),
+    PortDeclaration((PortDeclaration<'a>, Symbol<'a>)),
     NonPortProgramItem(NonPortProgramItem<'a>),
 }
 
@@ -54,7 +55,7 @@ pub struct NonPortProgramItemAssertion<'a> {
 
 #[derive(Debug, Node)]
 pub enum ProgramGenerateItem<'a> {
-    LoopGenerateConstuct(LoopGenerateConstruct<'a>),
+    LoopGenerateConstruct(LoopGenerateConstruct<'a>),
     ConditionalGenerateConstruct(ConditionalGenerateConstruct<'a>),
     GenerateRegion(GenerateRegion<'a>),
     ElaborationSystemTask(ElaborationSystemTask<'a>),
@@ -63,13 +64,88 @@ pub enum ProgramGenerateItem<'a> {
 // -----------------------------------------------------------------------------
 
 pub fn program_item(s: Span) -> IResult<Span, ProgramItem> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(pair(port_declaration, symbol(";")), |x| {
+            ProgramItem::PortDeclaration(x)
+        }),
+        map(non_port_program_item, |x| {
+            ProgramItem::NonPortProgramItem(x)
+        }),
+    ))(s)
 }
 
 pub fn non_port_program_item(s: Span) -> IResult<Span, NonPortProgramItem> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        non_port_program_item_assign,
+        non_port_program_item_module,
+        non_port_program_item_initial,
+        non_port_program_item_final,
+        non_port_program_item_assertion,
+        map(timeunits_declaration, |x| {
+            NonPortProgramItem::TimeunitsDeclaration(x)
+        }),
+        map(program_generate_item, |x| {
+            NonPortProgramItem::ProgramGenerateItem(x)
+        }),
+    ))(s)
+}
+
+pub fn non_port_program_item_assign(s: Span) -> IResult<Span, NonPortProgramItem> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = continuous_assign(s)?;
+    Ok((
+        s,
+        NonPortProgramItem::Assign(NonPortProgramItemAssign { nodes: (a, b) }),
+    ))
+}
+
+pub fn non_port_program_item_module(s: Span) -> IResult<Span, NonPortProgramItem> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = module_or_generate_item_declaration(s)?;
+    Ok((
+        s,
+        NonPortProgramItem::Module(NonPortProgramItemModule { nodes: (a, b) }),
+    ))
+}
+
+pub fn non_port_program_item_initial(s: Span) -> IResult<Span, NonPortProgramItem> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = initial_construct(s)?;
+    Ok((
+        s,
+        NonPortProgramItem::Initial(NonPortProgramItemInitial { nodes: (a, b) }),
+    ))
+}
+
+pub fn non_port_program_item_final(s: Span) -> IResult<Span, NonPortProgramItem> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = final_construct(s)?;
+    Ok((
+        s,
+        NonPortProgramItem::Final(NonPortProgramItemFinal { nodes: (a, b) }),
+    ))
+}
+
+pub fn non_port_program_item_assertion(s: Span) -> IResult<Span, NonPortProgramItem> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = concurrent_assertion_item(s)?;
+    Ok((
+        s,
+        NonPortProgramItem::Assertion(NonPortProgramItemAssertion { nodes: (a, b) }),
+    ))
 }
 
 pub fn program_generate_item(s: Span) -> IResult<Span, ProgramGenerateItem> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(loop_generate_construct, |x| {
+            ProgramGenerateItem::LoopGenerateConstruct(x)
+        }),
+        map(conditional_generate_construct, |x| {
+            ProgramGenerateItem::ConditionalGenerateConstruct(x)
+        }),
+        map(generate_region, |x| ProgramGenerateItem::GenerateRegion(x)),
+        map(elaboration_system_task, |x| {
+            ProgramGenerateItem::ElaborationSystemTask(x)
+        }),
+    ))(s)
 }

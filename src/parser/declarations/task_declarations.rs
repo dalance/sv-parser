@@ -1,9 +1,10 @@
 use crate::ast::*;
 use crate::parser::*;
-//use nom::branch::*;
-//use nom::combinator::*;
-use nom::error::*;
-use nom::{Err, IResult};
+use nom::branch::*;
+use nom::combinator::*;
+use nom::multi::*;
+use nom::sequence::*;
+use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
@@ -40,14 +41,9 @@ pub struct TaskBodyDeclarationWithPort<'a> {
         Symbol<'a>,
         Vec<BlockItemDeclaration<'a>>,
         Vec<StatementOrNull<'a>>,
+        Symbol<'a>,
         Option<(Symbol<'a>, TaskIdentifier<'a>)>,
     ),
-}
-
-#[derive(Debug, Node)]
-pub enum InterfaceIdentifierOrClassScope<'a> {
-    InterfaceIdentifier((InterfaceIdentifier<'a>, Symbol<'a>)),
-    ClassScope(ClassScope<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -106,33 +102,113 @@ pub struct TaskPrototype<'a> {
 // -----------------------------------------------------------------------------
 
 pub fn task_declaration(s: Span) -> IResult<Span, TaskDeclaration> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = symbol("task")(s)?;
+    let (s, b) = opt(lifetime)(s)?;
+    let (s, c) = task_body_declaration(s)?;
+    Ok((s, TaskDeclaration { nodes: (a, b, c) }))
 }
 
 pub fn task_body_declaration(s: Span) -> IResult<Span, TaskBodyDeclaration> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        task_body_declaration_without_port,
+        task_body_declaration_with_port,
+    ))(s)
+}
+
+pub fn task_body_declaration_without_port(s: Span) -> IResult<Span, TaskBodyDeclaration> {
+    let (s, a) = opt(interface_identifier_or_class_scope)(s)?;
+    let (s, b) = task_identifier(s)?;
+    let (s, c) = symbol(";")(s)?;
+    let (s, d) = many0(tf_item_declaration)(s)?;
+    let (s, e) = many0(statement_or_null)(s)?;
+    let (s, f) = symbol("endtask")(s)?;
+    let (s, g) = opt(pair(symbol(":"), task_identifier))(s)?;
+    Ok((
+        s,
+        TaskBodyDeclaration::WithoutPort(TaskBodyDeclarationWithoutPort {
+            nodes: (a, b, c, d, e, f, g),
+        }),
+    ))
+}
+
+pub fn task_body_declaration_with_port(s: Span) -> IResult<Span, TaskBodyDeclaration> {
+    let (s, a) = opt(interface_identifier_or_class_scope)(s)?;
+    let (s, b) = task_identifier(s)?;
+    let (s, c) = paren(opt(tf_port_list))(s)?;
+    let (s, d) = symbol(";")(s)?;
+    let (s, e) = many0(block_item_declaration)(s)?;
+    let (s, f) = many0(statement_or_null)(s)?;
+    let (s, g) = symbol("endtask")(s)?;
+    let (s, h) = opt(pair(symbol(":"), task_identifier))(s)?;
+    Ok((
+        s,
+        TaskBodyDeclaration::WithPort(TaskBodyDeclarationWithPort {
+            nodes: (a, b, c, d, e, f, g, h),
+        }),
+    ))
 }
 
 pub fn tf_item_declaration(s: Span) -> IResult<Span, TfItemDeclaration> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(block_item_declaration, |x| {
+            TfItemDeclaration::BlockItemDeclaration(x)
+        }),
+        map(tf_port_declaration, |x| {
+            TfItemDeclaration::TfPortDeclaration(x)
+        }),
+    ))(s)
 }
 
 pub fn tf_port_list(s: Span) -> IResult<Span, TfPortList> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = list(symbol(","), tf_port_item)(s)?;
+    Ok((s, TfPortList { nodes: (a,) }))
 }
 
 pub fn tf_port_item(s: Span) -> IResult<Span, TfPortItem> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = opt(tf_port_direction)(s)?;
+    let (s, c) = opt(var)(s)?;
+    let (s, d) = data_type_or_implicit(s)?;
+    let (s, e) = opt(triple(
+        port_identifier,
+        many0(variable_dimension),
+        opt(pair(symbol(":"), expression)),
+    ))(s)?;
+    Ok((
+        s,
+        TfPortItem {
+            nodes: (a, b, c, d, e),
+        },
+    ))
 }
 
 pub fn tf_port_direction(s: Span) -> IResult<Span, TfPortDirection> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(port_direction, |x| TfPortDirection::PortDirection(x)),
+        map(pair(symbol("const"), symbol("ref")), |x| {
+            TfPortDirection::ConstRef(x)
+        }),
+    ))(s)
 }
 
 pub fn tf_port_declaration(s: Span) -> IResult<Span, TfPortDeclaration> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = tf_port_direction(s)?;
+    let (s, c) = opt(var)(s)?;
+    let (s, d) = data_type_or_implicit(s)?;
+    let (s, e) = list_of_tf_variable_identifiers(s)?;
+    let (s, f) = symbol(";")(s)?;
+    Ok((
+        s,
+        TfPortDeclaration {
+            nodes: (a, b, c, d, e, f),
+        },
+    ))
 }
 
 pub fn task_prototype(s: Span) -> IResult<Span, TaskPrototype> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = symbol("task")(s)?;
+    let (s, b) = task_identifier(s)?;
+    let (s, c) = opt(paren(opt(tf_port_list)))(s)?;
+    Ok((s, TaskPrototype { nodes: (a, b, c) }))
 }

@@ -35,30 +35,9 @@ fn impl_node(ast: &syn::DeriveInput) -> TokenStream {
                 }
             }
         }
-        syn::Data::Struct(ref data) => {
-            let mut items = quote! {};
-            if let syn::Fields::Named(f) = &data.fields {
-                for f in &f.named {
-                    if let Some(ident) = &f.ident {
-                        if ident.to_string() == "nodes" {
-                            if let syn::Type::Tuple(t) = &f.ty {
-                                for i in 0..t.elems.len() {
-                                    let i = syn::Index::from(i);
-                                    items = quote! {
-                                        #items
-                                        let mut nodes : AnyNodes = (&(self.nodes.#i)).into();
-                                        ret.append(&mut nodes.0);
-                                    };
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        syn::Data::Struct(_) => {
             quote! {
-                let mut ret = Vec::new();
-                #items
-                ret.into()
+                (&(self.nodes)).into()
             }
         }
         _ => {

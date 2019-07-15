@@ -29,9 +29,9 @@ A parser library for System Verilog.
 | declaration                       | task_declarations                     | x    | x      |      |
 | declaration                       | block_item_declarations               | x    | x      |      |
 | declaration                       | interface_declarations                | x    | x      |      |
-| declaration                       | assertion_declarations                | x    |        |      |
-| declaration                       | covergroup_declarations               |      |        |      |
-| declaration                       | let_declarations                      |      |        |      |
+| declaration                       | assertion_declarations                | x    | x      |      |
+| declaration                       | covergroup_declarations               | x    | x      |      |
+| declaration                       | let_declarations                      | x    | x      |      |
 | primitive_instance                | primitive_instantiation_and_instances | x    | x      |      |
 | primitive_instance                | primitive_strengths                   | x    | x      | x    |
 | primitive_instance                | primitive_terminals                   | x    | x      |      |
@@ -44,7 +44,7 @@ A parser library for System Verilog.
 | udp_declaration_and_instantiation | udp_declaration                       |      |        |      |
 | udp_declaration_and_instantiation | udp_ports                             |      |        |      |
 | udp_declaration_and_instantiation | udp_body                              |      |        |      |
-| udp_declaration_and_instantiation | udp_instantiation                     |      |        |      |
+| udp_declaration_and_instantiation | udp_instantiation                     | x    | x      |      |
 | behavioral_statements             | continuous_assignment_and_net_alias   | x    | x      |      |
 | behavioral_statements             | procedural_blocks_and_assignments     | x    | x      |      |
 | behavioral_statements             | parallel_and_sequential_blocks        | x    | x      |      |

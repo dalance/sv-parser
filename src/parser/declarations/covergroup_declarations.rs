@@ -1,20 +1,24 @@
 use crate::ast::*;
 use crate::parser::*;
-//use nom::branch::*;
-//use nom::combinator::*;
-use nom::error::*;
-use nom::{Err, IResult};
+use nom::branch::*;
+use nom::combinator::*;
+use nom::multi::*;
+use nom::sequence::*;
+use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
 pub struct CovergroupDeclaration<'a> {
     pub nodes: (
-        Identifier<'a>,
-        Option<TfPortList<'a>>,
+        Symbol<'a>,
+        CovergroupIdentifier<'a>,
+        Option<Paren<'a, Option<TfPortList<'a>>>>,
         Option<CoverageEvent<'a>>,
+        Symbol<'a>,
         Vec<CoverageSpecOrOption<'a>>,
-        Identifier<'a>,
+        Symbol<'a>,
+        Option<(Symbol<'a>, CovergroupIdentifier<'a>)>,
     ),
 }
 
@@ -31,7 +35,7 @@ pub struct CoverageSpecOrOptionSpec<'a> {
 
 #[derive(Debug, Node)]
 pub struct CoverageSpecOrOptionOption<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, CoverageOption<'a>),
+    pub nodes: (Vec<AttributeInstance<'a>>, CoverageOption<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -42,12 +46,24 @@ pub enum CoverageOption<'a> {
 
 #[derive(Debug, Node)]
 pub struct CoverageOptionOption<'a> {
-    pub nodes: (Identifier<'a>, Expression<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        Symbol<'a>,
+        MemberIdentifier<'a>,
+        Symbol<'a>,
+        Expression<'a>,
+    ),
 }
 
 #[derive(Debug, Node)]
 pub struct CoverageOptionTypeOption<'a> {
-    pub nodes: (Identifier<'a>, ConstantExpression<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        Symbol<'a>,
+        MemberIdentifier<'a>,
+        Symbol<'a>,
+        ConstantExpression<'a>,
+    ),
 }
 
 #[derive(Debug, Node)]
@@ -65,12 +81,17 @@ pub enum CoverageEvent<'a> {
 
 #[derive(Debug, Node)]
 pub struct CoverageEventSample<'a> {
-    pub nodes: (Option<TfPortList<'a>>,),
+    pub nodes: (
+        Symbol<'a>,
+        Symbol<'a>,
+        Symbol<'a>,
+        Paren<'a, Option<TfPortList<'a>>>,
+    ),
 }
 
 #[derive(Debug, Node)]
 pub struct CoverageEventAt<'a> {
-    pub nodes: (BlockEventExpression<'a>,),
+    pub nodes: (Symbol<'a>, Paren<'a, BlockEventExpression<'a>>),
 }
 
 #[derive(Debug, Node)]
@@ -82,23 +103,27 @@ pub enum BlockEventExpression<'a> {
 
 #[derive(Debug, Node)]
 pub struct BlockEventExpressionOr<'a> {
-    pub nodes: (BlockEventExpression<'a>, BlockEventExpression<'a>),
+    pub nodes: (
+        BlockEventExpression<'a>,
+        Symbol<'a>,
+        BlockEventExpression<'a>,
+    ),
 }
 
 #[derive(Debug, Node)]
 pub struct BlockEventExpressionBegin<'a> {
-    pub nodes: (HierarchicalBtfIdentifier<'a>,),
+    pub nodes: (Symbol<'a>, HierarchicalBtfIdentifier<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct BlockEventExpressionEnd<'a> {
-    pub nodes: (HierarchicalBtfIdentifier<'a>,),
+    pub nodes: (Symbol<'a>, HierarchicalBtfIdentifier<'a>),
 }
 
 #[derive(Debug, Node)]
 pub enum HierarchicalBtfIdentifier<'a> {
-    Tf(Identifier<'a>),
-    Block(Identifier<'a>),
+    HierarchicalTfIdentifier(HierarchicalTfIdentifier<'a>),
+    HierarchicalBlockIdentifier(HierarchicalBlockIdentifier<'a>),
     Method(HierarchicalBtfIdentifierMethod<'a>),
 }
 
@@ -106,22 +131,27 @@ pub enum HierarchicalBtfIdentifier<'a> {
 pub struct HierarchicalBtfIdentifierMethod<'a> {
     pub nodes: (
         Option<HierarchicalIdentifierOrClassScope<'a>>,
-        Identifier<'a>,
+        MethodIdentifier<'a>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub enum HierarchicalIdentifierOrClassScope<'a> {
-    HierarchicalIdentifier(HierarchicalIdentifier<'a>),
+    HierarchicalIdentifier((HierarchicalIdentifier<'a>, Symbol<'a>)),
     ClassScope(ClassScope<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct CoverPoint<'a> {
     pub nodes: (
-        Option<(Option<DataTypeOrImplicit<'a>>, Identifier<'a>)>,
+        Option<(
+            Option<DataTypeOrImplicit<'a>>,
+            CoverPointIdentifier<'a>,
+            Symbol<'a>,
+        )>,
+        Symbol<'a>,
         Expression<'a>,
-        Option<Expression<'a>>,
+        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
         BinsOrEmpty<'a>,
     ),
 }
@@ -134,12 +164,20 @@ pub enum BinsOrEmpty<'a> {
 
 #[derive(Debug, Node)]
 pub struct BinsOrEmptyNonEmpty<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, Vec<BinsOrOptions<'a>>),
+    pub nodes: (
+        Brace<
+            'a,
+            (
+                Vec<AttributeInstance<'a>>,
+                Vec<(BinsOrOptions<'a>, Symbol<'a>)>,
+            ),
+        >,
+    ),
 }
 
 #[derive(Debug, Node)]
 pub enum BinsOrOptions<'a> {
-    Option(CoverageOption<'a>),
+    CoverageOption(CoverageOption<'a>),
     Covergroup(BinsOrOptionsCovergroup<'a>),
     CoverPoint(BinsOrOptionsCoverPoint<'a>),
     SetCovergroup(BinsOrOptionsSetCovergroup<'a>),
@@ -153,11 +191,12 @@ pub struct BinsOrOptionsCovergroup<'a> {
     pub nodes: (
         Option<Wildcard<'a>>,
         BinsKeyword<'a>,
-        Identifier<'a>,
-        Option<CovergroupExpression<'a>>,
-        CovergroupRangeList<'a>,
-        Option<WithCovergroupExpression<'a>>,
-        Option<Expression<'a>>,
+        BinIdentifier<'a>,
+        Option<Bracket<'a, Option<CovergroupExpression<'a>>>>,
+        Symbol<'a>,
+        Brace<'a, CovergroupRangeList<'a>>,
+        Option<(Symbol<'a>, Paren<'a, WithCovergroupExpression<'a>>)>,
+        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
     ),
 }
 
@@ -171,11 +210,13 @@ pub struct BinsOrOptionsCoverPoint<'a> {
     pub nodes: (
         Option<Wildcard<'a>>,
         BinsKeyword<'a>,
-        Identifier<'a>,
-        Option<CovergroupExpression<'a>>,
-        Identifier<'a>,
-        Option<WithCovergroupExpression<'a>>,
-        Option<Expression<'a>>,
+        BinIdentifier<'a>,
+        Option<Bracket<'a, Option<CovergroupExpression<'a>>>>,
+        Symbol<'a>,
+        CoverPointIdentifier<'a>,
+        Symbol<'a>,
+        Paren<'a, WithCovergroupExpression<'a>>,
+        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
     ),
 }
 
@@ -184,10 +225,11 @@ pub struct BinsOrOptionsSetCovergroup<'a> {
     pub nodes: (
         Option<Wildcard<'a>>,
         BinsKeyword<'a>,
-        Identifier<'a>,
-        Option<CovergroupExpression<'a>>,
+        BinIdentifier<'a>,
+        Option<Bracket<'a, Option<CovergroupExpression<'a>>>>,
+        Symbol<'a>,
         SetCovergroupExpression<'a>,
-        Option<Expression<'a>>,
+        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
     ),
 }
 
@@ -196,9 +238,11 @@ pub struct BinsOrOptionsTransList<'a> {
     pub nodes: (
         Option<Wildcard<'a>>,
         BinsKeyword<'a>,
-        Identifier<'a>,
+        BinIdentifier<'a>,
+        Option<(Symbol<'a>, Symbol<'a>)>,
+        Symbol<'a>,
         TransList<'a>,
-        Option<Expression<'a>>,
+        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
     ),
 }
 
@@ -206,15 +250,24 @@ pub struct BinsOrOptionsTransList<'a> {
 pub struct BinsOrOptionsDefault<'a> {
     pub nodes: (
         BinsKeyword<'a>,
-        Identifier<'a>,
-        Option<CovergroupExpression<'a>>,
-        Option<Expression<'a>>,
+        BinIdentifier<'a>,
+        Option<Bracket<'a, Option<CovergroupExpression<'a>>>>,
+        Symbol<'a>,
+        Symbol<'a>,
+        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct BinsOrOptionsDefaultSequence<'a> {
-    pub nodes: (BinsKeyword<'a>, Identifier<'a>, Option<Expression<'a>>),
+    pub nodes: (
+        BinsKeyword<'a>,
+        BinIdentifier<'a>,
+        Symbol<'a>,
+        Symbol<'a>,
+        Symbol<'a>,
+        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
+    ),
 }
 
 #[derive(Debug, Node)]
@@ -226,35 +279,35 @@ pub enum BinsKeyword<'a> {
 
 #[derive(Debug, Node)]
 pub struct TransList<'a> {
-    pub nodes: (Vec<TransSet<'a>>,),
+    pub nodes: (List<Symbol<'a>, Paren<'a, TransSet<'a>>>,),
 }
 
 #[derive(Debug, Node)]
 pub struct TransSet<'a> {
-    pub nodes: (TransRangeList<'a>, Vec<TransRangeList<'a>>),
+    pub nodes: (List<Symbol<'a>, TransRangeList<'a>>,),
 }
 
 #[derive(Debug, Node)]
 pub enum TransRangeList<'a> {
-    Single(TransItem<'a>),
+    TransItem(TransItem<'a>),
     Asterisk(TransRangeListAsterisk<'a>),
-    Right(TransRangeListRight<'a>),
+    Arrow(TransRangeListArrow<'a>),
     Equal(TransRangeListEqual<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct TransRangeListAsterisk<'a> {
-    pub nodes: (TransItem<'a>, RepeatRange<'a>),
+    pub nodes: (TransItem<'a>, Bracket<'a, (Symbol<'a>, RepeatRange<'a>)>),
 }
 
 #[derive(Debug, Node)]
-pub struct TransRangeListRight<'a> {
-    pub nodes: (TransItem<'a>, RepeatRange<'a>),
+pub struct TransRangeListArrow<'a> {
+    pub nodes: (TransItem<'a>, Bracket<'a, (Symbol<'a>, RepeatRange<'a>)>),
 }
 
 #[derive(Debug, Node)]
 pub struct TransRangeListEqual<'a> {
-    pub nodes: (TransItem<'a>, RepeatRange<'a>),
+    pub nodes: (TransItem<'a>, Bracket<'a, (Symbol<'a>, RepeatRange<'a>)>),
 }
 
 #[derive(Debug, Node)]
@@ -264,34 +317,39 @@ pub struct TransItem<'a> {
 
 #[derive(Debug, Node)]
 pub enum RepeatRange<'a> {
-    Single(CovergroupExpression<'a>),
+    CovergroupExpression(CovergroupExpression<'a>),
     Binary(RepeatRangeBinary<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct RepeatRangeBinary<'a> {
-    pub nodes: (CovergroupExpression<'a>, CovergroupExpression<'a>),
+    pub nodes: (
+        CovergroupExpression<'a>,
+        Symbol<'a>,
+        CovergroupExpression<'a>,
+    ),
 }
 
 #[derive(Debug, Node)]
 pub struct CoverCross<'a> {
     pub nodes: (
-        Option<Identifier<'a>>,
+        Option<(CrossIdentifier<'a>, Symbol<'a>)>,
+        Symbol<'a>,
         ListOfCrossItems<'a>,
-        Option<Expression<'a>>,
+        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
         CrossBody<'a>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct ListOfCrossItems<'a> {
-    pub nodes: (CrossItem<'a>, CrossItem<'a>, Option<CrossItem<'a>>),
+    pub nodes: (CrossItem<'a>, List<Symbol<'a>, CrossItem<'a>>),
 }
 
 #[derive(Debug, Node)]
 pub enum CrossItem<'a> {
-    CoverPointIdentifier(Identifier<'a>),
-    VariableIdentifier(Identifier<'a>),
+    CoverPointIdentifier(CoverPointIdentifier<'a>),
+    VariableIdentifier(VariableIdentifier<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -302,13 +360,13 @@ pub enum CrossBody<'a> {
 
 #[derive(Debug, Node)]
 pub struct CrossBodyNonEmpty<'a> {
-    pub nodes: (Vec<CrossBodyItem<'a>>),
+    pub nodes: (Brace<'a, Vec<(CrossBodyItem<'a>, Symbol<'a>)>>,),
 }
 
 #[derive(Debug, Node)]
 pub enum CrossBodyItem<'a> {
     FunctionDeclaration(FunctionDeclaration<'a>),
-    BinsSelectionOrOption(BinsSelectionOrOption<'a>),
+    BinsSelectionOrOption((BinsSelectionOrOption<'a>, Symbol<'a>)),
 }
 
 #[derive(Debug, Node)]
@@ -331,9 +389,10 @@ pub struct BinsSelectionOrOptionBins<'a> {
 pub struct BinsSelection<'a> {
     pub nodes: (
         BinsKeyword<'a>,
-        Identifier<'a>,
+        BinIdentifier<'a>,
+        Symbol<'a>,
         SelectExpression<'a>,
-        Option<Expression<'a>>,
+        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
     ),
 }
 
@@ -345,36 +404,37 @@ pub enum SelectExpression<'a> {
     Or(Box<SelectExpressionOr<'a>>),
     Paren(Box<SelectExpressionParen<'a>>),
     With(Box<SelectExpressionWith<'a>>),
-    CrossIdentifier(Identifier<'a>),
+    CrossIdentifier(CrossIdentifier<'a>),
     CrossSet(SelectExpressionCrossSet<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct SelectExpressionNot<'a> {
-    pub nodes: (SelectCondition<'a>,),
+    pub nodes: (Symbol<'a>, SelectCondition<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct SelectExpressionAnd<'a> {
-    pub nodes: (SelectExpression<'a>, SelectExpression<'a>),
+    pub nodes: (SelectExpression<'a>, Symbol<'a>, SelectExpression<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct SelectExpressionOr<'a> {
-    pub nodes: (SelectExpression<'a>, SelectExpression<'a>),
+    pub nodes: (SelectExpression<'a>, Symbol<'a>, SelectExpression<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct SelectExpressionParen<'a> {
-    pub nodes: (SelectExpression<'a>,),
+    pub nodes: (Paren<'a, SelectExpression<'a>>,),
 }
 
 #[derive(Debug, Node)]
 pub struct SelectExpressionWith<'a> {
     pub nodes: (
         SelectExpression<'a>,
-        WithCovergroupExpression<'a>,
-        Option<IntegerCovergroupExpression<'a>>,
+        Symbol<'a>,
+        Paren<'a, WithCovergroupExpression<'a>>,
+        Option<(Symbol<'a>, IntegerCovergroupExpression<'a>)>,
     ),
 }
 
@@ -382,40 +442,56 @@ pub struct SelectExpressionWith<'a> {
 pub struct SelectExpressionCrossSet<'a> {
     pub nodes: (
         CrossSetExpression<'a>,
-        Option<IntegerCovergroupExpression<'a>>,
+        Option<(Symbol<'a>, IntegerCovergroupExpression<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct SelectCondition<'a> {
-    pub nodes: (BinsExpression<'a>, Option<CovergroupRangeList<'a>>),
+    pub nodes: (
+        Symbol<'a>,
+        Paren<'a, BinsExpression<'a>>,
+        Option<(Symbol<'a>, Brace<'a, CovergroupRangeList<'a>>)>,
+    ),
 }
 
 #[derive(Debug, Node)]
 pub enum BinsExpression<'a> {
-    VariableIdentifier(Identifier<'a>),
+    VariableIdentifier(VariableIdentifier<'a>),
     CoverPoint(BinsExpressionCoverPoint<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct BinsExpressionCoverPoint<'a> {
-    pub nodes: (Identifier<'a>, Option<Identifier<'a>>),
+    pub nodes: (
+        CoverPointIdentifier<'a>,
+        Option<(Symbol<'a>, BinIdentifier<'a>)>,
+    ),
 }
 
 #[derive(Debug, Node)]
 pub struct CovergroupRangeList<'a> {
-    pub nodes: (Vec<CovergroupValueRange<'a>>,),
+    pub nodes: (List<Symbol<'a>, CovergroupValueRange<'a>>,),
 }
 
 #[derive(Debug, Node)]
 pub enum CovergroupValueRange<'a> {
-    Single(CovergroupExpression<'a>),
+    CovergroupExpression(CovergroupExpression<'a>),
     Binary(CovergroupValueRangeBinary<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct CovergroupValueRangeBinary<'a> {
-    pub nodes: (CovergroupExpression<'a>, CovergroupExpression<'a>),
+    pub nodes: (
+        Bracket<
+            'a,
+            (
+                CovergroupExpression<'a>,
+                Symbol<'a>,
+                CovergroupExpression<'a>,
+            ),
+        >,
+    ),
 }
 
 #[derive(Debug, Node)]
@@ -446,133 +522,644 @@ pub struct CovergroupExpression<'a> {
 // -----------------------------------------------------------------------------
 
 pub fn covergroup_declaration(s: Span) -> IResult<Span, CovergroupDeclaration> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = symbol("covergroup")(s)?;
+    let (s, b) = covergroup_identifier(s)?;
+    let (s, c) = opt(paren(opt(tf_port_list)))(s)?;
+    let (s, d) = opt(coverage_event)(s)?;
+    let (s, e) = symbol(";")(s)?;
+    let (s, f) = many0(coverage_spec_or_option)(s)?;
+    let (s, g) = symbol("endgroup")(s)?;
+    let (s, h) = opt(pair(symbol(":"), covergroup_identifier))(s)?;
+    Ok((
+        s,
+        CovergroupDeclaration {
+            nodes: (a, b, c, d, e, f, g, h),
+        },
+    ))
 }
 
 pub fn coverage_spec_or_option(s: Span) -> IResult<Span, CoverageSpecOrOption> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((coverage_spec_or_option_spec, coverage_spec_or_option_option))(s)
+}
+
+pub fn coverage_spec_or_option_spec(s: Span) -> IResult<Span, CoverageSpecOrOption> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = coverage_spec(s)?;
+    Ok((
+        s,
+        CoverageSpecOrOption::Spec(CoverageSpecOrOptionSpec { nodes: (a, b) }),
+    ))
+}
+
+pub fn coverage_spec_or_option_option(s: Span) -> IResult<Span, CoverageSpecOrOption> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = coverage_option(s)?;
+    let (s, c) = symbol(";")(s)?;
+    Ok((
+        s,
+        CoverageSpecOrOption::Option(CoverageSpecOrOptionOption { nodes: (a, b, c) }),
+    ))
 }
 
 pub fn coverage_option(s: Span) -> IResult<Span, CoverageOption> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((coverage_option_option, coverage_option_type_option))(s)
+}
+
+pub fn coverage_option_option(s: Span) -> IResult<Span, CoverageOption> {
+    let (s, a) = symbol("option")(s)?;
+    let (s, b) = symbol(".")(s)?;
+    let (s, c) = member_identifier(s)?;
+    let (s, d) = symbol("=")(s)?;
+    let (s, e) = expression(s)?;
+    Ok((
+        s,
+        CoverageOption::Option(CoverageOptionOption {
+            nodes: (a, b, c, d, e),
+        }),
+    ))
+}
+
+pub fn coverage_option_type_option(s: Span) -> IResult<Span, CoverageOption> {
+    let (s, a) = symbol("type_option")(s)?;
+    let (s, b) = symbol(".")(s)?;
+    let (s, c) = member_identifier(s)?;
+    let (s, d) = symbol("=")(s)?;
+    let (s, e) = constant_expression(s)?;
+    Ok((
+        s,
+        CoverageOption::TypeOption(CoverageOptionTypeOption {
+            nodes: (a, b, c, d, e),
+        }),
+    ))
 }
 
 pub fn coverage_spec(s: Span) -> IResult<Span, CoverageSpec> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(cover_point, |x| CoverageSpec::CoverPoint(x)),
+        map(cover_cross, |x| CoverageSpec::CoverCross(x)),
+    ))(s)
 }
 
 pub fn coverage_event(s: Span) -> IResult<Span, CoverageEvent> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(clocking_event, |x| CoverageEvent::ClockingEvent(x)),
+        coverage_event_sample,
+        coverage_event_at,
+    ))(s)
+}
+
+pub fn coverage_event_sample(s: Span) -> IResult<Span, CoverageEvent> {
+    let (s, a) = symbol("with")(s)?;
+    let (s, b) = symbol("function")(s)?;
+    let (s, c) = symbol("sample")(s)?;
+    let (s, d) = paren(opt(tf_port_list))(s)?;
+    Ok((
+        s,
+        CoverageEvent::Sample(CoverageEventSample {
+            nodes: (a, b, c, d),
+        }),
+    ))
+}
+
+pub fn coverage_event_at(s: Span) -> IResult<Span, CoverageEvent> {
+    let (s, a) = symbol("@@")(s)?;
+    let (s, b) = paren(block_event_expression)(s)?;
+    Ok((s, CoverageEvent::At(CoverageEventAt { nodes: (a, b) })))
 }
 
 pub fn block_event_expression(s: Span) -> IResult<Span, BlockEventExpression> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        block_event_expression_or,
+        block_event_expression_begin,
+        block_event_expression_end,
+    ))(s)
+}
+
+pub fn block_event_expression_or(s: Span) -> IResult<Span, BlockEventExpression> {
+    let (s, a) = block_event_expression(s)?;
+    let (s, b) = symbol("or")(s)?;
+    let (s, c) = block_event_expression(s)?;
+    Ok((
+        s,
+        BlockEventExpression::Or(Box::new(BlockEventExpressionOr { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn block_event_expression_begin(s: Span) -> IResult<Span, BlockEventExpression> {
+    let (s, a) = symbol("begin")(s)?;
+    let (s, b) = hierarchical_btf_identifier(s)?;
+    Ok((
+        s,
+        BlockEventExpression::Begin(BlockEventExpressionBegin { nodes: (a, b) }),
+    ))
+}
+
+pub fn block_event_expression_end(s: Span) -> IResult<Span, BlockEventExpression> {
+    let (s, a) = symbol("end")(s)?;
+    let (s, b) = hierarchical_btf_identifier(s)?;
+    Ok((
+        s,
+        BlockEventExpression::End(BlockEventExpressionEnd { nodes: (a, b) }),
+    ))
 }
 
 pub fn hierarchical_btf_identifier(s: Span) -> IResult<Span, HierarchicalBtfIdentifier> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(hierarchical_tf_identifier, |x| {
+            HierarchicalBtfIdentifier::HierarchicalTfIdentifier(x)
+        }),
+        map(hierarchical_block_identifier, |x| {
+            HierarchicalBtfIdentifier::HierarchicalBlockIdentifier(x)
+        }),
+        hierarchical_btf_identifier_method,
+    ))(s)
+}
+
+pub fn hierarchical_btf_identifier_method(s: Span) -> IResult<Span, HierarchicalBtfIdentifier> {
+    let (s, a) = opt(hierarchical_identifier_or_class_scope)(s)?;
+    let (s, b) = method_identifier(s)?;
+    Ok((
+        s,
+        HierarchicalBtfIdentifier::Method(HierarchicalBtfIdentifierMethod { nodes: (a, b) }),
+    ))
+}
+
+pub fn hierarchical_identifier_or_class_scope(
+    s: Span,
+) -> IResult<Span, HierarchicalIdentifierOrClassScope> {
+    alt((
+        map(pair(hierarchical_identifier, symbol(".")), |x| {
+            HierarchicalIdentifierOrClassScope::HierarchicalIdentifier(x)
+        }),
+        map(class_scope, |x| {
+            HierarchicalIdentifierOrClassScope::ClassScope(x)
+        }),
+    ))(s)
 }
 
 pub fn cover_point(s: Span) -> IResult<Span, CoverPoint> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = opt(triple(
+        opt(data_type_or_implicit),
+        cover_point_identifier,
+        symbol(":"),
+    ))(s)?;
+    let (s, b) = symbol("coverpoint")(s)?;
+    let (s, c) = expression(s)?;
+    let (s, d) = opt(pair(symbol("iff"), paren(expression)))(s)?;
+    let (s, e) = bins_or_empty(s)?;
+    Ok((
+        s,
+        CoverPoint {
+            nodes: (a, b, c, d, e),
+        },
+    ))
 }
 
 pub fn bins_or_empty(s: Span) -> IResult<Span, BinsOrEmpty> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        bins_or_empty_non_empty,
+        map(symbol(";"), |x| BinsOrEmpty::Empty(x)),
+    ))(s)
+}
+
+pub fn bins_or_empty_non_empty(s: Span) -> IResult<Span, BinsOrEmpty> {
+    let (s, a) = brace(pair(
+        many0(attribute_instance),
+        many0(pair(bins_or_options, symbol(";"))),
+    ))(s)?;
+    Ok((
+        s,
+        BinsOrEmpty::NonEmpty(BinsOrEmptyNonEmpty { nodes: (a,) }),
+    ))
 }
 
 pub fn bins_or_options(s: Span) -> IResult<Span, BinsOrOptions> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(coverage_option, |x| BinsOrOptions::CoverageOption(x)),
+        bins_or_options_covergroup,
+        bins_or_options_cover_point,
+        bins_or_options_set_covergroup,
+        bins_or_options_trans_list,
+        bins_or_options_default,
+        bins_or_options_default_sequence,
+    ))(s)
+}
+
+pub fn bins_or_options_covergroup(s: Span) -> IResult<Span, BinsOrOptions> {
+    let (s, a) = opt(wildcard)(s)?;
+    let (s, b) = bins_keyword(s)?;
+    let (s, c) = bin_identifier(s)?;
+    let (s, d) = opt(bracket(opt(covergroup_expression)))(s)?;
+    let (s, e) = symbol("=")(s)?;
+    let (s, f) = brace(covergroup_range_list)(s)?;
+    let (s, g) = opt(pair(symbol("with"), paren(with_covergroup_expression)))(s)?;
+    let (s, h) = opt(pair(symbol("iff"), paren(expression)))(s)?;
+    Ok((
+        s,
+        BinsOrOptions::Covergroup(BinsOrOptionsCovergroup {
+            nodes: (a, b, c, d, e, f, g, h),
+        }),
+    ))
+}
+
+pub fn wildcard(s: Span) -> IResult<Span, Wildcard> {
+    let (s, a) = symbol("wildcard")(s)?;
+    Ok((s, Wildcard { nodes: (a,) }))
+}
+
+pub fn bins_or_options_cover_point(s: Span) -> IResult<Span, BinsOrOptions> {
+    let (s, a) = opt(wildcard)(s)?;
+    let (s, b) = bins_keyword(s)?;
+    let (s, c) = bin_identifier(s)?;
+    let (s, d) = opt(bracket(opt(covergroup_expression)))(s)?;
+    let (s, e) = symbol("=")(s)?;
+    let (s, f) = cover_point_identifier(s)?;
+    let (s, g) = symbol("with")(s)?;
+    let (s, h) = paren(with_covergroup_expression)(s)?;
+    let (s, i) = opt(pair(symbol("iff"), paren(expression)))(s)?;
+    Ok((
+        s,
+        BinsOrOptions::CoverPoint(BinsOrOptionsCoverPoint {
+            nodes: (a, b, c, d, e, f, g, h, i),
+        }),
+    ))
+}
+
+pub fn bins_or_options_set_covergroup(s: Span) -> IResult<Span, BinsOrOptions> {
+    let (s, a) = opt(wildcard)(s)?;
+    let (s, b) = bins_keyword(s)?;
+    let (s, c) = bin_identifier(s)?;
+    let (s, d) = opt(bracket(opt(covergroup_expression)))(s)?;
+    let (s, e) = symbol("=")(s)?;
+    let (s, f) = set_covergroup_expression(s)?;
+    let (s, g) = opt(pair(symbol("iff"), paren(expression)))(s)?;
+    Ok((
+        s,
+        BinsOrOptions::SetCovergroup(BinsOrOptionsSetCovergroup {
+            nodes: (a, b, c, d, e, f, g),
+        }),
+    ))
+}
+
+pub fn bins_or_options_trans_list(s: Span) -> IResult<Span, BinsOrOptions> {
+    let (s, a) = opt(wildcard)(s)?;
+    let (s, b) = bins_keyword(s)?;
+    let (s, c) = bin_identifier(s)?;
+    let (s, d) = opt(pair(symbol("["), symbol("]")))(s)?;
+    let (s, e) = symbol("=")(s)?;
+    let (s, f) = trans_list(s)?;
+    let (s, g) = opt(pair(symbol("iff"), paren(expression)))(s)?;
+    Ok((
+        s,
+        BinsOrOptions::TransList(BinsOrOptionsTransList {
+            nodes: (a, b, c, d, e, f, g),
+        }),
+    ))
+}
+
+pub fn bins_or_options_default(s: Span) -> IResult<Span, BinsOrOptions> {
+    let (s, a) = bins_keyword(s)?;
+    let (s, b) = bin_identifier(s)?;
+    let (s, c) = opt(bracket(opt(covergroup_expression)))(s)?;
+    let (s, d) = symbol("=")(s)?;
+    let (s, e) = symbol("default")(s)?;
+    let (s, f) = opt(pair(symbol("iff"), paren(expression)))(s)?;
+    Ok((
+        s,
+        BinsOrOptions::Default(BinsOrOptionsDefault {
+            nodes: (a, b, c, d, e, f),
+        }),
+    ))
+}
+
+pub fn bins_or_options_default_sequence(s: Span) -> IResult<Span, BinsOrOptions> {
+    let (s, a) = bins_keyword(s)?;
+    let (s, b) = bin_identifier(s)?;
+    let (s, c) = symbol("=")(s)?;
+    let (s, d) = symbol("default")(s)?;
+    let (s, e) = symbol("sequence")(s)?;
+    let (s, f) = opt(pair(symbol("iff"), paren(expression)))(s)?;
+    Ok((
+        s,
+        BinsOrOptions::DefaultSequence(BinsOrOptionsDefaultSequence {
+            nodes: (a, b, c, d, e, f),
+        }),
+    ))
 }
 
 pub fn bins_keyword(s: Span) -> IResult<Span, BinsKeyword> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(symbol("bins"), |x| BinsKeyword::Bins(x)),
+        map(symbol("illegal_bins"), |x| BinsKeyword::IllegalBins(x)),
+        map(symbol("ignore_bins"), |x| BinsKeyword::IgnoreBins(x)),
+    ))(s)
 }
 
 pub fn trans_list(s: Span) -> IResult<Span, TransList> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = list(symbol(","), paren(trans_set))(s)?;
+    Ok((s, TransList { nodes: (a,) }))
 }
 
 pub fn trans_set(s: Span) -> IResult<Span, TransSet> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = list(symbol("=>"), trans_range_list)(s)?;
+    Ok((s, TransSet { nodes: (a,) }))
 }
 
 pub fn trans_range_list(s: Span) -> IResult<Span, TransRangeList> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(trans_item, |x| TransRangeList::TransItem(x)),
+        trans_range_list_asterisk,
+        trans_range_list_arrow,
+        trans_range_list_equal,
+    ))(s)
+}
+
+pub fn trans_range_list_asterisk(s: Span) -> IResult<Span, TransRangeList> {
+    let (s, a) = trans_item(s)?;
+    let (s, b) = bracket(pair(symbol("*"), repeat_range))(s)?;
+    Ok((
+        s,
+        TransRangeList::Asterisk(TransRangeListAsterisk { nodes: (a, b) }),
+    ))
+}
+
+pub fn trans_range_list_arrow(s: Span) -> IResult<Span, TransRangeList> {
+    let (s, a) = trans_item(s)?;
+    let (s, b) = bracket(pair(symbol("->"), repeat_range))(s)?;
+    Ok((
+        s,
+        TransRangeList::Arrow(TransRangeListArrow { nodes: (a, b) }),
+    ))
+}
+
+pub fn trans_range_list_equal(s: Span) -> IResult<Span, TransRangeList> {
+    let (s, a) = trans_item(s)?;
+    let (s, b) = bracket(pair(symbol("="), repeat_range))(s)?;
+    Ok((
+        s,
+        TransRangeList::Equal(TransRangeListEqual { nodes: (a, b) }),
+    ))
 }
 
 pub fn trans_item(s: Span) -> IResult<Span, TransItem> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = covergroup_range_list(s)?;
+    Ok((s, TransItem { nodes: (a,) }))
 }
 
 pub fn repeat_range(s: Span) -> IResult<Span, RepeatRange> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(covergroup_expression, |x| {
+            RepeatRange::CovergroupExpression(x)
+        }),
+        repeat_range_binary,
+    ))(s)
+}
+
+pub fn repeat_range_binary(s: Span) -> IResult<Span, RepeatRange> {
+    let (s, a) = covergroup_expression(s)?;
+    let (s, b) = symbol(":")(s)?;
+    let (s, c) = covergroup_expression(s)?;
+    Ok((
+        s,
+        RepeatRange::Binary(RepeatRangeBinary { nodes: (a, b, c) }),
+    ))
 }
 
 pub fn cover_cross(s: Span) -> IResult<Span, CoverCross> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = opt(pair(cross_identifier, symbol(":")))(s)?;
+    let (s, b) = symbol("cross")(s)?;
+    let (s, c) = list_of_cross_items(s)?;
+    let (s, d) = opt(pair(symbol("iff"), paren(expression)))(s)?;
+    let (s, e) = cross_body(s)?;
+    Ok((
+        s,
+        CoverCross {
+            nodes: (a, b, c, d, e),
+        },
+    ))
 }
 
 pub fn list_of_cross_items(s: Span) -> IResult<Span, ListOfCrossItems> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = cross_item(s)?;
+    let (s, b) = list(symbol(","), cross_item)(s)?;
+    Ok((s, ListOfCrossItems { nodes: (a, b) }))
 }
 
 pub fn cross_item(s: Span) -> IResult<Span, CrossItem> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(cover_point_identifier, |x| {
+            CrossItem::CoverPointIdentifier(x)
+        }),
+        map(variable_identifier, |x| CrossItem::VariableIdentifier(x)),
+    ))(s)
 }
 
 pub fn cross_body(s: Span) -> IResult<Span, CrossBody> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        cross_body_non_empty,
+        map(symbol(";"), |x| CrossBody::Empty(x)),
+    ))(s)
+}
+
+pub fn cross_body_non_empty(s: Span) -> IResult<Span, CrossBody> {
+    let (s, a) = brace(many0(pair(cross_body_item, symbol(";"))))(s)?;
+    Ok((s, CrossBody::NonEmpty(CrossBodyNonEmpty { nodes: (a,) })))
 }
 
 pub fn cross_body_item(s: Span) -> IResult<Span, CrossBodyItem> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(function_declaration, |x| {
+            CrossBodyItem::FunctionDeclaration(x)
+        }),
+        map(pair(bins_selection_or_option, symbol(";")), |x| {
+            CrossBodyItem::BinsSelectionOrOption(x)
+        }),
+    ))(s)
 }
 
 pub fn bins_selection_or_option(s: Span) -> IResult<Span, BinsSelectionOrOption> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        bins_selection_or_option_coverage,
+        bins_selection_or_option_bins,
+    ))(s)
+}
+
+pub fn bins_selection_or_option_coverage(s: Span) -> IResult<Span, BinsSelectionOrOption> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = coverage_option(s)?;
+    Ok((
+        s,
+        BinsSelectionOrOption::Coverage(BinsSelectionOrOptionCoverage { nodes: (a, b) }),
+    ))
+}
+
+pub fn bins_selection_or_option_bins(s: Span) -> IResult<Span, BinsSelectionOrOption> {
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = bins_selection(s)?;
+    Ok((
+        s,
+        BinsSelectionOrOption::Bins(BinsSelectionOrOptionBins { nodes: (a, b) }),
+    ))
 }
 
 pub fn bins_selection(s: Span) -> IResult<Span, BinsSelection> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = bins_keyword(s)?;
+    let (s, b) = bin_identifier(s)?;
+    let (s, c) = symbol("=")(s)?;
+    let (s, d) = select_expression(s)?;
+    let (s, e) = opt(pair(symbol("iff"), paren(expression)))(s)?;
+    Ok((
+        s,
+        BinsSelection {
+            nodes: (a, b, c, d, e),
+        },
+    ))
 }
 
 pub fn select_expression(s: Span) -> IResult<Span, SelectExpression> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(select_condition, |x| SelectExpression::SelectCondition(x)),
+        select_expression_not,
+        select_expression_and,
+        select_expression_or,
+        select_expression_paren,
+        select_expression_with,
+        map(cross_identifier, |x| SelectExpression::CrossIdentifier(x)),
+        select_expression_cross_set,
+    ))(s)
+}
+
+pub fn select_expression_not(s: Span) -> IResult<Span, SelectExpression> {
+    let (s, a) = symbol("!")(s)?;
+    let (s, b) = select_condition(s)?;
+    Ok((
+        s,
+        SelectExpression::Not(SelectExpressionNot { nodes: (a, b) }),
+    ))
+}
+
+pub fn select_expression_and(s: Span) -> IResult<Span, SelectExpression> {
+    let (s, a) = select_expression(s)?;
+    let (s, b) = symbol("&&")(s)?;
+    let (s, c) = select_expression(s)?;
+    Ok((
+        s,
+        SelectExpression::And(Box::new(SelectExpressionAnd { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn select_expression_or(s: Span) -> IResult<Span, SelectExpression> {
+    let (s, a) = select_expression(s)?;
+    let (s, b) = symbol("||")(s)?;
+    let (s, c) = select_expression(s)?;
+    Ok((
+        s,
+        SelectExpression::Or(Box::new(SelectExpressionOr { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn select_expression_paren(s: Span) -> IResult<Span, SelectExpression> {
+    let (s, a) = paren(select_expression)(s)?;
+    Ok((
+        s,
+        SelectExpression::Paren(Box::new(SelectExpressionParen { nodes: (a,) })),
+    ))
+}
+
+pub fn select_expression_with(s: Span) -> IResult<Span, SelectExpression> {
+    let (s, a) = select_expression(s)?;
+    let (s, b) = symbol("with")(s)?;
+    let (s, c) = paren(with_covergroup_expression)(s)?;
+    let (s, d) = opt(pair(symbol("matches"), integer_covergroup_expression))(s)?;
+    Ok((
+        s,
+        SelectExpression::With(Box::new(SelectExpressionWith {
+            nodes: (a, b, c, d),
+        })),
+    ))
+}
+
+pub fn select_expression_cross_set(s: Span) -> IResult<Span, SelectExpression> {
+    let (s, a) = cross_set_expression(s)?;
+    let (s, b) = opt(pair(symbol("matches"), integer_covergroup_expression))(s)?;
+    Ok((
+        s,
+        SelectExpression::CrossSet(SelectExpressionCrossSet { nodes: (a, b) }),
+    ))
 }
 
 pub fn select_condition(s: Span) -> IResult<Span, SelectCondition> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = symbol("binsof")(s)?;
+    let (s, b) = paren(bins_expression)(s)?;
+    let (s, c) = opt(pair(symbol("intersect"), brace(covergroup_range_list)))(s)?;
+    Ok((s, SelectCondition { nodes: (a, b, c) }))
 }
 
 pub fn bins_expression(s: Span) -> IResult<Span, BinsExpression> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(variable_identifier, |x| {
+            BinsExpression::VariableIdentifier(x)
+        }),
+        bins_expression_cover_point,
+    ))(s)
+}
+
+pub fn bins_expression_cover_point(s: Span) -> IResult<Span, BinsExpression> {
+    let (s, a) = cover_point_identifier(s)?;
+    let (s, b) = opt(pair(symbol("."), bin_identifier))(s)?;
+    Ok((
+        s,
+        BinsExpression::CoverPoint(BinsExpressionCoverPoint { nodes: (a, b) }),
+    ))
 }
 
 pub fn covergroup_range_list(s: Span) -> IResult<Span, CovergroupRangeList> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = list(symbol(","), covergroup_value_range)(s)?;
+    Ok((s, CovergroupRangeList { nodes: (a,) }))
 }
 
 pub fn covergroup_value_range(s: Span) -> IResult<Span, CovergroupValueRange> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(covergroup_expression, |x| {
+            CovergroupValueRange::CovergroupExpression(x)
+        }),
+        covergroup_value_range_binary,
+    ))(s)
+}
+
+pub fn covergroup_value_range_binary(s: Span) -> IResult<Span, CovergroupValueRange> {
+    let (s, a) = bracket(triple(
+        covergroup_expression,
+        symbol(":"),
+        covergroup_expression,
+    ))(s)?;
+    Ok((
+        s,
+        CovergroupValueRange::Binary(CovergroupValueRangeBinary { nodes: (a,) }),
+    ))
 }
 
 pub fn with_covergroup_expression(s: Span) -> IResult<Span, WithCovergroupExpression> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = covergroup_expression(s)?;
+    Ok((s, WithCovergroupExpression { nodes: (a,) }))
 }
 
 pub fn set_covergroup_expression(s: Span) -> IResult<Span, SetCovergroupExpression> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = covergroup_expression(s)?;
+    Ok((s, SetCovergroupExpression { nodes: (a,) }))
 }
 
 pub fn integer_covergroup_expression(s: Span) -> IResult<Span, IntegerCovergroupExpression> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = covergroup_expression(s)?;
+    Ok((s, IntegerCovergroupExpression { nodes: (a,) }))
 }
 
 pub fn cross_set_expression(s: Span) -> IResult<Span, CrossSetExpression> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = covergroup_expression(s)?;
+    Ok((s, CrossSetExpression { nodes: (a,) }))
 }
 
 pub fn covergroup_expression(s: Span) -> IResult<Span, CovergroupExpression> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = expression(s)?;
+    Ok((s, CovergroupExpression { nodes: (a,) }))
 }

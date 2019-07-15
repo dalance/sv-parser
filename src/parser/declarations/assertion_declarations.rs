@@ -1,9 +1,10 @@
 use crate::ast::*;
 use crate::parser::*;
-//use nom::branch::*;
-//use nom::combinator::*;
-use nom::error::*;
-use nom::{Err, IResult};
+use nom::branch::*;
+use nom::combinator::*;
+use nom::multi::*;
+use nom::sequence::*;
+use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
@@ -23,11 +24,11 @@ pub struct ConcurrentAssertionItemStatement<'a> {
 
 #[derive(Debug, Node)]
 pub enum ConcurrentAssertionStatement<'a> {
-    AssertProperty(AssertPropertyStatement<'a>),
-    AssumeProperty(AssumePropertyStatement<'a>),
-    CoverProperty(CoverPropertyStatement<'a>),
-    CoverSequence(CoverSequenceStatement<'a>),
-    RestrictProperty(RestrictPropertyStatement<'a>),
+    AssertPropertyStatement(AssertPropertyStatement<'a>),
+    AssumePropertyStatement(AssumePropertyStatement<'a>),
+    CoverPropertyStatement(CoverPropertyStatement<'a>),
+    CoverSequenceStatement(CoverSequenceStatement<'a>),
+    RestrictPropertyStatement(RestrictPropertyStatement<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -62,12 +63,7 @@ pub struct CoverPropertyStatement<'a> {
 
 #[derive(Debug, Node)]
 pub struct ExpectPropertyStatement<'a> {
-    pub nodes: (
-        Symbol<'a>,
-        Symbol<'a>,
-        Paren<'a, PropertySpec<'a>>,
-        ActionBlock<'a>,
-    ),
+    pub nodes: (Symbol<'a>, Paren<'a, PropertySpec<'a>>, ActionBlock<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -175,7 +171,7 @@ pub struct PropertyPortList<'a> {
 pub struct PropertyPortItem<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Option<(Symbol<'a>, Option<PropertyLvarPortDirection<'a>>)>,
+        Option<(Local<'a>, Option<PropertyLvarPortDirection<'a>>)>,
         PropertyFormalType<'a>,
         FormalPortIdentifier<'a>,
         Vec<VariableDimension<'a>>,
@@ -313,7 +309,7 @@ pub struct PropertyExprFollowedByNonoverlapped<'a> {
 pub struct PropertyExprNexttime<'a> {
     pub nodes: (
         Symbol<'a>,
-        Option<Paren<'a, ConstantExpression<'a>>>,
+        Option<Bracket<'a, ConstantExpression<'a>>>,
         PropertyExpr<'a>,
     ),
 }
@@ -322,7 +318,7 @@ pub struct PropertyExprNexttime<'a> {
 pub struct PropertyExprSNexttime<'a> {
     pub nodes: (
         Symbol<'a>,
-        Option<Paren<'a, ConstantExpression<'a>>>,
+        Option<Bracket<'a, ConstantExpression<'a>>>,
         PropertyExpr<'a>,
     ),
 }
@@ -331,7 +327,7 @@ pub struct PropertyExprSNexttime<'a> {
 pub struct PropertyExprAlways<'a> {
     pub nodes: (
         Symbol<'a>,
-        Option<Paren<'a, CycleDelayConstRangeExpression<'a>>>,
+        Option<Bracket<'a, CycleDelayConstRangeExpression<'a>>>,
         PropertyExpr<'a>,
     ),
 }
@@ -340,21 +336,21 @@ pub struct PropertyExprAlways<'a> {
 pub struct PropertyExprSAlways<'a> {
     pub nodes: (
         Symbol<'a>,
-        Option<Paren<'a, CycleDelayConstRangeExpression<'a>>>,
+        Bracket<'a, CycleDelayConstRangeExpression<'a>>,
         PropertyExpr<'a>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct PropertyExprEventually<'a> {
-    pub nodes: (Symbol<'a>, Paren<'a, ConstantRange<'a>>, PropertyExpr<'a>),
+    pub nodes: (Symbol<'a>, Bracket<'a, ConstantRange<'a>>, PropertyExpr<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct PropertyExprSEventually<'a> {
     pub nodes: (
         Symbol<'a>,
-        Option<Paren<'a, CycleDelayConstRangeExpression<'a>>>,
+        Option<Bracket<'a, CycleDelayConstRangeExpression<'a>>>,
         PropertyExpr<'a>,
     ),
 }
@@ -475,7 +471,7 @@ pub struct SequencePortList<'a> {
 pub struct SequencePortItem<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Option<(Symbol<'a>, Option<SequenceLvarPortDirection<'a>>)>,
+        Option<(Local<'a>, Option<SequenceLvarPortDirection<'a>>)>,
         SequenceFormalType<'a>,
         FormalPortIdentifier<'a>,
         Vec<VariableDimension<'a>>,
@@ -696,7 +692,7 @@ pub enum ConsecutiveRepetition<'a> {
 
 #[derive(Debug, Node)]
 pub struct ConsecutiveRepetitionExpression<'a> {
-    pub nodes: (Bracket<'a, (Symbol<'a>, ConstOrRangeExpression<'a>)>),
+    pub nodes: (Bracket<'a, (Symbol<'a>, ConstOrRangeExpression<'a>)>,),
 }
 
 #[derive(Debug, Node)]
@@ -761,167 +757,1040 @@ pub struct AssertionVariableDeclaration<'a> {
 // -----------------------------------------------------------------------------
 
 pub fn concurrent_assertion_item(s: Span) -> IResult<Span, ConcurrentAssertionItem> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        concurrent_assertion_item_statement,
+        map(checker_instantiation, |x| {
+            ConcurrentAssertionItem::CheckerInstantiation(x)
+        }),
+    ))(s)
+}
+
+pub fn concurrent_assertion_item_statement(s: Span) -> IResult<Span, ConcurrentAssertionItem> {
+    let (s, a) = opt(pair(block_identifier, symbol(":")))(s)?;
+    let (s, b) = concurrent_assertion_statement(s)?;
+    Ok((
+        s,
+        ConcurrentAssertionItem::Statement(ConcurrentAssertionItemStatement { nodes: (a, b) }),
+    ))
 }
 
 pub fn concurrent_assertion_statement(s: Span) -> IResult<Span, ConcurrentAssertionStatement> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(assert_property_statement, |x| {
+            ConcurrentAssertionStatement::AssertPropertyStatement(x)
+        }),
+        map(assume_property_statement, |x| {
+            ConcurrentAssertionStatement::AssumePropertyStatement(x)
+        }),
+        map(cover_property_statement, |x| {
+            ConcurrentAssertionStatement::CoverPropertyStatement(x)
+        }),
+        map(cover_sequence_statement, |x| {
+            ConcurrentAssertionStatement::CoverSequenceStatement(x)
+        }),
+        map(restrict_property_statement, |x| {
+            ConcurrentAssertionStatement::RestrictPropertyStatement(x)
+        }),
+    ))(s)
 }
 
 pub fn assert_property_statement(s: Span) -> IResult<Span, AssertPropertyStatement> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = symbol("assert")(s)?;
+    let (s, b) = symbol("property")(s)?;
+    let (s, c) = paren(property_spec)(s)?;
+    let (s, d) = action_block(s)?;
+    Ok((
+        s,
+        AssertPropertyStatement {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn assume_property_statement(s: Span) -> IResult<Span, AssumePropertyStatement> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = symbol("assume")(s)?;
+    let (s, b) = symbol("property")(s)?;
+    let (s, c) = paren(property_spec)(s)?;
+    let (s, d) = action_block(s)?;
+    Ok((
+        s,
+        AssumePropertyStatement {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn cover_property_statement(s: Span) -> IResult<Span, CoverPropertyStatement> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = symbol("cover")(s)?;
+    let (s, b) = symbol("property")(s)?;
+    let (s, c) = paren(property_spec)(s)?;
+    let (s, d) = statement_or_null(s)?;
+    Ok((
+        s,
+        CoverPropertyStatement {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn expect_property_statement(s: Span) -> IResult<Span, ExpectPropertyStatement> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = symbol("expect")(s)?;
+    let (s, b) = paren(property_spec)(s)?;
+    let (s, c) = action_block(s)?;
+    Ok((s, ExpectPropertyStatement { nodes: (a, b, c) }))
 }
 
 pub fn cover_sequence_statement(s: Span) -> IResult<Span, CoverSequenceStatement> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = symbol("cover")(s)?;
+    let (s, b) = symbol("sequence")(s)?;
+    let (s, c) = paren(triple(
+        opt(clocking_event),
+        opt(triple(
+            symbol("disable"),
+            symbol("iff"),
+            paren(expression_or_dist),
+        )),
+        sequence_expr,
+    ))(s)?;
+    let (s, d) = statement_or_null(s)?;
+    Ok((
+        s,
+        CoverSequenceStatement {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn restrict_property_statement(s: Span) -> IResult<Span, RestrictPropertyStatement> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = symbol("restrict")(s)?;
+    let (s, b) = symbol("property")(s)?;
+    let (s, c) = paren(property_spec)(s)?;
+    let (s, d) = symbol(";")(s)?;
+    Ok((
+        s,
+        RestrictPropertyStatement {
+            nodes: (a, b, c, d),
+        },
+    ))
 }
 
 pub fn property_instance(s: Span) -> IResult<Span, PropertyInstance> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = ps_or_hierarchical_property_identifier(s)?;
+    let (s, b) = opt(paren(opt(property_list_of_arguments)))(s)?;
+    Ok((s, PropertyInstance { nodes: (a, b) }))
 }
 
 pub fn property_list_of_arguments(s: Span) -> IResult<Span, PropertyListOfArguments> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        property_list_of_arguments_ordered,
+        property_list_of_arguments_named,
+    ))(s)
+}
+
+pub fn property_list_of_arguments_ordered(s: Span) -> IResult<Span, PropertyListOfArguments> {
+    let (s, a) = list(symbol(","), opt(property_actual_arg))(s)?;
+    let (s, b) = many0(tuple((
+        symbol(","),
+        symbol("."),
+        identifier,
+        paren(opt(property_actual_arg)),
+    )))(s)?;
+    Ok((
+        s,
+        PropertyListOfArguments::Ordered(PropertyListOfArgumentsOrdered { nodes: (a, b) }),
+    ))
+}
+
+pub fn property_list_of_arguments_named(s: Span) -> IResult<Span, PropertyListOfArguments> {
+    let (s, a) = list(
+        symbol(","),
+        triple(symbol("."), identifier, paren(opt(property_actual_arg))),
+    )(s)?;
+    Ok((
+        s,
+        PropertyListOfArguments::Named(PropertyListOfArgumentsNamed { nodes: (a,) }),
+    ))
 }
 
 pub fn property_actual_arg(s: Span) -> IResult<Span, PropertyActualArg> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(property_expr, |x| PropertyActualArg::PropertyExpr(x)),
+        map(sequence_actual_arg, |x| {
+            PropertyActualArg::SequenceActualArg(x)
+        }),
+    ))(s)
 }
 
 pub fn assertion_item_declaration(s: Span) -> IResult<Span, AssertionItemDeclaration> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(property_declaration, |x| {
+            AssertionItemDeclaration::PropertyDeclaration(x)
+        }),
+        map(sequence_declaration, |x| {
+            AssertionItemDeclaration::SequenceDeclaration(x)
+        }),
+        map(let_declaration, |x| {
+            AssertionItemDeclaration::LetDeclaration(x)
+        }),
+    ))(s)
 }
 
 pub fn property_declaration(s: Span) -> IResult<Span, PropertyDeclaration> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = symbol("property")(s)?;
+    let (s, b) = property_identifier(s)?;
+    let (s, c) = opt(paren(opt(property_port_list)))(s)?;
+    let (s, d) = symbol(";")(s)?;
+    let (s, e) = many0(assertion_variable_declaration)(s)?;
+    let (s, f) = property_spec(s)?;
+    let (s, g) = opt(symbol(";"))(s)?;
+    let (s, h) = symbol("endproperty")(s)?;
+    let (s, i) = opt(pair(symbol(":"), property_identifier))(s)?;
+    Ok((
+        s,
+        PropertyDeclaration {
+            nodes: (a, b, c, d, e, f, g, h, i),
+        },
+    ))
 }
 
 pub fn property_port_list(s: Span) -> IResult<Span, PropertyPortList> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = list(symbol(","), property_port_item)(s)?;
+    Ok((s, PropertyPortList { nodes: (a,) }))
 }
 
 pub fn property_port_item(s: Span) -> IResult<Span, PropertyPortItem> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = opt(pair(local, opt(property_lvar_port_direction)))(s)?;
+    let (s, c) = property_formal_type(s)?;
+    let (s, d) = formal_port_identifier(s)?;
+    let (s, e) = many0(variable_dimension)(s)?;
+    let (s, f) = opt(pair(symbol("="), property_actual_arg))(s)?;
+    Ok((
+        s,
+        PropertyPortItem {
+            nodes: (a, b, c, d, e, f),
+        },
+    ))
 }
 
 pub fn property_lvar_port_direction(s: Span) -> IResult<Span, PropertyLvarPortDirection> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = symbol("input")(s)?;
+    Ok((s, PropertyLvarPortDirection::Input(a)))
 }
 
 pub fn property_formal_type(s: Span) -> IResult<Span, PropertyFormalType> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(sequence_formal_type, |x| {
+            PropertyFormalType::SequenceFormalType(x)
+        }),
+        map(symbol("property"), |x| PropertyFormalType::Property(x)),
+    ))(s)
 }
 
 pub fn property_spec(s: Span) -> IResult<Span, PropertySpec> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = opt(clocking_event)(s)?;
+    let (s, b) = opt(triple(
+        symbol("disable"),
+        symbol("iff"),
+        paren(expression_or_dist),
+    ))(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((s, PropertySpec { nodes: (a, b, c) }))
 }
 
 pub fn property_expr(s: Span) -> IResult<Span, PropertyExpr> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        alt((
+            map(sequence_expr, |x| PropertyExpr::SequenceExpr(x)),
+            property_expr_strong,
+            property_expr_weak,
+            property_expr_paren,
+            property_expr_not,
+            property_expr_or,
+            property_expr_and,
+            property_expr_implication_overlapped,
+            property_expr_implication_nonoverlapped,
+            property_expr_if,
+            property_expr_case,
+            property_expr_followed_by_overlapped,
+            property_expr_followed_by_nonoverlapped,
+            property_expr_nexttime,
+            property_expr_s_nexttime,
+        )),
+        alt((
+            property_expr_always,
+            property_expr_s_always,
+            property_expr_eventually,
+            property_expr_s_eventually,
+            property_expr_until,
+            property_expr_s_until,
+            property_expr_until_with,
+            property_expr_s_until_with,
+            property_expr_implies,
+            property_expr_iff,
+            property_expr_accept_on,
+            property_expr_reject_on,
+            property_expr_sync_accept_on,
+            property_expr_sync_reject_on,
+            map(property_instance, |x| {
+                PropertyExpr::PropertyInstance(Box::new(x))
+            }),
+            property_expr_clocking_event,
+        )),
+    ))(s)
+}
+
+pub fn property_expr_strong(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = symbol("strong")(s)?;
+    let (s, b) = paren(sequence_expr)(s)?;
+    Ok((
+        s,
+        PropertyExpr::Strong(PropertyExprStrong { nodes: (a, b) }),
+    ))
+}
+
+pub fn property_expr_weak(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = symbol("weak")(s)?;
+    let (s, b) = paren(sequence_expr)(s)?;
+    Ok((
+        s,
+        PropertyExpr::Strong(PropertyExprStrong { nodes: (a, b) }),
+    ))
+}
+
+pub fn property_expr_paren(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = paren(sequence_expr)(s)?;
+    Ok((
+        s,
+        PropertyExpr::Paren(Box::new(PropertyExprParen { nodes: (a,) })),
+    ))
+}
+
+pub fn property_expr_not(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = symbol("not")(s)?;
+    let (s, b) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::Not(Box::new(PropertyExprNot { nodes: (a, b) })),
+    ))
+}
+
+pub fn property_expr_or(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = property_expr(s)?;
+    let (s, b) = symbol("or")(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::Or(Box::new(PropertyExprOr { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn property_expr_and(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = property_expr(s)?;
+    let (s, b) = symbol("and")(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::And(Box::new(PropertyExprAnd { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn property_expr_implication_overlapped(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = sequence_expr(s)?;
+    let (s, b) = symbol("|->")(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::ImplicationOverlapped(Box::new(PropertyExprImplicationOverlapped {
+            nodes: (a, b, c),
+        })),
+    ))
+}
+
+pub fn property_expr_implication_nonoverlapped(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = sequence_expr(s)?;
+    let (s, b) = symbol("|=>")(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::ImplicationNonoverlapped(Box::new(PropertyExprImplicationNonoverlapped {
+            nodes: (a, b, c),
+        })),
+    ))
+}
+
+pub fn property_expr_if(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = symbol("if")(s)?;
+    let (s, b) = paren(expression_or_dist)(s)?;
+    let (s, c) = property_expr(s)?;
+    let (s, d) = opt(pair(symbol("else"), property_expr))(s)?;
+    Ok((
+        s,
+        PropertyExpr::If(Box::new(PropertyExprIf {
+            nodes: (a, b, c, d),
+        })),
+    ))
+}
+
+pub fn property_expr_case(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = symbol("case")(s)?;
+    let (s, b) = paren(expression_or_dist)(s)?;
+    let (s, c) = property_case_item(s)?;
+    let (s, d) = many0(property_case_item)(s)?;
+    let (s, e) = symbol("endcase")(s)?;
+    Ok((
+        s,
+        PropertyExpr::Case(Box::new(PropertyExprCase {
+            nodes: (a, b, c, d, e),
+        })),
+    ))
+}
+
+pub fn property_expr_followed_by_overlapped(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = sequence_expr(s)?;
+    let (s, b) = symbol("#-#")(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::FollowedByOverlapped(Box::new(PropertyExprFollowedByOverlapped {
+            nodes: (a, b, c),
+        })),
+    ))
+}
+
+pub fn property_expr_followed_by_nonoverlapped(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = sequence_expr(s)?;
+    let (s, b) = symbol("#=#")(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::FollowedByNonoverlapped(Box::new(PropertyExprFollowedByNonoverlapped {
+            nodes: (a, b, c),
+        })),
+    ))
+}
+
+pub fn property_expr_nexttime(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = symbol("nexttime")(s)?;
+    let (s, b) = opt(bracket(constant_expression))(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::Nexttime(Box::new(PropertyExprNexttime { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn property_expr_s_nexttime(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = symbol("s_nexttime")(s)?;
+    let (s, b) = opt(bracket(constant_expression))(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::SNexttime(Box::new(PropertyExprSNexttime { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn property_expr_always(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = symbol("always")(s)?;
+    let (s, b) = opt(bracket(cycle_delay_const_range_expression))(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::Always(Box::new(PropertyExprAlways { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn property_expr_s_always(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = symbol("s_always")(s)?;
+    let (s, b) = bracket(cycle_delay_const_range_expression)(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::SAlways(Box::new(PropertyExprSAlways { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn property_expr_eventually(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = symbol("eventually")(s)?;
+    let (s, b) = bracket(constant_range)(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::Eventually(Box::new(PropertyExprEventually { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn property_expr_s_eventually(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = symbol("s_eventually")(s)?;
+    let (s, b) = opt(bracket(cycle_delay_const_range_expression))(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::SEventually(Box::new(PropertyExprSEventually { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn property_expr_until(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = property_expr(s)?;
+    let (s, b) = symbol("until")(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::Until(Box::new(PropertyExprUntil { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn property_expr_s_until(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = property_expr(s)?;
+    let (s, b) = symbol("s_until")(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::SUntil(Box::new(PropertyExprSUntil { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn property_expr_until_with(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = property_expr(s)?;
+    let (s, b) = symbol("until_with")(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::UntilWith(Box::new(PropertyExprUntilWith { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn property_expr_s_until_with(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = property_expr(s)?;
+    let (s, b) = symbol("s_until_with")(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::SUntilWith(Box::new(PropertyExprSUntilWith { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn property_expr_implies(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = property_expr(s)?;
+    let (s, b) = symbol("implies")(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::Implies(Box::new(PropertyExprImplies { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn property_expr_iff(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = property_expr(s)?;
+    let (s, b) = symbol("iff")(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::Iff(Box::new(PropertyExprIff { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn property_expr_accept_on(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = symbol("accept_on")(s)?;
+    let (s, b) = paren(expression_or_dist)(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::AcceptOn(Box::new(PropertyExprAcceptOn { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn property_expr_reject_on(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = symbol("reject_on")(s)?;
+    let (s, b) = paren(expression_or_dist)(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::RejectOn(Box::new(PropertyExprRejectOn { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn property_expr_sync_accept_on(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = symbol("sync_accept_on")(s)?;
+    let (s, b) = paren(expression_or_dist)(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::SyncAcceptOn(Box::new(PropertyExprSyncAcceptOn { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn property_expr_sync_reject_on(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = symbol("sync_reject_on")(s)?;
+    let (s, b) = paren(expression_or_dist)(s)?;
+    let (s, c) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::SyncRejectOn(Box::new(PropertyExprSyncRejectOn { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn property_expr_clocking_event(s: Span) -> IResult<Span, PropertyExpr> {
+    let (s, a) = clocking_event(s)?;
+    let (s, b) = property_expr(s)?;
+    Ok((
+        s,
+        PropertyExpr::ClockingEvent(Box::new(PropertyExprClockingEvent { nodes: (a, b) })),
+    ))
 }
 
 pub fn property_case_item(s: Span) -> IResult<Span, PropertyCaseItem> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((property_case_item_nondefault, property_case_item_default))(s)
+}
+
+pub fn property_case_item_nondefault(s: Span) -> IResult<Span, PropertyCaseItem> {
+    let (s, a) = list(symbol(","), expression_or_dist)(s)?;
+    let (s, b) = symbol(":")(s)?;
+    let (s, c) = property_expr(s)?;
+    let (s, d) = symbol(";")(s)?;
+    Ok((
+        s,
+        PropertyCaseItem::Nondefault(PropertyCaseItemNondefault {
+            nodes: (a, b, c, d),
+        }),
+    ))
+}
+
+pub fn property_case_item_default(s: Span) -> IResult<Span, PropertyCaseItem> {
+    let (s, a) = symbol("default")(s)?;
+    let (s, b) = opt(symbol(":"))(s)?;
+    let (s, c) = property_expr(s)?;
+    let (s, d) = symbol(";")(s)?;
+    Ok((
+        s,
+        PropertyCaseItem::Default(PropertyCaseItemDefault {
+            nodes: (a, b, c, d),
+        }),
+    ))
 }
 
 pub fn sequence_declaration(s: Span) -> IResult<Span, SequenceDeclaration> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = symbol("sequence")(s)?;
+    let (s, b) = sequence_identifier(s)?;
+    let (s, c) = opt(paren(opt(sequence_port_list)))(s)?;
+    let (s, d) = symbol(";")(s)?;
+    let (s, e) = many0(assertion_variable_declaration)(s)?;
+    let (s, f) = sequence_expr(s)?;
+    let (s, g) = opt(symbol(";"))(s)?;
+    let (s, h) = symbol("endsequence")(s)?;
+    let (s, i) = opt(pair(symbol(":"), sequence_identifier))(s)?;
+    Ok((
+        s,
+        SequenceDeclaration {
+            nodes: (a, b, c, d, e, f, g, h, i),
+        },
+    ))
 }
 
 pub fn sequence_port_list(s: Span) -> IResult<Span, SequencePortList> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = list(symbol(","), sequence_port_item)(s)?;
+    Ok((s, SequencePortList { nodes: (a,) }))
 }
 
 pub fn sequence_port_item(s: Span) -> IResult<Span, SequencePortItem> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = many0(attribute_instance)(s)?;
+    let (s, b) = opt(pair(local, opt(sequence_lvar_port_direction)))(s)?;
+    let (s, c) = sequence_formal_type(s)?;
+    let (s, d) = formal_port_identifier(s)?;
+    let (s, e) = many0(variable_dimension)(s)?;
+    let (s, f) = opt(pair(symbol("="), sequence_actual_arg))(s)?;
+    Ok((
+        s,
+        SequencePortItem {
+            nodes: (a, b, c, d, e, f),
+        },
+    ))
 }
 
 pub fn sequence_lvar_port_direction(s: Span) -> IResult<Span, SequenceLvarPortDirection> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(symbol("input"), |x| SequenceLvarPortDirection::Input(x)),
+        map(symbol("inout"), |x| SequenceLvarPortDirection::Inout(x)),
+        map(symbol("output"), |x| SequenceLvarPortDirection::Output(x)),
+    ))(s)
 }
 
 pub fn sequence_formal_type(s: Span) -> IResult<Span, SequenceFormalType> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(data_type_or_implicit, |x| {
+            SequenceFormalType::DataTypeOrImplicit(x)
+        }),
+        map(symbol("sequence"), |x| SequenceFormalType::Sequence(x)),
+        map(symbol("untyped"), |x| SequenceFormalType::Untyped(x)),
+    ))(s)
 }
 
 pub fn sequence_expr(s: Span) -> IResult<Span, SequenceExpr> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        sequence_expr_cycle_delay_expr,
+        sequence_expr_expr_cycle_delay_expr,
+        sequence_expr_expression,
+        sequence_expr_instance,
+        sequence_expr_paren,
+        sequence_expr_and,
+        sequence_expr_intersect,
+        sequence_expr_or,
+        sequence_expr_first_match,
+        sequence_expr_throughout,
+        sequence_expr_within,
+        sequence_expr_clocking_event,
+    ))(s)
+}
+
+pub fn sequence_expr_cycle_delay_expr(s: Span) -> IResult<Span, SequenceExpr> {
+    let (s, a) = cycle_delay_range(s)?;
+    let (s, b) = sequence_expr(s)?;
+    let (s, c) = many0(pair(cycle_delay_range, sequence_expr))(s)?;
+    Ok((
+        s,
+        SequenceExpr::CycleDelayExpr(Box::new(SequenceExprCycleDelayExpr { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn sequence_expr_expr_cycle_delay_expr(s: Span) -> IResult<Span, SequenceExpr> {
+    let (s, a) = sequence_expr(s)?;
+    let (s, b) = cycle_delay_range(s)?;
+    let (s, c) = sequence_expr(s)?;
+    let (s, d) = many0(pair(cycle_delay_range, sequence_expr))(s)?;
+    Ok((
+        s,
+        SequenceExpr::ExprCycleDelayExpr(Box::new(SequenceExprExprCycleDelayExpr {
+            nodes: (a, b, c, d),
+        })),
+    ))
+}
+
+pub fn sequence_expr_expression(s: Span) -> IResult<Span, SequenceExpr> {
+    let (s, a) = expression_or_dist(s)?;
+    let (s, b) = opt(boolean_abbrev)(s)?;
+    Ok((
+        s,
+        SequenceExpr::Expression(SequenceExprExpression { nodes: (a, b) }),
+    ))
+}
+
+pub fn sequence_expr_instance(s: Span) -> IResult<Span, SequenceExpr> {
+    let (s, a) = sequence_instance(s)?;
+    let (s, b) = opt(sequence_abbrev)(s)?;
+    Ok((
+        s,
+        SequenceExpr::Instance(Box::new(SequenceExprInstance { nodes: (a, b) })),
+    ))
+}
+
+pub fn sequence_expr_paren(s: Span) -> IResult<Span, SequenceExpr> {
+    let (s, a) = paren(pair(
+        sequence_expr,
+        many0(pair(symbol(","), sequence_match_item)),
+    ))(s)?;
+    let (s, b) = opt(sequence_abbrev)(s)?;
+    Ok((
+        s,
+        SequenceExpr::Paren(Box::new(SequenceExprParen { nodes: (a, b) })),
+    ))
+}
+
+pub fn sequence_expr_and(s: Span) -> IResult<Span, SequenceExpr> {
+    let (s, a) = sequence_expr(s)?;
+    let (s, b) = symbol("and")(s)?;
+    let (s, c) = sequence_expr(s)?;
+    Ok((
+        s,
+        SequenceExpr::And(Box::new(SequenceExprAnd { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn sequence_expr_intersect(s: Span) -> IResult<Span, SequenceExpr> {
+    let (s, a) = sequence_expr(s)?;
+    let (s, b) = symbol("intersect")(s)?;
+    let (s, c) = sequence_expr(s)?;
+    Ok((
+        s,
+        SequenceExpr::Intersect(Box::new(SequenceExprIntersect { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn sequence_expr_or(s: Span) -> IResult<Span, SequenceExpr> {
+    let (s, a) = sequence_expr(s)?;
+    let (s, b) = symbol("or")(s)?;
+    let (s, c) = sequence_expr(s)?;
+    Ok((
+        s,
+        SequenceExpr::Or(Box::new(SequenceExprOr { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn sequence_expr_first_match(s: Span) -> IResult<Span, SequenceExpr> {
+    let (s, a) = symbol("first_match")(s)?;
+    let (s, b) = paren(pair(
+        sequence_expr,
+        many0(pair(symbol(","), sequence_match_item)),
+    ))(s)?;
+    Ok((
+        s,
+        SequenceExpr::FirstMatch(Box::new(SequenceExprFirstMatch { nodes: (a, b) })),
+    ))
+}
+
+pub fn sequence_expr_throughout(s: Span) -> IResult<Span, SequenceExpr> {
+    let (s, a) = expression_or_dist(s)?;
+    let (s, b) = symbol("throughout")(s)?;
+    let (s, c) = sequence_expr(s)?;
+    Ok((
+        s,
+        SequenceExpr::Throughout(Box::new(SequenceExprThroughout { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn sequence_expr_within(s: Span) -> IResult<Span, SequenceExpr> {
+    let (s, a) = sequence_expr(s)?;
+    let (s, b) = symbol("within")(s)?;
+    let (s, c) = sequence_expr(s)?;
+    Ok((
+        s,
+        SequenceExpr::Within(Box::new(SequenceExprWithin { nodes: (a, b, c) })),
+    ))
+}
+
+pub fn sequence_expr_clocking_event(s: Span) -> IResult<Span, SequenceExpr> {
+    let (s, a) = clocking_event(s)?;
+    let (s, b) = sequence_expr(s)?;
+    Ok((
+        s,
+        SequenceExpr::ClockingEvent(Box::new(SequenceExprClockingEvent { nodes: (a, b) })),
+    ))
 }
 
 pub fn cycle_delay_range(s: Span) -> IResult<Span, CycleDelayRange> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        cycle_delay_range_primary,
+        cycle_delay_range_expression,
+        cycle_delay_range_asterisk,
+        cycle_delay_range_plus,
+    ))(s)
+}
+
+pub fn cycle_delay_range_primary(s: Span) -> IResult<Span, CycleDelayRange> {
+    let (s, a) = symbol("##")(s)?;
+    let (s, b) = constant_primary(s)?;
+    Ok((
+        s,
+        CycleDelayRange::Primary(CycleDelayRangePrimary { nodes: (a, b) }),
+    ))
+}
+
+pub fn cycle_delay_range_expression(s: Span) -> IResult<Span, CycleDelayRange> {
+    let (s, a) = symbol("##")(s)?;
+    let (s, b) = bracket(cycle_delay_const_range_expression)(s)?;
+    Ok((
+        s,
+        CycleDelayRange::Expression(CycleDelayRangeExpression { nodes: (a, b) }),
+    ))
+}
+
+pub fn cycle_delay_range_asterisk(s: Span) -> IResult<Span, CycleDelayRange> {
+    let (s, a) = symbol("##")(s)?;
+    let (s, b) = bracket(symbol("*"))(s)?;
+    Ok((
+        s,
+        CycleDelayRange::Asterisk(CycleDelayRangeAsterisk { nodes: (a, b) }),
+    ))
+}
+
+pub fn cycle_delay_range_plus(s: Span) -> IResult<Span, CycleDelayRange> {
+    let (s, a) = symbol("##")(s)?;
+    let (s, b) = bracket(symbol("+"))(s)?;
+    Ok((
+        s,
+        CycleDelayRange::Plus(CycleDelayRangePlus { nodes: (a, b) }),
+    ))
 }
 
 pub fn sequence_method_call(s: Span) -> IResult<Span, SequenceMethodCall> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = sequence_instance(s)?;
+    let (s, b) = symbol(".")(s)?;
+    let (s, c) = method_identifier(s)?;
+    Ok((s, SequenceMethodCall { nodes: (a, b, c) }))
 }
 
 pub fn sequence_match_item(s: Span) -> IResult<Span, SequenceMatchItem> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(operator_assignment, |x| {
+            SequenceMatchItem::OperatorAssignment(x)
+        }),
+        map(inc_or_dec_expression, |x| {
+            SequenceMatchItem::IncOrDecExpression(x)
+        }),
+        map(subroutine_call, |x| SequenceMatchItem::SubroutineCall(x)),
+    ))(s)
 }
 
 pub fn sequence_instance(s: Span) -> IResult<Span, SequenceInstance> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = ps_or_hierarchical_sequence_identifier(s)?;
+    let (s, b) = opt(paren(opt(sequence_list_of_arguments)))(s)?;
+    Ok((s, SequenceInstance { nodes: (a, b) }))
 }
 
 pub fn sequence_list_of_arguments(s: Span) -> IResult<Span, SequenceListOfArguments> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        sequence_list_of_arguments_ordered,
+        sequence_list_of_arguments_named,
+    ))(s)
+}
+
+pub fn sequence_list_of_arguments_ordered(s: Span) -> IResult<Span, SequenceListOfArguments> {
+    let (s, a) = list(symbol(","), opt(sequence_actual_arg))(s)?;
+    let (s, b) = many0(tuple((
+        symbol(","),
+        symbol("."),
+        identifier,
+        paren(opt(sequence_actual_arg)),
+    )))(s)?;
+    Ok((
+        s,
+        SequenceListOfArguments::Ordered(SequenceListOfArgumentsOrdered { nodes: (a, b) }),
+    ))
+}
+
+pub fn sequence_list_of_arguments_named(s: Span) -> IResult<Span, SequenceListOfArguments> {
+    let (s, a) = list(
+        symbol(","),
+        triple(symbol("."), identifier, paren(opt(sequence_actual_arg))),
+    )(s)?;
+    Ok((
+        s,
+        SequenceListOfArguments::Named(SequenceListOfArgumentsNamed { nodes: (a,) }),
+    ))
 }
 
 pub fn sequence_actual_arg(s: Span) -> IResult<Span, SequenceActualArg> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(event_expression, |x| SequenceActualArg::EventExpression(x)),
+        map(sequence_expr, |x| SequenceActualArg::SequenceExpr(x)),
+    ))(s)
 }
 
 pub fn boolean_abbrev(s: Span) -> IResult<Span, BooleanAbbrev> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(consecutive_repetition, |x| {
+            BooleanAbbrev::ConsecutiveRepetition(x)
+        }),
+        map(non_consecutive_repetition, |x| {
+            BooleanAbbrev::NonConsecutiveRepetition(x)
+        }),
+        map(goto_repetition, |x| BooleanAbbrev::GotoRepetition(x)),
+    ))(s)
 }
 
 pub fn sequence_abbrev(s: Span) -> IResult<Span, SequenceAbbrev> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = consecutive_repetition(s)?;
+    Ok((s, SequenceAbbrev { nodes: (a,) }))
 }
 
 pub fn consecutive_repetition(s: Span) -> IResult<Span, ConsecutiveRepetition> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        consecutive_repetition_expression,
+        consecutive_repetition_asterisk,
+        consecutive_repetition_plus,
+    ))(s)
+}
+
+pub fn consecutive_repetition_expression(s: Span) -> IResult<Span, ConsecutiveRepetition> {
+    let (s, a) = bracket(pair(symbol("*"), const_or_range_expression))(s)?;
+    Ok((
+        s,
+        ConsecutiveRepetition::Expression(ConsecutiveRepetitionExpression { nodes: (a,) }),
+    ))
+}
+
+pub fn consecutive_repetition_asterisk(s: Span) -> IResult<Span, ConsecutiveRepetition> {
+    let (s, a) = bracket(symbol("*"))(s)?;
+    Ok((
+        s,
+        ConsecutiveRepetition::Asterisk(ConsecutiveRepetitionAsterisk { nodes: (a,) }),
+    ))
+}
+
+pub fn consecutive_repetition_plus(s: Span) -> IResult<Span, ConsecutiveRepetition> {
+    let (s, a) = bracket(symbol("+"))(s)?;
+    Ok((
+        s,
+        ConsecutiveRepetition::Plus(ConsecutiveRepetitionPlus { nodes: (a,) }),
+    ))
 }
 
 pub fn non_consecutive_repetition(s: Span) -> IResult<Span, NonConsecutiveRepetition> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = bracket(pair(symbol("="), const_or_range_expression))(s)?;
+    Ok((s, NonConsecutiveRepetition { nodes: (a,) }))
 }
 
 pub fn goto_repetition(s: Span) -> IResult<Span, GotoRepetition> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = bracket(pair(symbol("->"), const_or_range_expression))(s)?;
+    Ok((s, GotoRepetition { nodes: (a,) }))
 }
 
 pub fn const_or_range_expression(s: Span) -> IResult<Span, ConstOrRangeExpression> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        map(constant_expression, |x| {
+            ConstOrRangeExpression::ConstantExpression(x)
+        }),
+        map(cycle_delay_const_range_expression, |x| {
+            ConstOrRangeExpression::CycleDelayConstRangeExpression(x)
+        }),
+    ))(s)
 }
 
 pub fn cycle_delay_const_range_expression(
     s: Span,
 ) -> IResult<Span, CycleDelayConstRangeExpression> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    alt((
+        cycle_delay_const_range_expression_binary,
+        cycle_delay_const_range_expression_dollar,
+    ))(s)
+}
+
+pub fn cycle_delay_const_range_expression_binary(
+    s: Span,
+) -> IResult<Span, CycleDelayConstRangeExpression> {
+    let (s, a) = constant_expression(s)?;
+    let (s, b) = symbol(":")(s)?;
+    let (s, c) = constant_expression(s)?;
+    Ok((
+        s,
+        CycleDelayConstRangeExpression::Binary(CycleDelayConstRangeExpressionBinary {
+            nodes: (a, b, c),
+        }),
+    ))
+}
+
+pub fn cycle_delay_const_range_expression_dollar(
+    s: Span,
+) -> IResult<Span, CycleDelayConstRangeExpression> {
+    let (s, a) = constant_expression(s)?;
+    let (s, b) = symbol(":")(s)?;
+    let (s, c) = symbol("$")(s)?;
+    Ok((
+        s,
+        CycleDelayConstRangeExpression::Dollar(CycleDelayConstRangeExpressionDollar {
+            nodes: (a, b, c),
+        }),
+    ))
 }
 
 pub fn expression_or_dist(s: Span) -> IResult<Span, ExpressionOrDist> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = expression(s)?;
+    let (s, b) = opt(pair(symbol("dist"), brace(dist_list)))(s)?;
+    Ok((s, ExpressionOrDist { nodes: (a, b) }))
 }
 
 pub fn assertion_variable_declaration(s: Span) -> IResult<Span, AssertionVariableDeclaration> {
-    Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    let (s, a) = var_data_type(s)?;
+    let (s, b) = list_of_variable_decl_assignments(s)?;
+    let (s, c) = symbol(";")(s)?;
+    Ok((s, AssertionVariableDeclaration { nodes: (a, b, c) }))
 }

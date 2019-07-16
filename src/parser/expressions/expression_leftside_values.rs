@@ -151,8 +151,26 @@ pub fn nonrange_variable_lvalue(s: Span) -> IResult<Span, NonrangeVariableLvalue
 
 #[cfg(test)]
 mod tests {
-    //use super::*;
+    use super::*;
 
     #[test]
-    fn test() {}
+    fn test_net_lvalue() {
+        parser_test!(net_lvalue, "A", Ok((_, _)));
+        parser_test!(net_lvalue, "{A[7:0],A[15:8],A[23:16]}", Ok((_, _)));
+        parser_test!(net_lvalue, "'{A[7:0],A[15:8]}", Ok((_, _)));
+    }
+
+    #[test]
+    fn test_variable_lvalue() {
+        parser_test!(variable_lvalue, "A", Ok((_, _)));
+        parser_test!(variable_lvalue, "{A[7:0],A[15:8],A[23:16]}", Ok((_, _)));
+        parser_test!(variable_lvalue, "'{A[7:0],A[15:8]}", Ok((_, _)));
+    }
+
+    #[test]
+    fn test_nonrange_variable_lvalue() {
+        parser_test!(nonrange_variable_lvalue, "A", Ok((_, _)));
+        parser_test!(nonrange_variable_lvalue, "A[][2][3]", Ok((_, _)));
+        //parser_test!(nonrange_variable_lvalue, "A[][]", Ok((_, _)));
+    }
 }

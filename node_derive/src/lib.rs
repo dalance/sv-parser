@@ -4,7 +4,7 @@ extern crate proc_macro;
 
 use crate::proc_macro::TokenStream;
 use quote::quote;
-use syn;
+use syn::{self, parse_macro_input, ItemFn};
 
 #[proc_macro_derive(Node)]
 pub fn node_derive(input: TokenStream) -> TokenStream {
@@ -110,6 +110,28 @@ fn impl_any_node(ast: &syn::DeriveInput) -> TokenStream {
                 }
             }
         }
+    };
+    gen.into()
+}
+
+#[proc_macro_attribute]
+pub fn trace(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    let item = parse_macro_input!(item as ItemFn);
+    impl_trace(&item)
+}
+
+fn impl_trace(item: &syn::ItemFn) -> TokenStream {
+    let ident = &item.ident;
+    let mut item = item.clone();
+    let tracer = quote! {
+        println!("{}: {:?}", stringify!(#ident), s);
+    };
+    let tracer: TokenStream = tracer.into();
+    let tracer = parse_macro_input!(tracer as syn::Stmt);
+    item.block.stmts.insert(0, tracer);
+
+    let gen = quote! {
+        #item
     };
     gen.into()
 }

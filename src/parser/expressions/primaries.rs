@@ -587,45 +587,38 @@ mod tests {
 
     #[test]
     fn test_primary() {
-        let ret = all_consuming(primary)(Span::new_extra("2.1ns", 0));
-        if let Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::TimeLiteral(_)))) = ret {
-        } else {
-            assert!(false, "{:?}", ret)
-        }
-        let ret = all_consuming(primary)(Span::new_extra("40 ps", 0));
-        if let Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::TimeLiteral(_)))) = ret {
-        } else {
-            assert!(false, "{:?}", ret)
-        }
-        let ret = all_consuming(primary)(Span::new_extra("'0", 0));
-        if let Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::UnbasedUnsizedLiteral(_)))) = ret {
-        } else {
-            assert!(false, "{:?}", ret)
-        }
-        let ret = all_consuming(primary)(Span::new_extra("10", 0));
-        if let Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::Number(_)))) = ret {
-        } else {
-            assert!(false, "{:?}", ret)
-        }
-        let ret = all_consuming(primary)(Span::new_extra("\"aaa\"", 0));
-        if let Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::StringLiteral(_)))) = ret {
-        } else {
-            assert!(false, "{:?}", ret)
-        }
-        let ret = all_consuming(primary)(Span::new_extra("this", 0));
-        if let Ok((_, Primary::This(_))) = ret {
-        } else {
-            assert!(false, "{:?}", ret)
-        }
-        let ret = all_consuming(primary)(Span::new_extra("$", 0));
-        if let Ok((_, Primary::Dollar(_))) = ret {
-        } else {
-            assert!(false, "{:?}", ret)
-        }
-        let ret = all_consuming(primary)(Span::new_extra("null", 0));
-        if let Ok((_, Primary::Null(_))) = ret {
-        } else {
-            assert!(false, "{:?}", ret)
-        }
+        parser_test!(
+            primary,
+            "2.1ns",
+            Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::TimeLiteral(_))))
+        );
+        parser_test!(
+            primary,
+            "40 ps",
+            Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::TimeLiteral(_))))
+        );
+        parser_test!(
+            primary,
+            "'0",
+            Ok(
+                (
+                    _,
+                    Primary::PrimaryLiteral(PrimaryLiteral::UnbasedUnsizedLiteral(_))
+                ),
+            )
+        );
+        parser_test!(
+            primary,
+            "10",
+            Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::Number(_))))
+        );
+        parser_test!(
+            primary,
+            "\"aaa\"",
+            Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::StringLiteral(_))))
+        );
+        parser_test!(primary, "this", Ok((_, Primary::This(_))));
+        parser_test!(primary, "$", Ok((_, Primary::Dollar(_))));
+        parser_test!(primary, "null", Ok((_, Primary::Null(_))));
     }
 }

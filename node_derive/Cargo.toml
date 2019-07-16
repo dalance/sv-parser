@@ -10,5 +10,5 @@ edition = "2018"
 proc-macro = true
 
 [dependencies]
-syn = "0.14.4"
-quote = "0.6.3"
+syn = { version = "0.15.18", features = ["full", "fold", "parsing"] }
+quote = "0.6.9"

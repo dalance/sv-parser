@@ -4,9 +4,8 @@ use nom::branch::*;
 use nom::bytes::complete::*;
 use nom::character::complete::*;
 use nom::combinator::*;
-use nom::error::*;
 use nom::multi::*;
-use nom::{Err, IResult};
+use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
@@ -63,10 +62,10 @@ pub fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol<'
     move |s: Span<'a>| {
         if cfg!(feature = "trace") {
             println!(
-                "{:<48} : {:<4},{:>032x} : {}",
+                "{:<64} : {:<4},{:>032x} : {}",
                 format!("symbol(\"{}\")", t),
                 s.offset,
-                s.extra,
+                s.extra[0],
                 s.fragment
             );
         }
@@ -82,8 +81,8 @@ where
     move |s: Span<'a>| {
         if cfg!(feature = "trace") {
             println!(
-                "{:<48} : {:<4},{:>032x} : {}",
-                "paren", s.offset, s.extra, s.fragment
+                "{:<64} : {:<4},{:>032x} : {}",
+                "paren", s.offset, s.extra[0], s.fragment
             );
         }
         let (s, a) = symbol("(")(s)?;
@@ -100,8 +99,8 @@ where
     move |s: Span<'a>| {
         if cfg!(feature = "trace") {
             println!(
-                "{:<48} : {:<4},{:>032x} : {}",
-                "bracket", s.offset, s.extra, s.fragment
+                "{:<64} : {:<4},{:>032x} : {}",
+                "bracket", s.offset, s.extra[0], s.fragment
             );
         }
         let (s, a) = symbol("[")(s)?;
@@ -118,8 +117,8 @@ where
     move |s: Span<'a>| {
         if cfg!(feature = "trace") {
             println!(
-                "{:<48} : {:<4},{:>032x} : {}",
-                "brace", s.offset, s.extra, s.fragment
+                "{:<64} : {:<4},{:>032x} : {}",
+                "brace", s.offset, s.extra[0], s.fragment
             );
         }
         let (s, a) = symbol("{")(s)?;
@@ -138,8 +137,8 @@ where
     move |s: Span<'a>| {
         if cfg!(feature = "trace") {
             println!(
-                "{:<48} : {:<4},{:>032x} : {}",
-                "apostrophe_brace", s.offset, s.extra, s.fragment
+                "{:<64} : {:<4},{:>032x} : {}",
+                "apostrophe_brace", s.offset, s.extra[0], s.fragment
             );
         }
         let (s, a) = symbol("'{")(s)?;
@@ -170,21 +169,6 @@ where
         Ok((s, List { nodes: (a, ret) }))
     }
 }
-
-//pub fn rec<'a, O, F>(f: F, id: u32) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
-//where
-//    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
-//{
-//    move |s: Span<'a>| {
-//        if check_bit(s, id) {
-//            return Err(Err::Error(make_error(s, ErrorKind::Fix)));
-//        }
-//        let s = set_bit(s, id, true);
-//        let (s, x) = f(s)?;
-//        let s = set_bit(s, id, false);
-//        Ok((s, x))
-//    }
-//}
 
 pub fn triple<'a, O1, O2, O3, F, G, H>(
     f: F,
@@ -231,18 +215,26 @@ pub fn concat<'a>(a: Span<'a>, b: Span<'a>) -> Option<Span<'a>> {
 }
 
 pub fn check_bit(s: Span, id: u32) -> bool {
-    ((s.extra >> id) & 1) == 1
+    let upper = (id / 128) as usize;
+    let lower = id % 128;
+
+    ((s.extra[upper] >> lower) & 1) == 1
 }
 
 pub fn set_bit(s: Span, id: u32, bit: bool) -> Span {
-    let val = if bit { 1u128 << id } else { 0u128 };
-    let mask = !(1u128 << id);
-    let val = (s.extra & mask) | val;
+    let upper = (id / 128) as usize;
+    let lower = id % 128;
+
+    let val = if bit { 1u128 << lower } else { 0u128 };
+    let mask = !(1u128 << lower);
+
+    let mut extra = s.extra;
+    extra[upper] = (extra[upper] & mask) | val;
     Span {
         offset: s.offset,
         line: s.line,
         fragment: s.fragment,
-        extra: val,
+        extra,
     }
 }
 
@@ -251,7 +243,7 @@ pub fn clear_bit(s: Span) -> Span {
         offset: s.offset,
         line: s.line,
         fragment: s.fragment,
-        extra: 0,
+        extra: [0; 10],
     }
 }
 
@@ -260,21 +252,10 @@ pub fn clear_bit(s: Span) -> Span {
 #[cfg(test)]
 macro_rules! parser_test {
     ( $x:expr, $y:expr, $z:pat ) => {
-        let ret = all_consuming($x)(Span::new_extra($y, 0));
+        let ret = all_consuming($x)(Span::new_extra($y, [0; 10]));
         if let $z = ret {
         } else {
             assert!(false, "{:?}", ret)
         }
     };
 }
-
-//macro_rules! s {
-//    ( $x:expr ) => {
-//        Span {
-//            offset: $x.offset,
-//            line: $x.line,
-//            fragment: $x.fragment,
-//            extra: (file!(), line!(), column!()),
-//        }
-//    };
-//}

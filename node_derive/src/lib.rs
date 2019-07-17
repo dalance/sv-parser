@@ -126,22 +126,22 @@ fn impl_trace(item: &syn::ItemFn) -> TokenStream {
 
     let tracer = quote! {
         if cfg!(feature = "trace") {
-            println!("{:<48} : {:<4},{:>032x} : {}", stringify!(#ident), s.offset, s.extra, s.fragment);
+            println!("{:<64} : {:<4},{:>032x} : {}", stringify!(#ident), s.offset, s.extra[0], s.fragment);
         }
     };
     let tracer: TokenStream = tracer.into();
     let tracer = parse_macro_input!(tracer as syn::Stmt);
 
     let checker = quote! {
-        if thread_context::TABLE.with(|t| {
-            if let Some(i) = t.borrow_mut().get_or_allocate(stringify!(#ident)) {
+        if thread_context::PARSER_INDEX.with(|p| {
+            if let Some(i) = p.borrow_mut().get(stringify!(#ident)) {
                 return check_bit(s, i);
             } else {
                 return false
             }
         }) {
             if cfg!(feature = "trace") {
-                println!("{:<48} : loop detect", stringify!(#ident));
+                println!("{:<64} : loop detect", stringify!(#ident));
             }
             return Err(nom::Err::Error(nom::error::make_error(s, nom::error::ErrorKind::Fix)));
         }
@@ -150,13 +150,12 @@ fn impl_trace(item: &syn::ItemFn) -> TokenStream {
     let checker = parse_macro_input!(checker as syn::Stmt);
 
     let before = quote! {
-        let s = thread_context::TABLE.with(|t| {
-            if let Some(i) = t.borrow_mut().get_or_allocate(stringify!(#ident)) {
-                //println!("{}:{} set", stringify!(#ident), i);
+        let s = thread_context::PARSER_INDEX.with(|p| {
+            if let Some(i) = p.borrow_mut().get(stringify!(#ident)) {
                 set_bit(s, i, true)
             } else {
                 if cfg!(feature = "trace") {
-                    println!("{:<48} : allocate failed", stringify!(#ident));
+                    println!("{:<64} : allocate failed", stringify!(#ident));
                 }
                 s
             }
@@ -191,38 +190,6 @@ fn impl_trace(item: &syn::ItemFn) -> TokenStream {
     item.block.stmts.push(before);
     item.block.stmts.push(body);
     item.block.stmts.push(after);
-
-    let gen = quote! {
-        #item
-    };
-    gen.into()
-}
-
-#[proc_macro_attribute]
-pub fn rec(_attr: TokenStream, item: TokenStream) -> TokenStream {
-    let item = parse_macro_input!(item as ItemFn);
-    impl_rec(&item)
-}
-
-fn impl_rec(item: &syn::ItemFn) -> TokenStream {
-    let ident = &item.ident;
-    let mut item = item.clone();
-    let tracer = quote! {
-        if thread_context::MAP_MUT.with(|m| {
-            if let Some(x) = m.borrow().get(stringify!(#ident)) {
-                if *x == s.offset {
-                    return true;
-                }
-            }
-            m.borrow_mut().insert(stringify!(#ident), s.offset);
-            false
-        }) {
-            return Err(nom::Err::Error(nom::error::make_error(s, nom::error::ErrorKind::Fix)));
-        }
-    };
-    let tracer: TokenStream = tracer.into();
-    let tracer = parse_macro_input!(tracer as syn::Stmt);
-    item.block.stmts.insert(0, tracer);
 
     let gen = quote! {
         #item

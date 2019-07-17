@@ -173,7 +173,7 @@ pub fn blocking_assignment(s: Span) -> IResult<Span, BlockingAssignment> {
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn blocking_assignment_variable(s: Span) -> IResult<Span, BlockingAssignment> {
     let (s, a) = variable_lvalue(s)?;
     let (s, b) = symbol("=")(s)?;
@@ -187,7 +187,7 @@ pub fn blocking_assignment_variable(s: Span) -> IResult<Span, BlockingAssignment
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn blocking_assignment_nonrange_variable(s: Span) -> IResult<Span, BlockingAssignment> {
     let (s, a) = nonrange_variable_lvalue(s)?;
     let (s, b) = symbol("=")(s)?;
@@ -215,7 +215,7 @@ pub fn blocking_assignment_hierarchical_variable(s: Span) -> IResult<Span, Block
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn operator_assignment(s: Span) -> IResult<Span, OperatorAssignment> {
     let (s, a) = variable_lvalue(s)?;
     let (s, b) = assignment_operator(s)?;
@@ -242,7 +242,7 @@ pub fn assignment_operator(s: Span) -> IResult<Span, AssignmentOperator> {
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn nonblocking_assignment(s: Span) -> IResult<Span, NonblockingAssignment> {
     let (s, a) = variable_lvalue(s)?;
     let (s, b) = symbol("<=")(s)?;
@@ -352,7 +352,7 @@ pub fn procedural_continuous_assignment_release_net(
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn variable_assignment(s: Span) -> IResult<Span, VariableAssignment> {
     let (s, a) = variable_lvalue(s)?;
     let (s, b) = symbol("=")(s)?;

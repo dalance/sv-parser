@@ -226,7 +226,7 @@ pub fn case_item(s: Span) -> IResult<Span, CaseItem> {
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn case_item_nondefault(s: Span) -> IResult<Span, CaseItem> {
     let (s, a) = list(symbol(","), case_item_expression)(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -253,7 +253,7 @@ pub fn case_pattern_item(s: Span) -> IResult<Span, CasePatternItem> {
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn case_pattern_item_nondefault(s: Span) -> IResult<Span, CasePatternItem> {
     let (s, a) = pattern(s)?;
     let (s, b) = opt(pair(symbol("&&&"), expression))(s)?;
@@ -275,7 +275,7 @@ pub fn case_inside_item(s: Span) -> IResult<Span, CaseInsideItem> {
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn case_inside_item_nondefault(s: Span) -> IResult<Span, CaseInsideItem> {
     let (s, a) = open_range_list(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -306,7 +306,7 @@ pub fn randcase_statement(s: Span) -> IResult<Span, RandcaseStatement> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn randcase_item(s: Span) -> IResult<Span, RandcaseItem> {
     let (s, a) = expression(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -314,7 +314,7 @@ pub fn randcase_item(s: Span) -> IResult<Span, RandcaseItem> {
     Ok((s, RandcaseItem { nodes: (a, b, c) }))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn open_range_list(s: Span) -> IResult<Span, OpenRangeList> {
     let (s, a) = list(symbol(","), open_value_range)(s)?;
     Ok((s, OpenRangeList { nodes: (a,) }))

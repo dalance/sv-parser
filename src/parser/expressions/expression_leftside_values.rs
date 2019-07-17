@@ -156,6 +156,41 @@ pub fn nonrange_variable_lvalue(s: Span) -> IResult<Span, NonrangeVariableLvalue
     Ok((s, NonrangeVariableLvalue { nodes: (a, b, c) }))
 }
 
+#[derive(Debug, Node)]
+pub enum Expr<'a> {
+    Expr(Box<ExprExpr<'a>>),
+    Term(ExprTerm<'a>),
+}
+
+#[derive(Debug, Node)]
+pub struct ExprExpr<'a> {
+    pub nodes: (Expr<'a>, Symbol<'a>, Expr<'a>),
+}
+
+#[derive(Debug, Node)]
+pub struct ExprTerm<'a> {
+    pub nodes: (Identifier<'a>,),
+}
+
+#[parser]
+pub fn expr(s: Span) -> IResult<Span, Expr> {
+    alt((expr_expr, expr_term))(s)
+}
+
+#[parser(MaybeRecursive)]
+pub fn expr_expr(s: Span) -> IResult<Span, Expr> {
+    let (s, a) = expr(s)?;
+    let (s, b) = symbol("+")(s)?;
+    let (s, c) = expr(s)?;
+    Ok((s, Expr::Expr(Box::new(ExprExpr { nodes: (a, b, c) }))))
+}
+
+#[parser]
+pub fn expr_term(s: Span) -> IResult<Span, Expr> {
+    let (s, a) = identifier(s)?;
+    Ok((s, Expr::Term(ExprTerm { nodes: (a,) })))
+}
+
 // -----------------------------------------------------------------------------
 
 #[cfg(test)]
@@ -183,5 +218,11 @@ mod tests {
         //TODO
         //parser_test!(nonrange_variable_lvalue, "A[][2][3]", Ok((_, _)));
         //parser_test!(nonrange_variable_lvalue, "A[][]", Ok((_, _)));
+    }
+
+    #[test]
+    fn test_expr() {
+        parser_test!(expr, "A", Ok((_, _)));
+        parser_test!(expr, "A+B", Ok((_, _)));
     }
 }

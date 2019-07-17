@@ -97,13 +97,13 @@ pub fn continuous_assign_variable(s: Span) -> IResult<Span, ContinuousAssign> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn list_of_net_assignments(s: Span) -> IResult<Span, ListOfNetAssignments> {
     let (s, a) = list(symbol(","), net_assignment)(s)?;
     Ok((s, ListOfNetAssignments { nodes: (a,) }))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn list_of_variable_assignments(s: Span) -> IResult<Span, ListOfVariableAssignments> {
     let (s, a) = list(symbol(","), variable_assignment)(s)?;
     Ok((s, ListOfVariableAssignments { nodes: (a,) }))
@@ -125,7 +125,7 @@ pub fn net_alias(s: Span) -> IResult<Span, NetAlias> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn net_assignment(s: Span) -> IResult<Span, NetAssignment> {
     let (s, a) = net_lvalue(s)?;
     let (s, b) = symbol("=")(s)?;

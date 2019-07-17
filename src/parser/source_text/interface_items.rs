@@ -66,7 +66,7 @@ pub fn interface_or_generate_item(s: Span) -> IResult<Span, InterfaceOrGenerateI
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn interface_or_generate_item_module(s: Span) -> IResult<Span, InterfaceOrGenerateItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = module_common_item(s)?;

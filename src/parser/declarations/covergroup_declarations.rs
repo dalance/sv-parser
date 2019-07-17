@@ -647,7 +647,7 @@ pub fn block_event_expression(s: Span) -> IResult<Span, BlockEventExpression> {
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn block_event_expression_or(s: Span) -> IResult<Span, BlockEventExpression> {
     let (s, a) = block_event_expression(s)?;
     let (s, b) = symbol("or")(s)?;
@@ -891,7 +891,7 @@ pub fn trans_list(s: Span) -> IResult<Span, TransList> {
     Ok((s, TransList { nodes: (a,) }))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn trans_set(s: Span) -> IResult<Span, TransSet> {
     let (s, a) = list(symbol("=>"), trans_range_list)(s)?;
     Ok((s, TransSet { nodes: (a,) }))
@@ -907,7 +907,7 @@ pub fn trans_range_list(s: Span) -> IResult<Span, TransRangeList> {
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn trans_range_list_asterisk(s: Span) -> IResult<Span, TransRangeList> {
     let (s, a) = trans_item(s)?;
     let (s, b) = bracket(pair(symbol("*"), repeat_range))(s)?;
@@ -917,7 +917,7 @@ pub fn trans_range_list_asterisk(s: Span) -> IResult<Span, TransRangeList> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn trans_range_list_arrow(s: Span) -> IResult<Span, TransRangeList> {
     let (s, a) = trans_item(s)?;
     let (s, b) = bracket(pair(symbol("->"), repeat_range))(s)?;
@@ -927,7 +927,7 @@ pub fn trans_range_list_arrow(s: Span) -> IResult<Span, TransRangeList> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn trans_range_list_equal(s: Span) -> IResult<Span, TransRangeList> {
     let (s, a) = trans_item(s)?;
     let (s, b) = bracket(pair(symbol("="), repeat_range))(s)?;
@@ -953,7 +953,7 @@ pub fn repeat_range(s: Span) -> IResult<Span, RepeatRange> {
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn repeat_range_binary(s: Span) -> IResult<Span, RepeatRange> {
     let (s, a) = covergroup_expression(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -1089,7 +1089,7 @@ pub fn select_expression_not(s: Span) -> IResult<Span, SelectExpression> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn select_expression_and(s: Span) -> IResult<Span, SelectExpression> {
     let (s, a) = select_expression(s)?;
     let (s, b) = symbol("&&")(s)?;
@@ -1100,7 +1100,7 @@ pub fn select_expression_and(s: Span) -> IResult<Span, SelectExpression> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn select_expression_or(s: Span) -> IResult<Span, SelectExpression> {
     let (s, a) = select_expression(s)?;
     let (s, b) = symbol("||")(s)?;
@@ -1120,7 +1120,7 @@ pub fn select_expression_paren(s: Span) -> IResult<Span, SelectExpression> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn select_expression_with(s: Span) -> IResult<Span, SelectExpression> {
     let (s, a) = select_expression(s)?;
     let (s, b) = symbol("with")(s)?;
@@ -1134,7 +1134,7 @@ pub fn select_expression_with(s: Span) -> IResult<Span, SelectExpression> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn select_expression_cross_set(s: Span) -> IResult<Span, SelectExpression> {
     let (s, a) = cross_set_expression(s)?;
     let (s, b) = opt(pair(symbol("matches"), integer_covergroup_expression))(s)?;
@@ -1172,7 +1172,7 @@ pub fn bins_expression_cover_point(s: Span) -> IResult<Span, BinsExpression> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn covergroup_range_list(s: Span) -> IResult<Span, CovergroupRangeList> {
     let (s, a) = list(symbol(","), covergroup_value_range)(s)?;
     Ok((s, CovergroupRangeList { nodes: (a,) }))

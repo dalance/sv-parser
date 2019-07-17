@@ -83,7 +83,7 @@ pub fn list_of_checker_port_connections(s: Span) -> IResult<Span, ListOfCheckerP
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn list_of_checker_port_connections_ordered(
     s: Span,
 ) -> IResult<Span, ListOfCheckerPortConnections> {
@@ -105,7 +105,7 @@ pub fn list_of_checker_port_connections_named(
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn ordered_checker_port_connection(s: Span) -> IResult<Span, OrderedCheckerPortConnection> {
     let (s, x) = many0(attribute_instance)(s)?;
     let (s, y) = opt(property_actual_arg)(s)?;

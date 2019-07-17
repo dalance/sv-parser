@@ -374,7 +374,7 @@ pub fn module_or_generate_item_module(s: Span) -> IResult<Span, ModuleOrGenerate
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn module_or_generate_item_module_item(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = module_common_item(s)?;

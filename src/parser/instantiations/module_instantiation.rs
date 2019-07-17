@@ -141,7 +141,7 @@ pub fn list_of_parameter_assignments(s: Span) -> IResult<Span, ListOfParameterAs
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn list_of_parameter_assignments_ordered(s: Span) -> IResult<Span, ListOfParameterAssignments> {
     let (s, a) = list(symbol(","), ordered_parameter_assignment)(s)?;
     Ok((
@@ -195,7 +195,7 @@ pub fn list_of_port_connections(s: Span) -> IResult<Span, ListOfPortConnections>
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn list_of_port_connections_ordered(s: Span) -> IResult<Span, ListOfPortConnections> {
     let (s, a) = list(symbol(","), ordered_port_connection)(s)?;
     Ok((
@@ -213,7 +213,7 @@ pub fn list_of_port_connections_named(s: Span) -> IResult<Span, ListOfPortConnec
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn ordered_port_connection(s: Span) -> IResult<Span, OrderedPortConnection> {
     let (s, x) = many0(attribute_instance)(s)?;
     let (s, y) = opt(expression)(s)?;

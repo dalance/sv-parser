@@ -102,7 +102,7 @@ pub fn non_port_program_item_assign(s: Span) -> IResult<Span, NonPortProgramItem
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn non_port_program_item_module(s: Span) -> IResult<Span, NonPortProgramItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = module_or_generate_item_declaration(s)?;

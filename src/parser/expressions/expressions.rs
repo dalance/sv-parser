@@ -295,7 +295,7 @@ pub fn inc_or_dec_expression_prefix(s: Span) -> IResult<Span, IncOrDecExpression
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn inc_or_dec_expression_suffix(s: Span) -> IResult<Span, IncOrDecExpression> {
     let (s, a) = variable_lvalue(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
@@ -306,7 +306,7 @@ pub fn inc_or_dec_expression_suffix(s: Span) -> IResult<Span, IncOrDecExpression
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn conditional_expression(s: Span) -> IResult<Span, ConditionalExpression> {
     let (s, a) = cond_predicate(s)?;
     let (s, b) = symbol("?")(s)?;
@@ -345,7 +345,7 @@ pub fn constant_expression_unary(s: Span) -> IResult<Span, ConstantExpression> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn constant_expression_binary(s: Span) -> IResult<Span, ConstantExpression> {
     let (s, a) = constant_expression(s)?;
     let (s, b) = binary_operator(s)?;
@@ -359,7 +359,7 @@ pub fn constant_expression_binary(s: Span) -> IResult<Span, ConstantExpression> 
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn constant_expression_ternary(s: Span) -> IResult<Span, ConstantExpression> {
     let (s, a) = constant_expression(s)?;
     let (s, b) = symbol("?")(s)?;
@@ -385,7 +385,7 @@ pub fn constant_mintypmax_expression(s: Span) -> IResult<Span, ConstantMintypmax
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn constant_mintypmax_expression_ternary(
     s: Span,
 ) -> IResult<Span, ConstantMintypmaxExpression> {
@@ -448,7 +448,7 @@ pub fn constant_part_select_range(s: Span) -> IResult<Span, ConstantPartSelectRa
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn constant_range(s: Span) -> IResult<Span, ConstantRange> {
     let (s, a) = constant_expression(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -456,7 +456,7 @@ pub fn constant_range(s: Span) -> IResult<Span, ConstantRange> {
     Ok((s, ConstantRange { nodes: (a, b, c) }))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn constant_indexed_range(s: Span) -> IResult<Span, ConstantIndexedRange> {
     let (s, a) = constant_expression(s)?;
     let (s, b) = alt((symbol("+:"), symbol("-:")))(s)?;
@@ -506,7 +506,7 @@ pub fn expression_operator_assignment(s: Span) -> IResult<Span, Expression> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn expression_binary(s: Span) -> IResult<Span, Expression> {
     let (s, a) = expression(s)?;
     let (s, b) = binary_operator(s)?;
@@ -528,7 +528,7 @@ pub fn tagged_union_expression(s: Span) -> IResult<Span, TaggedUnionExpression> 
     Ok((s, TaggedUnionExpression { nodes: (a, b, c) }))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn inside_expression(s: Span) -> IResult<Span, InsideExpression> {
     let (s, a) = expression(s)?;
     let (s, b) = symbol("inside")(s)?;
@@ -558,7 +558,7 @@ pub fn mintypmax_expression(s: Span) -> IResult<Span, MintypmaxExpression> {
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn mintypmax_expression_ternary(s: Span) -> IResult<Span, MintypmaxExpression> {
     let (s, a) = expression(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -573,7 +573,7 @@ pub fn mintypmax_expression_ternary(s: Span) -> IResult<Span, MintypmaxExpressio
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn module_path_conditional_expression(
     s: Span,
 ) -> IResult<Span, ModulePathConditionalExpression> {
@@ -616,7 +616,7 @@ pub fn module_path_expression_unary(s: Span) -> IResult<Span, ModulePathExpressi
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn module_path_expression_binary(s: Span) -> IResult<Span, ModulePathExpression> {
     let (s, a) = module_path_expression(s)?;
     let (s, b) = binary_module_path_operator(s)?;
@@ -640,7 +640,7 @@ pub fn module_path_mintypmax_expression(s: Span) -> IResult<Span, ModulePathMint
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn module_path_mintypmax_expression_ternary(
     s: Span,
 ) -> IResult<Span, ModulePathMintypmaxExpression> {
@@ -665,7 +665,7 @@ pub fn part_select_range(s: Span) -> IResult<Span, PartSelectRange> {
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn indexed_range(s: Span) -> IResult<Span, IndexedRange> {
     let (s, a) = expression(s)?;
     let (s, b) = alt((symbol("+:"), symbol("-:")))(s)?;

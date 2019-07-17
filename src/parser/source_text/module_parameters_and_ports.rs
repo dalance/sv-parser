@@ -373,7 +373,7 @@ pub fn port(s: Span) -> IResult<Span, Port> {
     alt((port_non_named, port_named))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn port_non_named(s: Span) -> IResult<Span, Port> {
     let (s, a) = opt(port_expression)(s)?;
     Ok((s, Port::NonNamed(PortNonNamed { nodes: (a,) })))

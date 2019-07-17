@@ -93,7 +93,7 @@ pub fn statement_or_null_attribute(s: Span) -> IResult<Span, StatementOrNull> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn statement(s: Span) -> IResult<Span, Statement> {
     let (s, a) = opt(pair(block_identifier, symbol(":")))(s)?;
     let (s, b) = many0(attribute_instance)(s)?;

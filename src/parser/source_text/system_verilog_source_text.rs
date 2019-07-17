@@ -460,7 +460,7 @@ pub fn description(s: Span) -> IResult<Span, Description> {
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn description_package_item(s: Span) -> IResult<Span, Description> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = package_item(s)?;

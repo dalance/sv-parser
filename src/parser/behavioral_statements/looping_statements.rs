@@ -217,7 +217,7 @@ pub fn for_initialization(s: Span) -> IResult<Span, ForInitialization> {
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn for_initialization_declaration(s: Span) -> IResult<Span, ForInitialization> {
     let (s, a) = list(symbol(","), for_variable_declaration)(s)?;
     Ok((
@@ -243,7 +243,7 @@ pub fn var(s: Span) -> IResult<Span, Var> {
     Ok((s, Var { nodes: (a,) }))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn for_step(s: Span) -> IResult<Span, ForStep> {
     let (s, a) = list(symbol(","), for_step_assignment)(s)?;
     Ok((s, ForStep { nodes: (a,) }))

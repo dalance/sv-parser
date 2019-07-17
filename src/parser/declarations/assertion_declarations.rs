@@ -898,7 +898,7 @@ pub fn property_list_of_arguments(s: Span) -> IResult<Span, PropertyListOfArgume
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn property_list_of_arguments_ordered(s: Span) -> IResult<Span, PropertyListOfArguments> {
     let (s, a) = list(symbol(","), opt(property_actual_arg))(s)?;
     let (s, b) = many0(tuple((
@@ -1007,7 +1007,7 @@ pub fn property_formal_type(s: Span) -> IResult<Span, PropertyFormalType> {
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn property_spec(s: Span) -> IResult<Span, PropertySpec> {
     let (s, a) = opt(clocking_event)(s)?;
     let (s, b) = opt(triple(
@@ -1101,7 +1101,7 @@ pub fn property_expr_not(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn property_expr_or(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = symbol("or")(s)?;
@@ -1112,7 +1112,7 @@ pub fn property_expr_or(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn property_expr_and(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = symbol("and")(s)?;
@@ -1123,7 +1123,7 @@ pub fn property_expr_and(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn property_expr_implication_overlapped(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("|->")(s)?;
@@ -1136,7 +1136,7 @@ pub fn property_expr_implication_overlapped(s: Span) -> IResult<Span, PropertyEx
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn property_expr_implication_nonoverlapped(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("|=>")(s)?;
@@ -1178,7 +1178,7 @@ pub fn property_expr_case(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn property_expr_followed_by_overlapped(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("#-#")(s)?;
@@ -1191,7 +1191,7 @@ pub fn property_expr_followed_by_overlapped(s: Span) -> IResult<Span, PropertyEx
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn property_expr_followed_by_nonoverlapped(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("#=#")(s)?;
@@ -1270,7 +1270,7 @@ pub fn property_expr_s_eventually(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn property_expr_until(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = symbol("until")(s)?;
@@ -1281,7 +1281,7 @@ pub fn property_expr_until(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn property_expr_s_until(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = symbol("s_until")(s)?;
@@ -1292,7 +1292,7 @@ pub fn property_expr_s_until(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn property_expr_until_with(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = symbol("until_with")(s)?;
@@ -1303,7 +1303,7 @@ pub fn property_expr_until_with(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn property_expr_s_until_with(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = symbol("s_until_with")(s)?;
@@ -1314,7 +1314,7 @@ pub fn property_expr_s_until_with(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn property_expr_implies(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = symbol("implies")(s)?;
@@ -1325,7 +1325,7 @@ pub fn property_expr_implies(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn property_expr_iff(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = symbol("iff")(s)?;
@@ -1395,7 +1395,7 @@ pub fn property_case_item(s: Span) -> IResult<Span, PropertyCaseItem> {
     alt((property_case_item_nondefault, property_case_item_default))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn property_case_item_nondefault(s: Span) -> IResult<Span, PropertyCaseItem> {
     let (s, a) = list(symbol(","), expression_or_dist)(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -1513,7 +1513,7 @@ pub fn sequence_expr_cycle_delay_expr(s: Span) -> IResult<Span, SequenceExpr> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn sequence_expr_expr_cycle_delay_expr(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = cycle_delay_range(s)?;
@@ -1527,7 +1527,7 @@ pub fn sequence_expr_expr_cycle_delay_expr(s: Span) -> IResult<Span, SequenceExp
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn sequence_expr_expression(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = expression_or_dist(s)?;
     let (s, b) = opt(boolean_abbrev)(s)?;
@@ -1560,7 +1560,7 @@ pub fn sequence_expr_paren(s: Span) -> IResult<Span, SequenceExpr> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn sequence_expr_and(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("and")(s)?;
@@ -1571,7 +1571,7 @@ pub fn sequence_expr_and(s: Span) -> IResult<Span, SequenceExpr> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn sequence_expr_intersect(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("intersect")(s)?;
@@ -1582,7 +1582,7 @@ pub fn sequence_expr_intersect(s: Span) -> IResult<Span, SequenceExpr> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn sequence_expr_or(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("or")(s)?;
@@ -1606,7 +1606,7 @@ pub fn sequence_expr_first_match(s: Span) -> IResult<Span, SequenceExpr> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn sequence_expr_throughout(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = expression_or_dist(s)?;
     let (s, b) = symbol("throughout")(s)?;
@@ -1617,7 +1617,7 @@ pub fn sequence_expr_throughout(s: Span) -> IResult<Span, SequenceExpr> {
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn sequence_expr_within(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("within")(s)?;
@@ -1724,7 +1724,7 @@ pub fn sequence_list_of_arguments(s: Span) -> IResult<Span, SequenceListOfArgume
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn sequence_list_of_arguments_ordered(s: Span) -> IResult<Span, SequenceListOfArguments> {
     let (s, a) = list(symbol(","), opt(sequence_actual_arg))(s)?;
     let (s, b) = many0(tuple((
@@ -1848,7 +1848,7 @@ pub fn cycle_delay_const_range_expression(
     ))(s)
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn cycle_delay_const_range_expression_binary(
     s: Span,
 ) -> IResult<Span, CycleDelayConstRangeExpression> {
@@ -1863,7 +1863,7 @@ pub fn cycle_delay_const_range_expression_binary(
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn cycle_delay_const_range_expression_dollar(
     s: Span,
 ) -> IResult<Span, CycleDelayConstRangeExpression> {
@@ -1878,7 +1878,7 @@ pub fn cycle_delay_const_range_expression_dollar(
     ))
 }
 
-#[parser]
+#[parser(MaybeRecursive)]
 pub fn expression_or_dist(s: Span) -> IResult<Span, ExpressionOrDist> {
     let (s, a) = expression(s)?;
     let (s, b) = opt(pair(symbol("dist"), brace(dist_list)))(s)?;

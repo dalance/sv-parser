@@ -72,19 +72,19 @@ pub enum DelayValue<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn delay3(s: Span) -> IResult<Span, Delay3> {
     alt((delay3_single, delay3_mintypmax))(s)
 }
 
-#[trace]
+#[parser]
 pub fn delay3_single(s: Span) -> IResult<Span, Delay3> {
     let (s, a) = symbol("#")(s)?;
     let (s, b) = delay_value(s)?;
     Ok((s, Delay3::Single(Delay3Single { nodes: (a, b) })))
 }
 
-#[trace]
+#[parser]
 pub fn delay3_mintypmax(s: Span) -> IResult<Span, Delay3> {
     let (s, a) = symbol("#")(s)?;
     let (s, b) = paren(pair(
@@ -98,19 +98,19 @@ pub fn delay3_mintypmax(s: Span) -> IResult<Span, Delay3> {
     Ok((s, Delay3::Mintypmax(Delay3Mintypmax { nodes: (a, b) })))
 }
 
-#[trace]
+#[parser]
 pub fn delay2(s: Span) -> IResult<Span, Delay2> {
     alt((delay2_single, delay2_mintypmax))(s)
 }
 
-#[trace]
+#[parser]
 pub fn delay2_single(s: Span) -> IResult<Span, Delay2> {
     let (s, a) = symbol("#")(s)?;
     let (s, b) = delay_value(s)?;
     Ok((s, Delay2::Single(Delay2Single { nodes: (a, b) })))
 }
 
-#[trace]
+#[parser]
 pub fn delay2_mintypmax(s: Span) -> IResult<Span, Delay2> {
     let (s, a) = symbol("#")(s)?;
     let (s, b) = paren(pair(
@@ -120,7 +120,7 @@ pub fn delay2_mintypmax(s: Span) -> IResult<Span, Delay2> {
     Ok((s, Delay2::Mintypmax(Delay2Mintypmax { nodes: (a, b) })))
 }
 
-#[trace]
+#[parser]
 pub fn delay_value(s: Span) -> IResult<Span, DelayValue> {
     alt((
         map(unsigned_number, |x| DelayValue::UnsignedNumber(x)),

@@ -261,7 +261,7 @@ pub struct Cast<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
     alt((
         map(symbol("null"), |x| ConstantPrimary::Null(x)),
@@ -288,7 +288,7 @@ pub fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn constant_primary_ps_parameter(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = ps_parameter_identifier(s)?;
     let (s, b) = constant_select(s)?;
@@ -298,7 +298,7 @@ pub fn constant_primary_ps_parameter(s: Span) -> IResult<Span, ConstantPrimary> 
     ))
 }
 
-#[trace]
+#[parser]
 pub fn constant_primary_specparam(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = specparam_identifier(s)?;
     let (s, b) = opt(bracket(constant_range_expression))(s)?;
@@ -308,7 +308,7 @@ pub fn constant_primary_specparam(s: Span) -> IResult<Span, ConstantPrimary> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn constant_primary_formal_port(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = formal_port_identifier(s)?;
     let (s, b) = constant_select(s)?;
@@ -318,7 +318,7 @@ pub fn constant_primary_formal_port(s: Span) -> IResult<Span, ConstantPrimary> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn constant_primary_enum(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = package_scope_or_class_scope(s)?;
     let (s, b) = enum_identifier(s)?;
@@ -328,7 +328,7 @@ pub fn constant_primary_enum(s: Span) -> IResult<Span, ConstantPrimary> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn constant_primary_concatenation(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = constant_concatenation(s)?;
     let (s, b) = opt(bracket(constant_range_expression))(s)?;
@@ -338,7 +338,7 @@ pub fn constant_primary_concatenation(s: Span) -> IResult<Span, ConstantPrimary>
     ))
 }
 
-#[trace]
+#[parser]
 pub fn constant_primary_multiple_concatenation(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = constant_multiple_concatenation(s)?;
     let (s, b) = opt(bracket(constant_range_expression))(s)?;
@@ -350,7 +350,7 @@ pub fn constant_primary_multiple_concatenation(s: Span) -> IResult<Span, Constan
     ))
 }
 
-#[trace]
+#[parser]
 pub fn constant_primary_mintypmax_expression(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = paren(constant_mintypmax_expression)(s)?;
     Ok((
@@ -359,7 +359,7 @@ pub fn constant_primary_mintypmax_expression(s: Span) -> IResult<Span, ConstantP
     ))
 }
 
-#[trace]
+#[parser]
 pub fn module_path_primary(s: Span) -> IResult<Span, ModulePathPrimary> {
     alt((
         map(number, |x| ModulePathPrimary::Number(x)),
@@ -377,7 +377,7 @@ pub fn module_path_primary(s: Span) -> IResult<Span, ModulePathPrimary> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn module_path_primary_mintypmax_expression(s: Span) -> IResult<Span, ModulePathPrimary> {
     let (s, a) = paren(module_path_mintypmax_expression)(s)?;
     Ok((
@@ -386,7 +386,7 @@ pub fn module_path_primary_mintypmax_expression(s: Span) -> IResult<Span, Module
     ))
 }
 
-#[trace]
+#[parser]
 pub fn primary(s: Span) -> IResult<Span, Primary> {
     alt((
         map(symbol("this"), |x| Primary::This(x)),
@@ -414,7 +414,7 @@ pub fn primary(s: Span) -> IResult<Span, Primary> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn primary_hierarchical(s: Span) -> IResult<Span, Primary> {
     let (s, a) = opt(class_qualifier_or_package_scope)(s)?;
     let (s, b) = hierarchical_identifier(s)?;
@@ -425,7 +425,7 @@ pub fn primary_hierarchical(s: Span) -> IResult<Span, Primary> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn primary_concatenation(s: Span) -> IResult<Span, Primary> {
     let (s, a) = concatenation(s)?;
     let (s, b) = opt(bracket(range_expression))(s)?;
@@ -435,7 +435,7 @@ pub fn primary_concatenation(s: Span) -> IResult<Span, Primary> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn primary_multiple_concatenation(s: Span) -> IResult<Span, Primary> {
     let (s, a) = multiple_concatenation(s)?;
     let (s, b) = opt(bracket(range_expression))(s)?;
@@ -445,7 +445,7 @@ pub fn primary_multiple_concatenation(s: Span) -> IResult<Span, Primary> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn primary_mintypmax_expression(s: Span) -> IResult<Span, Primary> {
     let (s, a) = paren(mintypmax_expression)(s)?;
     Ok((
@@ -454,7 +454,7 @@ pub fn primary_mintypmax_expression(s: Span) -> IResult<Span, Primary> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn class_qualifier_or_package_scope(s: Span) -> IResult<Span, ClassQualifierOrPackageScope> {
     alt((
         map(class_qualifier, |x| {
@@ -466,14 +466,14 @@ pub fn class_qualifier_or_package_scope(s: Span) -> IResult<Span, ClassQualifier
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn class_qualifier(s: Span) -> IResult<Span, ClassQualifier> {
     let (s, a) = opt(local)(s)?;
     let (s, b) = opt(implicit_class_handle_or_class_scope)(s)?;
     Ok((s, ClassQualifier { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn range_expression(s: Span) -> IResult<Span, RangeExpression> {
     alt((
         map(expression, |x| RangeExpression::Expression(x)),
@@ -481,7 +481,7 @@ pub fn range_expression(s: Span) -> IResult<Span, RangeExpression> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn primary_literal(s: Span) -> IResult<Span, PrimaryLiteral> {
     alt((
         map(time_literal, |x| PrimaryLiteral::TimeLiteral(x)),
@@ -493,12 +493,12 @@ pub fn primary_literal(s: Span) -> IResult<Span, PrimaryLiteral> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn time_literal(s: Span) -> IResult<Span, TimeLiteral> {
     alt((time_literal_unsigned, time_literal_fixed_point))(s)
 }
 
-#[trace]
+#[parser]
 pub fn time_literal_unsigned(s: Span) -> IResult<Span, TimeLiteral> {
     let (s, a) = unsigned_number(s)?;
     let (s, b) = time_unit(s)?;
@@ -508,7 +508,7 @@ pub fn time_literal_unsigned(s: Span) -> IResult<Span, TimeLiteral> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn time_literal_fixed_point(s: Span) -> IResult<Span, TimeLiteral> {
     let (s, a) = fixed_point_number(s)?;
     let (s, b) = time_unit(s)?;
@@ -518,7 +518,7 @@ pub fn time_literal_fixed_point(s: Span) -> IResult<Span, TimeLiteral> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn time_unit(s: Span) -> IResult<Span, TimeUnit> {
     alt((
         map(symbol("s"), |x| TimeUnit::S(x)),
@@ -530,7 +530,7 @@ pub fn time_unit(s: Span) -> IResult<Span, TimeUnit> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn implicit_class_handle(s: Span) -> IResult<Span, ImplicitClassHandle> {
     alt((
         map(
@@ -542,13 +542,13 @@ pub fn implicit_class_handle(s: Span) -> IResult<Span, ImplicitClassHandle> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn bit_select(s: Span) -> IResult<Span, BitSelect> {
     let (s, a) = many0(bracket(expression))(s)?;
     Ok((s, BitSelect { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn select(s: Span) -> IResult<Span, Select> {
     let (s, a) = opt(triple(
         many0(triple(symbol("."), member_identifier, bit_select)),
@@ -560,7 +560,7 @@ pub fn select(s: Span) -> IResult<Span, Select> {
     Ok((s, Select { nodes: (a, b, c) }))
 }
 
-#[trace]
+#[parser]
 pub fn nonrange_select(s: Span) -> IResult<Span, NonrangeSelect> {
     let (s, a) = opt(triple(
         many0(triple(symbol("."), member_identifier, bit_select)),
@@ -571,13 +571,13 @@ pub fn nonrange_select(s: Span) -> IResult<Span, NonrangeSelect> {
     Ok((s, NonrangeSelect { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn constant_bit_select(s: Span) -> IResult<Span, ConstantBitSelect> {
     let (s, a) = many0(bracket(constant_expression))(s)?;
     Ok((s, ConstantBitSelect { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn constant_select(s: Span) -> IResult<Span, ConstantSelect> {
     let (s, a) = opt(triple(
         many0(triple(symbol("."), member_identifier, constant_bit_select)),
@@ -589,7 +589,7 @@ pub fn constant_select(s: Span) -> IResult<Span, ConstantSelect> {
     Ok((s, ConstantSelect { nodes: (a, b, c) }))
 }
 
-#[trace]
+#[parser]
 pub fn constant_cast(s: Span) -> IResult<Span, ConstantCast> {
     let (s, a) = casting_type(s)?;
     let (s, b) = symbol("'")(s)?;
@@ -597,13 +597,13 @@ pub fn constant_cast(s: Span) -> IResult<Span, ConstantCast> {
     Ok((s, ConstantCast { nodes: (a, b, c) }))
 }
 
-#[trace]
+#[parser]
 pub fn constant_let_expression(s: Span) -> IResult<Span, ConstantLetExpression> {
     let (s, a) = let_expression(s)?;
     Ok((s, ConstantLetExpression { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn cast(s: Span) -> IResult<Span, Cast> {
     let (s, a) = casting_type(s)?;
     let (s, b) = symbol("'")(s)?;

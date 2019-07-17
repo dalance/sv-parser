@@ -58,7 +58,7 @@ pub enum NonPortInterfaceItem<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn interface_or_generate_item(s: Span) -> IResult<Span, InterfaceOrGenerateItem> {
     alt((
         interface_or_generate_item_module,
@@ -66,7 +66,7 @@ pub fn interface_or_generate_item(s: Span) -> IResult<Span, InterfaceOrGenerateI
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn interface_or_generate_item_module(s: Span) -> IResult<Span, InterfaceOrGenerateItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = module_common_item(s)?;
@@ -76,7 +76,7 @@ pub fn interface_or_generate_item_module(s: Span) -> IResult<Span, InterfaceOrGe
     ))
 }
 
-#[trace]
+#[parser]
 pub fn interface_or_generate_item_extern(s: Span) -> IResult<Span, InterfaceOrGenerateItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = extern_tf_declaration(s)?;
@@ -86,12 +86,12 @@ pub fn interface_or_generate_item_extern(s: Span) -> IResult<Span, InterfaceOrGe
     ))
 }
 
-#[trace]
+#[parser]
 pub fn extern_tf_declaration(s: Span) -> IResult<Span, ExternTfDeclaration> {
     alt((extern_tf_declaration_method, extern_tf_declaration_task))(s)
 }
 
-#[trace]
+#[parser]
 pub fn extern_tf_declaration_method(s: Span) -> IResult<Span, ExternTfDeclaration> {
     let (s, a) = symbol("extern")(s)?;
     let (s, b) = method_prototype(s)?;
@@ -102,7 +102,7 @@ pub fn extern_tf_declaration_method(s: Span) -> IResult<Span, ExternTfDeclaratio
     ))
 }
 
-#[trace]
+#[parser]
 pub fn extern_tf_declaration_task(s: Span) -> IResult<Span, ExternTfDeclaration> {
     let (s, a) = symbol("extern")(s)?;
     let (s, b) = symbol("forkjoin")(s)?;
@@ -116,7 +116,7 @@ pub fn extern_tf_declaration_task(s: Span) -> IResult<Span, ExternTfDeclaration>
     ))
 }
 
-#[trace]
+#[parser]
 pub fn interface_item(s: Span) -> IResult<Span, InterfaceItem> {
     alt((
         map(pair(port_declaration, symbol(";")), |x| {
@@ -128,7 +128,7 @@ pub fn interface_item(s: Span) -> IResult<Span, InterfaceItem> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn non_port_interface_item(s: Span) -> IResult<Span, NonPortInterfaceItem> {
     alt((
         map(generate_region, |x| NonPortInterfaceItem::GenerateRegion(x)),

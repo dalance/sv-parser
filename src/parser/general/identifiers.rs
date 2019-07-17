@@ -544,31 +544,31 @@ pub enum PackageScopeOrClassScope<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn array_identifier(s: Span) -> IResult<Span, ArrayIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ArrayIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn block_identifier(s: Span) -> IResult<Span, BlockIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, BlockIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn bin_identifier(s: Span) -> IResult<Span, BinIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, BinIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn c_identifier(s: Span) -> IResult<Span, CIdentifier> {
     let (s, a) = ws(c_identifier_impl)(s)?;
     Ok((s, CIdentifier { nodes: a }))
 }
 
-#[trace]
+#[parser]
 pub fn c_identifier_impl(s: Span) -> IResult<Span, Span> {
     let (s, a) = is_a(AZ_)(s)?;
     let (s, b) = opt(is_a(AZ09_))(s)?;
@@ -580,97 +580,97 @@ pub fn c_identifier_impl(s: Span) -> IResult<Span, Span> {
     Ok((s, a))
 }
 
-#[trace]
+#[parser]
 pub fn cell_identifier(s: Span) -> IResult<Span, CellIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, CellIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn checker_identifier(s: Span) -> IResult<Span, CheckerIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, CheckerIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn class_identifier(s: Span) -> IResult<Span, ClassIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ClassIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn class_variable_identifier(s: Span) -> IResult<Span, ClassVariableIdentifier> {
     let (s, a) = variable_identifier(s)?;
     Ok((s, ClassVariableIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn clocking_identifier(s: Span) -> IResult<Span, ClockingIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ClockingIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn config_identifier(s: Span) -> IResult<Span, ConfigIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ConfigIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn const_identifier(s: Span) -> IResult<Span, ConstIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ConstIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn constraint_identifier(s: Span) -> IResult<Span, ConstraintIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ConstraintIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn covergroup_identifier(s: Span) -> IResult<Span, CovergroupIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, CovergroupIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn covergroup_variable_identifier(s: Span) -> IResult<Span, CovergroupVariableIdentifier> {
     let (s, a) = variable_identifier(s)?;
     Ok((s, CovergroupVariableIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn cover_point_identifier(s: Span) -> IResult<Span, CoverPointIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, CoverPointIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn cross_identifier(s: Span) -> IResult<Span, CrossIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, CrossIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn dynamic_array_variable_identifier(s: Span) -> IResult<Span, DynamicArrayVariableIdentifier> {
     let (s, a) = variable_identifier(s)?;
     Ok((s, DynamicArrayVariableIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn enum_identifier(s: Span) -> IResult<Span, EnumIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, EnumIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn escaped_identifier(s: Span) -> IResult<Span, EscapedIdentifier> {
     let (s, a) = ws(escaped_identifier_impl)(s)?;
     Ok((s, EscapedIdentifier { nodes: a }))
 }
 
-#[trace]
+#[parser]
 pub fn escaped_identifier_impl(s: Span) -> IResult<Span, Span> {
     let (s, a) = tag("\\")(s)?;
     let (s, b) = is_not(" \t\r\n")(s)?;
@@ -678,55 +678,55 @@ pub fn escaped_identifier_impl(s: Span) -> IResult<Span, Span> {
     Ok((s, a))
 }
 
-#[trace]
+#[parser]
 pub fn formal_identifier(s: Span) -> IResult<Span, FormalIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, FormalIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn formal_port_identifier(s: Span) -> IResult<Span, FormalPortIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, FormalPortIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn function_identifier(s: Span) -> IResult<Span, FunctionIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, FunctionIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn generate_block_identifier(s: Span) -> IResult<Span, GenerateBlockIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, GenerateBlockIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn genvar_identifier(s: Span) -> IResult<Span, GenvarIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, GenvarIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn hierarchical_array_identifier(s: Span) -> IResult<Span, HierarchicalArrayIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalArrayIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn hierarchical_block_identifier(s: Span) -> IResult<Span, HierarchicalBlockIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalBlockIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn hierarchical_event_identifier(s: Span) -> IResult<Span, HierarchicalEventIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalEventIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn hierarchical_identifier(s: Span) -> IResult<Span, HierarchicalIdentifier> {
     let (s, a) = opt(root)(s)?;
     let (s, b) = many0(triple(identifier, constant_bit_select, symbol(".")))(s)?;
@@ -734,20 +734,20 @@ pub fn hierarchical_identifier(s: Span) -> IResult<Span, HierarchicalIdentifier>
     Ok((s, HierarchicalIdentifier { nodes: (a, b, c) }))
 }
 
-#[trace]
+#[parser]
 pub fn root(s: Span) -> IResult<Span, Root> {
     let (s, a) = symbol("$root")(s)?;
     let (s, b) = symbol(".")(s)?;
     Ok((s, Root { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn hierarchical_net_identifier(s: Span) -> IResult<Span, HierarchicalNetIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalNetIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn hierarchical_parameter_identifier(
     s: Span,
 ) -> IResult<Span, HierarchicalParameterIdentifier> {
@@ -755,37 +755,37 @@ pub fn hierarchical_parameter_identifier(
     Ok((s, HierarchicalParameterIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn hierarchical_property_identifier(s: Span) -> IResult<Span, HierarchicalPropertyIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalPropertyIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn hierarchical_sequence_identifier(s: Span) -> IResult<Span, HierarchicalSequenceIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalSequenceIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn hierarchical_task_identifier(s: Span) -> IResult<Span, HierarchicalTaskIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalTaskIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn hierarchical_tf_identifier(s: Span) -> IResult<Span, HierarchicalTfIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalTfIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn hierarchical_variable_identifier(s: Span) -> IResult<Span, HierarchicalVariableIdentifier> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, HierarchicalVariableIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn identifier(s: Span) -> IResult<Span, Identifier> {
     alt((
         map(escaped_identifier, |x| Identifier::EscapedIdentifier(x)),
@@ -793,102 +793,102 @@ pub fn identifier(s: Span) -> IResult<Span, Identifier> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn index_variable_identifier(s: Span) -> IResult<Span, IndexVariableIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, IndexVariableIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn interface_identifier(s: Span) -> IResult<Span, InterfaceIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, InterfaceIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn interface_instance_identifier(s: Span) -> IResult<Span, InterfaceInstanceIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, InterfaceInstanceIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn inout_port_identifier(s: Span) -> IResult<Span, InoutPortIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, InoutPortIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn input_port_identifier(s: Span) -> IResult<Span, InputPortIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, InputPortIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn instance_identifier(s: Span) -> IResult<Span, InstanceIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, InstanceIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn library_identifier(s: Span) -> IResult<Span, LibraryIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, LibraryIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn member_identifier(s: Span) -> IResult<Span, MemberIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, MemberIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn method_identifier(s: Span) -> IResult<Span, MethodIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, MethodIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn modport_identifier(s: Span) -> IResult<Span, ModportIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ModportIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn module_identifier(s: Span) -> IResult<Span, ModuleIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ModuleIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn net_identifier(s: Span) -> IResult<Span, NetIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, NetIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn net_type_identifier(s: Span) -> IResult<Span, NetTypeIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, NetTypeIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn output_port_identifier(s: Span) -> IResult<Span, OutputPortIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, OutputPortIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn package_identifier(s: Span) -> IResult<Span, PackageIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, PackageIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn package_scope(s: Span) -> IResult<Span, PackageScope> {
     alt((package_scope_package, map(unit, |x| PackageScope::Unit(x))))(s)
 }
 
-#[trace]
+#[parser]
 pub fn package_scope_package(s: Span) -> IResult<Span, PackageScope> {
     let (s, a) = package_identifier(s)?;
     let (s, b) = symbol("::")(s)?;
@@ -898,72 +898,72 @@ pub fn package_scope_package(s: Span) -> IResult<Span, PackageScope> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn unit(s: Span) -> IResult<Span, Unit> {
     let (s, a) = symbol("$unit")(s)?;
     let (s, b) = symbol("::")(s)?;
     Ok((s, Unit { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn parameter_identifier(s: Span) -> IResult<Span, ParameterIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ParameterIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn port_identifier(s: Span) -> IResult<Span, PortIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, PortIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn production_identifier(s: Span) -> IResult<Span, ProductionIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ProductionIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn program_identifier(s: Span) -> IResult<Span, ProgramIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, ProgramIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn property_identifier(s: Span) -> IResult<Span, PropertyIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, PropertyIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn ps_class_identifier(s: Span) -> IResult<Span, PsClassIdentifier> {
     let (s, a) = opt(package_scope)(s)?;
     let (s, b) = class_identifier(s)?;
     Ok((s, PsClassIdentifier { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn ps_covergroup_identifier(s: Span) -> IResult<Span, PsCovergroupIdentifier> {
     let (s, a) = opt(package_scope)(s)?;
     let (s, b) = covergroup_identifier(s)?;
     Ok((s, PsCovergroupIdentifier { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn ps_checker_identifier(s: Span) -> IResult<Span, PsCheckerIdentifier> {
     let (s, a) = opt(package_scope)(s)?;
     let (s, b) = checker_identifier(s)?;
     Ok((s, PsCheckerIdentifier { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn ps_identifier(s: Span) -> IResult<Span, PsIdentifier> {
     let (s, a) = opt(package_scope)(s)?;
     let (s, b) = identifier(s)?;
     Ok((s, PsIdentifier { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn ps_or_hierarchical_array_identifier(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalArrayIdentifier> {
@@ -972,7 +972,7 @@ pub fn ps_or_hierarchical_array_identifier(
     Ok((s, PsOrHierarchicalArrayIdentifier { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn ps_or_hierarchical_net_identifier(s: Span) -> IResult<Span, PsOrHierarchicalNetIdentifier> {
     alt((
         ps_or_hierarchical_net_identifier_package_scope,
@@ -982,7 +982,7 @@ pub fn ps_or_hierarchical_net_identifier(s: Span) -> IResult<Span, PsOrHierarchi
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn ps_or_hierarchical_net_identifier_package_scope(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalNetIdentifier> {
@@ -996,7 +996,7 @@ pub fn ps_or_hierarchical_net_identifier_package_scope(
     ))
 }
 
-#[trace]
+#[parser]
 pub fn ps_or_hierarchical_property_identifier(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalPropertyIdentifier> {
@@ -1008,7 +1008,7 @@ pub fn ps_or_hierarchical_property_identifier(
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn ps_or_hierarchical_property_identifier_package_scope(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalPropertyIdentifier> {
@@ -1022,7 +1022,7 @@ pub fn ps_or_hierarchical_property_identifier_package_scope(
     ))
 }
 
-#[trace]
+#[parser]
 pub fn ps_or_hierarchical_sequence_identifier(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalSequenceIdentifier> {
@@ -1034,7 +1034,7 @@ pub fn ps_or_hierarchical_sequence_identifier(
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn ps_or_hierarchical_sequence_identifier_package_scope(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalSequenceIdentifier> {
@@ -1048,7 +1048,7 @@ pub fn ps_or_hierarchical_sequence_identifier_package_scope(
     ))
 }
 
-#[trace]
+#[parser]
 pub fn ps_or_hierarchical_tf_identifier(s: Span) -> IResult<Span, PsOrHierarchicalTfIdentifier> {
     alt((
         ps_or_hierarchical_tf_identifier_package_scope,
@@ -1058,7 +1058,7 @@ pub fn ps_or_hierarchical_tf_identifier(s: Span) -> IResult<Span, PsOrHierarchic
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn ps_or_hierarchical_tf_identifier_package_scope(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalTfIdentifier> {
@@ -1072,7 +1072,7 @@ pub fn ps_or_hierarchical_tf_identifier_package_scope(
     ))
 }
 
-#[trace]
+#[parser]
 pub fn ps_parameter_identifier(s: Span) -> IResult<Span, PsParameterIdentifier> {
     alt((
         ps_parameter_identifier_scope,
@@ -1080,7 +1080,7 @@ pub fn ps_parameter_identifier(s: Span) -> IResult<Span, PsParameterIdentifier> 
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn ps_parameter_identifier_scope(s: Span) -> IResult<Span, PsParameterIdentifier> {
     let (s, a) = opt(package_scope_or_class_scope)(s)?;
     let (s, b) = parameter_identifier(s)?;
@@ -1090,7 +1090,7 @@ pub fn ps_parameter_identifier_scope(s: Span) -> IResult<Span, PsParameterIdenti
     ))
 }
 
-#[trace]
+#[parser]
 pub fn ps_parameter_identifier_generate(s: Span) -> IResult<Span, PsParameterIdentifier> {
     let (s, a) = many0(triple(
         generate_block_identifier,
@@ -1104,32 +1104,32 @@ pub fn ps_parameter_identifier_generate(s: Span) -> IResult<Span, PsParameterIde
     ))
 }
 
-#[trace]
+#[parser]
 pub fn ps_type_identifier(s: Span) -> IResult<Span, PsTypeIdentifier> {
     let (s, a) = opt(local_or_package_scope_or_class_scope)(s)?;
     let (s, b) = type_identifier(s)?;
     Ok((s, PsTypeIdentifier { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn sequence_identifier(s: Span) -> IResult<Span, SequenceIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, SequenceIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn signal_identifier(s: Span) -> IResult<Span, SignalIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, SignalIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn simple_identifier(s: Span) -> IResult<Span, SimpleIdentifier> {
     let (s, a) = ws(simple_identifier_impl)(s)?;
     Ok((s, SimpleIdentifier { nodes: a }))
 }
 
-#[trace]
+#[parser]
 pub fn simple_identifier_impl(s: Span) -> IResult<Span, Span> {
     let (s, a) = is_a(AZ_)(s)?;
     let (s, b) = opt(is_a(AZ09_DOLLAR))(s)?;
@@ -1141,19 +1141,19 @@ pub fn simple_identifier_impl(s: Span) -> IResult<Span, Span> {
     Ok((s, a))
 }
 
-#[trace]
+#[parser]
 pub fn specparam_identifier(s: Span) -> IResult<Span, SpecparamIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, SpecparamIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn system_tf_identifier(s: Span) -> IResult<Span, SystemTfIdentifier> {
     let (s, a) = ws(system_tf_identifier_impl)(s)?;
     Ok((s, SystemTfIdentifier { nodes: a }))
 }
 
-#[trace]
+#[parser]
 pub fn system_tf_identifier_impl(s: Span) -> IResult<Span, Span> {
     let (s, a) = tag("$")(s)?;
     let (s, b) = is_a(AZ09_DOLLAR)(s)?;
@@ -1161,49 +1161,49 @@ pub fn system_tf_identifier_impl(s: Span) -> IResult<Span, Span> {
     Ok((s, a))
 }
 
-#[trace]
+#[parser]
 pub fn task_identifier(s: Span) -> IResult<Span, TaskIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, TaskIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn tf_identifier(s: Span) -> IResult<Span, TfIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, TfIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn terminal_identifier(s: Span) -> IResult<Span, TerminalIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, TerminalIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn topmodule_identifier(s: Span) -> IResult<Span, TopmoduleIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, TopmoduleIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn type_identifier(s: Span) -> IResult<Span, TypeIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, TypeIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn udp_identifier(s: Span) -> IResult<Span, UdpIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, UdpIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn variable_identifier(s: Span) -> IResult<Span, VariableIdentifier> {
     let (s, a) = identifier(s)?;
     Ok((s, VariableIdentifier { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn implicit_class_handle_or_class_scope_or_package_scope(
     s: Span,
 ) -> IResult<Span, ImplicitClassHandleOrClassScopeOrPackageScope> {
@@ -1220,7 +1220,7 @@ pub fn implicit_class_handle_or_class_scope_or_package_scope(
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn implicit_class_handle_or_package_scope(
     s: Span,
 ) -> IResult<Span, ImplicitClassHandleOrPackageScope> {
@@ -1234,7 +1234,7 @@ pub fn implicit_class_handle_or_package_scope(
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn implicit_class_handle_or_class_scope(
     s: Span,
 ) -> IResult<Span, ImplicitClassHandleOrClassScope> {
@@ -1248,7 +1248,7 @@ pub fn implicit_class_handle_or_class_scope(
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn package_scope_or_class_scope(s: Span) -> IResult<Span, PackageScopeOrClassScope> {
     alt((
         map(package_scope, |x| PackageScopeOrClassScope::PackageScope(x)),
@@ -1256,7 +1256,7 @@ pub fn package_scope_or_class_scope(s: Span) -> IResult<Span, PackageScopeOrClas
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn local_or_package_scope_or_class_scope(
     s: Span,
 ) -> IResult<Span, LocalOrPackageScopeOrClassScope> {
@@ -1271,7 +1271,7 @@ pub fn local_or_package_scope_or_class_scope(
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn local(s: Span) -> IResult<Span, Local> {
     let (s, a) = symbol("local")(s)?;
     let (s, b) = symbol("::")(s)?;

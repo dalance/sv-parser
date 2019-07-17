@@ -61,12 +61,12 @@ pub struct NetAssignment<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn continuous_assign(s: Span) -> IResult<Span, ContinuousAssign> {
     alt((continuous_assign_net, continuous_assign_variable))(s)
 }
 
-#[trace]
+#[parser]
 pub fn continuous_assign_net(s: Span) -> IResult<Span, ContinuousAssign> {
     let (s, a) = symbol("assign")(s)?;
     let (s, b) = opt(drive_strength)(s)?;
@@ -82,7 +82,7 @@ pub fn continuous_assign_net(s: Span) -> IResult<Span, ContinuousAssign> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn continuous_assign_variable(s: Span) -> IResult<Span, ContinuousAssign> {
     let (s, a) = symbol("assign")(s)?;
     let (s, b) = opt(delay_control)(s)?;
@@ -97,19 +97,19 @@ pub fn continuous_assign_variable(s: Span) -> IResult<Span, ContinuousAssign> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn list_of_net_assignments(s: Span) -> IResult<Span, ListOfNetAssignments> {
     let (s, a) = list(symbol(","), net_assignment)(s)?;
     Ok((s, ListOfNetAssignments { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn list_of_variable_assignments(s: Span) -> IResult<Span, ListOfVariableAssignments> {
     let (s, a) = list(symbol(","), variable_assignment)(s)?;
     Ok((s, ListOfVariableAssignments { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn net_alias(s: Span) -> IResult<Span, NetAlias> {
     let (s, a) = symbol("alias")(s)?;
     let (s, b) = net_lvalue(s)?;
@@ -125,7 +125,7 @@ pub fn net_alias(s: Span) -> IResult<Span, NetAlias> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn net_assignment(s: Span) -> IResult<Span, NetAssignment> {
     let (s, a) = net_lvalue(s)?;
     let (s, b) = symbol("=")(s)?;

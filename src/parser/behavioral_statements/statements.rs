@@ -75,7 +75,7 @@ pub struct VariableIdentifierList<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn statement_or_null(s: Span) -> IResult<Span, StatementOrNull> {
     alt((
         map(statement, |x| StatementOrNull::Statement(x)),
@@ -83,7 +83,7 @@ pub fn statement_or_null(s: Span) -> IResult<Span, StatementOrNull> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn statement_or_null_attribute(s: Span) -> IResult<Span, StatementOrNull> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = symbol(";")(s)?;
@@ -93,7 +93,7 @@ pub fn statement_or_null_attribute(s: Span) -> IResult<Span, StatementOrNull> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn statement(s: Span) -> IResult<Span, Statement> {
     let (s, a) = opt(pair(block_identifier, symbol(":")))(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
@@ -101,7 +101,7 @@ pub fn statement(s: Span) -> IResult<Span, Statement> {
     Ok((s, Statement { nodes: (a, b, c) }))
 }
 
-#[trace]
+#[parser]
 pub fn statement_item(s: Span) -> IResult<Span, StatementItem> {
     alt((
         map(pair(blocking_assignment, symbol(";")), |x| {
@@ -161,13 +161,13 @@ pub fn statement_item(s: Span) -> IResult<Span, StatementItem> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn function_statement(s: Span) -> IResult<Span, FunctionStatement> {
     let (s, a) = statement(s)?;
     Ok((s, FunctionStatement { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn function_statement_or_null(s: Span) -> IResult<Span, FunctionStatementOrNull> {
     alt((
         map(function_statement, |x| {
@@ -177,7 +177,7 @@ pub fn function_statement_or_null(s: Span) -> IResult<Span, FunctionStatementOrN
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn function_statement_or_null_attribute(s: Span) -> IResult<Span, FunctionStatementOrNull> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = symbol(";")(s)?;
@@ -187,7 +187,7 @@ pub fn function_statement_or_null_attribute(s: Span) -> IResult<Span, FunctionSt
     ))
 }
 
-#[trace]
+#[parser]
 pub fn variable_identifier_list(s: Span) -> IResult<Span, VariableIdentifierList> {
     let (s, a) = list(symbol(","), variable_identifier)(s)?;
     Ok((s, VariableIdentifierList { nodes: (a,) }))

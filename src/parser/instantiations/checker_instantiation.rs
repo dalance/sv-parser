@@ -61,7 +61,7 @@ pub struct NamedCheckerPortConnectionAsterisk<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn checker_instantiation(s: Span) -> IResult<Span, CheckerInstantiation> {
     let (s, a) = ps_checker_identifier(s)?;
     let (s, b) = name_of_instance(s)?;
@@ -75,7 +75,7 @@ pub fn checker_instantiation(s: Span) -> IResult<Span, CheckerInstantiation> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn list_of_checker_port_connections(s: Span) -> IResult<Span, ListOfCheckerPortConnections> {
     alt((
         list_of_checker_port_connections_ordered,
@@ -83,7 +83,7 @@ pub fn list_of_checker_port_connections(s: Span) -> IResult<Span, ListOfCheckerP
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn list_of_checker_port_connections_ordered(
     s: Span,
 ) -> IResult<Span, ListOfCheckerPortConnections> {
@@ -94,7 +94,7 @@ pub fn list_of_checker_port_connections_ordered(
     ))
 }
 
-#[trace]
+#[parser]
 pub fn list_of_checker_port_connections_named(
     s: Span,
 ) -> IResult<Span, ListOfCheckerPortConnections> {
@@ -105,14 +105,14 @@ pub fn list_of_checker_port_connections_named(
     ))
 }
 
-#[trace]
+#[parser]
 pub fn ordered_checker_port_connection(s: Span) -> IResult<Span, OrderedCheckerPortConnection> {
     let (s, x) = many0(attribute_instance)(s)?;
     let (s, y) = opt(property_actual_arg)(s)?;
     Ok((s, OrderedCheckerPortConnection { nodes: (x, y) }))
 }
 
-#[trace]
+#[parser]
 pub fn named_checker_port_connection(s: Span) -> IResult<Span, NamedCheckerPortConnection> {
     alt((
         named_checker_port_connection_identifier,
@@ -120,7 +120,7 @@ pub fn named_checker_port_connection(s: Span) -> IResult<Span, NamedCheckerPortC
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn named_checker_port_connection_identifier(
     s: Span,
 ) -> IResult<Span, NamedCheckerPortConnection> {
@@ -136,7 +136,7 @@ pub fn named_checker_port_connection_identifier(
     ))
 }
 
-#[trace]
+#[parser]
 pub fn named_checker_port_connection_asterisk(
     s: Span,
 ) -> IResult<Span, NamedCheckerPortConnection> {

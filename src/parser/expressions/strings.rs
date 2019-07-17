@@ -15,13 +15,13 @@ pub struct StringLiteral<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn string_literal(s: Span) -> IResult<Span, StringLiteral> {
     let (s, a) = ws(string_literal_impl)(s)?;
     Ok((s, StringLiteral { nodes: a }))
 }
 
-#[trace]
+#[parser]
 pub fn string_literal_impl(s: Span) -> IResult<Span, Span> {
     let (s, a) = tag("\"")(s)?;
     let (s, b) = many1(pair(is_not("\\\""), opt(pair(tag("\\"), take(1usize)))))(s)?;

@@ -25,7 +25,7 @@ pub struct SubroutineCallStatementFunction<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn subroutine_call_statement(s: Span) -> IResult<Span, SubroutineCallStatement> {
     alt((
         map(pair(subroutine_call, symbol(";")), |x| {
@@ -35,7 +35,7 @@ pub fn subroutine_call_statement(s: Span) -> IResult<Span, SubroutineCallStateme
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn subroutine_call_statement_function(s: Span) -> IResult<Span, SubroutineCallStatement> {
     let (s, a) = symbol("void")(s)?;
     let (s, b) = symbol("'")(s)?;

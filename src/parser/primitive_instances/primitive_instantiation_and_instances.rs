@@ -227,7 +227,7 @@ pub struct PullGateInstance<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn gate_instantiation(s: Span) -> IResult<Span, GateInstantiation> {
     alt((
         gate_instantiation_cmos,
@@ -242,7 +242,7 @@ pub fn gate_instantiation(s: Span) -> IResult<Span, GateInstantiation> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn gate_instantiation_cmos(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, a) = cmos_switchtype(s)?;
     let (s, b) = opt(delay3)(s)?;
@@ -256,7 +256,7 @@ pub fn gate_instantiation_cmos(s: Span) -> IResult<Span, GateInstantiation> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn gate_instantiation_enable(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, a) = enable_gatetype(s)?;
     let (s, b) = opt(drive_strength)(s)?;
@@ -271,7 +271,7 @@ pub fn gate_instantiation_enable(s: Span) -> IResult<Span, GateInstantiation> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn gate_instantiation_mos(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, a) = mos_switchtype(s)?;
     let (s, b) = opt(delay3)(s)?;
@@ -285,7 +285,7 @@ pub fn gate_instantiation_mos(s: Span) -> IResult<Span, GateInstantiation> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn gate_instantiation_n_input(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, a) = n_input_gatetype(s)?;
     let (s, b) = opt(drive_strength)(s)?;
@@ -300,7 +300,7 @@ pub fn gate_instantiation_n_input(s: Span) -> IResult<Span, GateInstantiation> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn gate_instantiation_n_output(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, a) = n_output_gatetype(s)?;
     let (s, b) = opt(drive_strength)(s)?;
@@ -315,7 +315,7 @@ pub fn gate_instantiation_n_output(s: Span) -> IResult<Span, GateInstantiation> 
     ))
 }
 
-#[trace]
+#[parser]
 pub fn gate_instantiation_pass_en(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, a) = pass_en_switchtype(s)?;
     let (s, b) = opt(delay2)(s)?;
@@ -329,7 +329,7 @@ pub fn gate_instantiation_pass_en(s: Span) -> IResult<Span, GateInstantiation> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn gate_instantiation_pass(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, a) = pass_switchtype(s)?;
     let (s, b) = list(symbol(","), pass_switch_instance)(s)?;
@@ -340,7 +340,7 @@ pub fn gate_instantiation_pass(s: Span) -> IResult<Span, GateInstantiation> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn gate_instantiation_pulldown(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, a) = symbol("pulldown")(s)?;
     let (s, b) = opt(pulldown_strength)(s)?;
@@ -354,7 +354,7 @@ pub fn gate_instantiation_pulldown(s: Span) -> IResult<Span, GateInstantiation> 
     ))
 }
 
-#[trace]
+#[parser]
 pub fn gate_instantiation_pullup(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, a) = symbol("pullup")(s)?;
     let (s, b) = opt(pullup_strength)(s)?;
@@ -368,7 +368,7 @@ pub fn gate_instantiation_pullup(s: Span) -> IResult<Span, GateInstantiation> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn cmos_switch_instance(s: Span) -> IResult<Span, CmosSwitchInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(tuple((
@@ -383,7 +383,7 @@ pub fn cmos_switch_instance(s: Span) -> IResult<Span, CmosSwitchInstance> {
     Ok((s, CmosSwitchInstance { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn enable_gate_instance(s: Span) -> IResult<Span, EnableGateInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(tuple((
@@ -396,7 +396,7 @@ pub fn enable_gate_instance(s: Span) -> IResult<Span, EnableGateInstance> {
     Ok((s, EnableGateInstance { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn mos_switch_instance(s: Span) -> IResult<Span, MosSwitchInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(tuple((
@@ -409,7 +409,7 @@ pub fn mos_switch_instance(s: Span) -> IResult<Span, MosSwitchInstance> {
     Ok((s, MosSwitchInstance { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn n_input_gate_instance(s: Span) -> IResult<Span, NInputGateInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(tuple((
@@ -420,7 +420,7 @@ pub fn n_input_gate_instance(s: Span) -> IResult<Span, NInputGateInstance> {
     Ok((s, NInputGateInstance { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn n_output_gate_instance(s: Span) -> IResult<Span, NOutputGateInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(tuple((
@@ -431,14 +431,14 @@ pub fn n_output_gate_instance(s: Span) -> IResult<Span, NOutputGateInstance> {
     Ok((s, NOutputGateInstance { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn pass_switch_instance(s: Span) -> IResult<Span, PassSwitchInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(tuple((inout_terminal, symbol(","), inout_terminal)))(s)?;
     Ok((s, PassSwitchInstance { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn pass_enable_switch_instance(s: Span) -> IResult<Span, PassEnableSwitchInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(tuple((
@@ -451,7 +451,7 @@ pub fn pass_enable_switch_instance(s: Span) -> IResult<Span, PassEnableSwitchIns
     Ok((s, PassEnableSwitchInstance { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn pull_gate_instance(s: Span) -> IResult<Span, PullGateInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(output_terminal)(s)?;

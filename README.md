@@ -69,7 +69,7 @@ A parser library for System Verilog.
 | expressions                       | subroutine_calls                      | x    | x      |      |
 | expressions                       | expressions                           | x    | x      |      |
 | expressions                       | primaries                             | x    | x      |      |
-| expressions                       | expression_leftside_values            | x    | x      |      |
+| expressions                       | expression_leftside_values            | x    | x      | x    |
 | expressions                       | operators                             | x    | x      | x    |
 | expressions                       | numbers                               | x    | x      | x    |
 | expressions                       | strings                               | x    | x      | x    |

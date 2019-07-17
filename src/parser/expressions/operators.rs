@@ -32,7 +32,7 @@ pub struct BinaryModulePathOperator<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn unary_operator(s: Span) -> IResult<Span, UnaryOperator> {
     let (s, a) = alt((
         symbol("+"),
@@ -50,7 +50,7 @@ pub fn unary_operator(s: Span) -> IResult<Span, UnaryOperator> {
     Ok((s, UnaryOperator { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn binary_operator(s: Span) -> IResult<Span, BinaryOperator> {
     let (s, a) = alt((
         alt((
@@ -90,13 +90,13 @@ pub fn binary_operator(s: Span) -> IResult<Span, BinaryOperator> {
     Ok((s, BinaryOperator { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn inc_or_dec_operator(s: Span) -> IResult<Span, IncOrDecOperator> {
     let (s, a) = alt((symbol("++"), symbol("--")))(s)?;
     Ok((s, IncOrDecOperator { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn unary_module_path_operator(s: Span) -> IResult<Span, UnaryModulePathOperator> {
     let (s, a) = alt((
         symbol("!"),
@@ -112,7 +112,7 @@ pub fn unary_module_path_operator(s: Span) -> IResult<Span, UnaryModulePathOpera
     Ok((s, UnaryModulePathOperator { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn binary_module_path_operator(s: Span) -> IResult<Span, BinaryModulePathOperator> {
     let (s, a) = alt((
         symbol("=="),

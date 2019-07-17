@@ -144,7 +144,7 @@ pub struct OpenValueRange<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn case_statement(s: Span) -> IResult<Span, CaseStatement> {
     alt((
         case_statement_normal,
@@ -153,7 +153,7 @@ pub fn case_statement(s: Span) -> IResult<Span, CaseStatement> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn case_statement_normal(s: Span) -> IResult<Span, CaseStatement> {
     let (s, a) = opt(unique_priority)(s)?;
     let (s, b) = case_keyword(s)?;
@@ -169,7 +169,7 @@ pub fn case_statement_normal(s: Span) -> IResult<Span, CaseStatement> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn case_statement_matches(s: Span) -> IResult<Span, CaseStatement> {
     let (s, a) = opt(unique_priority)(s)?;
     let (s, b) = case_keyword(s)?;
@@ -186,7 +186,7 @@ pub fn case_statement_matches(s: Span) -> IResult<Span, CaseStatement> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn case_statement_inside(s: Span) -> IResult<Span, CaseStatement> {
     let (s, a) = opt(unique_priority)(s)?;
     let (s, b) = symbol("case")(s)?;
@@ -203,7 +203,7 @@ pub fn case_statement_inside(s: Span) -> IResult<Span, CaseStatement> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn case_keyword(s: Span) -> IResult<Span, CaseKeyword> {
     alt((
         map(symbol("casez"), |x| CaseKeyword::Casez(x)),
@@ -212,13 +212,13 @@ pub fn case_keyword(s: Span) -> IResult<Span, CaseKeyword> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn case_expression(s: Span) -> IResult<Span, CaseExpression> {
     let (s, a) = expression(s)?;
     Ok((s, CaseExpression { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn case_item(s: Span) -> IResult<Span, CaseItem> {
     alt((
         case_item_nondefault,
@@ -226,7 +226,7 @@ pub fn case_item(s: Span) -> IResult<Span, CaseItem> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn case_item_nondefault(s: Span) -> IResult<Span, CaseItem> {
     let (s, a) = list(symbol(","), case_item_expression)(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -237,7 +237,7 @@ pub fn case_item_nondefault(s: Span) -> IResult<Span, CaseItem> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn case_item_default(s: Span) -> IResult<Span, CaseItemDefault> {
     let (s, a) = symbol("default")(s)?;
     let (s, b) = opt(symbol(":"))(s)?;
@@ -245,7 +245,7 @@ pub fn case_item_default(s: Span) -> IResult<Span, CaseItemDefault> {
     Ok((s, CaseItemDefault { nodes: (a, b, c) }))
 }
 
-#[trace]
+#[parser]
 pub fn case_pattern_item(s: Span) -> IResult<Span, CasePatternItem> {
     alt((
         case_pattern_item_nondefault,
@@ -253,7 +253,7 @@ pub fn case_pattern_item(s: Span) -> IResult<Span, CasePatternItem> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn case_pattern_item_nondefault(s: Span) -> IResult<Span, CasePatternItem> {
     let (s, a) = pattern(s)?;
     let (s, b) = opt(pair(symbol("&&&"), expression))(s)?;
@@ -267,7 +267,7 @@ pub fn case_pattern_item_nondefault(s: Span) -> IResult<Span, CasePatternItem> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn case_inside_item(s: Span) -> IResult<Span, CaseInsideItem> {
     alt((
         case_inside_item_nondefault,
@@ -275,7 +275,7 @@ pub fn case_inside_item(s: Span) -> IResult<Span, CaseInsideItem> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn case_inside_item_nondefault(s: Span) -> IResult<Span, CaseInsideItem> {
     let (s, a) = open_range_list(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -286,13 +286,13 @@ pub fn case_inside_item_nondefault(s: Span) -> IResult<Span, CaseInsideItem> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn case_item_expression(s: Span) -> IResult<Span, CaseItemExpression> {
     let (s, a) = expression(s)?;
     Ok((s, CaseItemExpression { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn randcase_statement(s: Span) -> IResult<Span, RandcaseStatement> {
     let (s, a) = symbol("randcase")(s)?;
     let (s, b) = randcase_item(s)?;
@@ -306,7 +306,7 @@ pub fn randcase_statement(s: Span) -> IResult<Span, RandcaseStatement> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn randcase_item(s: Span) -> IResult<Span, RandcaseItem> {
     let (s, a) = expression(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -314,13 +314,13 @@ pub fn randcase_item(s: Span) -> IResult<Span, RandcaseItem> {
     Ok((s, RandcaseItem { nodes: (a, b, c) }))
 }
 
-#[trace]
+#[parser]
 pub fn open_range_list(s: Span) -> IResult<Span, OpenRangeList> {
     let (s, a) = list(symbol(","), open_value_range)(s)?;
     Ok((s, OpenRangeList { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn open_value_range(s: Span) -> IResult<Span, OpenValueRange> {
     let (s, a) = value_range(s)?;
     Ok((s, OpenValueRange { nodes: (a,) }))

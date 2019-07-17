@@ -279,12 +279,12 @@ pub struct GenvarExpression<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn inc_or_dec_expression(s: Span) -> IResult<Span, IncOrDecExpression> {
     alt((inc_or_dec_expression_prefix, inc_or_dec_expression_suffix))(s)
 }
 
-#[trace]
+#[parser]
 pub fn inc_or_dec_expression_prefix(s: Span) -> IResult<Span, IncOrDecExpression> {
     let (s, a) = inc_or_dec_operator(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
@@ -295,7 +295,7 @@ pub fn inc_or_dec_expression_prefix(s: Span) -> IResult<Span, IncOrDecExpression
     ))
 }
 
-#[trace]
+#[parser]
 pub fn inc_or_dec_expression_suffix(s: Span) -> IResult<Span, IncOrDecExpression> {
     let (s, a) = variable_lvalue(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
@@ -306,7 +306,7 @@ pub fn inc_or_dec_expression_suffix(s: Span) -> IResult<Span, IncOrDecExpression
     ))
 }
 
-#[trace]
+#[parser]
 pub fn conditional_expression(s: Span) -> IResult<Span, ConditionalExpression> {
     let (s, a) = cond_predicate(s)?;
     let (s, b) = symbol("?")(s)?;
@@ -322,7 +322,7 @@ pub fn conditional_expression(s: Span) -> IResult<Span, ConditionalExpression> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn constant_expression(s: Span) -> IResult<Span, ConstantExpression> {
     alt((
         map(constant_primary, |x| {
@@ -334,7 +334,7 @@ pub fn constant_expression(s: Span) -> IResult<Span, ConstantExpression> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn constant_expression_unary(s: Span) -> IResult<Span, ConstantExpression> {
     let (s, a) = unary_operator(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
@@ -345,7 +345,7 @@ pub fn constant_expression_unary(s: Span) -> IResult<Span, ConstantExpression> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn constant_expression_binary(s: Span) -> IResult<Span, ConstantExpression> {
     let (s, a) = constant_expression(s)?;
     let (s, b) = binary_operator(s)?;
@@ -359,7 +359,7 @@ pub fn constant_expression_binary(s: Span) -> IResult<Span, ConstantExpression> 
     ))
 }
 
-#[trace]
+#[parser]
 pub fn constant_expression_ternary(s: Span) -> IResult<Span, ConstantExpression> {
     let (s, a) = constant_expression(s)?;
     let (s, b) = symbol("?")(s)?;
@@ -375,7 +375,7 @@ pub fn constant_expression_ternary(s: Span) -> IResult<Span, ConstantExpression>
     ))
 }
 
-#[trace]
+#[parser]
 pub fn constant_mintypmax_expression(s: Span) -> IResult<Span, ConstantMintypmaxExpression> {
     alt((
         constant_mintypmax_expression_ternary,
@@ -385,7 +385,7 @@ pub fn constant_mintypmax_expression(s: Span) -> IResult<Span, ConstantMintypmax
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn constant_mintypmax_expression_ternary(
     s: Span,
 ) -> IResult<Span, ConstantMintypmaxExpression> {
@@ -402,7 +402,7 @@ pub fn constant_mintypmax_expression_ternary(
     ))
 }
 
-#[trace]
+#[parser]
 pub fn constant_param_expression(s: Span) -> IResult<Span, ConstantParamExpression> {
     alt((
         map(symbol("$"), |x| ConstantParamExpression::Dollar(x)),
@@ -413,7 +413,7 @@ pub fn constant_param_expression(s: Span) -> IResult<Span, ConstantParamExpressi
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn param_expression(s: Span) -> IResult<Span, ParamExpression> {
     alt((
         map(symbol("$"), |x| ParamExpression::Dollar(x)),
@@ -424,7 +424,7 @@ pub fn param_expression(s: Span) -> IResult<Span, ParamExpression> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn constant_range_expression(s: Span) -> IResult<Span, ConstantRangeExpression> {
     alt((
         map(constant_part_select_range, |x| {
@@ -436,7 +436,7 @@ pub fn constant_range_expression(s: Span) -> IResult<Span, ConstantRangeExpressi
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn constant_part_select_range(s: Span) -> IResult<Span, ConstantPartSelectRange> {
     alt((
         map(constant_range, |x| {
@@ -448,7 +448,7 @@ pub fn constant_part_select_range(s: Span) -> IResult<Span, ConstantPartSelectRa
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn constant_range(s: Span) -> IResult<Span, ConstantRange> {
     let (s, a) = constant_expression(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -456,7 +456,7 @@ pub fn constant_range(s: Span) -> IResult<Span, ConstantRange> {
     Ok((s, ConstantRange { nodes: (a, b, c) }))
 }
 
-#[trace]
+#[parser]
 pub fn constant_indexed_range(s: Span) -> IResult<Span, ConstantIndexedRange> {
     let (s, a) = constant_expression(s)?;
     let (s, b) = alt((symbol("+:"), symbol("-:")))(s)?;
@@ -464,7 +464,7 @@ pub fn constant_indexed_range(s: Span) -> IResult<Span, ConstantIndexedRange> {
     Ok((s, ConstantIndexedRange { nodes: (a, b, c) }))
 }
 
-#[trace]
+#[parser]
 pub fn expression(s: Span) -> IResult<Span, Expression> {
     alt((
         map(primary, |x| Expression::Primary(Box::new(x))),
@@ -486,7 +486,7 @@ pub fn expression(s: Span) -> IResult<Span, Expression> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn expression_unary(s: Span) -> IResult<Span, Expression> {
     let (s, x) = unary_operator(s)?;
     let (s, y) = many0(attribute_instance)(s)?;
@@ -497,7 +497,7 @@ pub fn expression_unary(s: Span) -> IResult<Span, Expression> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn expression_operator_assignment(s: Span) -> IResult<Span, Expression> {
     let (s, a) = paren(operator_assignment)(s)?;
     Ok((
@@ -506,7 +506,7 @@ pub fn expression_operator_assignment(s: Span) -> IResult<Span, Expression> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn expression_binary(s: Span) -> IResult<Span, Expression> {
     let (s, a) = expression(s)?;
     let (s, b) = binary_operator(s)?;
@@ -520,7 +520,7 @@ pub fn expression_binary(s: Span) -> IResult<Span, Expression> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn tagged_union_expression(s: Span) -> IResult<Span, TaggedUnionExpression> {
     let (s, a) = symbol("tagged")(s)?;
     let (s, b) = member_identifier(s)?;
@@ -528,7 +528,7 @@ pub fn tagged_union_expression(s: Span) -> IResult<Span, TaggedUnionExpression> 
     Ok((s, TaggedUnionExpression { nodes: (a, b, c) }))
 }
 
-#[trace]
+#[parser]
 pub fn inside_expression(s: Span) -> IResult<Span, InsideExpression> {
     let (s, a) = expression(s)?;
     let (s, b) = symbol("inside")(s)?;
@@ -536,7 +536,7 @@ pub fn inside_expression(s: Span) -> IResult<Span, InsideExpression> {
     Ok((s, InsideExpression { nodes: (a, b, c) }))
 }
 
-#[trace]
+#[parser]
 pub fn value_range(s: Span) -> IResult<Span, ValueRange> {
     alt((
         value_range_binary,
@@ -544,13 +544,13 @@ pub fn value_range(s: Span) -> IResult<Span, ValueRange> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn value_range_binary(s: Span) -> IResult<Span, ValueRange> {
     let (s, a) = bracket(triple(expression, symbol(":"), expression))(s)?;
     Ok((s, ValueRange::Binary(ValueRangeBinary { nodes: (a,) })))
 }
 
-#[trace]
+#[parser]
 pub fn mintypmax_expression(s: Span) -> IResult<Span, MintypmaxExpression> {
     alt((
         mintypmax_expression_ternary,
@@ -558,7 +558,7 @@ pub fn mintypmax_expression(s: Span) -> IResult<Span, MintypmaxExpression> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn mintypmax_expression_ternary(s: Span) -> IResult<Span, MintypmaxExpression> {
     let (s, a) = expression(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -573,7 +573,7 @@ pub fn mintypmax_expression_ternary(s: Span) -> IResult<Span, MintypmaxExpressio
     ))
 }
 
-#[trace]
+#[parser]
 pub fn module_path_conditional_expression(
     s: Span,
 ) -> IResult<Span, ModulePathConditionalExpression> {
@@ -591,7 +591,7 @@ pub fn module_path_conditional_expression(
     ))
 }
 
-#[trace]
+#[parser]
 pub fn module_path_expression(s: Span) -> IResult<Span, ModulePathExpression> {
     alt((
         map(module_path_primary, |x| {
@@ -605,7 +605,7 @@ pub fn module_path_expression(s: Span) -> IResult<Span, ModulePathExpression> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn module_path_expression_unary(s: Span) -> IResult<Span, ModulePathExpression> {
     let (s, a) = unary_module_path_operator(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
@@ -616,7 +616,7 @@ pub fn module_path_expression_unary(s: Span) -> IResult<Span, ModulePathExpressi
     ))
 }
 
-#[trace]
+#[parser]
 pub fn module_path_expression_binary(s: Span) -> IResult<Span, ModulePathExpression> {
     let (s, a) = module_path_expression(s)?;
     let (s, b) = binary_module_path_operator(s)?;
@@ -630,7 +630,7 @@ pub fn module_path_expression_binary(s: Span) -> IResult<Span, ModulePathExpress
     ))
 }
 
-#[trace]
+#[parser]
 pub fn module_path_mintypmax_expression(s: Span) -> IResult<Span, ModulePathMintypmaxExpression> {
     alt((
         module_path_mintypmax_expression_ternary,
@@ -640,7 +640,7 @@ pub fn module_path_mintypmax_expression(s: Span) -> IResult<Span, ModulePathMint
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn module_path_mintypmax_expression_ternary(
     s: Span,
 ) -> IResult<Span, ModulePathMintypmaxExpression> {
@@ -657,7 +657,7 @@ pub fn module_path_mintypmax_expression_ternary(
     ))
 }
 
-#[trace]
+#[parser]
 pub fn part_select_range(s: Span) -> IResult<Span, PartSelectRange> {
     alt((
         map(constant_range, |x| PartSelectRange::ConstantRange(x)),
@@ -665,7 +665,7 @@ pub fn part_select_range(s: Span) -> IResult<Span, PartSelectRange> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn indexed_range(s: Span) -> IResult<Span, IndexedRange> {
     let (s, a) = expression(s)?;
     let (s, b) = alt((symbol("+:"), symbol("-:")))(s)?;
@@ -673,7 +673,7 @@ pub fn indexed_range(s: Span) -> IResult<Span, IndexedRange> {
     Ok((s, IndexedRange { nodes: (a, b, c) }))
 }
 
-#[trace]
+#[parser]
 pub fn genvar_expression(s: Span) -> IResult<Span, GenvarExpression> {
     let (s, a) = constant_expression(s)?;
     Ok((s, GenvarExpression { nodes: (a,) }))

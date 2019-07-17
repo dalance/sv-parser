@@ -218,7 +218,7 @@ pub struct AnsiPortDeclarationParen<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn parameter_port_list(s: Span) -> IResult<Span, ParameterPortList> {
     alt((
         parameter_port_list_assignment,
@@ -227,7 +227,7 @@ pub fn parameter_port_list(s: Span) -> IResult<Span, ParameterPortList> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn parameter_port_list_assignment(s: Span) -> IResult<Span, ParameterPortList> {
     let (s, a) = symbol("#")(s)?;
     let (s, b) = paren(pair(
@@ -240,7 +240,7 @@ pub fn parameter_port_list_assignment(s: Span) -> IResult<Span, ParameterPortLis
     ))
 }
 
-#[trace]
+#[parser]
 pub fn parameter_port_list_declaration(s: Span) -> IResult<Span, ParameterPortList> {
     let (s, a) = symbol("#")(s)?;
     let (s, b) = paren(list(symbol(","), parameter_port_declaration))(s)?;
@@ -250,7 +250,7 @@ pub fn parameter_port_list_declaration(s: Span) -> IResult<Span, ParameterPortLi
     ))
 }
 
-#[trace]
+#[parser]
 pub fn parameter_port_list_empty(s: Span) -> IResult<Span, ParameterPortList> {
     let (s, a) = symbol("#")(s)?;
     let (s, b) = symbol("(")(s)?;
@@ -258,7 +258,7 @@ pub fn parameter_port_list_empty(s: Span) -> IResult<Span, ParameterPortList> {
     Ok((s, ParameterPortList::Empty((a, b, c))))
 }
 
-#[trace]
+#[parser]
 pub fn parameter_port_declaration(s: Span) -> IResult<Span, ParameterPortDeclaration> {
     alt((
         map(parameter_declaration, |x| {
@@ -272,7 +272,7 @@ pub fn parameter_port_declaration(s: Span) -> IResult<Span, ParameterPortDeclara
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn parameter_port_declaration_param_list(s: Span) -> IResult<Span, ParameterPortDeclaration> {
     let (s, a) = data_type(s)?;
     let (s, b) = list_of_param_assignments(s)?;
@@ -282,7 +282,7 @@ pub fn parameter_port_declaration_param_list(s: Span) -> IResult<Span, Parameter
     ))
 }
 
-#[trace]
+#[parser]
 pub fn parameter_port_declaration_type_list(s: Span) -> IResult<Span, ParameterPortDeclaration> {
     let (s, a) = symbol("type")(s)?;
     let (s, b) = list_of_type_assignments(s)?;
@@ -292,13 +292,13 @@ pub fn parameter_port_declaration_type_list(s: Span) -> IResult<Span, ParameterP
     ))
 }
 
-#[trace]
+#[parser]
 pub fn list_of_ports(s: Span) -> IResult<Span, ListOfPorts> {
     let (s, a) = paren(list(symbol(","), port))(s)?;
     Ok((s, ListOfPorts { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn list_of_port_declarations(s: Span) -> IResult<Span, ListOfPortDeclarations> {
     let (s, a) = paren(opt(list(
         symbol(","),
@@ -307,7 +307,7 @@ pub fn list_of_port_declarations(s: Span) -> IResult<Span, ListOfPortDeclaration
     Ok((s, ListOfPortDeclarations { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn port_declaration(s: Span) -> IResult<Span, PortDeclaration> {
     alt((
         port_declaration_inout,
@@ -318,7 +318,7 @@ pub fn port_declaration(s: Span) -> IResult<Span, PortDeclaration> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn port_declaration_inout(s: Span) -> IResult<Span, PortDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = inout_declaration(s)?;
@@ -328,7 +328,7 @@ pub fn port_declaration_inout(s: Span) -> IResult<Span, PortDeclaration> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn port_declaration_input(s: Span) -> IResult<Span, PortDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = input_declaration(s)?;
@@ -338,7 +338,7 @@ pub fn port_declaration_input(s: Span) -> IResult<Span, PortDeclaration> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn port_declaration_output(s: Span) -> IResult<Span, PortDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = output_declaration(s)?;
@@ -348,7 +348,7 @@ pub fn port_declaration_output(s: Span) -> IResult<Span, PortDeclaration> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn port_declaration_ref(s: Span) -> IResult<Span, PortDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = ref_declaration(s)?;
@@ -358,7 +358,7 @@ pub fn port_declaration_ref(s: Span) -> IResult<Span, PortDeclaration> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn port_declaration_interface(s: Span) -> IResult<Span, PortDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = interface_port_declaration(s)?;
@@ -368,18 +368,18 @@ pub fn port_declaration_interface(s: Span) -> IResult<Span, PortDeclaration> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn port(s: Span) -> IResult<Span, Port> {
     alt((port_non_named, port_named))(s)
 }
 
-#[trace]
+#[parser]
 pub fn port_non_named(s: Span) -> IResult<Span, Port> {
     let (s, a) = opt(port_expression)(s)?;
     Ok((s, Port::NonNamed(PortNonNamed { nodes: (a,) })))
 }
 
-#[trace]
+#[parser]
 pub fn port_named(s: Span) -> IResult<Span, Port> {
     let (s, a) = symbol(".")(s)?;
     let (s, b) = port_identifier(s)?;
@@ -387,7 +387,7 @@ pub fn port_named(s: Span) -> IResult<Span, Port> {
     Ok((s, Port::Named(PortNamed { nodes: (a, b, c) })))
 }
 
-#[trace]
+#[parser]
 pub fn port_expression(s: Span) -> IResult<Span, PortExpression> {
     alt((
         map(port_reference, |x| PortExpression::PortReference(x)),
@@ -395,7 +395,7 @@ pub fn port_expression(s: Span) -> IResult<Span, PortExpression> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn port_expressio_named(s: Span) -> IResult<Span, PortExpression> {
     let (s, a) = brace(list(symbol(","), port_reference))(s)?;
     Ok((
@@ -404,14 +404,14 @@ pub fn port_expressio_named(s: Span) -> IResult<Span, PortExpression> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn port_reference(s: Span) -> IResult<Span, PortReference> {
     let (s, a) = port_identifier(s)?;
     let (s, b) = constant_select(s)?;
     Ok((s, PortReference { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn port_direction(s: Span) -> IResult<Span, PortDirection> {
     alt((
         map(symbol("input"), |x| PortDirection::Input(x)),
@@ -421,21 +421,21 @@ pub fn port_direction(s: Span) -> IResult<Span, PortDirection> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn net_port_header(s: Span) -> IResult<Span, NetPortHeader> {
     let (s, a) = opt(port_direction)(s)?;
     let (s, b) = net_port_type(s)?;
     Ok((s, NetPortHeader { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn variable_port_header(s: Span) -> IResult<Span, VariablePortHeader> {
     let (s, a) = opt(port_direction)(s)?;
     let (s, b) = variable_port_type(s)?;
     Ok((s, VariablePortHeader { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn interface_port_header(s: Span) -> IResult<Span, InterfacePortHeader> {
     alt((
         interface_port_header_identifier,
@@ -443,7 +443,7 @@ pub fn interface_port_header(s: Span) -> IResult<Span, InterfacePortHeader> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn interface_port_header_identifier(s: Span) -> IResult<Span, InterfacePortHeader> {
     let (s, a) = interface_identifier(s)?;
     let (s, b) = opt(pair(symbol("."), modport_identifier))(s)?;
@@ -453,7 +453,7 @@ pub fn interface_port_header_identifier(s: Span) -> IResult<Span, InterfacePortH
     ))
 }
 
-#[trace]
+#[parser]
 pub fn interface_port_header_interface(s: Span) -> IResult<Span, InterfacePortHeader> {
     let (s, a) = symbol("interface")(s)?;
     let (s, b) = opt(pair(symbol("."), modport_identifier))(s)?;
@@ -463,7 +463,7 @@ pub fn interface_port_header_interface(s: Span) -> IResult<Span, InterfacePortHe
     ))
 }
 
-#[trace]
+#[parser]
 pub fn ansi_port_declaration(s: Span) -> IResult<Span, AnsiPortDeclaration> {
     alt((
         ansi_port_declaration_net,
@@ -472,7 +472,7 @@ pub fn ansi_port_declaration(s: Span) -> IResult<Span, AnsiPortDeclaration> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn ansi_port_declaration_net(s: Span) -> IResult<Span, AnsiPortDeclaration> {
     let (s, a) = opt(net_port_header_or_interface_port_header)(s)?;
     let (s, b) = port_identifier(s)?;
@@ -486,7 +486,7 @@ pub fn ansi_port_declaration_net(s: Span) -> IResult<Span, AnsiPortDeclaration> 
     ))
 }
 
-#[trace]
+#[parser]
 pub fn net_port_header_or_interface_port_header(
     s: Span,
 ) -> IResult<Span, NetPortHeaderOrInterfacePortHeader> {
@@ -500,7 +500,7 @@ pub fn net_port_header_or_interface_port_header(
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn ansi_port_declaration_port(s: Span) -> IResult<Span, AnsiPortDeclaration> {
     let (s, a) = opt(variable_port_header)(s)?;
     let (s, b) = port_identifier(s)?;
@@ -514,7 +514,7 @@ pub fn ansi_port_declaration_port(s: Span) -> IResult<Span, AnsiPortDeclaration>
     ))
 }
 
-#[trace]
+#[parser]
 pub fn ansi_port_declaration_paren(s: Span) -> IResult<Span, AnsiPortDeclaration> {
     let (s, a) = opt(port_direction)(s)?;
     let (s, b) = symbol(".")(s)?;

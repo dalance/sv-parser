@@ -17,7 +17,7 @@ pub struct ProgramInstantiation<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn program_instantiation(s: Span) -> IResult<Span, ProgramInstantiation> {
     let (s, a) = program_identifier(s)?;
     let (s, b) = opt(parameter_value_assignment)(s)?;

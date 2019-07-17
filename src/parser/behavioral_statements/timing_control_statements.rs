@@ -212,7 +212,7 @@ pub struct DisableStatementFork<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn procedural_timing_control_statement(
     s: Span,
 ) -> IResult<Span, ProceduralTimingControlStatement> {
@@ -221,7 +221,7 @@ pub fn procedural_timing_control_statement(
     Ok((s, ProceduralTimingControlStatement { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn delay_or_event_control(s: Span) -> IResult<Span, DelayOrEventControl> {
     alt((
         map(delay_control, |x| DelayOrEventControl::Delay(x)),
@@ -230,7 +230,7 @@ pub fn delay_or_event_control(s: Span) -> IResult<Span, DelayOrEventControl> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn delay_or_event_control_repeat(s: Span) -> IResult<Span, DelayOrEventControl> {
     let (s, a) = symbol("repeat")(s)?;
     let (s, b) = paren(expression)(s)?;
@@ -241,19 +241,19 @@ pub fn delay_or_event_control_repeat(s: Span) -> IResult<Span, DelayOrEventContr
     ))
 }
 
-#[trace]
+#[parser]
 pub fn delay_control(s: Span) -> IResult<Span, DelayControl> {
     alt((delay_control_delay, delay_control_mintypmax))(s)
 }
 
-#[trace]
+#[parser]
 pub fn delay_control_delay(s: Span) -> IResult<Span, DelayControl> {
     let (s, a) = symbol("#")(s)?;
     let (s, b) = delay_value(s)?;
     Ok((s, DelayControl::Delay(DelayControlDelay { nodes: (a, b) })))
 }
 
-#[trace]
+#[parser]
 pub fn delay_control_mintypmax(s: Span) -> IResult<Span, DelayControl> {
     let (s, a) = symbol("#")(s)?;
     let (s, b) = paren(mintypmax_expression)(s)?;
@@ -263,7 +263,7 @@ pub fn delay_control_mintypmax(s: Span) -> IResult<Span, DelayControl> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn event_control(s: Span) -> IResult<Span, EventControl> {
     alt((
         event_control_event_identifier,
@@ -274,7 +274,7 @@ pub fn event_control(s: Span) -> IResult<Span, EventControl> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn event_control_event_identifier(s: Span) -> IResult<Span, EventControl> {
     let (s, a) = symbol("@")(s)?;
     let (s, b) = hierarchical_event_identifier(s)?;
@@ -284,7 +284,7 @@ pub fn event_control_event_identifier(s: Span) -> IResult<Span, EventControl> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn event_control_event_expression(s: Span) -> IResult<Span, EventControl> {
     let (s, a) = symbol("@")(s)?;
     let (s, b) = paren(event_expression)(s)?;
@@ -294,7 +294,7 @@ pub fn event_control_event_expression(s: Span) -> IResult<Span, EventControl> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn event_control_asterisk(s: Span) -> IResult<Span, EventControl> {
     let (s, a) = symbol("@*")(s)?;
     Ok((
@@ -303,7 +303,7 @@ pub fn event_control_asterisk(s: Span) -> IResult<Span, EventControl> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn event_control_paren_asterisk(s: Span) -> IResult<Span, EventControl> {
     let (s, a) = symbol("@")(s)?;
     let (s, b) = paren(symbol("*"))(s)?;
@@ -313,7 +313,7 @@ pub fn event_control_paren_asterisk(s: Span) -> IResult<Span, EventControl> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn event_control_sequence_identifier(s: Span) -> IResult<Span, EventControl> {
     let (s, a) = symbol("@")(s)?;
     let (s, b) = ps_or_hierarchical_sequence_identifier(s)?;
@@ -323,7 +323,7 @@ pub fn event_control_sequence_identifier(s: Span) -> IResult<Span, EventControl>
     ))
 }
 
-#[trace]
+#[parser]
 pub fn event_expression(s: Span) -> IResult<Span, EventExpression> {
     alt((
         event_expression_expression,
@@ -334,7 +334,7 @@ pub fn event_expression(s: Span) -> IResult<Span, EventExpression> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn event_expression_expression(s: Span) -> IResult<Span, EventExpression> {
     let (s, a) = opt(edge_identifier)(s)?;
     let (s, b) = expression(s)?;
@@ -345,7 +345,7 @@ pub fn event_expression_expression(s: Span) -> IResult<Span, EventExpression> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn event_expression_sequence(s: Span) -> IResult<Span, EventExpression> {
     let (s, a) = sequence_instance(s)?;
     let (s, b) = opt(pair(symbol("iff"), expression))(s)?;
@@ -355,7 +355,7 @@ pub fn event_expression_sequence(s: Span) -> IResult<Span, EventExpression> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn event_expression_or(s: Span) -> IResult<Span, EventExpression> {
     let (s, a) = event_expression(s)?;
     let (s, b) = symbol("or")(s)?;
@@ -366,7 +366,7 @@ pub fn event_expression_or(s: Span) -> IResult<Span, EventExpression> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn event_expression_comma(s: Span) -> IResult<Span, EventExpression> {
     let (s, a) = event_expression(s)?;
     let (s, b) = symbol(",")(s)?;
@@ -377,7 +377,7 @@ pub fn event_expression_comma(s: Span) -> IResult<Span, EventExpression> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn event_expression_paren(s: Span) -> IResult<Span, EventExpression> {
     let (s, a) = paren(event_expression)(s)?;
     Ok((
@@ -386,7 +386,7 @@ pub fn event_expression_paren(s: Span) -> IResult<Span, EventExpression> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn procedural_timing_control(s: Span) -> IResult<Span, ProceduralTimingControl> {
     alt((
         map(delay_control, |x| ProceduralTimingControl::DelayControl(x)),
@@ -395,7 +395,7 @@ pub fn procedural_timing_control(s: Span) -> IResult<Span, ProceduralTimingContr
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn jump_statement(s: Span) -> IResult<Span, JumpStatement> {
     alt((
         jump_statement_return,
@@ -404,7 +404,7 @@ pub fn jump_statement(s: Span) -> IResult<Span, JumpStatement> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn jump_statement_return(s: Span) -> IResult<Span, JumpStatement> {
     let (s, a) = symbol("return")(s)?;
     let (s, b) = opt(expression)(s)?;
@@ -415,7 +415,7 @@ pub fn jump_statement_return(s: Span) -> IResult<Span, JumpStatement> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn jump_statement_break(s: Span) -> IResult<Span, JumpStatement> {
     let (s, a) = symbol("break")(s)?;
     let (s, b) = symbol(";")(s)?;
@@ -425,7 +425,7 @@ pub fn jump_statement_break(s: Span) -> IResult<Span, JumpStatement> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn jump_statement_continue(s: Span) -> IResult<Span, JumpStatement> {
     let (s, a) = symbol("continue")(s)?;
     let (s, b) = symbol(";")(s)?;
@@ -435,7 +435,7 @@ pub fn jump_statement_continue(s: Span) -> IResult<Span, JumpStatement> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn wait_statement(s: Span) -> IResult<Span, WaitStatement> {
     alt((
         wait_statement_wait,
@@ -444,7 +444,7 @@ pub fn wait_statement(s: Span) -> IResult<Span, WaitStatement> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn wait_statement_wait(s: Span) -> IResult<Span, WaitStatement> {
     let (s, a) = symbol("wait")(s)?;
     let (s, b) = paren(expression)(s)?;
@@ -455,7 +455,7 @@ pub fn wait_statement_wait(s: Span) -> IResult<Span, WaitStatement> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn wait_statement_fork(s: Span) -> IResult<Span, WaitStatement> {
     let (s, a) = symbol("wait")(s)?;
     let (s, b) = symbol("fork")(s)?;
@@ -466,7 +466,7 @@ pub fn wait_statement_fork(s: Span) -> IResult<Span, WaitStatement> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn wait_statement_order(s: Span) -> IResult<Span, WaitStatement> {
     let (s, a) = symbol("wait_order")(s)?;
     let (s, b) = paren(list(symbol(","), hierarchical_identifier))(s)?;
@@ -477,12 +477,12 @@ pub fn wait_statement_order(s: Span) -> IResult<Span, WaitStatement> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn event_trigger(s: Span) -> IResult<Span, EventTrigger> {
     alt((event_trigger_named, event_trigger_nonblocking))(s)
 }
 
-#[trace]
+#[parser]
 pub fn event_trigger_named(s: Span) -> IResult<Span, EventTrigger> {
     let (s, a) = symbol("->")(s)?;
     let (s, b) = hierarchical_event_identifier(s)?;
@@ -493,7 +493,7 @@ pub fn event_trigger_named(s: Span) -> IResult<Span, EventTrigger> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn event_trigger_nonblocking(s: Span) -> IResult<Span, EventTrigger> {
     let (s, a) = symbol("->>")(s)?;
     let (s, b) = opt(delay_or_event_control)(s)?;
@@ -507,7 +507,7 @@ pub fn event_trigger_nonblocking(s: Span) -> IResult<Span, EventTrigger> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn disable_statement(s: Span) -> IResult<Span, DisableStatement> {
     alt((
         disable_statement_task,
@@ -516,7 +516,7 @@ pub fn disable_statement(s: Span) -> IResult<Span, DisableStatement> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn disable_statement_task(s: Span) -> IResult<Span, DisableStatement> {
     let (s, a) = symbol("disable")(s)?;
     let (s, b) = hierarchical_task_identifier(s)?;
@@ -527,7 +527,7 @@ pub fn disable_statement_task(s: Span) -> IResult<Span, DisableStatement> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn disable_statement_block(s: Span) -> IResult<Span, DisableStatement> {
     let (s, a) = symbol("disable")(s)?;
     let (s, b) = hierarchical_block_identifier(s)?;
@@ -538,7 +538,7 @@ pub fn disable_statement_block(s: Span) -> IResult<Span, DisableStatement> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn disable_statement_fork(s: Span) -> IResult<Span, DisableStatement> {
     let (s, a) = symbol("disable")(s)?;
     let (s, b) = symbol("fork")(s)?;

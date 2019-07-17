@@ -191,7 +191,7 @@ pub struct IdentifierList<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn constraint_declaration(s: Span) -> IResult<Span, ConstraintDeclaration> {
     let (s, a) = opt(r#static)(s)?;
     let (s, b) = symbol("constraint")(s)?;
@@ -205,19 +205,19 @@ pub fn constraint_declaration(s: Span) -> IResult<Span, ConstraintDeclaration> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn r#static(s: Span) -> IResult<Span, Static> {
     let (s, a) = symbol("static")(s)?;
     Ok((s, Static { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn constraint_block(s: Span) -> IResult<Span, ConstraintBlock> {
     let (s, a) = brace(many0(constraint_block_item))(s)?;
     Ok((s, ConstraintBlock { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn constraint_block_item(s: Span) -> IResult<Span, ConstraintBlockItem> {
     alt((
         constraint_block_item_solve,
@@ -227,7 +227,7 @@ pub fn constraint_block_item(s: Span) -> IResult<Span, ConstraintBlockItem> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn constraint_block_item_solve(s: Span) -> IResult<Span, ConstraintBlockItem> {
     let (s, a) = symbol("solve")(s)?;
     let (s, b) = solve_before_list(s)?;
@@ -242,13 +242,13 @@ pub fn constraint_block_item_solve(s: Span) -> IResult<Span, ConstraintBlockItem
     ))
 }
 
-#[trace]
+#[parser]
 pub fn solve_before_list(s: Span) -> IResult<Span, SolveBeforeList> {
     let (s, a) = list(symbol(","), constraint_primary)(s)?;
     Ok((s, SolveBeforeList { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn constraint_primary(s: Span) -> IResult<Span, ConstraintPrimary> {
     let (s, a) = opt(implicit_class_handle_or_class_scope)(s)?;
     let (s, b) = hierarchical_identifier(s)?;
@@ -256,7 +256,7 @@ pub fn constraint_primary(s: Span) -> IResult<Span, ConstraintPrimary> {
     Ok((s, ConstraintPrimary { nodes: (a, b, c) }))
 }
 
-#[trace]
+#[parser]
 pub fn constraint_expression(s: Span) -> IResult<Span, ConstraintExpression> {
     alt((
         constraint_expression_expression,
@@ -270,7 +270,7 @@ pub fn constraint_expression(s: Span) -> IResult<Span, ConstraintExpression> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn constraint_expression_expression(s: Span) -> IResult<Span, ConstraintExpression> {
     let (s, a) = opt(soft)(s)?;
     let (s, b) = expression_or_dist(s)?;
@@ -281,13 +281,13 @@ pub fn constraint_expression_expression(s: Span) -> IResult<Span, ConstraintExpr
     ))
 }
 
-#[trace]
+#[parser]
 pub fn soft(s: Span) -> IResult<Span, Soft> {
     let (s, a) = symbol("soft")(s)?;
     Ok((s, Soft { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn constraint_expression_arrow(s: Span) -> IResult<Span, ConstraintExpression> {
     let (s, a) = expression(s)?;
     let (s, b) = symbol("->")(s)?;
@@ -298,7 +298,7 @@ pub fn constraint_expression_arrow(s: Span) -> IResult<Span, ConstraintExpressio
     ))
 }
 
-#[trace]
+#[parser]
 pub fn constraint_expression_if(s: Span) -> IResult<Span, ConstraintExpression> {
     let (s, a) = symbol("if")(s)?;
     let (s, b) = paren(expression)(s)?;
@@ -312,7 +312,7 @@ pub fn constraint_expression_if(s: Span) -> IResult<Span, ConstraintExpression> 
     ))
 }
 
-#[trace]
+#[parser]
 pub fn constraint_expression_foreach(s: Span) -> IResult<Span, ConstraintExpression> {
     let (s, a) = symbol("foreach")(s)?;
     let (s, b) = paren(pair(
@@ -326,7 +326,7 @@ pub fn constraint_expression_foreach(s: Span) -> IResult<Span, ConstraintExpress
     ))
 }
 
-#[trace]
+#[parser]
 pub fn constraint_expression_disable(s: Span) -> IResult<Span, ConstraintExpression> {
     let (s, a) = symbol("disable")(s)?;
     let (s, b) = symbol("soft")(s)?;
@@ -340,14 +340,14 @@ pub fn constraint_expression_disable(s: Span) -> IResult<Span, ConstraintExpress
     ))
 }
 
-#[trace]
+#[parser]
 pub fn uniqueness_constraint(s: Span) -> IResult<Span, UniquenessConstraint> {
     let (s, a) = symbol("unique")(s)?;
     let (s, b) = brace(open_range_list)(s)?;
     Ok((s, UniquenessConstraint { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn constraint_set(s: Span) -> IResult<Span, ConstraintSet> {
     alt((
         map(constraint_expression, |x| {
@@ -357,45 +357,45 @@ pub fn constraint_set(s: Span) -> IResult<Span, ConstraintSet> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn constraint_set_brace(s: Span) -> IResult<Span, ConstraintSet> {
     let (s, a) = brace(many0(constraint_expression))(s)?;
     Ok((s, ConstraintSet::Brace(ConstraintSetBrace { nodes: (a,) })))
 }
 
-#[trace]
+#[parser]
 pub fn dist_list(s: Span) -> IResult<Span, DistList> {
     let (s, a) = list(symbol(","), dist_item)(s)?;
     Ok((s, DistList { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn dist_item(s: Span) -> IResult<Span, DistItem> {
     let (s, a) = value_range(s)?;
     let (s, b) = opt(dist_weight)(s)?;
     Ok((s, DistItem { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn dist_weight(s: Span) -> IResult<Span, DistWeight> {
     alt((dist_weight_equal, dist_weight_divide))(s)
 }
 
-#[trace]
+#[parser]
 pub fn dist_weight_equal(s: Span) -> IResult<Span, DistWeight> {
     let (s, a) = symbol(":=")(s)?;
     let (s, b) = expression(s)?;
     Ok((s, DistWeight::Equal(DistWeightEqual { nodes: (a, b) })))
 }
 
-#[trace]
+#[parser]
 pub fn dist_weight_divide(s: Span) -> IResult<Span, DistWeight> {
     let (s, a) = symbol(":/")(s)?;
     let (s, b) = expression(s)?;
     Ok((s, DistWeight::Divide(DistWeightDivide { nodes: (a, b) })))
 }
 
-#[trace]
+#[parser]
 pub fn constraint_prototype(s: Span) -> IResult<Span, ConstraintPrototype> {
     let (s, a) = opt(constraint_prototype_qualifier)(s)?;
     let (s, b) = opt(r#static)(s)?;
@@ -410,7 +410,7 @@ pub fn constraint_prototype(s: Span) -> IResult<Span, ConstraintPrototype> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn constraint_prototype_qualifier(s: Span) -> IResult<Span, ConstraintPrototypeQualifier> {
     alt((
         map(symbol("extern"), |x| {
@@ -420,7 +420,7 @@ pub fn constraint_prototype_qualifier(s: Span) -> IResult<Span, ConstraintProtot
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn extern_constraint_declaration(s: Span) -> IResult<Span, ExternConstraintDeclaration> {
     let (s, a) = opt(r#static)(s)?;
     let (s, b) = symbol("constraint")(s)?;
@@ -435,7 +435,7 @@ pub fn extern_constraint_declaration(s: Span) -> IResult<Span, ExternConstraintD
     ))
 }
 
-#[trace]
+#[parser]
 pub fn identifier_list(s: Span) -> IResult<Span, IdentifierList> {
     let (s, a) = list(symbol(","), identifier)(s)?;
     Ok((s, IdentifierList { nodes: (a,) }))

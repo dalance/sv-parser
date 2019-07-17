@@ -92,13 +92,13 @@ pub enum CheckerGenerateItem<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn checker_port_list(s: Span) -> IResult<Span, CheckerPortList> {
     let (s, a) = list(symbol(","), checker_port_item)(s)?;
     Ok((s, CheckerPortList { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn checker_port_item(s: Span) -> IResult<Span, CheckerPortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = opt(checker_port_direction)(s)?;
@@ -114,7 +114,7 @@ pub fn checker_port_item(s: Span) -> IResult<Span, CheckerPortItem> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn checker_port_direction(s: Span) -> IResult<Span, CheckerPortDirection> {
     alt((
         map(symbol("input"), |x| CheckerPortDirection::Input(x)),
@@ -122,7 +122,7 @@ pub fn checker_port_direction(s: Span) -> IResult<Span, CheckerPortDirection> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn checker_or_generate_item(s: Span) -> IResult<Span, CheckerOrGenerateItem> {
     alt((
         map(checker_or_generate_item_declaration, |x| {
@@ -147,7 +147,7 @@ pub fn checker_or_generate_item(s: Span) -> IResult<Span, CheckerOrGenerateItem>
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn checker_or_generate_item_declaration(
     s: Span,
 ) -> IResult<Span, CheckerOrGenerateItemDeclaration> {
@@ -177,7 +177,7 @@ pub fn checker_or_generate_item_declaration(
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn checker_or_generate_item_declaration_data(
     s: Span,
 ) -> IResult<Span, CheckerOrGenerateItemDeclaration> {
@@ -191,13 +191,13 @@ pub fn checker_or_generate_item_declaration_data(
     ))
 }
 
-#[trace]
+#[parser]
 pub fn rand(s: Span) -> IResult<Span, Rand> {
     let (s, a) = symbol("rand")(s)?;
     Ok((s, Rand { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn checker_or_generate_item_declaration_clocking(
     s: Span,
 ) -> IResult<Span, CheckerOrGenerateItemDeclaration> {
@@ -213,7 +213,7 @@ pub fn checker_or_generate_item_declaration_clocking(
     ))
 }
 
-#[trace]
+#[parser]
 pub fn checker_or_generate_item_declaration_disable(
     s: Span,
 ) -> IResult<Span, CheckerOrGenerateItemDeclaration> {
@@ -230,7 +230,7 @@ pub fn checker_or_generate_item_declaration_disable(
     ))
 }
 
-#[trace]
+#[parser]
 pub fn checker_generate_item(s: Span) -> IResult<Span, CheckerGenerateItem> {
     alt((
         map(loop_generate_construct, |x| {

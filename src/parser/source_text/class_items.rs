@@ -200,7 +200,7 @@ pub struct New<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn class_item(s: Span) -> IResult<Span, ClassItem> {
     alt((
         class_item_property,
@@ -218,21 +218,21 @@ pub fn class_item(s: Span) -> IResult<Span, ClassItem> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn class_item_property(s: Span) -> IResult<Span, ClassItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = class_property(s)?;
     Ok((s, ClassItem::Property(ClassItemProperty { nodes: (a, b) })))
 }
 
-#[trace]
+#[parser]
 pub fn class_item_method(s: Span) -> IResult<Span, ClassItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = class_method(s)?;
     Ok((s, ClassItem::Method(ClassItemMethod { nodes: (a, b) })))
 }
 
-#[trace]
+#[parser]
 pub fn class_item_constraint(s: Span) -> IResult<Span, ClassItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = class_constraint(s)?;
@@ -242,7 +242,7 @@ pub fn class_item_constraint(s: Span) -> IResult<Span, ClassItem> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn class_item_declaration(s: Span) -> IResult<Span, ClassItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = class_declaration(s)?;
@@ -252,7 +252,7 @@ pub fn class_item_declaration(s: Span) -> IResult<Span, ClassItem> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn class_item_covergroup(s: Span) -> IResult<Span, ClassItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = covergroup_declaration(s)?;
@@ -262,12 +262,12 @@ pub fn class_item_covergroup(s: Span) -> IResult<Span, ClassItem> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn class_property(s: Span) -> IResult<Span, ClassProperty> {
     alt((class_property_non_const, class_property_const))(s)
 }
 
-#[trace]
+#[parser]
 pub fn class_property_non_const(s: Span) -> IResult<Span, ClassProperty> {
     let (s, a) = many0(property_qualifier)(s)?;
     let (s, b) = data_declaration(s)?;
@@ -277,7 +277,7 @@ pub fn class_property_non_const(s: Span) -> IResult<Span, ClassProperty> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn class_property_const(s: Span) -> IResult<Span, ClassProperty> {
     let (s, a) = symbol("const")(s)?;
     let (s, b) = many0(class_item_qualifier)(s)?;
@@ -293,7 +293,7 @@ pub fn class_property_const(s: Span) -> IResult<Span, ClassProperty> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn class_method(s: Span) -> IResult<Span, ClassMethod> {
     alt((
         class_method_task,
@@ -305,14 +305,14 @@ pub fn class_method(s: Span) -> IResult<Span, ClassMethod> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn class_method_task(s: Span) -> IResult<Span, ClassMethod> {
     let (s, a) = many0(method_qualifier)(s)?;
     let (s, b) = task_declaration(s)?;
     Ok((s, ClassMethod::Task(ClassMethodTask { nodes: (a, b) })))
 }
 
-#[trace]
+#[parser]
 pub fn class_method_function(s: Span) -> IResult<Span, ClassMethod> {
     let (s, a) = many0(method_qualifier)(s)?;
     let (s, b) = function_declaration(s)?;
@@ -322,7 +322,7 @@ pub fn class_method_function(s: Span) -> IResult<Span, ClassMethod> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn class_method_pure_virtual(s: Span) -> IResult<Span, ClassMethod> {
     let (s, a) = symbol("pure")(s)?;
     let (s, b) = symbol("virtual")(s)?;
@@ -337,7 +337,7 @@ pub fn class_method_pure_virtual(s: Span) -> IResult<Span, ClassMethod> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn class_method_extern_method(s: Span) -> IResult<Span, ClassMethod> {
     let (s, a) = symbol("extern")(s)?;
     let (s, b) = many0(method_qualifier)(s)?;
@@ -351,7 +351,7 @@ pub fn class_method_extern_method(s: Span) -> IResult<Span, ClassMethod> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn class_method_constructor(s: Span) -> IResult<Span, ClassMethod> {
     let (s, a) = many0(method_qualifier)(s)?;
     let (s, b) = class_constructor_declaration(s)?;
@@ -361,7 +361,7 @@ pub fn class_method_constructor(s: Span) -> IResult<Span, ClassMethod> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn class_method_extern_constructor(s: Span) -> IResult<Span, ClassMethod> {
     let (s, a) = symbol("extern")(s)?;
     let (s, b) = many0(method_qualifier)(s)?;
@@ -372,7 +372,7 @@ pub fn class_method_extern_constructor(s: Span) -> IResult<Span, ClassMethod> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn class_constructor_prototype(s: Span) -> IResult<Span, ClassConstructorPrototype> {
     let (s, a) = symbol("function")(s)?;
     let (s, b) = symbol("new")(s)?;
@@ -386,7 +386,7 @@ pub fn class_constructor_prototype(s: Span) -> IResult<Span, ClassConstructorPro
     ))
 }
 
-#[trace]
+#[parser]
 pub fn class_constraint(s: Span) -> IResult<Span, ClassConstraint> {
     alt((
         map(constraint_prototype, |x| {
@@ -398,7 +398,7 @@ pub fn class_constraint(s: Span) -> IResult<Span, ClassConstraint> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn class_item_qualifier(s: Span) -> IResult<Span, ClassItemQualifier> {
     alt((
         map(symbol("static"), |x| ClassItemQualifier::Static(x)),
@@ -407,7 +407,7 @@ pub fn class_item_qualifier(s: Span) -> IResult<Span, ClassItemQualifier> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn property_qualifier(s: Span) -> IResult<Span, PropertyQualifier> {
     alt((
         map(random_qualifier, |x| PropertyQualifier::RandomQualifier(x)),
@@ -417,7 +417,7 @@ pub fn property_qualifier(s: Span) -> IResult<Span, PropertyQualifier> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn random_qualifier(s: Span) -> IResult<Span, RandomQualifier> {
     alt((
         map(symbol("randc"), |x| RandomQualifier::Randc(x)),
@@ -425,7 +425,7 @@ pub fn random_qualifier(s: Span) -> IResult<Span, RandomQualifier> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn method_qualifier(s: Span) -> IResult<Span, MethodQualifier> {
     alt((
         map(pair(symbol("pure"), symbol("virtual")), |x| {
@@ -438,7 +438,7 @@ pub fn method_qualifier(s: Span) -> IResult<Span, MethodQualifier> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn method_prototype(s: Span) -> IResult<Span, MethodPrototype> {
     alt((
         map(task_prototype, |x| MethodPrototype::TaskPrototype(x)),
@@ -448,7 +448,7 @@ pub fn method_prototype(s: Span) -> IResult<Span, MethodPrototype> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn class_constructor_declaration(s: Span) -> IResult<Span, ClassConstructorDeclaration> {
     let (s, a) = symbol("function")(s)?;
     let (s, b) = opt(class_scope)(s)?;
@@ -474,7 +474,7 @@ pub fn class_constructor_declaration(s: Span) -> IResult<Span, ClassConstructorD
     ))
 }
 
-#[trace]
+#[parser]
 pub fn new(s: Span) -> IResult<Span, New> {
     let (s, a) = symbol("new")(s)?;
     Ok((s, New { nodes: (a,) }))

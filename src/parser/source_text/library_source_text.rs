@@ -44,13 +44,13 @@ pub struct FilePathSpec<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn library_text(s: Span) -> IResult<Span, LibraryText> {
     let (s, a) = many0(library_description)(s)?;
     Ok((s, LibraryText { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn library_description(s: Span) -> IResult<Span, LibraryDescription> {
     alt((
         map(library_declaration, |x| {
@@ -66,7 +66,7 @@ pub fn library_description(s: Span) -> IResult<Span, LibraryDescription> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn library_declaration(s: Span) -> IResult<Span, LibraryDeclaration> {
     let (s, a) = symbol("library")(s)?;
     let (s, b) = library_identifier(s)?;
@@ -81,7 +81,7 @@ pub fn library_declaration(s: Span) -> IResult<Span, LibraryDeclaration> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn include_statement(s: Span) -> IResult<Span, IncludeStatement> {
     let (s, a) = symbol("include")(s)?;
     let (s, b) = file_path_spec(s)?;
@@ -90,7 +90,7 @@ pub fn include_statement(s: Span) -> IResult<Span, IncludeStatement> {
 }
 
 //TODO support non literal path
-#[trace]
+#[parser]
 pub fn file_path_spec(s: Span) -> IResult<Span, FilePathSpec> {
     let (s, a) = string_literal(s)?;
     Ok((s, FilePathSpec { nodes: (a,) }))

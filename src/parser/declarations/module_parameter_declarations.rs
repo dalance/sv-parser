@@ -58,7 +58,7 @@ pub struct SpecparamDeclaration<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn local_parameter_declaration(s: Span) -> IResult<Span, LocalParameterDeclaration> {
     alt((
         local_parameter_declaration_param,
@@ -66,7 +66,7 @@ pub fn local_parameter_declaration(s: Span) -> IResult<Span, LocalParameterDecla
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn local_parameter_declaration_param(s: Span) -> IResult<Span, LocalParameterDeclaration> {
     let (s, a) = symbol("localparam")(s)?;
     let (s, b) = data_type_or_implicit(s)?;
@@ -77,7 +77,7 @@ pub fn local_parameter_declaration_param(s: Span) -> IResult<Span, LocalParamete
     ))
 }
 
-#[trace]
+#[parser]
 pub fn local_parameter_declaration_type(s: Span) -> IResult<Span, LocalParameterDeclaration> {
     let (s, a) = symbol("localparam")(s)?;
     let (s, b) = symbol("type")(s)?;
@@ -88,12 +88,12 @@ pub fn local_parameter_declaration_type(s: Span) -> IResult<Span, LocalParameter
     ))
 }
 
-#[trace]
+#[parser]
 pub fn parameter_declaration(s: Span) -> IResult<Span, ParameterDeclaration> {
     alt((parameter_declaration_param, parameter_declaration_type))(s)
 }
 
-#[trace]
+#[parser]
 pub fn parameter_declaration_param(s: Span) -> IResult<Span, ParameterDeclaration> {
     let (s, a) = symbol("parameter")(s)?;
     let (s, b) = data_type_or_implicit(s)?;
@@ -104,7 +104,7 @@ pub fn parameter_declaration_param(s: Span) -> IResult<Span, ParameterDeclaratio
     ))
 }
 
-#[trace]
+#[parser]
 pub fn parameter_declaration_type(s: Span) -> IResult<Span, ParameterDeclaration> {
     let (s, a) = symbol("parameter")(s)?;
     let (s, b) = symbol("type")(s)?;
@@ -115,7 +115,7 @@ pub fn parameter_declaration_type(s: Span) -> IResult<Span, ParameterDeclaration
     ))
 }
 
-#[trace]
+#[parser]
 pub fn specparam_declaration(s: Span) -> IResult<Span, SpecparamDeclaration> {
     let (s, a) = symbol("specparam")(s)?;
     let (s, b) = opt(packed_dimension)(s)?;

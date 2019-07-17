@@ -14,7 +14,7 @@ pub struct UdpDeclaration<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn udp_declaration(s: Span) -> IResult<Span, UdpDeclaration> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

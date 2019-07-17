@@ -49,10 +49,6 @@ fn impl_node(ast: &syn::DeriveInput) -> TokenStream {
 
     let gen = quote! {
         impl<'a> Node<'a> for #name<'a> {
-            fn test(&'a self) -> String {
-                format!("{}", stringify!(#name))
-            }
-
             fn next(&'a self) -> AnyNodes<'a> {
                 #next
             }
@@ -115,12 +111,12 @@ fn impl_any_node(ast: &syn::DeriveInput) -> TokenStream {
 }
 
 #[proc_macro_attribute]
-pub fn trace(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn parser(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let item = parse_macro_input!(item as ItemFn);
-    impl_trace(&item)
+    impl_parser(&item)
 }
 
-fn impl_trace(item: &syn::ItemFn) -> TokenStream {
+fn impl_parser(item: &syn::ItemFn) -> TokenStream {
     let ident = &item.ident;
     let mut item = item.clone();
 

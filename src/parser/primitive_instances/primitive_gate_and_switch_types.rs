@@ -42,13 +42,13 @@ pub struct PassSwitchtype<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn cmos_switchtype(s: Span) -> IResult<Span, CmosSwitchtype> {
     let (s, a) = alt((symbol("cmos"), symbol("rcmos")))(s)?;
     Ok((s, CmosSwitchtype { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn enable_gatetype(s: Span) -> IResult<Span, EnableGatetype> {
     let (s, a) = alt((
         symbol("bufif0"),
@@ -59,7 +59,7 @@ pub fn enable_gatetype(s: Span) -> IResult<Span, EnableGatetype> {
     Ok((s, EnableGatetype { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn mos_switchtype(s: Span) -> IResult<Span, MosSwitchtype> {
     let (s, a) = alt((
         symbol("nmos"),
@@ -70,7 +70,7 @@ pub fn mos_switchtype(s: Span) -> IResult<Span, MosSwitchtype> {
     Ok((s, MosSwitchtype { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn n_input_gatetype(s: Span) -> IResult<Span, NInputGatetype> {
     let (s, a) = alt((
         symbol("and"),
@@ -83,13 +83,13 @@ pub fn n_input_gatetype(s: Span) -> IResult<Span, NInputGatetype> {
     Ok((s, NInputGatetype { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn n_output_gatetype(s: Span) -> IResult<Span, NOutputGatetype> {
     let (s, a) = alt((symbol("buf"), symbol("not")))(s)?;
     Ok((s, NOutputGatetype { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn pass_en_switchtype(s: Span) -> IResult<Span, PassEnSwitchtype> {
     let (s, a) = alt((
         symbol("tranif0"),
@@ -100,7 +100,7 @@ pub fn pass_en_switchtype(s: Span) -> IResult<Span, PassEnSwitchtype> {
     Ok((s, PassEnSwitchtype { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn pass_switchtype(s: Span) -> IResult<Span, PassSwitchtype> {
     let (s, a) = alt((symbol("tran"), symbol("rtran")))(s)?;
     Ok((s, PassSwitchtype { nodes: (a,) }))

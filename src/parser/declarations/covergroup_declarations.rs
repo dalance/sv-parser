@@ -521,7 +521,7 @@ pub struct CovergroupExpression<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn covergroup_declaration(s: Span) -> IResult<Span, CovergroupDeclaration> {
     let (s, a) = symbol("covergroup")(s)?;
     let (s, b) = covergroup_identifier(s)?;
@@ -539,12 +539,12 @@ pub fn covergroup_declaration(s: Span) -> IResult<Span, CovergroupDeclaration> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn coverage_spec_or_option(s: Span) -> IResult<Span, CoverageSpecOrOption> {
     alt((coverage_spec_or_option_spec, coverage_spec_or_option_option))(s)
 }
 
-#[trace]
+#[parser]
 pub fn coverage_spec_or_option_spec(s: Span) -> IResult<Span, CoverageSpecOrOption> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = coverage_spec(s)?;
@@ -554,7 +554,7 @@ pub fn coverage_spec_or_option_spec(s: Span) -> IResult<Span, CoverageSpecOrOpti
     ))
 }
 
-#[trace]
+#[parser]
 pub fn coverage_spec_or_option_option(s: Span) -> IResult<Span, CoverageSpecOrOption> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = coverage_option(s)?;
@@ -565,12 +565,12 @@ pub fn coverage_spec_or_option_option(s: Span) -> IResult<Span, CoverageSpecOrOp
     ))
 }
 
-#[trace]
+#[parser]
 pub fn coverage_option(s: Span) -> IResult<Span, CoverageOption> {
     alt((coverage_option_option, coverage_option_type_option))(s)
 }
 
-#[trace]
+#[parser]
 pub fn coverage_option_option(s: Span) -> IResult<Span, CoverageOption> {
     let (s, a) = symbol("option")(s)?;
     let (s, b) = symbol(".")(s)?;
@@ -585,7 +585,7 @@ pub fn coverage_option_option(s: Span) -> IResult<Span, CoverageOption> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn coverage_option_type_option(s: Span) -> IResult<Span, CoverageOption> {
     let (s, a) = symbol("type_option")(s)?;
     let (s, b) = symbol(".")(s)?;
@@ -600,7 +600,7 @@ pub fn coverage_option_type_option(s: Span) -> IResult<Span, CoverageOption> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn coverage_spec(s: Span) -> IResult<Span, CoverageSpec> {
     alt((
         map(cover_point, |x| CoverageSpec::CoverPoint(x)),
@@ -608,7 +608,7 @@ pub fn coverage_spec(s: Span) -> IResult<Span, CoverageSpec> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn coverage_event(s: Span) -> IResult<Span, CoverageEvent> {
     alt((
         map(clocking_event, |x| CoverageEvent::ClockingEvent(x)),
@@ -617,7 +617,7 @@ pub fn coverage_event(s: Span) -> IResult<Span, CoverageEvent> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn coverage_event_sample(s: Span) -> IResult<Span, CoverageEvent> {
     let (s, a) = symbol("with")(s)?;
     let (s, b) = symbol("function")(s)?;
@@ -631,14 +631,14 @@ pub fn coverage_event_sample(s: Span) -> IResult<Span, CoverageEvent> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn coverage_event_at(s: Span) -> IResult<Span, CoverageEvent> {
     let (s, a) = symbol("@@")(s)?;
     let (s, b) = paren(block_event_expression)(s)?;
     Ok((s, CoverageEvent::At(CoverageEventAt { nodes: (a, b) })))
 }
 
-#[trace]
+#[parser]
 pub fn block_event_expression(s: Span) -> IResult<Span, BlockEventExpression> {
     alt((
         block_event_expression_or,
@@ -647,7 +647,7 @@ pub fn block_event_expression(s: Span) -> IResult<Span, BlockEventExpression> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn block_event_expression_or(s: Span) -> IResult<Span, BlockEventExpression> {
     let (s, a) = block_event_expression(s)?;
     let (s, b) = symbol("or")(s)?;
@@ -658,7 +658,7 @@ pub fn block_event_expression_or(s: Span) -> IResult<Span, BlockEventExpression>
     ))
 }
 
-#[trace]
+#[parser]
 pub fn block_event_expression_begin(s: Span) -> IResult<Span, BlockEventExpression> {
     let (s, a) = symbol("begin")(s)?;
     let (s, b) = hierarchical_btf_identifier(s)?;
@@ -668,7 +668,7 @@ pub fn block_event_expression_begin(s: Span) -> IResult<Span, BlockEventExpressi
     ))
 }
 
-#[trace]
+#[parser]
 pub fn block_event_expression_end(s: Span) -> IResult<Span, BlockEventExpression> {
     let (s, a) = symbol("end")(s)?;
     let (s, b) = hierarchical_btf_identifier(s)?;
@@ -678,7 +678,7 @@ pub fn block_event_expression_end(s: Span) -> IResult<Span, BlockEventExpression
     ))
 }
 
-#[trace]
+#[parser]
 pub fn hierarchical_btf_identifier(s: Span) -> IResult<Span, HierarchicalBtfIdentifier> {
     alt((
         map(hierarchical_tf_identifier, |x| {
@@ -691,7 +691,7 @@ pub fn hierarchical_btf_identifier(s: Span) -> IResult<Span, HierarchicalBtfIden
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn hierarchical_btf_identifier_method(s: Span) -> IResult<Span, HierarchicalBtfIdentifier> {
     let (s, a) = opt(hierarchical_identifier_or_class_scope)(s)?;
     let (s, b) = method_identifier(s)?;
@@ -701,7 +701,7 @@ pub fn hierarchical_btf_identifier_method(s: Span) -> IResult<Span, Hierarchical
     ))
 }
 
-#[trace]
+#[parser]
 pub fn hierarchical_identifier_or_class_scope(
     s: Span,
 ) -> IResult<Span, HierarchicalIdentifierOrClassScope> {
@@ -715,7 +715,7 @@ pub fn hierarchical_identifier_or_class_scope(
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn cover_point(s: Span) -> IResult<Span, CoverPoint> {
     let (s, a) = opt(triple(
         opt(data_type_or_implicit),
@@ -734,7 +734,7 @@ pub fn cover_point(s: Span) -> IResult<Span, CoverPoint> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn bins_or_empty(s: Span) -> IResult<Span, BinsOrEmpty> {
     alt((
         bins_or_empty_non_empty,
@@ -742,7 +742,7 @@ pub fn bins_or_empty(s: Span) -> IResult<Span, BinsOrEmpty> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn bins_or_empty_non_empty(s: Span) -> IResult<Span, BinsOrEmpty> {
     let (s, a) = brace(pair(
         many0(attribute_instance),
@@ -754,7 +754,7 @@ pub fn bins_or_empty_non_empty(s: Span) -> IResult<Span, BinsOrEmpty> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn bins_or_options(s: Span) -> IResult<Span, BinsOrOptions> {
     alt((
         map(coverage_option, |x| BinsOrOptions::CoverageOption(x)),
@@ -767,7 +767,7 @@ pub fn bins_or_options(s: Span) -> IResult<Span, BinsOrOptions> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn bins_or_options_covergroup(s: Span) -> IResult<Span, BinsOrOptions> {
     let (s, a) = opt(wildcard)(s)?;
     let (s, b) = bins_keyword(s)?;
@@ -785,13 +785,13 @@ pub fn bins_or_options_covergroup(s: Span) -> IResult<Span, BinsOrOptions> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn wildcard(s: Span) -> IResult<Span, Wildcard> {
     let (s, a) = symbol("wildcard")(s)?;
     Ok((s, Wildcard { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn bins_or_options_cover_point(s: Span) -> IResult<Span, BinsOrOptions> {
     let (s, a) = opt(wildcard)(s)?;
     let (s, b) = bins_keyword(s)?;
@@ -810,7 +810,7 @@ pub fn bins_or_options_cover_point(s: Span) -> IResult<Span, BinsOrOptions> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn bins_or_options_set_covergroup(s: Span) -> IResult<Span, BinsOrOptions> {
     let (s, a) = opt(wildcard)(s)?;
     let (s, b) = bins_keyword(s)?;
@@ -827,7 +827,7 @@ pub fn bins_or_options_set_covergroup(s: Span) -> IResult<Span, BinsOrOptions> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn bins_or_options_trans_list(s: Span) -> IResult<Span, BinsOrOptions> {
     let (s, a) = opt(wildcard)(s)?;
     let (s, b) = bins_keyword(s)?;
@@ -844,7 +844,7 @@ pub fn bins_or_options_trans_list(s: Span) -> IResult<Span, BinsOrOptions> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn bins_or_options_default(s: Span) -> IResult<Span, BinsOrOptions> {
     let (s, a) = bins_keyword(s)?;
     let (s, b) = bin_identifier(s)?;
@@ -860,7 +860,7 @@ pub fn bins_or_options_default(s: Span) -> IResult<Span, BinsOrOptions> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn bins_or_options_default_sequence(s: Span) -> IResult<Span, BinsOrOptions> {
     let (s, a) = bins_keyword(s)?;
     let (s, b) = bin_identifier(s)?;
@@ -876,7 +876,7 @@ pub fn bins_or_options_default_sequence(s: Span) -> IResult<Span, BinsOrOptions>
     ))
 }
 
-#[trace]
+#[parser]
 pub fn bins_keyword(s: Span) -> IResult<Span, BinsKeyword> {
     alt((
         map(symbol("bins"), |x| BinsKeyword::Bins(x)),
@@ -885,19 +885,19 @@ pub fn bins_keyword(s: Span) -> IResult<Span, BinsKeyword> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn trans_list(s: Span) -> IResult<Span, TransList> {
     let (s, a) = list(symbol(","), paren(trans_set))(s)?;
     Ok((s, TransList { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn trans_set(s: Span) -> IResult<Span, TransSet> {
     let (s, a) = list(symbol("=>"), trans_range_list)(s)?;
     Ok((s, TransSet { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn trans_range_list(s: Span) -> IResult<Span, TransRangeList> {
     alt((
         map(trans_item, |x| TransRangeList::TransItem(x)),
@@ -907,7 +907,7 @@ pub fn trans_range_list(s: Span) -> IResult<Span, TransRangeList> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn trans_range_list_asterisk(s: Span) -> IResult<Span, TransRangeList> {
     let (s, a) = trans_item(s)?;
     let (s, b) = bracket(pair(symbol("*"), repeat_range))(s)?;
@@ -917,7 +917,7 @@ pub fn trans_range_list_asterisk(s: Span) -> IResult<Span, TransRangeList> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn trans_range_list_arrow(s: Span) -> IResult<Span, TransRangeList> {
     let (s, a) = trans_item(s)?;
     let (s, b) = bracket(pair(symbol("->"), repeat_range))(s)?;
@@ -927,7 +927,7 @@ pub fn trans_range_list_arrow(s: Span) -> IResult<Span, TransRangeList> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn trans_range_list_equal(s: Span) -> IResult<Span, TransRangeList> {
     let (s, a) = trans_item(s)?;
     let (s, b) = bracket(pair(symbol("="), repeat_range))(s)?;
@@ -937,13 +937,13 @@ pub fn trans_range_list_equal(s: Span) -> IResult<Span, TransRangeList> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn trans_item(s: Span) -> IResult<Span, TransItem> {
     let (s, a) = covergroup_range_list(s)?;
     Ok((s, TransItem { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn repeat_range(s: Span) -> IResult<Span, RepeatRange> {
     alt((
         map(covergroup_expression, |x| {
@@ -953,7 +953,7 @@ pub fn repeat_range(s: Span) -> IResult<Span, RepeatRange> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn repeat_range_binary(s: Span) -> IResult<Span, RepeatRange> {
     let (s, a) = covergroup_expression(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -964,7 +964,7 @@ pub fn repeat_range_binary(s: Span) -> IResult<Span, RepeatRange> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn cover_cross(s: Span) -> IResult<Span, CoverCross> {
     let (s, a) = opt(pair(cross_identifier, symbol(":")))(s)?;
     let (s, b) = symbol("cross")(s)?;
@@ -979,14 +979,14 @@ pub fn cover_cross(s: Span) -> IResult<Span, CoverCross> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn list_of_cross_items(s: Span) -> IResult<Span, ListOfCrossItems> {
     let (s, a) = cross_item(s)?;
     let (s, b) = list(symbol(","), cross_item)(s)?;
     Ok((s, ListOfCrossItems { nodes: (a, b) }))
 }
 
-#[trace]
+#[parser]
 pub fn cross_item(s: Span) -> IResult<Span, CrossItem> {
     alt((
         map(cover_point_identifier, |x| {
@@ -996,7 +996,7 @@ pub fn cross_item(s: Span) -> IResult<Span, CrossItem> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn cross_body(s: Span) -> IResult<Span, CrossBody> {
     alt((
         cross_body_non_empty,
@@ -1004,13 +1004,13 @@ pub fn cross_body(s: Span) -> IResult<Span, CrossBody> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn cross_body_non_empty(s: Span) -> IResult<Span, CrossBody> {
     let (s, a) = brace(many0(pair(cross_body_item, symbol(";"))))(s)?;
     Ok((s, CrossBody::NonEmpty(CrossBodyNonEmpty { nodes: (a,) })))
 }
 
-#[trace]
+#[parser]
 pub fn cross_body_item(s: Span) -> IResult<Span, CrossBodyItem> {
     alt((
         map(function_declaration, |x| {
@@ -1022,7 +1022,7 @@ pub fn cross_body_item(s: Span) -> IResult<Span, CrossBodyItem> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn bins_selection_or_option(s: Span) -> IResult<Span, BinsSelectionOrOption> {
     alt((
         bins_selection_or_option_coverage,
@@ -1030,7 +1030,7 @@ pub fn bins_selection_or_option(s: Span) -> IResult<Span, BinsSelectionOrOption>
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn bins_selection_or_option_coverage(s: Span) -> IResult<Span, BinsSelectionOrOption> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = coverage_option(s)?;
@@ -1040,7 +1040,7 @@ pub fn bins_selection_or_option_coverage(s: Span) -> IResult<Span, BinsSelection
     ))
 }
 
-#[trace]
+#[parser]
 pub fn bins_selection_or_option_bins(s: Span) -> IResult<Span, BinsSelectionOrOption> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = bins_selection(s)?;
@@ -1050,7 +1050,7 @@ pub fn bins_selection_or_option_bins(s: Span) -> IResult<Span, BinsSelectionOrOp
     ))
 }
 
-#[trace]
+#[parser]
 pub fn bins_selection(s: Span) -> IResult<Span, BinsSelection> {
     let (s, a) = bins_keyword(s)?;
     let (s, b) = bin_identifier(s)?;
@@ -1065,7 +1065,7 @@ pub fn bins_selection(s: Span) -> IResult<Span, BinsSelection> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn select_expression(s: Span) -> IResult<Span, SelectExpression> {
     alt((
         map(select_condition, |x| SelectExpression::SelectCondition(x)),
@@ -1079,7 +1079,7 @@ pub fn select_expression(s: Span) -> IResult<Span, SelectExpression> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn select_expression_not(s: Span) -> IResult<Span, SelectExpression> {
     let (s, a) = symbol("!")(s)?;
     let (s, b) = select_condition(s)?;
@@ -1089,7 +1089,7 @@ pub fn select_expression_not(s: Span) -> IResult<Span, SelectExpression> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn select_expression_and(s: Span) -> IResult<Span, SelectExpression> {
     let (s, a) = select_expression(s)?;
     let (s, b) = symbol("&&")(s)?;
@@ -1100,7 +1100,7 @@ pub fn select_expression_and(s: Span) -> IResult<Span, SelectExpression> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn select_expression_or(s: Span) -> IResult<Span, SelectExpression> {
     let (s, a) = select_expression(s)?;
     let (s, b) = symbol("||")(s)?;
@@ -1111,7 +1111,7 @@ pub fn select_expression_or(s: Span) -> IResult<Span, SelectExpression> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn select_expression_paren(s: Span) -> IResult<Span, SelectExpression> {
     let (s, a) = paren(select_expression)(s)?;
     Ok((
@@ -1120,7 +1120,7 @@ pub fn select_expression_paren(s: Span) -> IResult<Span, SelectExpression> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn select_expression_with(s: Span) -> IResult<Span, SelectExpression> {
     let (s, a) = select_expression(s)?;
     let (s, b) = symbol("with")(s)?;
@@ -1134,7 +1134,7 @@ pub fn select_expression_with(s: Span) -> IResult<Span, SelectExpression> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn select_expression_cross_set(s: Span) -> IResult<Span, SelectExpression> {
     let (s, a) = cross_set_expression(s)?;
     let (s, b) = opt(pair(symbol("matches"), integer_covergroup_expression))(s)?;
@@ -1144,7 +1144,7 @@ pub fn select_expression_cross_set(s: Span) -> IResult<Span, SelectExpression> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn select_condition(s: Span) -> IResult<Span, SelectCondition> {
     let (s, a) = symbol("binsof")(s)?;
     let (s, b) = paren(bins_expression)(s)?;
@@ -1152,7 +1152,7 @@ pub fn select_condition(s: Span) -> IResult<Span, SelectCondition> {
     Ok((s, SelectCondition { nodes: (a, b, c) }))
 }
 
-#[trace]
+#[parser]
 pub fn bins_expression(s: Span) -> IResult<Span, BinsExpression> {
     alt((
         map(variable_identifier, |x| {
@@ -1162,7 +1162,7 @@ pub fn bins_expression(s: Span) -> IResult<Span, BinsExpression> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn bins_expression_cover_point(s: Span) -> IResult<Span, BinsExpression> {
     let (s, a) = cover_point_identifier(s)?;
     let (s, b) = opt(pair(symbol("."), bin_identifier))(s)?;
@@ -1172,13 +1172,13 @@ pub fn bins_expression_cover_point(s: Span) -> IResult<Span, BinsExpression> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn covergroup_range_list(s: Span) -> IResult<Span, CovergroupRangeList> {
     let (s, a) = list(symbol(","), covergroup_value_range)(s)?;
     Ok((s, CovergroupRangeList { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn covergroup_value_range(s: Span) -> IResult<Span, CovergroupValueRange> {
     alt((
         map(covergroup_expression, |x| {
@@ -1188,7 +1188,7 @@ pub fn covergroup_value_range(s: Span) -> IResult<Span, CovergroupValueRange> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn covergroup_value_range_binary(s: Span) -> IResult<Span, CovergroupValueRange> {
     let (s, a) = bracket(triple(
         covergroup_expression,
@@ -1201,31 +1201,31 @@ pub fn covergroup_value_range_binary(s: Span) -> IResult<Span, CovergroupValueRa
     ))
 }
 
-#[trace]
+#[parser]
 pub fn with_covergroup_expression(s: Span) -> IResult<Span, WithCovergroupExpression> {
     let (s, a) = covergroup_expression(s)?;
     Ok((s, WithCovergroupExpression { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn set_covergroup_expression(s: Span) -> IResult<Span, SetCovergroupExpression> {
     let (s, a) = covergroup_expression(s)?;
     Ok((s, SetCovergroupExpression { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn integer_covergroup_expression(s: Span) -> IResult<Span, IntegerCovergroupExpression> {
     let (s, a) = covergroup_expression(s)?;
     Ok((s, IntegerCovergroupExpression { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn cross_set_expression(s: Span) -> IResult<Span, CrossSetExpression> {
     let (s, a) = covergroup_expression(s)?;
     Ok((s, CrossSetExpression { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn covergroup_expression(s: Span) -> IResult<Span, CovergroupExpression> {
     let (s, a) = expression(s)?;
     Ok((s, CovergroupExpression { nodes: (a,) }))

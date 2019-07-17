@@ -14,7 +14,7 @@ pub struct EdgeIdentifier<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn edge_identifier(s: Span) -> IResult<Span, EdgeIdentifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

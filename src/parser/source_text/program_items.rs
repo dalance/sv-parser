@@ -63,7 +63,7 @@ pub enum ProgramGenerateItem<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn program_item(s: Span) -> IResult<Span, ProgramItem> {
     alt((
         map(pair(port_declaration, symbol(";")), |x| {
@@ -75,7 +75,7 @@ pub fn program_item(s: Span) -> IResult<Span, ProgramItem> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn non_port_program_item(s: Span) -> IResult<Span, NonPortProgramItem> {
     alt((
         non_port_program_item_assign,
@@ -92,7 +92,7 @@ pub fn non_port_program_item(s: Span) -> IResult<Span, NonPortProgramItem> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn non_port_program_item_assign(s: Span) -> IResult<Span, NonPortProgramItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = continuous_assign(s)?;
@@ -102,7 +102,7 @@ pub fn non_port_program_item_assign(s: Span) -> IResult<Span, NonPortProgramItem
     ))
 }
 
-#[trace]
+#[parser]
 pub fn non_port_program_item_module(s: Span) -> IResult<Span, NonPortProgramItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = module_or_generate_item_declaration(s)?;
@@ -112,7 +112,7 @@ pub fn non_port_program_item_module(s: Span) -> IResult<Span, NonPortProgramItem
     ))
 }
 
-#[trace]
+#[parser]
 pub fn non_port_program_item_initial(s: Span) -> IResult<Span, NonPortProgramItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = initial_construct(s)?;
@@ -122,7 +122,7 @@ pub fn non_port_program_item_initial(s: Span) -> IResult<Span, NonPortProgramIte
     ))
 }
 
-#[trace]
+#[parser]
 pub fn non_port_program_item_final(s: Span) -> IResult<Span, NonPortProgramItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = final_construct(s)?;
@@ -132,7 +132,7 @@ pub fn non_port_program_item_final(s: Span) -> IResult<Span, NonPortProgramItem>
     ))
 }
 
-#[trace]
+#[parser]
 pub fn non_port_program_item_assertion(s: Span) -> IResult<Span, NonPortProgramItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = concurrent_assertion_item(s)?;
@@ -142,7 +142,7 @@ pub fn non_port_program_item_assertion(s: Span) -> IResult<Span, NonPortProgramI
     ))
 }
 
-#[trace]
+#[parser]
 pub fn program_generate_item(s: Span) -> IResult<Span, ProgramGenerateItem> {
     alt((
         map(loop_generate_construct, |x| {

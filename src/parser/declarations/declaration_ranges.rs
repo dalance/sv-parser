@@ -70,12 +70,12 @@ pub struct UnsizedDimension<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn unpacked_dimension(s: Span) -> IResult<Span, UnpackedDimension> {
     alt((unpacked_dimension_range, unpacked_dimension_expression))(s)
 }
 
-#[trace]
+#[parser]
 pub fn unpacked_dimension_range(s: Span) -> IResult<Span, UnpackedDimension> {
     let (s, a) = bracket(constant_range)(s)?;
     Ok((
@@ -84,7 +84,7 @@ pub fn unpacked_dimension_range(s: Span) -> IResult<Span, UnpackedDimension> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn unpacked_dimension_expression(s: Span) -> IResult<Span, UnpackedDimension> {
     let (s, a) = bracket(constant_expression)(s)?;
     Ok((
@@ -93,7 +93,7 @@ pub fn unpacked_dimension_expression(s: Span) -> IResult<Span, UnpackedDimension
     ))
 }
 
-#[trace]
+#[parser]
 pub fn packed_dimension(s: Span) -> IResult<Span, PackedDimension> {
     alt((
         packed_dimension_range,
@@ -101,7 +101,7 @@ pub fn packed_dimension(s: Span) -> IResult<Span, PackedDimension> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn packed_dimension_range(s: Span) -> IResult<Span, PackedDimension> {
     let (s, a) = bracket(constant_range)(s)?;
     Ok((
@@ -110,7 +110,7 @@ pub fn packed_dimension_range(s: Span) -> IResult<Span, PackedDimension> {
     ))
 }
 
-#[trace]
+#[parser]
 pub fn associative_dimension(s: Span) -> IResult<Span, AssociativeDimension> {
     alt((
         associative_dimension_data_type,
@@ -118,7 +118,7 @@ pub fn associative_dimension(s: Span) -> IResult<Span, AssociativeDimension> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn associative_dimension_data_type(s: Span) -> IResult<Span, AssociativeDimension> {
     let (s, a) = bracket(data_type)(s)?;
     Ok((
@@ -127,7 +127,7 @@ pub fn associative_dimension_data_type(s: Span) -> IResult<Span, AssociativeDime
     ))
 }
 
-#[trace]
+#[parser]
 pub fn associative_dimension_asterisk(s: Span) -> IResult<Span, AssociativeDimension> {
     let (s, a) = bracket(symbol("*"))(s)?;
     Ok((
@@ -136,7 +136,7 @@ pub fn associative_dimension_asterisk(s: Span) -> IResult<Span, AssociativeDimen
     ))
 }
 
-#[trace]
+#[parser]
 pub fn variable_dimension(s: Span) -> IResult<Span, VariableDimension> {
     alt((
         map(unsized_dimension, |x| {
@@ -152,7 +152,7 @@ pub fn variable_dimension(s: Span) -> IResult<Span, VariableDimension> {
     ))(s)
 }
 
-#[trace]
+#[parser]
 pub fn queue_dimension(s: Span) -> IResult<Span, QueueDimension> {
     let (s, a) = bracket(pair(
         symbol("$"),
@@ -161,7 +161,7 @@ pub fn queue_dimension(s: Span) -> IResult<Span, QueueDimension> {
     Ok((s, QueueDimension { nodes: (a,) }))
 }
 
-#[trace]
+#[parser]
 pub fn unsized_dimension(s: Span) -> IResult<Span, UnsizedDimension> {
     let (s, a) = symbol("[")(s)?;
     let (s, b) = symbol("]")(s)?;

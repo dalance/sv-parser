@@ -190,7 +190,7 @@ where
 
 // -----------------------------------------------------------------------------
 
-#[trace]
+#[parser]
 pub fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
     alt((
         map(multispace1, |x| WhiteSpace::Space(x)),

@@ -123,8 +123,102 @@ pub fn trace(_attr: TokenStream, item: TokenStream) -> TokenStream {
 fn impl_trace(item: &syn::ItemFn) -> TokenStream {
     let ident = &item.ident;
     let mut item = item.clone();
+
     let tracer = quote! {
-        println!("{}: {:?}", stringify!(#ident), s);
+        if cfg!(feature = "trace") {
+            println!("{:<48} : {:<4},{:>032x} : {}", stringify!(#ident), s.offset, s.extra, s.fragment);
+        }
+    };
+    let tracer: TokenStream = tracer.into();
+    let tracer = parse_macro_input!(tracer as syn::Stmt);
+
+    let checker = quote! {
+        if thread_context::TABLE.with(|t| {
+            if let Some(i) = t.borrow_mut().get_or_allocate(stringify!(#ident)) {
+                return check_bit(s, i);
+            } else {
+                return false
+            }
+        }) {
+            if cfg!(feature = "trace") {
+                println!("{:<48} : loop detect", stringify!(#ident));
+            }
+            return Err(nom::Err::Error(nom::error::make_error(s, nom::error::ErrorKind::Fix)));
+        }
+    };
+    let checker: TokenStream = checker.into();
+    let checker = parse_macro_input!(checker as syn::Stmt);
+
+    let before = quote! {
+        let s = thread_context::TABLE.with(|t| {
+            if let Some(i) = t.borrow_mut().get_or_allocate(stringify!(#ident)) {
+                //println!("{}:{} set", stringify!(#ident), i);
+                set_bit(s, i, true)
+            } else {
+                if cfg!(feature = "trace") {
+                    println!("{:<48} : allocate failed", stringify!(#ident));
+                }
+                s
+            }
+        });
+    };
+    let before: TokenStream = before.into();
+    let before = parse_macro_input!(before as syn::Stmt);
+
+    let mut body = quote! {};
+    for s in &item.block.stmts {
+        body = quote! {
+            #body
+            #s
+        };
+    }
+    let body = quote! {
+        let (s, ret) = { #body }?;
+    };
+    let body: TokenStream = body.into();
+    let body = parse_macro_input!(body as syn::Stmt);
+
+    let after = quote! {
+        Ok((clear_bit(s), ret))
+    };
+    let after: TokenStream = after.into();
+    let after = parse_macro_input!(after as syn::Expr);
+    let after = syn::Stmt::Expr(after);
+
+    item.block.stmts.clear();
+    item.block.stmts.push(tracer);
+    item.block.stmts.push(checker);
+    item.block.stmts.push(before);
+    item.block.stmts.push(body);
+    item.block.stmts.push(after);
+
+    let gen = quote! {
+        #item
+    };
+    gen.into()
+}
+
+#[proc_macro_attribute]
+pub fn rec(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    let item = parse_macro_input!(item as ItemFn);
+    impl_rec(&item)
+}
+
+fn impl_rec(item: &syn::ItemFn) -> TokenStream {
+    let ident = &item.ident;
+    let mut item = item.clone();
+    let tracer = quote! {
+        if thread_context::MAP_MUT.with(|m| {
+            if let Some(x) = m.borrow().get(stringify!(#ident)) {
+                if *x == s.offset {
+                    return true;
+                }
+            }
+            m.borrow_mut().insert(stringify!(#ident), s.offset);
+            false
+        }) {
+            return Err(nom::Err::Error(nom::error::make_error(s, nom::error::ErrorKind::Fix)));
+        }
     };
     let tracer: TokenStream = tracer.into();
     let tracer = parse_macro_input!(tracer as syn::Stmt);

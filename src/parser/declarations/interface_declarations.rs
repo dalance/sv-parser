@@ -94,6 +94,7 @@ pub enum ImportExport<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn modport_declaration(s: Span) -> IResult<Span, ModportDeclaration> {
     let (s, a) = symbol("modport")(s)?;
     let (s, b) = list(symbol(","), modport_item)(s)?;
@@ -101,12 +102,14 @@ pub fn modport_declaration(s: Span) -> IResult<Span, ModportDeclaration> {
     Ok((s, ModportDeclaration { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn modport_item(s: Span) -> IResult<Span, ModportItem> {
     let (s, a) = modport_identifier(s)?;
     let (s, b) = paren(list(symbol(","), modport_ports_declaration))(s)?;
     Ok((s, ModportItem { nodes: (a, b) }))
 }
 
+#[trace]
 pub fn modport_ports_declaration(s: Span) -> IResult<Span, ModportPortsDeclaraton> {
     alt((
         modport_ports_declaration_simple,
@@ -115,6 +118,7 @@ pub fn modport_ports_declaration(s: Span) -> IResult<Span, ModportPortsDeclarato
     ))(s)
 }
 
+#[trace]
 pub fn modport_ports_declaration_simple(s: Span) -> IResult<Span, ModportPortsDeclaraton> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = modport_simple_ports_declaration(s)?;
@@ -124,6 +128,7 @@ pub fn modport_ports_declaration_simple(s: Span) -> IResult<Span, ModportPortsDe
     ))
 }
 
+#[trace]
 pub fn modport_ports_declaration_tf(s: Span) -> IResult<Span, ModportPortsDeclaraton> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = modport_tf_ports_declaration(s)?;
@@ -133,6 +138,7 @@ pub fn modport_ports_declaration_tf(s: Span) -> IResult<Span, ModportPortsDeclar
     ))
 }
 
+#[trace]
 pub fn modport_ports_declaration_clocking(s: Span) -> IResult<Span, ModportPortsDeclaraton> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = modport_clocking_declaration(s)?;
@@ -142,22 +148,26 @@ pub fn modport_ports_declaration_clocking(s: Span) -> IResult<Span, ModportPorts
     ))
 }
 
+#[trace]
 pub fn modport_clocking_declaration(s: Span) -> IResult<Span, ModportClockingDeclaration> {
     let (s, a) = symbol("clocking")(s)?;
     let (s, b) = clocking_identifier(s)?;
     Ok((s, ModportClockingDeclaration { nodes: (a, b) }))
 }
 
+#[trace]
 pub fn modport_simple_ports_declaration(s: Span) -> IResult<Span, ModportSimplePortsDeclaration> {
     let (s, a) = port_direction(s)?;
     let (s, b) = list(symbol(","), modport_simple_port)(s)?;
     Ok((s, ModportSimplePortsDeclaration { nodes: (a, b) }))
 }
 
+#[trace]
 pub fn modport_simple_port(s: Span) -> IResult<Span, ModportSimplePort> {
     alt((modport_simple_port_ordered, modport_simple_port_named))(s)
 }
 
+#[trace]
 pub fn modport_simple_port_ordered(s: Span) -> IResult<Span, ModportSimplePort> {
     let (s, a) = port_identifier(s)?;
     Ok((
@@ -166,6 +176,7 @@ pub fn modport_simple_port_ordered(s: Span) -> IResult<Span, ModportSimplePort> 
     ))
 }
 
+#[trace]
 pub fn modport_simple_port_named(s: Span) -> IResult<Span, ModportSimplePort> {
     let (s, a) = symbol(".")(s)?;
     let (s, b) = port_identifier(s)?;
@@ -176,12 +187,14 @@ pub fn modport_simple_port_named(s: Span) -> IResult<Span, ModportSimplePort> {
     ))
 }
 
+#[trace]
 pub fn modport_tf_ports_declaration(s: Span) -> IResult<Span, ModportTfPortsDeclaration> {
     let (s, a) = import_export(s)?;
     let (s, b) = list(symbol(","), modport_tf_port)(s)?;
     Ok((s, ModportTfPortsDeclaration { nodes: (a, b) }))
 }
 
+#[trace]
 pub fn modport_tf_port(s: Span) -> IResult<Span, ModportTfPort> {
     alt((
         map(method_prototype, |x| ModportTfPort::MethodPrototype(x)),
@@ -189,6 +202,7 @@ pub fn modport_tf_port(s: Span) -> IResult<Span, ModportTfPort> {
     ))(s)
 }
 
+#[trace]
 pub fn import_export(s: Span) -> IResult<Span, ImportExport> {
     alt((
         map(symbol("import"), |x| ImportExport::Import(x)),

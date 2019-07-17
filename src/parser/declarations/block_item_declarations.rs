@@ -44,6 +44,7 @@ pub struct BlockItemDeclarationLet<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn block_item_declaration(s: Span) -> IResult<Span, BlockItemDeclaration> {
     alt((
         block_item_declaration_data,
@@ -53,6 +54,7 @@ pub fn block_item_declaration(s: Span) -> IResult<Span, BlockItemDeclaration> {
     ))(s)
 }
 
+#[trace]
 pub fn block_item_declaration_data(s: Span) -> IResult<Span, BlockItemDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = data_declaration(s)?;
@@ -62,6 +64,7 @@ pub fn block_item_declaration_data(s: Span) -> IResult<Span, BlockItemDeclaratio
     ))
 }
 
+#[trace]
 pub fn block_item_declaration_local_parameter(s: Span) -> IResult<Span, BlockItemDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = local_parameter_declaration(s)?;
@@ -74,6 +77,7 @@ pub fn block_item_declaration_local_parameter(s: Span) -> IResult<Span, BlockIte
     ))
 }
 
+#[trace]
 pub fn block_item_declaration_parameter(s: Span) -> IResult<Span, BlockItemDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = parameter_declaration(s)?;
@@ -84,6 +88,7 @@ pub fn block_item_declaration_parameter(s: Span) -> IResult<Span, BlockItemDecla
     ))
 }
 
+#[trace]
 pub fn block_item_declaration_let(s: Span) -> IResult<Span, BlockItemDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = let_declaration(s)?;

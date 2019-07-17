@@ -11,6 +11,10 @@ description = ""
 edition = "2018"
 build = "build.rs"
 
+[features]
+default = []
+trace = []
+
 [dependencies]
 nom = "5.0.0"
 nom_locate = { git = "https://github.com/fflorent/nom_locate" }

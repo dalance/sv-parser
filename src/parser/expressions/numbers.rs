@@ -162,6 +162,7 @@ pub struct UnbasedUnsizedLiteral<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn number(s: Span) -> IResult<Span, Number> {
     alt((
         map(real_number, |x| Number::RealNumber(x)),
@@ -169,6 +170,7 @@ pub fn number(s: Span) -> IResult<Span, Number> {
     ))(s)
 }
 
+#[trace]
 pub fn integral_number(s: Span) -> IResult<Span, IntegralNumber> {
     alt((
         map(octal_number, |x| IntegralNumber::OctalNumber(x)),
@@ -178,6 +180,7 @@ pub fn integral_number(s: Span) -> IResult<Span, IntegralNumber> {
     ))(s)
 }
 
+#[trace]
 pub fn decimal_number(s: Span) -> IResult<Span, DecimalNumber> {
     alt((
         decimal_number_base_unsigned,
@@ -187,6 +190,7 @@ pub fn decimal_number(s: Span) -> IResult<Span, DecimalNumber> {
     ))(s)
 }
 
+#[trace]
 pub fn decimal_number_base_unsigned(s: Span) -> IResult<Span, DecimalNumber> {
     let (s, a) = opt(size)(s)?;
     let (s, b) = decimal_base(s)?;
@@ -197,6 +201,7 @@ pub fn decimal_number_base_unsigned(s: Span) -> IResult<Span, DecimalNumber> {
     ))
 }
 
+#[trace]
 pub fn decimal_number_base_x_number(s: Span) -> IResult<Span, DecimalNumber> {
     let (s, a) = opt(size)(s)?;
     let (s, b) = decimal_base(s)?;
@@ -207,6 +212,7 @@ pub fn decimal_number_base_x_number(s: Span) -> IResult<Span, DecimalNumber> {
     ))
 }
 
+#[trace]
 pub fn decimal_number_base_z_number(s: Span) -> IResult<Span, DecimalNumber> {
     let (s, a) = opt(size)(s)?;
     let (s, b) = decimal_base(s)?;
@@ -217,6 +223,7 @@ pub fn decimal_number_base_z_number(s: Span) -> IResult<Span, DecimalNumber> {
     ))
 }
 
+#[trace]
 pub fn binary_number(s: Span) -> IResult<Span, BinaryNumber> {
     let (s, a) = opt(size)(s)?;
     let (s, b) = binary_base(s)?;
@@ -224,6 +231,7 @@ pub fn binary_number(s: Span) -> IResult<Span, BinaryNumber> {
     Ok((s, BinaryNumber { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn octal_number(s: Span) -> IResult<Span, OctalNumber> {
     let (s, a) = opt(size)(s)?;
     let (s, b) = octal_base(s)?;
@@ -231,6 +239,7 @@ pub fn octal_number(s: Span) -> IResult<Span, OctalNumber> {
     Ok((s, OctalNumber { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn hex_number(s: Span) -> IResult<Span, HexNumber> {
     let (s, a) = opt(size)(s)?;
     let (s, b) = hex_base(s)?;
@@ -238,6 +247,7 @@ pub fn hex_number(s: Span) -> IResult<Span, HexNumber> {
     Ok((s, HexNumber { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn sign(s: Span) -> IResult<Span, Sign> {
     alt((
         map(symbol("+"), |x| Sign::Plus(x)),
@@ -245,16 +255,19 @@ pub fn sign(s: Span) -> IResult<Span, Sign> {
     ))(s)
 }
 
+#[trace]
 pub fn size(s: Span) -> IResult<Span, Size> {
     let (s, a) = non_zero_unsigned_number(s)?;
     Ok((s, Size { nodes: (a,) }))
 }
 
+#[trace]
 pub fn non_zero_unsigned_number(s: Span) -> IResult<Span, NonZeroUnsignedNumber> {
     let (s, a) = ws(non_zero_unsigned_number_impl)(s)?;
     Ok((s, NonZeroUnsignedNumber { nodes: a }))
 }
 
+#[trace]
 pub fn non_zero_unsigned_number_impl(s: Span) -> IResult<Span, Span> {
     let (s, a) = is_a("123456789")(s)?;
     fold_many0(alt((tag("_"), digit1)), a, |acc, item| {
@@ -262,6 +275,7 @@ pub fn non_zero_unsigned_number_impl(s: Span) -> IResult<Span, Span> {
     })(s)
 }
 
+#[trace]
 pub fn real_number(s: Span) -> IResult<Span, RealNumber> {
     alt((
         real_number_floating,
@@ -269,6 +283,7 @@ pub fn real_number(s: Span) -> IResult<Span, RealNumber> {
     ))(s)
 }
 
+#[trace]
 pub fn real_number_floating(s: Span) -> IResult<Span, RealNumber> {
     let (s, a) = unsigned_number(s)?;
     let (s, b) = opt(pair(symbol("."), unsigned_number))(s)?;
@@ -283,6 +298,7 @@ pub fn real_number_floating(s: Span) -> IResult<Span, RealNumber> {
     ))
 }
 
+#[trace]
 pub fn fixed_point_number(s: Span) -> IResult<Span, FixedPointNumber> {
     let (s, a) = unsigned_number(s)?;
     let (s, b) = map(tag("."), |x| Symbol { nodes: (x, vec![]) })(s)?;;
@@ -290,16 +306,19 @@ pub fn fixed_point_number(s: Span) -> IResult<Span, FixedPointNumber> {
     Ok((s, FixedPointNumber { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn exp(s: Span) -> IResult<Span, Exp> {
     let (s, a) = alt((symbol("e"), symbol("E")))(s)?;
     Ok((s, Exp { nodes: (a,) }))
 }
 
+#[trace]
 pub fn unsigned_number(s: Span) -> IResult<Span, UnsignedNumber> {
     let (s, a) = ws(unsigned_number_impl)(s)?;
     Ok((s, UnsignedNumber { nodes: a }))
 }
 
+#[trace]
 pub fn unsigned_number_impl(s: Span) -> IResult<Span, Span> {
     let (s, a) = digit1(s)?;
     fold_many0(alt((tag("_"), digit1)), a, |acc, item| {
@@ -307,11 +326,13 @@ pub fn unsigned_number_impl(s: Span) -> IResult<Span, Span> {
     })(s)
 }
 
+#[trace]
 pub fn binary_value(s: Span) -> IResult<Span, BinaryValue> {
     let (s, a) = ws(binary_value_impl)(s)?;
     Ok((s, BinaryValue { nodes: a }))
 }
 
+#[trace]
 pub fn binary_value_impl(s: Span) -> IResult<Span, Span> {
     let (s, a) = is_a("01xXzZ?")(s)?;
     fold_many0(alt((tag("_"), is_a("01xXzZ?"))), a, |acc, item| {
@@ -319,11 +340,13 @@ pub fn binary_value_impl(s: Span) -> IResult<Span, Span> {
     })(s)
 }
 
+#[trace]
 pub fn octal_value(s: Span) -> IResult<Span, OctalValue> {
     let (s, a) = ws(octal_value_impl)(s)?;
     Ok((s, OctalValue { nodes: a }))
 }
 
+#[trace]
 pub fn octal_value_impl(s: Span) -> IResult<Span, Span> {
     let (s, a) = is_a("01234567xXzZ?")(s)?;
     fold_many0(alt((tag("_"), is_a("01234567xXzZ?"))), a, |acc, item| {
@@ -331,11 +354,13 @@ pub fn octal_value_impl(s: Span) -> IResult<Span, Span> {
     })(s)
 }
 
+#[trace]
 pub fn hex_value(s: Span) -> IResult<Span, HexValue> {
     let (s, a) = ws(hex_value_impl)(s)?;
     Ok((s, HexValue { nodes: a }))
 }
 
+#[trace]
 pub fn hex_value_impl(s: Span) -> IResult<Span, Span> {
     let (s, a) = is_a("0123456789abcdefABCDEFxXzZ?")(s)?;
     fold_many0(
@@ -345,47 +370,57 @@ pub fn hex_value_impl(s: Span) -> IResult<Span, Span> {
     )(s)
 }
 
+#[trace]
 pub fn decimal_base(s: Span) -> IResult<Span, DecimalBase> {
     let (s, a) = ws(decimal_base_impl)(s)?;
     Ok((s, DecimalBase { nodes: a }))
 }
 
+#[trace]
 pub fn decimal_base_impl(s: Span) -> IResult<Span, Span> {
     alt((tag_no_case("'d"), tag_no_case("'sd")))(s)
 }
 
+#[trace]
 pub fn binary_base(s: Span) -> IResult<Span, BinaryBase> {
     let (s, a) = ws(binary_base_impl)(s)?;
     Ok((s, BinaryBase { nodes: a }))
 }
 
+#[trace]
 pub fn binary_base_impl(s: Span) -> IResult<Span, Span> {
     alt((tag_no_case("'b"), tag_no_case("'sb")))(s)
 }
 
+#[trace]
 pub fn octal_base(s: Span) -> IResult<Span, OctalBase> {
     let (s, a) = ws(octal_base_impl)(s)?;
     Ok((s, OctalBase { nodes: a }))
 }
 
+#[trace]
 pub fn octal_base_impl(s: Span) -> IResult<Span, Span> {
     alt((tag_no_case("'o"), tag_no_case("'so")))(s)
 }
 
+#[trace]
 pub fn hex_base(s: Span) -> IResult<Span, HexBase> {
     let (s, a) = ws(hex_base_impl)(s)?;
     Ok((s, HexBase { nodes: a }))
 }
 
+#[trace]
 pub fn hex_base_impl(s: Span) -> IResult<Span, Span> {
     alt((tag_no_case("'h"), tag_no_case("'sh")))(s)
 }
 
+#[trace]
 pub fn x_number(s: Span) -> IResult<Span, XNumber> {
     let (s, a) = ws(x_number_impl)(s)?;
     Ok((s, XNumber { nodes: a }))
 }
 
+#[trace]
 pub fn x_number_impl(s: Span) -> IResult<Span, Span> {
     let (s, a) = tag_no_case("x")(s)?;
     fold_many0(alt((tag("_"), is_a("_"))), a, |acc, item| {
@@ -393,11 +428,13 @@ pub fn x_number_impl(s: Span) -> IResult<Span, Span> {
     })(s)
 }
 
+#[trace]
 pub fn z_number(s: Span) -> IResult<Span, ZNumber> {
     let (s, a) = ws(z_number_impl)(s)?;
     Ok((s, ZNumber { nodes: a }))
 }
 
+#[trace]
 pub fn z_number_impl(s: Span) -> IResult<Span, Span> {
     let (s, a) = alt((tag_no_case("z"), tag("?")))(s)?;
     fold_many0(alt((tag("_"), is_a("_"))), a, |acc, item| {
@@ -405,6 +442,7 @@ pub fn z_number_impl(s: Span) -> IResult<Span, Span> {
     })(s)
 }
 
+#[trace]
 pub fn unbased_unsized_literal(s: Span) -> IResult<Span, UnbasedUnsizedLiteral> {
     let (s, a) = alt((symbol("'0"), symbol("'1"), symbol("'z"), symbol("'x")))(s)?;
     Ok((s, UnbasedUnsizedLiteral { nodes: (a,) }))

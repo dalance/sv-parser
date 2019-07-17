@@ -120,6 +120,7 @@ pub struct LoopVariables<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn loop_statement(s: Span) -> IResult<Span, LoopStatement> {
     alt((
         loop_statement_forever,
@@ -131,6 +132,7 @@ pub fn loop_statement(s: Span) -> IResult<Span, LoopStatement> {
     ))(s)
 }
 
+#[trace]
 pub fn loop_statement_forever(s: Span) -> IResult<Span, LoopStatement> {
     let (s, a) = symbol("forever")(s)?;
     let (s, b) = statement_or_null(s)?;
@@ -140,6 +142,7 @@ pub fn loop_statement_forever(s: Span) -> IResult<Span, LoopStatement> {
     ))
 }
 
+#[trace]
 pub fn loop_statement_repeat(s: Span) -> IResult<Span, LoopStatement> {
     let (s, a) = symbol("repeat")(s)?;
     let (s, b) = paren(expression)(s)?;
@@ -150,6 +153,7 @@ pub fn loop_statement_repeat(s: Span) -> IResult<Span, LoopStatement> {
     ))
 }
 
+#[trace]
 pub fn loop_statement_while(s: Span) -> IResult<Span, LoopStatement> {
     let (s, a) = symbol("while")(s)?;
     let (s, b) = paren(expression)(s)?;
@@ -160,6 +164,7 @@ pub fn loop_statement_while(s: Span) -> IResult<Span, LoopStatement> {
     ))
 }
 
+#[trace]
 pub fn loop_statement_for(s: Span) -> IResult<Span, LoopStatement> {
     let (s, a) = symbol("for")(s)?;
     let (s, b) = paren(tuple((
@@ -173,6 +178,7 @@ pub fn loop_statement_for(s: Span) -> IResult<Span, LoopStatement> {
     Ok((s, LoopStatement::For(LoopStatementFor { nodes: (a, b, c) })))
 }
 
+#[trace]
 pub fn loop_statement_do_while(s: Span) -> IResult<Span, LoopStatement> {
     let (s, a) = symbol("do")(s)?;
     let (s, b) = statement_or_null(s)?;
@@ -187,6 +193,7 @@ pub fn loop_statement_do_while(s: Span) -> IResult<Span, LoopStatement> {
     ))
 }
 
+#[trace]
 pub fn loop_statement_foreach(s: Span) -> IResult<Span, LoopStatement> {
     let (s, a) = symbol("foreach")(s)?;
     let (s, b) = paren(pair(
@@ -200,6 +207,7 @@ pub fn loop_statement_foreach(s: Span) -> IResult<Span, LoopStatement> {
     ))
 }
 
+#[trace]
 pub fn for_initialization(s: Span) -> IResult<Span, ForInitialization> {
     alt((
         map(list_of_variable_assignments, |x| {
@@ -209,6 +217,7 @@ pub fn for_initialization(s: Span) -> IResult<Span, ForInitialization> {
     ))(s)
 }
 
+#[trace]
 pub fn for_initialization_declaration(s: Span) -> IResult<Span, ForInitialization> {
     let (s, a) = list(symbol(","), for_variable_declaration)(s)?;
     Ok((
@@ -217,6 +226,7 @@ pub fn for_initialization_declaration(s: Span) -> IResult<Span, ForInitializatio
     ))
 }
 
+#[trace]
 pub fn for_variable_declaration(s: Span) -> IResult<Span, ForVariableDeclaration> {
     let (s, a) = opt(var)(s)?;
     let (s, b) = data_type(s)?;
@@ -227,16 +237,19 @@ pub fn for_variable_declaration(s: Span) -> IResult<Span, ForVariableDeclaration
     Ok((s, ForVariableDeclaration { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn var(s: Span) -> IResult<Span, Var> {
     let (s, a) = symbol("var")(s)?;
     Ok((s, Var { nodes: (a,) }))
 }
 
+#[trace]
 pub fn for_step(s: Span) -> IResult<Span, ForStep> {
     let (s, a) = list(symbol(","), for_step_assignment)(s)?;
     Ok((s, ForStep { nodes: (a,) }))
 }
 
+#[trace]
 pub fn for_step_assignment(s: Span) -> IResult<Span, ForStepAssignment> {
     alt((
         map(operator_assignment, |x| {
@@ -251,6 +264,7 @@ pub fn for_step_assignment(s: Span) -> IResult<Span, ForStepAssignment> {
     ))(s)
 }
 
+#[trace]
 pub fn loop_variables(s: Span) -> IResult<Span, LoopVariables> {
     let (s, a) = list(symbol(","), opt(index_variable_identifier))(s)?;
     Ok((s, LoopVariables { nodes: (a,) }))

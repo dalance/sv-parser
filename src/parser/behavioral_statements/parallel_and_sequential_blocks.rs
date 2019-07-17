@@ -52,6 +52,7 @@ pub enum JoinKeyword<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn action_block(s: Span) -> IResult<Span, ActionBlock> {
     alt((
         map(statement_or_null, |x| ActionBlock::StatementOrNull(x)),
@@ -59,6 +60,7 @@ pub fn action_block(s: Span) -> IResult<Span, ActionBlock> {
     ))(s)
 }
 
+#[trace]
 pub fn action_block_else(s: Span) -> IResult<Span, ActionBlock> {
     let (s, a) = opt(statement)(s)?;
     let (s, b) = symbol("else")(s)?;
@@ -66,6 +68,7 @@ pub fn action_block_else(s: Span) -> IResult<Span, ActionBlock> {
     Ok((s, ActionBlock::Else(ActionBlockElse { nodes: (a, b, c) })))
 }
 
+#[trace]
 pub fn seq_block(s: Span) -> IResult<Span, SeqBlock> {
     let (s, a) = symbol("begin")(s)?;
     let (s, b) = opt(pair(symbol(":"), block_identifier))(s)?;
@@ -81,6 +84,7 @@ pub fn seq_block(s: Span) -> IResult<Span, SeqBlock> {
     ))
 }
 
+#[trace]
 pub fn par_block(s: Span) -> IResult<Span, ParBlock> {
     let (s, a) = symbol("fork")(s)?;
     let (s, b) = opt(pair(symbol(":"), block_identifier))(s)?;
@@ -96,6 +100,7 @@ pub fn par_block(s: Span) -> IResult<Span, ParBlock> {
     ))
 }
 
+#[trace]
 pub fn join_keyword(s: Span) -> IResult<Span, JoinKeyword> {
     alt((
         map(symbol("join_any"), |x| JoinKeyword::JoinAny(x)),

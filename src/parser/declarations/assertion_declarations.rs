@@ -756,6 +756,7 @@ pub struct AssertionVariableDeclaration<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn concurrent_assertion_item(s: Span) -> IResult<Span, ConcurrentAssertionItem> {
     alt((
         concurrent_assertion_item_statement,
@@ -765,6 +766,7 @@ pub fn concurrent_assertion_item(s: Span) -> IResult<Span, ConcurrentAssertionIt
     ))(s)
 }
 
+#[trace]
 pub fn concurrent_assertion_item_statement(s: Span) -> IResult<Span, ConcurrentAssertionItem> {
     let (s, a) = opt(pair(block_identifier, symbol(":")))(s)?;
     let (s, b) = concurrent_assertion_statement(s)?;
@@ -774,6 +776,7 @@ pub fn concurrent_assertion_item_statement(s: Span) -> IResult<Span, ConcurrentA
     ))
 }
 
+#[trace]
 pub fn concurrent_assertion_statement(s: Span) -> IResult<Span, ConcurrentAssertionStatement> {
     alt((
         map(assert_property_statement, |x| {
@@ -794,6 +797,7 @@ pub fn concurrent_assertion_statement(s: Span) -> IResult<Span, ConcurrentAssert
     ))(s)
 }
 
+#[trace]
 pub fn assert_property_statement(s: Span) -> IResult<Span, AssertPropertyStatement> {
     let (s, a) = symbol("assert")(s)?;
     let (s, b) = symbol("property")(s)?;
@@ -807,6 +811,7 @@ pub fn assert_property_statement(s: Span) -> IResult<Span, AssertPropertyStateme
     ))
 }
 
+#[trace]
 pub fn assume_property_statement(s: Span) -> IResult<Span, AssumePropertyStatement> {
     let (s, a) = symbol("assume")(s)?;
     let (s, b) = symbol("property")(s)?;
@@ -820,6 +825,7 @@ pub fn assume_property_statement(s: Span) -> IResult<Span, AssumePropertyStateme
     ))
 }
 
+#[trace]
 pub fn cover_property_statement(s: Span) -> IResult<Span, CoverPropertyStatement> {
     let (s, a) = symbol("cover")(s)?;
     let (s, b) = symbol("property")(s)?;
@@ -833,6 +839,7 @@ pub fn cover_property_statement(s: Span) -> IResult<Span, CoverPropertyStatement
     ))
 }
 
+#[trace]
 pub fn expect_property_statement(s: Span) -> IResult<Span, ExpectPropertyStatement> {
     let (s, a) = symbol("expect")(s)?;
     let (s, b) = paren(property_spec)(s)?;
@@ -840,6 +847,7 @@ pub fn expect_property_statement(s: Span) -> IResult<Span, ExpectPropertyStateme
     Ok((s, ExpectPropertyStatement { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn cover_sequence_statement(s: Span) -> IResult<Span, CoverSequenceStatement> {
     let (s, a) = symbol("cover")(s)?;
     let (s, b) = symbol("sequence")(s)?;
@@ -861,6 +869,7 @@ pub fn cover_sequence_statement(s: Span) -> IResult<Span, CoverSequenceStatement
     ))
 }
 
+#[trace]
 pub fn restrict_property_statement(s: Span) -> IResult<Span, RestrictPropertyStatement> {
     let (s, a) = symbol("restrict")(s)?;
     let (s, b) = symbol("property")(s)?;
@@ -874,12 +883,14 @@ pub fn restrict_property_statement(s: Span) -> IResult<Span, RestrictPropertySta
     ))
 }
 
+#[trace]
 pub fn property_instance(s: Span) -> IResult<Span, PropertyInstance> {
     let (s, a) = ps_or_hierarchical_property_identifier(s)?;
     let (s, b) = opt(paren(opt(property_list_of_arguments)))(s)?;
     Ok((s, PropertyInstance { nodes: (a, b) }))
 }
 
+#[trace]
 pub fn property_list_of_arguments(s: Span) -> IResult<Span, PropertyListOfArguments> {
     alt((
         property_list_of_arguments_ordered,
@@ -887,6 +898,7 @@ pub fn property_list_of_arguments(s: Span) -> IResult<Span, PropertyListOfArgume
     ))(s)
 }
 
+#[trace]
 pub fn property_list_of_arguments_ordered(s: Span) -> IResult<Span, PropertyListOfArguments> {
     let (s, a) = list(symbol(","), opt(property_actual_arg))(s)?;
     let (s, b) = many0(tuple((
@@ -901,6 +913,7 @@ pub fn property_list_of_arguments_ordered(s: Span) -> IResult<Span, PropertyList
     ))
 }
 
+#[trace]
 pub fn property_list_of_arguments_named(s: Span) -> IResult<Span, PropertyListOfArguments> {
     let (s, a) = list(
         symbol(","),
@@ -912,6 +925,7 @@ pub fn property_list_of_arguments_named(s: Span) -> IResult<Span, PropertyListOf
     ))
 }
 
+#[trace]
 pub fn property_actual_arg(s: Span) -> IResult<Span, PropertyActualArg> {
     alt((
         map(property_expr, |x| PropertyActualArg::PropertyExpr(x)),
@@ -921,6 +935,7 @@ pub fn property_actual_arg(s: Span) -> IResult<Span, PropertyActualArg> {
     ))(s)
 }
 
+#[trace]
 pub fn assertion_item_declaration(s: Span) -> IResult<Span, AssertionItemDeclaration> {
     alt((
         map(property_declaration, |x| {
@@ -935,6 +950,7 @@ pub fn assertion_item_declaration(s: Span) -> IResult<Span, AssertionItemDeclara
     ))(s)
 }
 
+#[trace]
 pub fn property_declaration(s: Span) -> IResult<Span, PropertyDeclaration> {
     let (s, a) = symbol("property")(s)?;
     let (s, b) = property_identifier(s)?;
@@ -953,11 +969,13 @@ pub fn property_declaration(s: Span) -> IResult<Span, PropertyDeclaration> {
     ))
 }
 
+#[trace]
 pub fn property_port_list(s: Span) -> IResult<Span, PropertyPortList> {
     let (s, a) = list(symbol(","), property_port_item)(s)?;
     Ok((s, PropertyPortList { nodes: (a,) }))
 }
 
+#[trace]
 pub fn property_port_item(s: Span) -> IResult<Span, PropertyPortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = opt(pair(local, opt(property_lvar_port_direction)))(s)?;
@@ -973,11 +991,13 @@ pub fn property_port_item(s: Span) -> IResult<Span, PropertyPortItem> {
     ))
 }
 
+#[trace]
 pub fn property_lvar_port_direction(s: Span) -> IResult<Span, PropertyLvarPortDirection> {
     let (s, a) = symbol("input")(s)?;
     Ok((s, PropertyLvarPortDirection::Input(a)))
 }
 
+#[trace]
 pub fn property_formal_type(s: Span) -> IResult<Span, PropertyFormalType> {
     alt((
         map(sequence_formal_type, |x| {
@@ -987,6 +1007,7 @@ pub fn property_formal_type(s: Span) -> IResult<Span, PropertyFormalType> {
     ))(s)
 }
 
+#[trace]
 pub fn property_spec(s: Span) -> IResult<Span, PropertySpec> {
     let (s, a) = opt(clocking_event)(s)?;
     let (s, b) = opt(triple(
@@ -998,6 +1019,7 @@ pub fn property_spec(s: Span) -> IResult<Span, PropertySpec> {
     Ok((s, PropertySpec { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn property_expr(s: Span) -> IResult<Span, PropertyExpr> {
     alt((
         alt((
@@ -1040,6 +1062,7 @@ pub fn property_expr(s: Span) -> IResult<Span, PropertyExpr> {
     ))(s)
 }
 
+#[trace]
 pub fn property_expr_strong(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = symbol("strong")(s)?;
     let (s, b) = paren(sequence_expr)(s)?;
@@ -1049,6 +1072,7 @@ pub fn property_expr_strong(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_weak(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = symbol("weak")(s)?;
     let (s, b) = paren(sequence_expr)(s)?;
@@ -1058,6 +1082,7 @@ pub fn property_expr_weak(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_paren(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = paren(sequence_expr)(s)?;
     Ok((
@@ -1066,6 +1091,7 @@ pub fn property_expr_paren(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_not(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = symbol("not")(s)?;
     let (s, b) = property_expr(s)?;
@@ -1075,6 +1101,7 @@ pub fn property_expr_not(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_or(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = symbol("or")(s)?;
@@ -1085,6 +1112,7 @@ pub fn property_expr_or(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_and(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = symbol("and")(s)?;
@@ -1095,6 +1123,7 @@ pub fn property_expr_and(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_implication_overlapped(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("|->")(s)?;
@@ -1107,6 +1136,7 @@ pub fn property_expr_implication_overlapped(s: Span) -> IResult<Span, PropertyEx
     ))
 }
 
+#[trace]
 pub fn property_expr_implication_nonoverlapped(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("|=>")(s)?;
@@ -1119,6 +1149,7 @@ pub fn property_expr_implication_nonoverlapped(s: Span) -> IResult<Span, Propert
     ))
 }
 
+#[trace]
 pub fn property_expr_if(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = symbol("if")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
@@ -1132,6 +1163,7 @@ pub fn property_expr_if(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_case(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = symbol("case")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
@@ -1146,6 +1178,7 @@ pub fn property_expr_case(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_followed_by_overlapped(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("#-#")(s)?;
@@ -1158,6 +1191,7 @@ pub fn property_expr_followed_by_overlapped(s: Span) -> IResult<Span, PropertyEx
     ))
 }
 
+#[trace]
 pub fn property_expr_followed_by_nonoverlapped(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("#=#")(s)?;
@@ -1170,6 +1204,7 @@ pub fn property_expr_followed_by_nonoverlapped(s: Span) -> IResult<Span, Propert
     ))
 }
 
+#[trace]
 pub fn property_expr_nexttime(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = symbol("nexttime")(s)?;
     let (s, b) = opt(bracket(constant_expression))(s)?;
@@ -1180,6 +1215,7 @@ pub fn property_expr_nexttime(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_s_nexttime(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = symbol("s_nexttime")(s)?;
     let (s, b) = opt(bracket(constant_expression))(s)?;
@@ -1190,6 +1226,7 @@ pub fn property_expr_s_nexttime(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_always(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = symbol("always")(s)?;
     let (s, b) = opt(bracket(cycle_delay_const_range_expression))(s)?;
@@ -1200,6 +1237,7 @@ pub fn property_expr_always(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_s_always(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = symbol("s_always")(s)?;
     let (s, b) = bracket(cycle_delay_const_range_expression)(s)?;
@@ -1210,6 +1248,7 @@ pub fn property_expr_s_always(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_eventually(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = symbol("eventually")(s)?;
     let (s, b) = bracket(constant_range)(s)?;
@@ -1220,6 +1259,7 @@ pub fn property_expr_eventually(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_s_eventually(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = symbol("s_eventually")(s)?;
     let (s, b) = opt(bracket(cycle_delay_const_range_expression))(s)?;
@@ -1230,6 +1270,7 @@ pub fn property_expr_s_eventually(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_until(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = symbol("until")(s)?;
@@ -1240,6 +1281,7 @@ pub fn property_expr_until(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_s_until(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = symbol("s_until")(s)?;
@@ -1250,6 +1292,7 @@ pub fn property_expr_s_until(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_until_with(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = symbol("until_with")(s)?;
@@ -1260,6 +1303,7 @@ pub fn property_expr_until_with(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_s_until_with(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = symbol("s_until_with")(s)?;
@@ -1270,6 +1314,7 @@ pub fn property_expr_s_until_with(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_implies(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = symbol("implies")(s)?;
@@ -1280,6 +1325,7 @@ pub fn property_expr_implies(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_iff(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = symbol("iff")(s)?;
@@ -1290,6 +1336,7 @@ pub fn property_expr_iff(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_accept_on(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = symbol("accept_on")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
@@ -1300,6 +1347,7 @@ pub fn property_expr_accept_on(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_reject_on(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = symbol("reject_on")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
@@ -1310,6 +1358,7 @@ pub fn property_expr_reject_on(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_sync_accept_on(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = symbol("sync_accept_on")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
@@ -1320,6 +1369,7 @@ pub fn property_expr_sync_accept_on(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_sync_reject_on(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = symbol("sync_reject_on")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
@@ -1330,6 +1380,7 @@ pub fn property_expr_sync_reject_on(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_expr_clocking_event(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = clocking_event(s)?;
     let (s, b) = property_expr(s)?;
@@ -1339,10 +1390,12 @@ pub fn property_expr_clocking_event(s: Span) -> IResult<Span, PropertyExpr> {
     ))
 }
 
+#[trace]
 pub fn property_case_item(s: Span) -> IResult<Span, PropertyCaseItem> {
     alt((property_case_item_nondefault, property_case_item_default))(s)
 }
 
+#[trace]
 pub fn property_case_item_nondefault(s: Span) -> IResult<Span, PropertyCaseItem> {
     let (s, a) = list(symbol(","), expression_or_dist)(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -1356,6 +1409,7 @@ pub fn property_case_item_nondefault(s: Span) -> IResult<Span, PropertyCaseItem>
     ))
 }
 
+#[trace]
 pub fn property_case_item_default(s: Span) -> IResult<Span, PropertyCaseItem> {
     let (s, a) = symbol("default")(s)?;
     let (s, b) = opt(symbol(":"))(s)?;
@@ -1369,6 +1423,7 @@ pub fn property_case_item_default(s: Span) -> IResult<Span, PropertyCaseItem> {
     ))
 }
 
+#[trace]
 pub fn sequence_declaration(s: Span) -> IResult<Span, SequenceDeclaration> {
     let (s, a) = symbol("sequence")(s)?;
     let (s, b) = sequence_identifier(s)?;
@@ -1387,11 +1442,13 @@ pub fn sequence_declaration(s: Span) -> IResult<Span, SequenceDeclaration> {
     ))
 }
 
+#[trace]
 pub fn sequence_port_list(s: Span) -> IResult<Span, SequencePortList> {
     let (s, a) = list(symbol(","), sequence_port_item)(s)?;
     Ok((s, SequencePortList { nodes: (a,) }))
 }
 
+#[trace]
 pub fn sequence_port_item(s: Span) -> IResult<Span, SequencePortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = opt(pair(local, opt(sequence_lvar_port_direction)))(s)?;
@@ -1407,6 +1464,7 @@ pub fn sequence_port_item(s: Span) -> IResult<Span, SequencePortItem> {
     ))
 }
 
+#[trace]
 pub fn sequence_lvar_port_direction(s: Span) -> IResult<Span, SequenceLvarPortDirection> {
     alt((
         map(symbol("input"), |x| SequenceLvarPortDirection::Input(x)),
@@ -1415,6 +1473,7 @@ pub fn sequence_lvar_port_direction(s: Span) -> IResult<Span, SequenceLvarPortDi
     ))(s)
 }
 
+#[trace]
 pub fn sequence_formal_type(s: Span) -> IResult<Span, SequenceFormalType> {
     alt((
         map(data_type_or_implicit, |x| {
@@ -1425,6 +1484,7 @@ pub fn sequence_formal_type(s: Span) -> IResult<Span, SequenceFormalType> {
     ))(s)
 }
 
+#[trace]
 pub fn sequence_expr(s: Span) -> IResult<Span, SequenceExpr> {
     alt((
         sequence_expr_cycle_delay_expr,
@@ -1442,6 +1502,7 @@ pub fn sequence_expr(s: Span) -> IResult<Span, SequenceExpr> {
     ))(s)
 }
 
+#[trace]
 pub fn sequence_expr_cycle_delay_expr(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = cycle_delay_range(s)?;
     let (s, b) = sequence_expr(s)?;
@@ -1452,6 +1513,7 @@ pub fn sequence_expr_cycle_delay_expr(s: Span) -> IResult<Span, SequenceExpr> {
     ))
 }
 
+#[trace]
 pub fn sequence_expr_expr_cycle_delay_expr(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = cycle_delay_range(s)?;
@@ -1465,6 +1527,7 @@ pub fn sequence_expr_expr_cycle_delay_expr(s: Span) -> IResult<Span, SequenceExp
     ))
 }
 
+#[trace]
 pub fn sequence_expr_expression(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = expression_or_dist(s)?;
     let (s, b) = opt(boolean_abbrev)(s)?;
@@ -1474,6 +1537,7 @@ pub fn sequence_expr_expression(s: Span) -> IResult<Span, SequenceExpr> {
     ))
 }
 
+#[trace]
 pub fn sequence_expr_instance(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_instance(s)?;
     let (s, b) = opt(sequence_abbrev)(s)?;
@@ -1483,6 +1547,7 @@ pub fn sequence_expr_instance(s: Span) -> IResult<Span, SequenceExpr> {
     ))
 }
 
+#[trace]
 pub fn sequence_expr_paren(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = paren(pair(
         sequence_expr,
@@ -1495,6 +1560,7 @@ pub fn sequence_expr_paren(s: Span) -> IResult<Span, SequenceExpr> {
     ))
 }
 
+#[trace]
 pub fn sequence_expr_and(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("and")(s)?;
@@ -1505,6 +1571,7 @@ pub fn sequence_expr_and(s: Span) -> IResult<Span, SequenceExpr> {
     ))
 }
 
+#[trace]
 pub fn sequence_expr_intersect(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("intersect")(s)?;
@@ -1515,6 +1582,7 @@ pub fn sequence_expr_intersect(s: Span) -> IResult<Span, SequenceExpr> {
     ))
 }
 
+#[trace]
 pub fn sequence_expr_or(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("or")(s)?;
@@ -1525,6 +1593,7 @@ pub fn sequence_expr_or(s: Span) -> IResult<Span, SequenceExpr> {
     ))
 }
 
+#[trace]
 pub fn sequence_expr_first_match(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = symbol("first_match")(s)?;
     let (s, b) = paren(pair(
@@ -1537,6 +1606,7 @@ pub fn sequence_expr_first_match(s: Span) -> IResult<Span, SequenceExpr> {
     ))
 }
 
+#[trace]
 pub fn sequence_expr_throughout(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = expression_or_dist(s)?;
     let (s, b) = symbol("throughout")(s)?;
@@ -1547,6 +1617,7 @@ pub fn sequence_expr_throughout(s: Span) -> IResult<Span, SequenceExpr> {
     ))
 }
 
+#[trace]
 pub fn sequence_expr_within(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("within")(s)?;
@@ -1557,6 +1628,7 @@ pub fn sequence_expr_within(s: Span) -> IResult<Span, SequenceExpr> {
     ))
 }
 
+#[trace]
 pub fn sequence_expr_clocking_event(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = clocking_event(s)?;
     let (s, b) = sequence_expr(s)?;
@@ -1566,6 +1638,7 @@ pub fn sequence_expr_clocking_event(s: Span) -> IResult<Span, SequenceExpr> {
     ))
 }
 
+#[trace]
 pub fn cycle_delay_range(s: Span) -> IResult<Span, CycleDelayRange> {
     alt((
         cycle_delay_range_primary,
@@ -1575,6 +1648,7 @@ pub fn cycle_delay_range(s: Span) -> IResult<Span, CycleDelayRange> {
     ))(s)
 }
 
+#[trace]
 pub fn cycle_delay_range_primary(s: Span) -> IResult<Span, CycleDelayRange> {
     let (s, a) = symbol("##")(s)?;
     let (s, b) = constant_primary(s)?;
@@ -1584,6 +1658,7 @@ pub fn cycle_delay_range_primary(s: Span) -> IResult<Span, CycleDelayRange> {
     ))
 }
 
+#[trace]
 pub fn cycle_delay_range_expression(s: Span) -> IResult<Span, CycleDelayRange> {
     let (s, a) = symbol("##")(s)?;
     let (s, b) = bracket(cycle_delay_const_range_expression)(s)?;
@@ -1593,6 +1668,7 @@ pub fn cycle_delay_range_expression(s: Span) -> IResult<Span, CycleDelayRange> {
     ))
 }
 
+#[trace]
 pub fn cycle_delay_range_asterisk(s: Span) -> IResult<Span, CycleDelayRange> {
     let (s, a) = symbol("##")(s)?;
     let (s, b) = bracket(symbol("*"))(s)?;
@@ -1602,6 +1678,7 @@ pub fn cycle_delay_range_asterisk(s: Span) -> IResult<Span, CycleDelayRange> {
     ))
 }
 
+#[trace]
 pub fn cycle_delay_range_plus(s: Span) -> IResult<Span, CycleDelayRange> {
     let (s, a) = symbol("##")(s)?;
     let (s, b) = bracket(symbol("+"))(s)?;
@@ -1611,6 +1688,7 @@ pub fn cycle_delay_range_plus(s: Span) -> IResult<Span, CycleDelayRange> {
     ))
 }
 
+#[trace]
 pub fn sequence_method_call(s: Span) -> IResult<Span, SequenceMethodCall> {
     let (s, a) = sequence_instance(s)?;
     let (s, b) = symbol(".")(s)?;
@@ -1618,6 +1696,7 @@ pub fn sequence_method_call(s: Span) -> IResult<Span, SequenceMethodCall> {
     Ok((s, SequenceMethodCall { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn sequence_match_item(s: Span) -> IResult<Span, SequenceMatchItem> {
     alt((
         map(operator_assignment, |x| {
@@ -1630,12 +1709,14 @@ pub fn sequence_match_item(s: Span) -> IResult<Span, SequenceMatchItem> {
     ))(s)
 }
 
+#[trace]
 pub fn sequence_instance(s: Span) -> IResult<Span, SequenceInstance> {
     let (s, a) = ps_or_hierarchical_sequence_identifier(s)?;
     let (s, b) = opt(paren(opt(sequence_list_of_arguments)))(s)?;
     Ok((s, SequenceInstance { nodes: (a, b) }))
 }
 
+#[trace]
 pub fn sequence_list_of_arguments(s: Span) -> IResult<Span, SequenceListOfArguments> {
     alt((
         sequence_list_of_arguments_ordered,
@@ -1643,6 +1724,7 @@ pub fn sequence_list_of_arguments(s: Span) -> IResult<Span, SequenceListOfArgume
     ))(s)
 }
 
+#[trace]
 pub fn sequence_list_of_arguments_ordered(s: Span) -> IResult<Span, SequenceListOfArguments> {
     let (s, a) = list(symbol(","), opt(sequence_actual_arg))(s)?;
     let (s, b) = many0(tuple((
@@ -1657,6 +1739,7 @@ pub fn sequence_list_of_arguments_ordered(s: Span) -> IResult<Span, SequenceList
     ))
 }
 
+#[trace]
 pub fn sequence_list_of_arguments_named(s: Span) -> IResult<Span, SequenceListOfArguments> {
     let (s, a) = list(
         symbol(","),
@@ -1668,6 +1751,7 @@ pub fn sequence_list_of_arguments_named(s: Span) -> IResult<Span, SequenceListOf
     ))
 }
 
+#[trace]
 pub fn sequence_actual_arg(s: Span) -> IResult<Span, SequenceActualArg> {
     alt((
         map(event_expression, |x| SequenceActualArg::EventExpression(x)),
@@ -1675,6 +1759,7 @@ pub fn sequence_actual_arg(s: Span) -> IResult<Span, SequenceActualArg> {
     ))(s)
 }
 
+#[trace]
 pub fn boolean_abbrev(s: Span) -> IResult<Span, BooleanAbbrev> {
     alt((
         map(consecutive_repetition, |x| {
@@ -1687,11 +1772,13 @@ pub fn boolean_abbrev(s: Span) -> IResult<Span, BooleanAbbrev> {
     ))(s)
 }
 
+#[trace]
 pub fn sequence_abbrev(s: Span) -> IResult<Span, SequenceAbbrev> {
     let (s, a) = consecutive_repetition(s)?;
     Ok((s, SequenceAbbrev { nodes: (a,) }))
 }
 
+#[trace]
 pub fn consecutive_repetition(s: Span) -> IResult<Span, ConsecutiveRepetition> {
     alt((
         consecutive_repetition_expression,
@@ -1700,6 +1787,7 @@ pub fn consecutive_repetition(s: Span) -> IResult<Span, ConsecutiveRepetition> {
     ))(s)
 }
 
+#[trace]
 pub fn consecutive_repetition_expression(s: Span) -> IResult<Span, ConsecutiveRepetition> {
     let (s, a) = bracket(pair(symbol("*"), const_or_range_expression))(s)?;
     Ok((
@@ -1708,6 +1796,7 @@ pub fn consecutive_repetition_expression(s: Span) -> IResult<Span, ConsecutiveRe
     ))
 }
 
+#[trace]
 pub fn consecutive_repetition_asterisk(s: Span) -> IResult<Span, ConsecutiveRepetition> {
     let (s, a) = bracket(symbol("*"))(s)?;
     Ok((
@@ -1716,6 +1805,7 @@ pub fn consecutive_repetition_asterisk(s: Span) -> IResult<Span, ConsecutiveRepe
     ))
 }
 
+#[trace]
 pub fn consecutive_repetition_plus(s: Span) -> IResult<Span, ConsecutiveRepetition> {
     let (s, a) = bracket(symbol("+"))(s)?;
     Ok((
@@ -1724,16 +1814,19 @@ pub fn consecutive_repetition_plus(s: Span) -> IResult<Span, ConsecutiveRepetiti
     ))
 }
 
+#[trace]
 pub fn non_consecutive_repetition(s: Span) -> IResult<Span, NonConsecutiveRepetition> {
     let (s, a) = bracket(pair(symbol("="), const_or_range_expression))(s)?;
     Ok((s, NonConsecutiveRepetition { nodes: (a,) }))
 }
 
+#[trace]
 pub fn goto_repetition(s: Span) -> IResult<Span, GotoRepetition> {
     let (s, a) = bracket(pair(symbol("->"), const_or_range_expression))(s)?;
     Ok((s, GotoRepetition { nodes: (a,) }))
 }
 
+#[trace]
 pub fn const_or_range_expression(s: Span) -> IResult<Span, ConstOrRangeExpression> {
     alt((
         map(constant_expression, |x| {
@@ -1745,6 +1838,7 @@ pub fn const_or_range_expression(s: Span) -> IResult<Span, ConstOrRangeExpressio
     ))(s)
 }
 
+#[trace]
 pub fn cycle_delay_const_range_expression(
     s: Span,
 ) -> IResult<Span, CycleDelayConstRangeExpression> {
@@ -1754,6 +1848,7 @@ pub fn cycle_delay_const_range_expression(
     ))(s)
 }
 
+#[trace]
 pub fn cycle_delay_const_range_expression_binary(
     s: Span,
 ) -> IResult<Span, CycleDelayConstRangeExpression> {
@@ -1768,6 +1863,7 @@ pub fn cycle_delay_const_range_expression_binary(
     ))
 }
 
+#[trace]
 pub fn cycle_delay_const_range_expression_dollar(
     s: Span,
 ) -> IResult<Span, CycleDelayConstRangeExpression> {
@@ -1782,12 +1878,14 @@ pub fn cycle_delay_const_range_expression_dollar(
     ))
 }
 
+#[trace]
 pub fn expression_or_dist(s: Span) -> IResult<Span, ExpressionOrDist> {
     let (s, a) = expression(s)?;
     let (s, b) = opt(pair(symbol("dist"), brace(dist_list)))(s)?;
     Ok((s, ExpressionOrDist { nodes: (a, b) }))
 }
 
+#[trace]
 pub fn assertion_variable_declaration(s: Span) -> IResult<Span, AssertionVariableDeclaration> {
     let (s, a) = var_data_type(s)?;
     let (s, b) = list_of_variable_decl_assignments(s)?;

@@ -13,10 +13,12 @@ pub struct Comment<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn comment(s: Span) -> IResult<Span, Comment> {
     alt((one_line_comment, block_comment))(s)
 }
 
+#[trace]
 pub fn one_line_comment(s: Span) -> IResult<Span, Comment> {
     let (s, a) = tag("//")(s)?;
     let (s, b) = is_not("\n")(s)?;
@@ -24,6 +26,7 @@ pub fn one_line_comment(s: Span) -> IResult<Span, Comment> {
     Ok((s, Comment { nodes: (a,) }))
 }
 
+#[trace]
 pub fn block_comment(s: Span) -> IResult<Span, Comment> {
     let (s, a) = tag("/*")(s)?;
     let (s, b) = is_not("*/")(s)?;

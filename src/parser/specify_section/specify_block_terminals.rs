@@ -43,20 +43,24 @@ pub struct OutputIdentifierInterface<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn specify_input_terminal_descriptor(s: Span) -> IResult<Span, SpecifyInputTerminalDescriptor> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
+#[trace]
 pub fn specify_output_terminal_descriptor(
     s: Span,
 ) -> IResult<Span, SpecifyOutputTerminalDescriptor> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
+#[trace]
 pub fn input_identifier(s: Span) -> IResult<Span, InputIdentifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }
 
+#[trace]
 pub fn output_identifier(s: Span) -> IResult<Span, OutputIdentifier> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

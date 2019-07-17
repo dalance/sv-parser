@@ -216,6 +216,7 @@ pub enum BindInstantiation<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn elaboration_system_task(s: Span) -> IResult<Span, ElaborationSystemTask> {
     alt((
         elaboration_system_task_fatal,
@@ -225,6 +226,7 @@ pub fn elaboration_system_task(s: Span) -> IResult<Span, ElaborationSystemTask> 
     ))(s)
 }
 
+#[trace]
 pub fn elaboration_system_task_fatal(s: Span) -> IResult<Span, ElaborationSystemTask> {
     let (s, a) = symbol("$fatal")(s)?;
     let (s, b) = opt(paren(pair(
@@ -238,6 +240,7 @@ pub fn elaboration_system_task_fatal(s: Span) -> IResult<Span, ElaborationSystem
     ))
 }
 
+#[trace]
 pub fn elaboration_system_task_error(s: Span) -> IResult<Span, ElaborationSystemTask> {
     let (s, a) = symbol("$error")(s)?;
     let (s, b) = opt(paren(opt(list_of_arguments)))(s)?;
@@ -248,6 +251,7 @@ pub fn elaboration_system_task_error(s: Span) -> IResult<Span, ElaborationSystem
     ))
 }
 
+#[trace]
 pub fn elaboration_system_task_warning(s: Span) -> IResult<Span, ElaborationSystemTask> {
     let (s, a) = symbol("$warning")(s)?;
     let (s, b) = opt(paren(opt(list_of_arguments)))(s)?;
@@ -258,6 +262,7 @@ pub fn elaboration_system_task_warning(s: Span) -> IResult<Span, ElaborationSyst
     ))
 }
 
+#[trace]
 pub fn elaboration_system_task_info(s: Span) -> IResult<Span, ElaborationSystemTask> {
     let (s, a) = symbol("$info")(s)?;
     let (s, b) = opt(paren(opt(list_of_arguments)))(s)?;
@@ -268,6 +273,7 @@ pub fn elaboration_system_task_info(s: Span) -> IResult<Span, ElaborationSystemT
     ))
 }
 
+#[trace]
 pub fn finish_number(s: Span) -> IResult<Span, FinishNumber> {
     alt((
         map(symbol("0"), |x| FinishNumber::Zero(x)),
@@ -276,6 +282,7 @@ pub fn finish_number(s: Span) -> IResult<Span, FinishNumber> {
     ))(s)
 }
 
+#[trace]
 pub fn module_common_item(s: Span) -> IResult<Span, ModuleCommonItem> {
     alt((
         map(module_or_generate_item_declaration, |x| {
@@ -306,6 +313,7 @@ pub fn module_common_item(s: Span) -> IResult<Span, ModuleCommonItem> {
     ))(s)
 }
 
+#[trace]
 pub fn module_item(s: Span) -> IResult<Span, ModuleItem> {
     alt((
         map(pair(port_declaration, symbol(";")), |x| {
@@ -315,6 +323,7 @@ pub fn module_item(s: Span) -> IResult<Span, ModuleItem> {
     ))(s)
 }
 
+#[trace]
 pub fn module_or_generate_item(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
     alt((
         module_or_generate_item_parameter,
@@ -325,6 +334,7 @@ pub fn module_or_generate_item(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
     ))(s)
 }
 
+#[trace]
 pub fn module_or_generate_item_parameter(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = parameter_override(s)?;
@@ -334,6 +344,7 @@ pub fn module_or_generate_item_parameter(s: Span) -> IResult<Span, ModuleOrGener
     ))
 }
 
+#[trace]
 pub fn module_or_generate_item_gate(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = gate_instantiation(s)?;
@@ -343,6 +354,7 @@ pub fn module_or_generate_item_gate(s: Span) -> IResult<Span, ModuleOrGenerateIt
     ))
 }
 
+#[trace]
 pub fn module_or_generate_item_udp(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = udp_instantiation(s)?;
@@ -352,6 +364,7 @@ pub fn module_or_generate_item_udp(s: Span) -> IResult<Span, ModuleOrGenerateIte
     ))
 }
 
+#[trace]
 pub fn module_or_generate_item_module(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = module_instantiation(s)?;
@@ -361,6 +374,7 @@ pub fn module_or_generate_item_module(s: Span) -> IResult<Span, ModuleOrGenerate
     ))
 }
 
+#[trace]
 pub fn module_or_generate_item_module_item(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = module_common_item(s)?;
@@ -372,6 +386,7 @@ pub fn module_or_generate_item_module_item(s: Span) -> IResult<Span, ModuleOrGen
     ))
 }
 
+#[trace]
 pub fn module_or_generate_item_declaration(
     s: Span,
 ) -> IResult<Span, ModuleOrGenerateItemDeclaration> {
@@ -390,6 +405,7 @@ pub fn module_or_generate_item_declaration(
     ))(s)
 }
 
+#[trace]
 pub fn module_or_generate_item_declaration_clocking(
     s: Span,
 ) -> IResult<Span, ModuleOrGenerateItemDeclaration> {
@@ -405,6 +421,7 @@ pub fn module_or_generate_item_declaration_clocking(
     ))
 }
 
+#[trace]
 pub fn module_or_generate_item_declaration_disable(
     s: Span,
 ) -> IResult<Span, ModuleOrGenerateItemDeclaration> {
@@ -421,6 +438,7 @@ pub fn module_or_generate_item_declaration_disable(
     ))
 }
 
+#[trace]
 pub fn non_port_module_item(s: Span) -> IResult<Span, NonPortModuleItem> {
     alt((
         map(generate_region, |x| NonPortModuleItem::GenerateRegion(x)),
@@ -444,6 +462,7 @@ pub fn non_port_module_item(s: Span) -> IResult<Span, NonPortModuleItem> {
     ))(s)
 }
 
+#[trace]
 pub fn non_port_module_item_specparam(s: Span) -> IResult<Span, NonPortModuleItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = specparam_declaration(s)?;
@@ -453,6 +472,7 @@ pub fn non_port_module_item_specparam(s: Span) -> IResult<Span, NonPortModuleIte
     ))
 }
 
+#[trace]
 pub fn parameter_override(s: Span) -> IResult<Span, ParameterOverride> {
     let (s, a) = symbol("defparam")(s)?;
     let (s, b) = list_of_defparam_assignments(s)?;
@@ -460,10 +480,12 @@ pub fn parameter_override(s: Span) -> IResult<Span, ParameterOverride> {
     Ok((s, ParameterOverride { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn bind_directive(s: Span) -> IResult<Span, BindDirective> {
     alt((bind_directive_scope, bind_directive_instance))(s)
 }
 
+#[trace]
 pub fn bind_directive_scope(s: Span) -> IResult<Span, BindDirective> {
     let (s, a) = symbol("bind")(s)?;
     let (s, b) = bind_target_scope(s)?;
@@ -478,6 +500,7 @@ pub fn bind_directive_scope(s: Span) -> IResult<Span, BindDirective> {
     ))
 }
 
+#[trace]
 pub fn bind_directive_instance(s: Span) -> IResult<Span, BindDirective> {
     let (s, a) = symbol("bind")(s)?;
     let (s, b) = bind_target_instance(s)?;
@@ -491,6 +514,7 @@ pub fn bind_directive_instance(s: Span) -> IResult<Span, BindDirective> {
     ))
 }
 
+#[trace]
 pub fn bind_target_scope(s: Span) -> IResult<Span, BindTargetScope> {
     alt((
         map(module_identifier, |x| BindTargetScope::ModuleIdentifier(x)),
@@ -500,17 +524,20 @@ pub fn bind_target_scope(s: Span) -> IResult<Span, BindTargetScope> {
     ))(s)
 }
 
+#[trace]
 pub fn bind_target_instance(s: Span) -> IResult<Span, BindTargetInstance> {
     let (s, a) = hierarchical_identifier(s)?;
     let (s, b) = constant_bit_select(s)?;
     Ok((s, BindTargetInstance { nodes: (a, b) }))
 }
 
+#[trace]
 pub fn bind_target_instance_list(s: Span) -> IResult<Span, BindTargetInstanceList> {
     let (s, a) = list(symbol(","), bind_target_instance)(s)?;
     Ok((s, BindTargetInstanceList { nodes: (a,) }))
 }
 
+#[trace]
 pub fn bind_instantiation(s: Span) -> IResult<Span, BindInstantiation> {
     alt((
         map(program_instantiation, |x| {

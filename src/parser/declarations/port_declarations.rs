@@ -72,6 +72,7 @@ pub struct RefDeclaration<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn inout_declaration(s: Span) -> IResult<Span, InoutDeclaration> {
     let (s, a) = symbol("inout")(s)?;
     let (s, b) = net_port_type(s)?;
@@ -79,10 +80,12 @@ pub fn inout_declaration(s: Span) -> IResult<Span, InoutDeclaration> {
     Ok((s, InoutDeclaration { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn input_declaration(s: Span) -> IResult<Span, InputDeclaration> {
     alt((input_declaration_net, input_declaration_variable))(s)
 }
 
+#[trace]
 pub fn input_declaration_net(s: Span) -> IResult<Span, InputDeclaration> {
     let (s, a) = symbol("input")(s)?;
     let (s, b) = net_port_type(s)?;
@@ -93,6 +96,7 @@ pub fn input_declaration_net(s: Span) -> IResult<Span, InputDeclaration> {
     ))
 }
 
+#[trace]
 pub fn input_declaration_variable(s: Span) -> IResult<Span, InputDeclaration> {
     let (s, a) = symbol("input")(s)?;
     let (s, b) = variable_port_type(s)?;
@@ -103,10 +107,12 @@ pub fn input_declaration_variable(s: Span) -> IResult<Span, InputDeclaration> {
     ))
 }
 
+#[trace]
 pub fn output_declaration(s: Span) -> IResult<Span, OutputDeclaration> {
     alt((output_declaration_net, output_declaration_variable))(s)
 }
 
+#[trace]
 pub fn output_declaration_net(s: Span) -> IResult<Span, OutputDeclaration> {
     let (s, a) = symbol("output")(s)?;
     let (s, b) = net_port_type(s)?;
@@ -117,6 +123,7 @@ pub fn output_declaration_net(s: Span) -> IResult<Span, OutputDeclaration> {
     ))
 }
 
+#[trace]
 pub fn output_declaration_variable(s: Span) -> IResult<Span, OutputDeclaration> {
     let (s, a) = symbol("output")(s)?;
     let (s, b) = variable_port_type(s)?;
@@ -127,6 +134,7 @@ pub fn output_declaration_variable(s: Span) -> IResult<Span, OutputDeclaration> 
     ))
 }
 
+#[trace]
 pub fn interface_port_declaration(s: Span) -> IResult<Span, InterfacePortDeclaration> {
     let (s, a) = interface_identifier(s)?;
     let (s, b) = opt(pair(symbol("."), modport_identifier))(s)?;
@@ -134,6 +142,7 @@ pub fn interface_port_declaration(s: Span) -> IResult<Span, InterfacePortDeclara
     Ok((s, InterfacePortDeclaration { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn ref_declaration(s: Span) -> IResult<Span, RefDeclaration> {
     let (s, a) = symbol("ref")(s)?;
     let (s, b) = variable_port_type(s)?;

@@ -86,6 +86,7 @@ pub struct ChargeStrengthLarge<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn drive_strength(s: Span) -> IResult<Span, DriveStrength> {
     alt((
         drive_strength01,
@@ -97,6 +98,7 @@ pub fn drive_strength(s: Span) -> IResult<Span, DriveStrength> {
     ))(s)
 }
 
+#[trace]
 pub fn drive_strength01(s: Span) -> IResult<Span, DriveStrength> {
     let (s, a) = paren(triple(strength0, symbol(","), strength1))(s)?;
     Ok((
@@ -105,6 +107,7 @@ pub fn drive_strength01(s: Span) -> IResult<Span, DriveStrength> {
     ))
 }
 
+#[trace]
 pub fn drive_strength10(s: Span) -> IResult<Span, DriveStrength> {
     let (s, a) = paren(triple(strength1, symbol(","), strength0))(s)?;
     Ok((
@@ -113,6 +116,7 @@ pub fn drive_strength10(s: Span) -> IResult<Span, DriveStrength> {
     ))
 }
 
+#[trace]
 pub fn drive_strength0z(s: Span) -> IResult<Span, DriveStrength> {
     let (s, a) = paren(triple(strength0, symbol(","), symbol("highz1")))(s)?;
     Ok((
@@ -121,6 +125,7 @@ pub fn drive_strength0z(s: Span) -> IResult<Span, DriveStrength> {
     ))
 }
 
+#[trace]
 pub fn drive_strength1z(s: Span) -> IResult<Span, DriveStrength> {
     let (s, a) = paren(triple(strength1, symbol(","), symbol("highz0")))(s)?;
     Ok((
@@ -129,6 +134,7 @@ pub fn drive_strength1z(s: Span) -> IResult<Span, DriveStrength> {
     ))
 }
 
+#[trace]
 pub fn drive_strengthz1(s: Span) -> IResult<Span, DriveStrength> {
     let (s, a) = paren(triple(symbol("highz0"), symbol(","), strength1))(s)?;
     Ok((
@@ -137,6 +143,7 @@ pub fn drive_strengthz1(s: Span) -> IResult<Span, DriveStrength> {
     ))
 }
 
+#[trace]
 pub fn drive_strengthz0(s: Span) -> IResult<Span, DriveStrength> {
     let (s, a) = paren(triple(symbol("highz1"), symbol(","), strength0))(s)?;
     Ok((
@@ -145,6 +152,7 @@ pub fn drive_strengthz0(s: Span) -> IResult<Span, DriveStrength> {
     ))
 }
 
+#[trace]
 pub fn strength0(s: Span) -> IResult<Span, Strength0> {
     alt((
         map(symbol("supply0"), |x| Strength0::Supply0(x)),
@@ -154,6 +162,7 @@ pub fn strength0(s: Span) -> IResult<Span, Strength0> {
     ))(s)
 }
 
+#[trace]
 pub fn strength1(s: Span) -> IResult<Span, Strength1> {
     alt((
         map(symbol("supply1"), |x| Strength1::Supply1(x)),
@@ -163,6 +172,7 @@ pub fn strength1(s: Span) -> IResult<Span, Strength1> {
     ))(s)
 }
 
+#[trace]
 pub fn charge_strength(s: Span) -> IResult<Span, ChargeStrength> {
     alt((
         charge_strength_small,
@@ -171,6 +181,7 @@ pub fn charge_strength(s: Span) -> IResult<Span, ChargeStrength> {
     ))(s)
 }
 
+#[trace]
 pub fn charge_strength_small(s: Span) -> IResult<Span, ChargeStrength> {
     let (s, a) = paren(symbol("small"))(s)?;
     Ok((
@@ -179,6 +190,7 @@ pub fn charge_strength_small(s: Span) -> IResult<Span, ChargeStrength> {
     ))
 }
 
+#[trace]
 pub fn charge_strength_medium(s: Span) -> IResult<Span, ChargeStrength> {
     let (s, a) = paren(symbol("medium"))(s)?;
     Ok((
@@ -187,6 +199,7 @@ pub fn charge_strength_medium(s: Span) -> IResult<Span, ChargeStrength> {
     ))
 }
 
+#[trace]
 pub fn charge_strength_large(s: Span) -> IResult<Span, ChargeStrength> {
     let (s, a) = paren(symbol("large"))(s)?;
     Ok((

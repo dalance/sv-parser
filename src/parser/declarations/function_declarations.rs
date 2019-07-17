@@ -159,6 +159,7 @@ pub struct DpiTaskProto<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn function_data_type_or_implicit(s: Span) -> IResult<Span, FunctionDataTypeOrImplicit> {
     alt((
         map(data_type_or_void, |x| {
@@ -170,6 +171,7 @@ pub fn function_data_type_or_implicit(s: Span) -> IResult<Span, FunctionDataType
     ))(s)
 }
 
+#[trace]
 pub fn function_declaration(s: Span) -> IResult<Span, FunctionDeclaration> {
     let (s, a) = symbol("function")(s)?;
     let (s, b) = opt(lifetime)(s)?;
@@ -177,6 +179,7 @@ pub fn function_declaration(s: Span) -> IResult<Span, FunctionDeclaration> {
     Ok((s, FunctionDeclaration { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn function_body_declaration(s: Span) -> IResult<Span, FunctionBodyDeclaration> {
     alt((
         function_body_declaration_without_port,
@@ -184,6 +187,7 @@ pub fn function_body_declaration(s: Span) -> IResult<Span, FunctionBodyDeclarati
     ))(s)
 }
 
+#[trace]
 pub fn function_body_declaration_without_port(s: Span) -> IResult<Span, FunctionBodyDeclaration> {
     let (s, a) = function_data_type_or_implicit(s)?;
     let (s, b) = opt(interface_identifier_or_class_scope)(s)?;
@@ -201,6 +205,7 @@ pub fn function_body_declaration_without_port(s: Span) -> IResult<Span, Function
     ))
 }
 
+#[trace]
 pub fn function_body_declaration_with_port(s: Span) -> IResult<Span, FunctionBodyDeclaration> {
     let (s, a) = function_data_type_or_implicit(s)?;
     let (s, b) = opt(interface_identifier_or_class_scope)(s)?;
@@ -219,6 +224,7 @@ pub fn function_body_declaration_with_port(s: Span) -> IResult<Span, FunctionBod
     ))
 }
 
+#[trace]
 pub fn interface_identifier_or_class_scope(
     s: Span,
 ) -> IResult<Span, InterfaceIdentifierOrClassScope> {
@@ -232,6 +238,7 @@ pub fn interface_identifier_or_class_scope(
     ))(s)
 }
 
+#[trace]
 pub fn function_prototype(s: Span) -> IResult<Span, FunctionPrototype> {
     let (s, a) = symbol("function")(s)?;
     let (s, b) = data_type_or_void(s)?;
@@ -245,6 +252,7 @@ pub fn function_prototype(s: Span) -> IResult<Span, FunctionPrototype> {
     ))
 }
 
+#[trace]
 pub fn dpi_import_export(s: Span) -> IResult<Span, DpiImportExport> {
     alt((
         dpi_import_export_import_function,
@@ -254,6 +262,7 @@ pub fn dpi_import_export(s: Span) -> IResult<Span, DpiImportExport> {
     ))(s)
 }
 
+#[trace]
 pub fn dpi_import_export_import_function(s: Span) -> IResult<Span, DpiImportExport> {
     let (s, a) = symbol("import")(s)?;
     let (s, b) = dpi_spec_string(s)?;
@@ -269,6 +278,7 @@ pub fn dpi_import_export_import_function(s: Span) -> IResult<Span, DpiImportExpo
     ))
 }
 
+#[trace]
 pub fn dpi_import_export_import_task(s: Span) -> IResult<Span, DpiImportExport> {
     let (s, a) = symbol("import")(s)?;
     let (s, b) = dpi_spec_string(s)?;
@@ -284,6 +294,7 @@ pub fn dpi_import_export_import_task(s: Span) -> IResult<Span, DpiImportExport> 
     ))
 }
 
+#[trace]
 pub fn dpi_import_export_export_function(s: Span) -> IResult<Span, DpiImportExport> {
     let (s, a) = symbol("export")(s)?;
     let (s, b) = dpi_spec_string(s)?;
@@ -299,6 +310,7 @@ pub fn dpi_import_export_export_function(s: Span) -> IResult<Span, DpiImportExpo
     ))
 }
 
+#[trace]
 pub fn dpi_import_export_export_task(s: Span) -> IResult<Span, DpiImportExport> {
     let (s, a) = symbol("export")(s)?;
     let (s, b) = dpi_spec_string(s)?;
@@ -314,6 +326,7 @@ pub fn dpi_import_export_export_task(s: Span) -> IResult<Span, DpiImportExport> 
     ))
 }
 
+#[trace]
 pub fn dpi_spec_string(s: Span) -> IResult<Span, DpiSpecString> {
     alt((
         map(symbol("DPI-C"), |x| DpiSpecString::DpiC(x)),
@@ -321,6 +334,7 @@ pub fn dpi_spec_string(s: Span) -> IResult<Span, DpiSpecString> {
     ))(s)
 }
 
+#[trace]
 pub fn dpi_function_import_property(s: Span) -> IResult<Span, DpiFunctionImportProperty> {
     alt((
         map(symbol("context"), |x| DpiFunctionImportProperty::Context(x)),
@@ -328,16 +342,19 @@ pub fn dpi_function_import_property(s: Span) -> IResult<Span, DpiFunctionImportP
     ))(s)
 }
 
+#[trace]
 pub fn dpi_task_import_property(s: Span) -> IResult<Span, DpiTaskImportProperty> {
     let (s, a) = symbol("context")(s)?;
     Ok((s, DpiTaskImportProperty::Context(a)))
 }
 
+#[trace]
 pub fn dpi_function_proto(s: Span) -> IResult<Span, DpiFunctionProto> {
     let (s, a) = function_prototype(s)?;
     Ok((s, DpiFunctionProto { nodes: (a,) }))
 }
 
+#[trace]
 pub fn dpi_task_proto(s: Span) -> IResult<Span, DpiTaskProto> {
     let (s, a) = task_prototype(s)?;
     Ok((s, DpiTaskProto { nodes: (a,) }))

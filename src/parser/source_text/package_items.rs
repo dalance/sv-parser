@@ -56,6 +56,7 @@ pub enum AnonymousProgramItem<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn package_item(s: Span) -> IResult<Span, PackageItem> {
     alt((
         map(package_or_generate_item_declaration, |x| {
@@ -71,6 +72,7 @@ pub fn package_item(s: Span) -> IResult<Span, PackageItem> {
     ))(s)
 }
 
+#[trace]
 pub fn package_or_generate_item_declaration(
     s: Span,
 ) -> IResult<Span, PackageOrGenerateItemDeclaration> {
@@ -118,6 +120,7 @@ pub fn package_or_generate_item_declaration(
     ))(s)
 }
 
+#[trace]
 pub fn anonymous_program(s: Span) -> IResult<Span, AnonymousProgram> {
     let (s, a) = symbol("program")(s)?;
     let (s, b) = symbol(";")(s)?;
@@ -131,6 +134,7 @@ pub fn anonymous_program(s: Span) -> IResult<Span, AnonymousProgram> {
     ))
 }
 
+#[trace]
 pub fn anonymous_program_item(s: Span) -> IResult<Span, AnonymousProgramItem> {
     alt((
         map(task_declaration, |x| {

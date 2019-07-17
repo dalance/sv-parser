@@ -101,6 +101,7 @@ pub struct TaskPrototype<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn task_declaration(s: Span) -> IResult<Span, TaskDeclaration> {
     let (s, a) = symbol("task")(s)?;
     let (s, b) = opt(lifetime)(s)?;
@@ -108,6 +109,7 @@ pub fn task_declaration(s: Span) -> IResult<Span, TaskDeclaration> {
     Ok((s, TaskDeclaration { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn task_body_declaration(s: Span) -> IResult<Span, TaskBodyDeclaration> {
     alt((
         task_body_declaration_without_port,
@@ -115,6 +117,7 @@ pub fn task_body_declaration(s: Span) -> IResult<Span, TaskBodyDeclaration> {
     ))(s)
 }
 
+#[trace]
 pub fn task_body_declaration_without_port(s: Span) -> IResult<Span, TaskBodyDeclaration> {
     let (s, a) = opt(interface_identifier_or_class_scope)(s)?;
     let (s, b) = task_identifier(s)?;
@@ -131,6 +134,7 @@ pub fn task_body_declaration_without_port(s: Span) -> IResult<Span, TaskBodyDecl
     ))
 }
 
+#[trace]
 pub fn task_body_declaration_with_port(s: Span) -> IResult<Span, TaskBodyDeclaration> {
     let (s, a) = opt(interface_identifier_or_class_scope)(s)?;
     let (s, b) = task_identifier(s)?;
@@ -148,6 +152,7 @@ pub fn task_body_declaration_with_port(s: Span) -> IResult<Span, TaskBodyDeclara
     ))
 }
 
+#[trace]
 pub fn tf_item_declaration(s: Span) -> IResult<Span, TfItemDeclaration> {
     alt((
         map(block_item_declaration, |x| {
@@ -159,11 +164,13 @@ pub fn tf_item_declaration(s: Span) -> IResult<Span, TfItemDeclaration> {
     ))(s)
 }
 
+#[trace]
 pub fn tf_port_list(s: Span) -> IResult<Span, TfPortList> {
     let (s, a) = list(symbol(","), tf_port_item)(s)?;
     Ok((s, TfPortList { nodes: (a,) }))
 }
 
+#[trace]
 pub fn tf_port_item(s: Span) -> IResult<Span, TfPortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = opt(tf_port_direction)(s)?;
@@ -182,6 +189,7 @@ pub fn tf_port_item(s: Span) -> IResult<Span, TfPortItem> {
     ))
 }
 
+#[trace]
 pub fn tf_port_direction(s: Span) -> IResult<Span, TfPortDirection> {
     alt((
         map(port_direction, |x| TfPortDirection::PortDirection(x)),
@@ -191,6 +199,7 @@ pub fn tf_port_direction(s: Span) -> IResult<Span, TfPortDirection> {
     ))(s)
 }
 
+#[trace]
 pub fn tf_port_declaration(s: Span) -> IResult<Span, TfPortDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = tf_port_direction(s)?;
@@ -206,6 +215,7 @@ pub fn tf_port_declaration(s: Span) -> IResult<Span, TfPortDeclaration> {
     ))
 }
 
+#[trace]
 pub fn task_prototype(s: Span) -> IResult<Span, TaskPrototype> {
     let (s, a) = symbol("task")(s)?;
     let (s, b) = task_identifier(s)?;

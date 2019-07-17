@@ -297,6 +297,7 @@ pub struct TypeReferenceDataType<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn casting_type(s: Span) -> IResult<Span, CastingType> {
     alt((
         map(simple_type, |x| CastingType::SimpleType(Box::new(x))),
@@ -309,6 +310,7 @@ pub fn casting_type(s: Span) -> IResult<Span, CastingType> {
     ))(s)
 }
 
+#[trace]
 pub fn data_type(s: Span) -> IResult<Span, DataType> {
     alt((
         data_type_vector,
@@ -329,6 +331,7 @@ pub fn data_type(s: Span) -> IResult<Span, DataType> {
     ))(s)
 }
 
+#[trace]
 pub fn data_type_vector(s: Span) -> IResult<Span, DataType> {
     let (s, a) = integer_vector_type(s)?;
     let (s, b) = opt(signing)(s)?;
@@ -336,12 +339,14 @@ pub fn data_type_vector(s: Span) -> IResult<Span, DataType> {
     Ok((s, DataType::Vector(DataTypeVector { nodes: (a, b, c) })))
 }
 
+#[trace]
 pub fn data_type_atom(s: Span) -> IResult<Span, DataType> {
     let (s, a) = integer_atom_type(s)?;
     let (s, b) = opt(signing)(s)?;
     Ok((s, DataType::Atom(DataTypeAtom { nodes: (a, b) })))
 }
 
+#[trace]
 pub fn data_type_union(s: Span) -> IResult<Span, DataType> {
     let (s, a) = struct_union(s)?;
     let (s, b) = opt(pair(packed, opt(signing)))(s)?;
@@ -355,11 +360,13 @@ pub fn data_type_union(s: Span) -> IResult<Span, DataType> {
     ))
 }
 
+#[trace]
 pub fn packed(s: Span) -> IResult<Span, Packed> {
     let (s, a) = symbol("packed")(s)?;
     Ok((s, Packed { nodes: (a,) }))
 }
 
+#[trace]
 pub fn data_type_enum(s: Span) -> IResult<Span, DataType> {
     let (s, a) = symbol("enum")(s)?;
     let (s, b) = opt(enum_base_type)(s)?;
@@ -373,6 +380,7 @@ pub fn data_type_enum(s: Span) -> IResult<Span, DataType> {
     ))
 }
 
+#[trace]
 pub fn data_type_virtual(s: Span) -> IResult<Span, DataType> {
     let (s, a) = symbol("virtual")(s)?;
     let (s, b) = opt(interface)(s)?;
@@ -387,11 +395,13 @@ pub fn data_type_virtual(s: Span) -> IResult<Span, DataType> {
     ))
 }
 
+#[trace]
 pub fn interface(s: Span) -> IResult<Span, Interface> {
     let (s, a) = symbol("interface")(s)?;
     Ok((s, Interface { nodes: (a,) }))
 }
 
+#[trace]
 pub fn data_type_type(s: Span) -> IResult<Span, DataType> {
     let (s, a) = opt(package_scope_or_class_scope)(s)?;
     let (s, b) = type_identifier(s)?;
@@ -399,6 +409,7 @@ pub fn data_type_type(s: Span) -> IResult<Span, DataType> {
     Ok((s, DataType::Type(DataTypeType { nodes: (a, b, c) })))
 }
 
+#[trace]
 pub fn data_type_or_implicit(s: Span) -> IResult<Span, DataTypeOrImplicit> {
     alt((
         map(data_type, |x| DataTypeOrImplicit::DataType(x)),
@@ -408,12 +419,14 @@ pub fn data_type_or_implicit(s: Span) -> IResult<Span, DataTypeOrImplicit> {
     ))(s)
 }
 
+#[trace]
 pub fn implicit_data_type(s: Span) -> IResult<Span, ImplicitDataType> {
     let (s, a) = opt(signing)(s)?;
     let (s, b) = many0(packed_dimension)(s)?;
     Ok((s, ImplicitDataType { nodes: (a, b) }))
 }
 
+#[trace]
 pub fn enum_base_type(s: Span) -> IResult<Span, EnumBaseType> {
     alt((
         enum_base_type_atom,
@@ -422,12 +435,14 @@ pub fn enum_base_type(s: Span) -> IResult<Span, EnumBaseType> {
     ))(s)
 }
 
+#[trace]
 pub fn enum_base_type_atom(s: Span) -> IResult<Span, EnumBaseType> {
     let (s, a) = integer_atom_type(s)?;
     let (s, b) = opt(signing)(s)?;
     Ok((s, EnumBaseType::Atom(EnumBaseTypeAtom { nodes: (a, b) })))
 }
 
+#[trace]
 pub fn enum_base_type_vector(s: Span) -> IResult<Span, EnumBaseType> {
     let (s, a) = integer_vector_type(s)?;
     let (s, b) = opt(signing)(s)?;
@@ -438,12 +453,14 @@ pub fn enum_base_type_vector(s: Span) -> IResult<Span, EnumBaseType> {
     ))
 }
 
+#[trace]
 pub fn enum_base_type_type(s: Span) -> IResult<Span, EnumBaseType> {
     let (s, a) = type_identifier(s)?;
     let (s, b) = opt(packed_dimension)(s)?;
     Ok((s, EnumBaseType::Type(EnumBaseTypeType { nodes: (a, b) })))
 }
 
+#[trace]
 pub fn enum_name_declaration(s: Span) -> IResult<Span, EnumNameDeclaration> {
     let (s, a) = enum_identifier(s)?;
     let (s, b) = opt(bracket(pair(
@@ -454,12 +471,14 @@ pub fn enum_name_declaration(s: Span) -> IResult<Span, EnumNameDeclaration> {
     Ok((s, EnumNameDeclaration { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn class_scope(s: Span) -> IResult<Span, ClassScope> {
     let (s, a) = class_type(s)?;
     let (s, b) = symbol("::")(s)?;
     Ok((s, ClassScope { nodes: (a, b) }))
 }
 
+#[trace]
 pub fn class_type(s: Span) -> IResult<Span, ClassType> {
     let (s, a) = ps_class_identifier(s)?;
     let (s, b) = opt(parameter_value_assignment)(s)?;
@@ -471,6 +490,7 @@ pub fn class_type(s: Span) -> IResult<Span, ClassType> {
     Ok((s, ClassType { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn integer_type(s: Span) -> IResult<Span, IntegerType> {
     alt((
         map(integer_vector_type, |x| IntegerType::IntegerVectorType(x)),
@@ -478,6 +498,7 @@ pub fn integer_type(s: Span) -> IResult<Span, IntegerType> {
     ))(s)
 }
 
+#[trace]
 pub fn integer_atom_type(s: Span) -> IResult<Span, IntegerAtomType> {
     alt((
         map(symbol("byte"), |x| IntegerAtomType::Byte(x)),
@@ -489,6 +510,7 @@ pub fn integer_atom_type(s: Span) -> IResult<Span, IntegerAtomType> {
     ))(s)
 }
 
+#[trace]
 pub fn integer_vector_type(s: Span) -> IResult<Span, IntegerVectorType> {
     alt((
         map(symbol("bit"), |x| IntegerVectorType::Bit(x)),
@@ -497,6 +519,7 @@ pub fn integer_vector_type(s: Span) -> IResult<Span, IntegerVectorType> {
     ))(s)
 }
 
+#[trace]
 pub fn non_integer_type(s: Span) -> IResult<Span, NonIntegerType> {
     alt((
         map(symbol("shortreal"), |x| NonIntegerType::Shortreal(x)),
@@ -505,6 +528,7 @@ pub fn non_integer_type(s: Span) -> IResult<Span, NonIntegerType> {
     ))(s)
 }
 
+#[trace]
 pub fn net_type(s: Span) -> IResult<Span, NetType> {
     alt((
         map(symbol("supply0"), |x| NetType::Supply0(x)),
@@ -522,6 +546,7 @@ pub fn net_type(s: Span) -> IResult<Span, NetType> {
     ))(s)
 }
 
+#[trace]
 pub fn net_port_type(s: Span) -> IResult<Span, NetPortType> {
     alt((
         net_port_type_data_type,
@@ -530,6 +555,7 @@ pub fn net_port_type(s: Span) -> IResult<Span, NetPortType> {
     ))(s)
 }
 
+#[trace]
 pub fn net_port_type_data_type(s: Span) -> IResult<Span, NetPortType> {
     let (s, a) = opt(net_type)(s)?;
     let (s, b) = data_type_or_implicit(s)?;
@@ -539,6 +565,7 @@ pub fn net_port_type_data_type(s: Span) -> IResult<Span, NetPortType> {
     ))
 }
 
+#[trace]
 pub fn net_port_type_interconnect(s: Span) -> IResult<Span, NetPortType> {
     let (s, a) = symbol("interconnect")(s)?;
     let (s, b) = implicit_data_type(s)?;
@@ -548,11 +575,13 @@ pub fn net_port_type_interconnect(s: Span) -> IResult<Span, NetPortType> {
     ))
 }
 
+#[trace]
 pub fn variable_port_type(s: Span) -> IResult<Span, VariablePortType> {
     let (s, a) = var_data_type(s)?;
     Ok((s, VariablePortType { nodes: (a,) }))
 }
 
+#[trace]
 pub fn var_data_type(s: Span) -> IResult<Span, VarDataType> {
     alt((
         map(data_type, |x| VarDataType::DataType(x)),
@@ -560,12 +589,14 @@ pub fn var_data_type(s: Span) -> IResult<Span, VarDataType> {
     ))(s)
 }
 
+#[trace]
 pub fn var_data_type_var(s: Span) -> IResult<Span, VarDataType> {
     let (s, a) = symbol("var")(s)?;
     let (s, b) = data_type_or_implicit(s)?;
     Ok((s, VarDataType::Var(VarDataTypeVar { nodes: (a, b) })))
 }
 
+#[trace]
 pub fn signing(s: Span) -> IResult<Span, Signing> {
     alt((
         map(symbol("signed"), |x| Signing::Signed(x)),
@@ -573,6 +604,7 @@ pub fn signing(s: Span) -> IResult<Span, Signing> {
     ))(s)
 }
 
+#[trace]
 pub fn simple_type(s: Span) -> IResult<Span, SimpleType> {
     alt((
         map(integer_type, |x| SimpleType::IntegerType(x)),
@@ -584,6 +616,7 @@ pub fn simple_type(s: Span) -> IResult<Span, SimpleType> {
     ))(s)
 }
 
+#[trace]
 pub fn struct_union_member(s: Span) -> IResult<Span, StructUnionMember> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = opt(random_qualifier)(s)?;
@@ -598,6 +631,7 @@ pub fn struct_union_member(s: Span) -> IResult<Span, StructUnionMember> {
     ))
 }
 
+#[trace]
 pub fn data_type_or_void(s: Span) -> IResult<Span, DataTypeOrVoid> {
     alt((
         map(data_type, |x| DataTypeOrVoid::DataType(x)),
@@ -605,6 +639,7 @@ pub fn data_type_or_void(s: Span) -> IResult<Span, DataTypeOrVoid> {
     ))(s)
 }
 
+#[trace]
 pub fn struct_union(s: Span) -> IResult<Span, StructUnion> {
     alt((
         map(symbol("struct"), |x| StructUnion::Struct(x)),
@@ -615,10 +650,12 @@ pub fn struct_union(s: Span) -> IResult<Span, StructUnion> {
     ))(s)
 }
 
+#[trace]
 pub fn type_reference(s: Span) -> IResult<Span, TypeReference> {
     alt((type_reference_expression, type_reference_data_type))(s)
 }
 
+#[trace]
 pub fn type_reference_expression(s: Span) -> IResult<Span, TypeReference> {
     let (s, a) = symbol("type")(s)?;
     let (s, b) = paren(expression)(s)?;
@@ -628,6 +665,7 @@ pub fn type_reference_expression(s: Span) -> IResult<Span, TypeReference> {
     ))
 }
 
+#[trace]
 pub fn type_reference_data_type(s: Span) -> IResult<Span, TypeReference> {
     let (s, a) = symbol("type")(s)?;
     let (s, b) = paren(data_type)(s)?;

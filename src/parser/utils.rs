@@ -60,7 +60,19 @@ where
 }
 
 pub fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol<'a>> {
-    move |s: Span<'a>| map(ws(tag(t.clone())), |x| Symbol { nodes: x })(s)
+    move |s: Span<'a>| {
+        if cfg!(feature = "trace") {
+            println!(
+                "{:<48} : {:<4},{:>032x} : {}",
+                format!("symbol(\"{}\")", t),
+                s.offset,
+                s.extra,
+                s.fragment
+            );
+        }
+        let (s, x) = map(ws(tag(t.clone())), |x| Symbol { nodes: x })(s)?;
+        Ok((clear_bit(s), x))
+    }
 }
 
 pub fn paren<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Paren<O>>
@@ -68,6 +80,12 @@ where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
+        if cfg!(feature = "trace") {
+            println!(
+                "{:<48} : {:<4},{:>032x} : {}",
+                "paren", s.offset, s.extra, s.fragment
+            );
+        }
         let (s, a) = symbol("(")(s)?;
         let (s, b) = f(s)?;
         let (s, c) = symbol(")")(s)?;
@@ -80,6 +98,12 @@ where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
+        if cfg!(feature = "trace") {
+            println!(
+                "{:<48} : {:<4},{:>032x} : {}",
+                "bracket", s.offset, s.extra, s.fragment
+            );
+        }
         let (s, a) = symbol("[")(s)?;
         let (s, b) = f(s)?;
         let (s, c) = symbol("]")(s)?;
@@ -92,6 +116,12 @@ where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
+        if cfg!(feature = "trace") {
+            println!(
+                "{:<48} : {:<4},{:>032x} : {}",
+                "brace", s.offset, s.extra, s.fragment
+            );
+        }
         let (s, a) = symbol("{")(s)?;
         let (s, b) = f(s)?;
         let (s, c) = symbol("}")(s)?;
@@ -106,6 +136,12 @@ where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
+        if cfg!(feature = "trace") {
+            println!(
+                "{:<48} : {:<4},{:>032x} : {}",
+                "apostrophe_brace", s.offset, s.extra, s.fragment
+            );
+        }
         let (s, a) = symbol("'{")(s)?;
         let (s, b) = f(s)?;
         let (s, c) = symbol("}")(s)?;
@@ -135,20 +171,20 @@ where
     }
 }
 
-pub fn rec<'a, O, F>(f: F, id: u32) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
-where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
-{
-    move |s: Span<'a>| {
-        if check_bit(s, id) {
-            return Err(Err::Error(make_error(s, ErrorKind::Fix)));
-        }
-        let s = set_bit(s, id, true);
-        let (s, x) = f(s)?;
-        let s = set_bit(s, id, false);
-        Ok((s, x))
-    }
-}
+//pub fn rec<'a, O, F>(f: F, id: u32) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
+//where
+//    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+//{
+//    move |s: Span<'a>| {
+//        if check_bit(s, id) {
+//            return Err(Err::Error(make_error(s, ErrorKind::Fix)));
+//        }
+//        let s = set_bit(s, id, true);
+//        let (s, x) = f(s)?;
+//        let s = set_bit(s, id, false);
+//        Ok((s, x))
+//    }
+//}
 
 pub fn triple<'a, O1, O2, O3, F, G, H>(
     f: F,
@@ -170,6 +206,7 @@ where
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
     alt((
         map(multispace1, |x| WhiteSpace::Space(x)),
@@ -198,14 +235,23 @@ pub fn check_bit(s: Span, id: u32) -> bool {
 }
 
 pub fn set_bit(s: Span, id: u32, bit: bool) -> Span {
-    let val = if bit { 1u64 << id } else { 0u64 };
-    let mask = !(1u64 << id);
+    let val = if bit { 1u128 << id } else { 0u128 };
+    let mask = !(1u128 << id);
     let val = (s.extra & mask) | val;
     Span {
         offset: s.offset,
         line: s.line,
         fragment: s.fragment,
         extra: val,
+    }
+}
+
+pub fn clear_bit(s: Span) -> Span {
+    Span {
+        offset: s.offset,
+        line: s.line,
+        fragment: s.fragment,
+        extra: 0,
     }
 }
 
@@ -221,3 +267,14 @@ macro_rules! parser_test {
         }
     };
 }
+
+//macro_rules! s {
+//    ( $x:expr ) => {
+//        Span {
+//            offset: $x.offset,
+//            line: $x.line,
+//            fragment: $x.fragment,
+//            extra: (file!(), line!(), column!()),
+//        }
+//    };
+//}

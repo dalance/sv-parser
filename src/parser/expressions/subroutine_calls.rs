@@ -184,11 +184,13 @@ pub enum ArrayMethodName<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn constant_function_call(s: Span) -> IResult<Span, ConstantFunctionCall> {
     let (s, a) = function_subroutine_call(s)?;
     Ok((s, ConstantFunctionCall { nodes: (a,) }))
 }
 
+#[trace]
 pub fn tf_call(s: Span) -> IResult<Span, TfCall> {
     let (s, a) = ps_or_hierarchical_tf_identifier(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
@@ -196,6 +198,7 @@ pub fn tf_call(s: Span) -> IResult<Span, TfCall> {
     Ok((s, TfCall { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn system_tf_call(s: Span) -> IResult<Span, SystemTfCall> {
     alt((
         system_tf_call_arg_optional,
@@ -204,6 +207,7 @@ pub fn system_tf_call(s: Span) -> IResult<Span, SystemTfCall> {
     ))(s)
 }
 
+#[trace]
 pub fn system_tf_call_arg_optional(s: Span) -> IResult<Span, SystemTfCall> {
     let (s, a) = system_tf_identifier(s)?;
     let (s, b) = opt(paren(list_of_arguments))(s)?;
@@ -213,6 +217,7 @@ pub fn system_tf_call_arg_optional(s: Span) -> IResult<Span, SystemTfCall> {
     ))
 }
 
+#[trace]
 pub fn system_tf_call_arg_data_type(s: Span) -> IResult<Span, SystemTfCall> {
     let (s, a) = system_tf_identifier(s)?;
     let (s, b) = paren(pair(data_type, opt(pair(symbol(","), expression))))(s)?;
@@ -222,6 +227,7 @@ pub fn system_tf_call_arg_data_type(s: Span) -> IResult<Span, SystemTfCall> {
     ))
 }
 
+#[trace]
 pub fn system_tf_call_arg_expression(s: Span) -> IResult<Span, SystemTfCall> {
     let (s, a) = system_tf_identifier(s)?;
     let (s, b) = paren(pair(
@@ -234,6 +240,7 @@ pub fn system_tf_call_arg_expression(s: Span) -> IResult<Span, SystemTfCall> {
     ))
 }
 
+#[trace]
 pub fn subroutine_call(s: Span) -> IResult<Span, SubroutineCall> {
     alt((
         map(tf_call, |x| SubroutineCall::TfCall(Box::new(x))),
@@ -245,6 +252,7 @@ pub fn subroutine_call(s: Span) -> IResult<Span, SubroutineCall> {
     ))(s)
 }
 
+#[trace]
 pub fn subroutine_call_randomize(s: Span) -> IResult<Span, SubroutineCall> {
     let (s, a) = opt(pair(symbol("std"), symbol("::")))(s)?;
     let (s, b) = randomize_call(s)?;
@@ -254,14 +262,17 @@ pub fn subroutine_call_randomize(s: Span) -> IResult<Span, SubroutineCall> {
     ))
 }
 
+#[trace]
 pub fn function_subroutine_call(s: Span) -> IResult<Span, FunctionSubroutineCall> {
     map(subroutine_call, |x| FunctionSubroutineCall { nodes: (x,) })(s)
 }
 
+#[trace]
 pub fn list_of_arguments(s: Span) -> IResult<Span, ListOfArguments> {
     alt((list_of_arguments_ordered, list_of_arguments_named))(s)
 }
 
+#[trace]
 pub fn list_of_arguments_ordered(s: Span) -> IResult<Span, ListOfArguments> {
     let (s, a) = list(symbol(","), opt(expression))(s)?;
     let (s, b) = many0(tuple((
@@ -276,6 +287,7 @@ pub fn list_of_arguments_ordered(s: Span) -> IResult<Span, ListOfArguments> {
     ))
 }
 
+#[trace]
 pub fn list_of_arguments_named(s: Span) -> IResult<Span, ListOfArguments> {
     let (s, a) = symbol(".")(s)?;
     let (s, b) = identifier(s)?;
@@ -294,6 +306,7 @@ pub fn list_of_arguments_named(s: Span) -> IResult<Span, ListOfArguments> {
     ))
 }
 
+#[trace]
 pub fn method_call(s: Span) -> IResult<Span, MethodCall> {
     let (s, a) = method_call_root(s)?;
     let (s, b) = symbol(".")(s)?;
@@ -302,6 +315,7 @@ pub fn method_call(s: Span) -> IResult<Span, MethodCall> {
     Ok((s, MethodCall { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn method_call_body(s: Span) -> IResult<Span, MethodCallBody> {
     alt((
         method_call_body_user,
@@ -311,6 +325,7 @@ pub fn method_call_body(s: Span) -> IResult<Span, MethodCallBody> {
     ))(s)
 }
 
+#[trace]
 pub fn method_call_body_user(s: Span) -> IResult<Span, MethodCallBody> {
     let (s, a) = method_identifier(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
@@ -321,6 +336,7 @@ pub fn method_call_body_user(s: Span) -> IResult<Span, MethodCallBody> {
     ))
 }
 
+#[trace]
 pub fn built_in_method_call(s: Span) -> IResult<Span, BuiltInMethodCall> {
     alt((
         map(array_manipulation_call, |x| {
@@ -330,6 +346,7 @@ pub fn built_in_method_call(s: Span) -> IResult<Span, BuiltInMethodCall> {
     ))(s)
 }
 
+#[trace]
 pub fn array_manipulation_call(s: Span) -> IResult<Span, ArrayManipulationCall> {
     let (s, a) = array_method_name(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
@@ -343,6 +360,7 @@ pub fn array_manipulation_call(s: Span) -> IResult<Span, ArrayManipulationCall> 
     ))
 }
 
+#[trace]
 pub fn randomize_call(s: Span) -> IResult<Span, RandomizeCall> {
     let (s, a) = symbol("randomize")(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
@@ -360,6 +378,7 @@ pub fn randomize_call(s: Span) -> IResult<Span, RandomizeCall> {
     ))
 }
 
+#[trace]
 pub fn variable_identifier_list_or_null(s: Span) -> IResult<Span, VariableIdentifierListOrNull> {
     alt((
         map(variable_identifier_list, |x| {
@@ -369,6 +388,7 @@ pub fn variable_identifier_list_or_null(s: Span) -> IResult<Span, VariableIdenti
     ))(s)
 }
 
+#[trace]
 pub fn method_call_root(s: Span) -> IResult<Span, MethodCallRoot> {
     alt((
         map(primary, |x| MethodCallRoot::Primary(x)),
@@ -378,6 +398,7 @@ pub fn method_call_root(s: Span) -> IResult<Span, MethodCallRoot> {
     ))(s)
 }
 
+#[trace]
 pub fn array_method_name(s: Span) -> IResult<Span, ArrayMethodName> {
     alt((
         map(symbol("unique"), |x| ArrayMethodName::Unique(x)),

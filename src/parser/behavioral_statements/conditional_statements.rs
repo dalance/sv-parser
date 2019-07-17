@@ -50,6 +50,7 @@ pub struct CondPattern<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn conditional_statement(s: Span) -> IResult<Span, ConditionalStatement> {
     let (s, a) = opt(unique_priority)(s)?;
     let (s, b) = symbol("if")(s)?;
@@ -71,6 +72,7 @@ pub fn conditional_statement(s: Span) -> IResult<Span, ConditionalStatement> {
     ))
 }
 
+#[trace]
 pub fn unique_priority(s: Span) -> IResult<Span, UniquePriority> {
     alt((
         map(symbol("unique0"), |x| UniquePriority::Unique0(x)),
@@ -79,11 +81,13 @@ pub fn unique_priority(s: Span) -> IResult<Span, UniquePriority> {
     ))(s)
 }
 
+#[trace]
 pub fn cond_predicate(s: Span) -> IResult<Span, CondPredicate> {
     let (s, a) = list(symbol("&&&"), expression_or_cond_pattern)(s)?;
     Ok((s, CondPredicate { nodes: (a,) }))
 }
 
+#[trace]
 pub fn expression_or_cond_pattern(s: Span) -> IResult<Span, ExpressionOrCondPattern> {
     alt((
         map(expression, |x| ExpressionOrCondPattern::Expression(x)),
@@ -91,6 +95,7 @@ pub fn expression_or_cond_pattern(s: Span) -> IResult<Span, ExpressionOrCondPatt
     ))(s)
 }
 
+#[trace]
 pub fn cond_pattern(s: Span) -> IResult<Span, CondPattern> {
     let (s, a) = expression(s)?;
     let (s, b) = symbol("matches")(s)?;

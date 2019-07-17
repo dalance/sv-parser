@@ -437,12 +437,14 @@ pub struct TimeunitsDeclarationTimeprecisionTimeunit<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn source_text(s: Span) -> IResult<Span, SourceText> {
     let (s, a) = opt(timeunits_declaration)(s)?;
     let (s, b) = many0(description)(s)?;
     Ok((s, SourceText { nodes: (a, b) }))
 }
 
+#[trace]
 pub fn description(s: Span) -> IResult<Span, Description> {
     alt((
         map(module_declaration, |x| Description::ModuleDeclaration(x)),
@@ -458,6 +460,7 @@ pub fn description(s: Span) -> IResult<Span, Description> {
     ))(s)
 }
 
+#[trace]
 pub fn description_package_item(s: Span) -> IResult<Span, Description> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = package_item(s)?;
@@ -467,6 +470,7 @@ pub fn description_package_item(s: Span) -> IResult<Span, Description> {
     ))
 }
 
+#[trace]
 pub fn description_bind_directive(s: Span) -> IResult<Span, Description> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = bind_directive(s)?;
@@ -476,6 +480,7 @@ pub fn description_bind_directive(s: Span) -> IResult<Span, Description> {
     ))
 }
 
+#[trace]
 pub fn module_nonansi_header(s: Span) -> IResult<Span, ModuleNonansiHeader> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = module_keyword(s)?;
@@ -493,6 +498,7 @@ pub fn module_nonansi_header(s: Span) -> IResult<Span, ModuleNonansiHeader> {
     ))
 }
 
+#[trace]
 pub fn module_ansi_header(s: Span) -> IResult<Span, ModuleAnsiHeader> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = module_keyword(s)?;
@@ -510,6 +516,7 @@ pub fn module_ansi_header(s: Span) -> IResult<Span, ModuleAnsiHeader> {
     ))
 }
 
+#[trace]
 pub fn module_declaration(s: Span) -> IResult<Span, ModuleDeclaration> {
     alt((
         module_declaration_nonansi,
@@ -520,6 +527,7 @@ pub fn module_declaration(s: Span) -> IResult<Span, ModuleDeclaration> {
     ))(s)
 }
 
+#[trace]
 pub fn module_declaration_nonansi(s: Span) -> IResult<Span, ModuleDeclaration> {
     let (s, a) = module_nonansi_header(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
@@ -534,6 +542,7 @@ pub fn module_declaration_nonansi(s: Span) -> IResult<Span, ModuleDeclaration> {
     ))
 }
 
+#[trace]
 pub fn module_declaration_ansi(s: Span) -> IResult<Span, ModuleDeclaration> {
     let (s, a) = module_ansi_header(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
@@ -548,6 +557,7 @@ pub fn module_declaration_ansi(s: Span) -> IResult<Span, ModuleDeclaration> {
     ))
 }
 
+#[trace]
 pub fn module_declaration_wildcard(s: Span) -> IResult<Span, ModuleDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = module_keyword(s)?;
@@ -567,6 +577,7 @@ pub fn module_declaration_wildcard(s: Span) -> IResult<Span, ModuleDeclaration> 
     ))
 }
 
+#[trace]
 pub fn module_declaration_extern_nonansi(s: Span) -> IResult<Span, ModuleDeclaration> {
     let (s, a) = symbol("extern")(s)?;
     let (s, b) = module_nonansi_header(s)?;
@@ -576,6 +587,7 @@ pub fn module_declaration_extern_nonansi(s: Span) -> IResult<Span, ModuleDeclara
     ))
 }
 
+#[trace]
 pub fn module_declaration_extern_ansi(s: Span) -> IResult<Span, ModuleDeclaration> {
     let (s, a) = symbol("extern")(s)?;
     let (s, b) = module_ansi_header(s)?;
@@ -585,6 +597,7 @@ pub fn module_declaration_extern_ansi(s: Span) -> IResult<Span, ModuleDeclaratio
     ))
 }
 
+#[trace]
 pub fn module_keyword(s: Span) -> IResult<Span, ModuleKeyword> {
     alt((
         map(symbol("module"), |x| ModuleKeyword::Module(x)),
@@ -592,6 +605,7 @@ pub fn module_keyword(s: Span) -> IResult<Span, ModuleKeyword> {
     ))(s)
 }
 
+#[trace]
 pub fn interface_declaration(s: Span) -> IResult<Span, InterfaceDeclaration> {
     alt((
         interface_declaration_nonansi,
@@ -602,6 +616,7 @@ pub fn interface_declaration(s: Span) -> IResult<Span, InterfaceDeclaration> {
     ))(s)
 }
 
+#[trace]
 pub fn interface_declaration_nonansi(s: Span) -> IResult<Span, InterfaceDeclaration> {
     let (s, a) = interface_nonansi_header(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
@@ -616,6 +631,7 @@ pub fn interface_declaration_nonansi(s: Span) -> IResult<Span, InterfaceDeclarat
     ))
 }
 
+#[trace]
 pub fn interface_declaration_ansi(s: Span) -> IResult<Span, InterfaceDeclaration> {
     let (s, a) = interface_ansi_header(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
@@ -630,6 +646,7 @@ pub fn interface_declaration_ansi(s: Span) -> IResult<Span, InterfaceDeclaration
     ))
 }
 
+#[trace]
 pub fn interface_declaration_wildcard(s: Span) -> IResult<Span, InterfaceDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = symbol("interface")(s)?;
@@ -649,6 +666,7 @@ pub fn interface_declaration_wildcard(s: Span) -> IResult<Span, InterfaceDeclara
     ))
 }
 
+#[trace]
 pub fn interface_declaration_extern_nonansi(s: Span) -> IResult<Span, InterfaceDeclaration> {
     let (s, a) = symbol("extern")(s)?;
     let (s, b) = interface_nonansi_header(s)?;
@@ -658,6 +676,7 @@ pub fn interface_declaration_extern_nonansi(s: Span) -> IResult<Span, InterfaceD
     ))
 }
 
+#[trace]
 pub fn interface_declaration_extern_ansi(s: Span) -> IResult<Span, InterfaceDeclaration> {
     let (s, a) = symbol("extern")(s)?;
     let (s, b) = interface_ansi_header(s)?;
@@ -667,6 +686,7 @@ pub fn interface_declaration_extern_ansi(s: Span) -> IResult<Span, InterfaceDecl
     ))
 }
 
+#[trace]
 pub fn interface_nonansi_header(s: Span) -> IResult<Span, InterfaceNonansiHeader> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = symbol("interface")(s)?;
@@ -684,6 +704,7 @@ pub fn interface_nonansi_header(s: Span) -> IResult<Span, InterfaceNonansiHeader
     ))
 }
 
+#[trace]
 pub fn interface_ansi_header(s: Span) -> IResult<Span, InterfaceAnsiHeader> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = symbol("interface")(s)?;
@@ -701,6 +722,7 @@ pub fn interface_ansi_header(s: Span) -> IResult<Span, InterfaceAnsiHeader> {
     ))
 }
 
+#[trace]
 pub fn program_declaration(s: Span) -> IResult<Span, ProgramDeclaration> {
     alt((
         program_declaration_nonansi,
@@ -711,6 +733,7 @@ pub fn program_declaration(s: Span) -> IResult<Span, ProgramDeclaration> {
     ))(s)
 }
 
+#[trace]
 pub fn program_declaration_nonansi(s: Span) -> IResult<Span, ProgramDeclaration> {
     let (s, a) = program_nonansi_header(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
@@ -725,6 +748,7 @@ pub fn program_declaration_nonansi(s: Span) -> IResult<Span, ProgramDeclaration>
     ))
 }
 
+#[trace]
 pub fn program_declaration_ansi(s: Span) -> IResult<Span, ProgramDeclaration> {
     let (s, a) = program_ansi_header(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
@@ -739,6 +763,7 @@ pub fn program_declaration_ansi(s: Span) -> IResult<Span, ProgramDeclaration> {
     ))
 }
 
+#[trace]
 pub fn program_declaration_wildcard(s: Span) -> IResult<Span, ProgramDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = symbol("program")(s)?;
@@ -757,6 +782,7 @@ pub fn program_declaration_wildcard(s: Span) -> IResult<Span, ProgramDeclaration
     ))
 }
 
+#[trace]
 pub fn program_declaration_extern_nonansi(s: Span) -> IResult<Span, ProgramDeclaration> {
     let (s, a) = symbol("extern")(s)?;
     let (s, b) = program_nonansi_header(s)?;
@@ -766,6 +792,7 @@ pub fn program_declaration_extern_nonansi(s: Span) -> IResult<Span, ProgramDecla
     ))
 }
 
+#[trace]
 pub fn program_declaration_extern_ansi(s: Span) -> IResult<Span, ProgramDeclaration> {
     let (s, a) = symbol("extern")(s)?;
     let (s, b) = program_ansi_header(s)?;
@@ -775,6 +802,7 @@ pub fn program_declaration_extern_ansi(s: Span) -> IResult<Span, ProgramDeclarat
     ))
 }
 
+#[trace]
 pub fn program_nonansi_header(s: Span) -> IResult<Span, ProgramNonansiHeader> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = symbol("prgogram")(s)?;
@@ -792,6 +820,7 @@ pub fn program_nonansi_header(s: Span) -> IResult<Span, ProgramNonansiHeader> {
     ))
 }
 
+#[trace]
 pub fn program_ansi_header(s: Span) -> IResult<Span, ProgramAnsiHeader> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = symbol("program")(s)?;
@@ -809,6 +838,7 @@ pub fn program_ansi_header(s: Span) -> IResult<Span, ProgramAnsiHeader> {
     ))
 }
 
+#[trace]
 pub fn checker_declaration(s: Span) -> IResult<Span, CheckerDeclaration> {
     let (s, a) = symbol("checker")(s)?;
     let (s, b) = checker_identifier(s)?;
@@ -825,6 +855,7 @@ pub fn checker_declaration(s: Span) -> IResult<Span, CheckerDeclaration> {
     ))
 }
 
+#[trace]
 pub fn class_declaration(s: Span) -> IResult<Span, ClassDeclaration> {
     let (s, a) = opt(map(symbol("virtual"), |x| Virtual { nodes: (x,) }))(s)?;
     let (s, b) = symbol("class")(s)?;
@@ -852,12 +883,14 @@ pub fn class_declaration(s: Span) -> IResult<Span, ClassDeclaration> {
     ))
 }
 
+#[trace]
 pub fn interface_class_type(s: Span) -> IResult<Span, InterfaceClassType> {
     let (s, a) = ps_class_identifier(s)?;
     let (s, b) = opt(parameter_value_assignment)(s)?;
     Ok((s, InterfaceClassType { nodes: (a, b) }))
 }
 
+#[trace]
 pub fn interface_class_declaration(s: Span) -> IResult<Span, InterfaceClassDeclaration> {
     let (s, a) = symbol("interface")(s)?;
     let (s, b) = symbol("class")(s)?;
@@ -879,6 +912,7 @@ pub fn interface_class_declaration(s: Span) -> IResult<Span, InterfaceClassDecla
     ))
 }
 
+#[trace]
 pub fn interface_class_item(s: Span) -> IResult<Span, InterfaceClassItem> {
     alt((
         map(type_declaration, |x| InterfaceClassItem::TypeDeclaration(x)),
@@ -893,6 +927,7 @@ pub fn interface_class_item(s: Span) -> IResult<Span, InterfaceClassItem> {
     ))(s)
 }
 
+#[trace]
 pub fn interface_class_item_method(s: Span) -> IResult<Span, InterfaceClassItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = interface_class_method(s)?;
@@ -902,6 +937,7 @@ pub fn interface_class_item_method(s: Span) -> IResult<Span, InterfaceClassItem>
     ))
 }
 
+#[trace]
 pub fn interface_class_method(s: Span) -> IResult<Span, InterfaceClassMethod> {
     let (s, a) = symbol("pure")(s)?;
     let (s, b) = symbol("virtual")(s)?;
@@ -915,6 +951,7 @@ pub fn interface_class_method(s: Span) -> IResult<Span, InterfaceClassMethod> {
     ))
 }
 
+#[trace]
 pub fn package_declaration(s: Span) -> IResult<Span, PackageDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = symbol("package")(s)?;
@@ -933,6 +970,7 @@ pub fn package_declaration(s: Span) -> IResult<Span, PackageDeclaration> {
     ))
 }
 
+#[trace]
 pub fn timeunits_declaration(s: Span) -> IResult<Span, TimeunitsDeclaration> {
     alt((
         timeunits_declaration_timeunit_timeprecision,
@@ -942,6 +980,7 @@ pub fn timeunits_declaration(s: Span) -> IResult<Span, TimeunitsDeclaration> {
     ))(s)
 }
 
+#[trace]
 pub fn timeunits_declaration_timeunit(s: Span) -> IResult<Span, TimeunitsDeclaration> {
     let (s, a) = symbol("timeunit")(s)?;
     let (s, b) = time_literal(s)?;
@@ -955,6 +994,7 @@ pub fn timeunits_declaration_timeunit(s: Span) -> IResult<Span, TimeunitsDeclara
     ))
 }
 
+#[trace]
 pub fn timeunits_declaration_timeprecision(s: Span) -> IResult<Span, TimeunitsDeclaration> {
     let (s, a) = symbol("timeprecision")(s)?;
     let (s, b) = time_literal(s)?;
@@ -965,6 +1005,7 @@ pub fn timeunits_declaration_timeprecision(s: Span) -> IResult<Span, TimeunitsDe
     ))
 }
 
+#[trace]
 pub fn timeunits_declaration_timeunit_timeprecision(
     s: Span,
 ) -> IResult<Span, TimeunitsDeclaration> {
@@ -982,6 +1023,7 @@ pub fn timeunits_declaration_timeunit_timeprecision(
     ))
 }
 
+#[trace]
 pub fn timeunits_declaration_timeprecision_timeunit(
     s: Span,
 ) -> IResult<Span, TimeunitsDeclaration> {

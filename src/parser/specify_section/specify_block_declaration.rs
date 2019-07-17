@@ -14,6 +14,7 @@ pub struct SpecifyBlock<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn specify_block(s: Span) -> IResult<Span, SpecifyBlock> {
     Err(Err::Error(make_error(s, ErrorKind::Fix)))
 }

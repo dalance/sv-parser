@@ -228,6 +228,7 @@ pub enum Lifetime<'a> {
 
 // -----------------------------------------------------------------------------
 
+#[trace]
 pub fn data_declaration(s: Span) -> IResult<Span, DataDeclaration> {
     alt((
         data_declaration_variable,
@@ -241,6 +242,7 @@ pub fn data_declaration(s: Span) -> IResult<Span, DataDeclaration> {
     ))(s)
 }
 
+#[trace]
 pub fn data_declaration_variable(s: Span) -> IResult<Span, DataDeclaration> {
     let (s, a) = opt(r#const)(s)?;
     let (s, b) = opt(var)(s)?;
@@ -256,11 +258,13 @@ pub fn data_declaration_variable(s: Span) -> IResult<Span, DataDeclaration> {
     ))
 }
 
+#[trace]
 pub fn r#const(s: Span) -> IResult<Span, Const> {
     let (s, a) = symbol("const")(s)?;
     Ok((s, Const { nodes: (a,) }))
 }
 
+#[trace]
 pub fn package_import_declaration(s: Span) -> IResult<Span, PackageImportDeclaration> {
     let (s, a) = symbol("import")(s)?;
     let (s, b) = list(symbol(","), package_import_item)(s)?;
@@ -268,10 +272,12 @@ pub fn package_import_declaration(s: Span) -> IResult<Span, PackageImportDeclara
     Ok((s, PackageImportDeclaration { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn package_import_item(s: Span) -> IResult<Span, PackageImportItem> {
     alt((package_import_item_identifier, package_import_item_asterisk))(s)
 }
 
+#[trace]
 pub fn package_import_item_identifier(s: Span) -> IResult<Span, PackageImportItem> {
     let (s, a) = package_identifier(s)?;
     let (s, b) = symbol("::")(s)?;
@@ -282,6 +288,7 @@ pub fn package_import_item_identifier(s: Span) -> IResult<Span, PackageImportIte
     ))
 }
 
+#[trace]
 pub fn package_import_item_asterisk(s: Span) -> IResult<Span, PackageImportItem> {
     let (s, a) = package_identifier(s)?;
     let (s, b) = symbol("::")(s)?;
@@ -292,6 +299,7 @@ pub fn package_import_item_asterisk(s: Span) -> IResult<Span, PackageImportItem>
     ))
 }
 
+#[trace]
 pub fn package_export_declaration(s: Span) -> IResult<Span, PackageExportDeclaration> {
     alt((
         package_export_declaration_asterisk,
@@ -299,6 +307,7 @@ pub fn package_export_declaration(s: Span) -> IResult<Span, PackageExportDeclara
     ))(s)
 }
 
+#[trace]
 pub fn package_export_declaration_asterisk(s: Span) -> IResult<Span, PackageExportDeclaration> {
     let (s, a) = symbol("export")(s)?;
     let (s, b) = symbol("*::*")(s)?;
@@ -309,6 +318,7 @@ pub fn package_export_declaration_asterisk(s: Span) -> IResult<Span, PackageExpo
     ))
 }
 
+#[trace]
 pub fn package_export_declaration_item(s: Span) -> IResult<Span, PackageExportDeclaration> {
     let (s, a) = symbol("export")(s)?;
     let (s, b) = list(symbol(","), package_import_item)(s)?;
@@ -319,6 +329,7 @@ pub fn package_export_declaration_item(s: Span) -> IResult<Span, PackageExportDe
     ))
 }
 
+#[trace]
 pub fn genvar_declaration(s: Span) -> IResult<Span, GenvarDeclaration> {
     let (s, a) = symbol("genvar")(s)?;
     let (s, b) = list_of_genvar_identifiers(s)?;
@@ -326,6 +337,7 @@ pub fn genvar_declaration(s: Span) -> IResult<Span, GenvarDeclaration> {
     Ok((s, GenvarDeclaration { nodes: (a, b, c) }))
 }
 
+#[trace]
 pub fn net_declaration(s: Span) -> IResult<Span, NetDeclaration> {
     alt((
         net_declaration_net_type,
@@ -334,6 +346,7 @@ pub fn net_declaration(s: Span) -> IResult<Span, NetDeclaration> {
     ))(s)
 }
 
+#[trace]
 pub fn net_declaration_net_type(s: Span) -> IResult<Span, NetDeclaration> {
     let (s, a) = net_type(s)?;
     let (s, b) = opt(strength)(s)?;
@@ -350,6 +363,7 @@ pub fn net_declaration_net_type(s: Span) -> IResult<Span, NetDeclaration> {
     ))
 }
 
+#[trace]
 pub fn strength(s: Span) -> IResult<Span, Strength> {
     alt((
         map(drive_strength, |x| Strength::Drive(x)),
@@ -357,6 +371,7 @@ pub fn strength(s: Span) -> IResult<Span, Strength> {
     ))(s)
 }
 
+#[trace]
 pub fn vector_scalar(s: Span) -> IResult<Span, VectorScalar> {
     alt((
         map(symbol("vectored"), |x| VectorScalar::Vectored(x)),
@@ -364,6 +379,7 @@ pub fn vector_scalar(s: Span) -> IResult<Span, VectorScalar> {
     ))(s)
 }
 
+#[trace]
 pub fn net_declaration_net_type_identifier(s: Span) -> IResult<Span, NetDeclaration> {
     let (s, a) = net_type_identifier(s)?;
     let (s, b) = opt(delay_control)(s)?;
@@ -377,6 +393,7 @@ pub fn net_declaration_net_type_identifier(s: Span) -> IResult<Span, NetDeclarat
     ))
 }
 
+#[trace]
 pub fn net_declaration_interconnect(s: Span) -> IResult<Span, NetDeclaration> {
     let (s, a) = symbol("interconnect")(s)?;
     let (s, b) = implicit_data_type(s)?;
@@ -397,6 +414,7 @@ pub fn net_declaration_interconnect(s: Span) -> IResult<Span, NetDeclaration> {
     ))
 }
 
+#[trace]
 pub fn type_declaration(s: Span) -> IResult<Span, TypeDeclaration> {
     alt((
         type_declaration_data_type,
@@ -405,6 +423,7 @@ pub fn type_declaration(s: Span) -> IResult<Span, TypeDeclaration> {
     ))(s)
 }
 
+#[trace]
 pub fn type_declaration_data_type(s: Span) -> IResult<Span, TypeDeclaration> {
     let (s, a) = symbol("typedef")(s)?;
     let (s, b) = data_type(s)?;
@@ -419,6 +438,7 @@ pub fn type_declaration_data_type(s: Span) -> IResult<Span, TypeDeclaration> {
     ))
 }
 
+#[trace]
 pub fn type_declaration_interface(s: Span) -> IResult<Span, TypeDeclaration> {
     let (s, a) = symbol("typedef")(s)?;
     let (s, b) = interface_instance_identifier(s)?;
@@ -435,6 +455,7 @@ pub fn type_declaration_interface(s: Span) -> IResult<Span, TypeDeclaration> {
     ))
 }
 
+#[trace]
 pub fn type_declaration_reserved(s: Span) -> IResult<Span, TypeDeclaration> {
     let (s, a) = symbol("typedef")(s)?;
     let (s, b) = type_declaration_keyword(s)?;
@@ -448,6 +469,7 @@ pub fn type_declaration_reserved(s: Span) -> IResult<Span, TypeDeclaration> {
     ))
 }
 
+#[trace]
 pub fn type_declaration_keyword(s: Span) -> IResult<Span, TypeDeclarationKeyword> {
     alt((
         map(symbol("enum"), |x| TypeDeclarationKeyword::Enum(x)),
@@ -460,6 +482,7 @@ pub fn type_declaration_keyword(s: Span) -> IResult<Span, TypeDeclarationKeyword
     ))(s)
 }
 
+#[trace]
 pub fn net_type_declaration(s: Span) -> IResult<Span, NetTypeDeclaration> {
     alt((
         net_type_declaration_data_type,
@@ -467,6 +490,7 @@ pub fn net_type_declaration(s: Span) -> IResult<Span, NetTypeDeclaration> {
     ))(s)
 }
 
+#[trace]
 pub fn net_type_declaration_data_type(s: Span) -> IResult<Span, NetTypeDeclaration> {
     let (s, a) = symbol("nettype")(s)?;
     let (s, b) = data_type(s)?;
@@ -485,6 +509,7 @@ pub fn net_type_declaration_data_type(s: Span) -> IResult<Span, NetTypeDeclarati
     ))
 }
 
+#[trace]
 pub fn net_type_declaration_net_type(s: Span) -> IResult<Span, NetTypeDeclaration> {
     let (s, a) = symbol("nettype")(s)?;
     let (s, b) = opt(package_scope_or_class_scope)(s)?;
@@ -499,6 +524,7 @@ pub fn net_type_declaration_net_type(s: Span) -> IResult<Span, NetTypeDeclaratio
     ))
 }
 
+#[trace]
 pub fn lifetime(s: Span) -> IResult<Span, Lifetime> {
     alt((
         map(symbol("static"), |x| Lifetime::Static(x)),

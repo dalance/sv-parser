@@ -19,7 +19,7 @@ trace = []
 nom = "5.0.0"
 nom_locate = { git = "https://github.com/fflorent/nom_locate" }
 str-concat = "*"
-node_derive = { path = "./node_derive" }
+sv-parser-derive = { path = "./sv-parser-derive" }
 
 [build-dependencies]
 walkdir = "2"

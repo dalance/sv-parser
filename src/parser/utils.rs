@@ -70,7 +70,7 @@ pub fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol<'
             );
         }
         let (s, x) = map(ws(tag(t.clone())), |x| Symbol { nodes: x })(s)?;
-        Ok((clear_bit(s), x))
+        Ok((clear_recursive_flags(s), x))
     }
 }
 
@@ -214,15 +214,15 @@ pub fn concat<'a>(a: Span<'a>, b: Span<'a>) -> Option<Span<'a>> {
     }
 }
 
-pub fn check_bit(s: Span, id: u32) -> bool {
-    let upper = (id / 128) as usize;
+pub fn check_recursive_flag(s: Span, id: usize) -> bool {
+    let upper = id / 128;
     let lower = id % 128;
 
     ((s.extra[upper] >> lower) & 1) == 1
 }
 
-pub fn set_bit(s: Span, id: u32, bit: bool) -> Span {
-    let upper = (id / 128) as usize;
+pub fn set_recursive_flag(s: Span, id: usize, bit: bool) -> Span {
+    let upper = id / 128;
     let lower = id % 128;
 
     let val = if bit { 1u128 << lower } else { 0u128 };
@@ -238,12 +238,12 @@ pub fn set_bit(s: Span, id: u32, bit: bool) -> Span {
     }
 }
 
-pub fn clear_bit(s: Span) -> Span {
+pub fn clear_recursive_flags(s: Span) -> Span {
     Span {
         offset: s.offset,
         line: s.line,
         fragment: s.fragment,
-        extra: [0; 10],
+        extra: [0; RECURSIVE_FLAG_WORDS],
     }
 }
 
@@ -252,7 +252,7 @@ pub fn clear_bit(s: Span) -> Span {
 #[cfg(test)]
 macro_rules! parser_test {
     ( $x:expr, $y:expr, $z:pat ) => {
-        let ret = all_consuming($x)(Span::new_extra($y, [0; 10]));
+        let ret = all_consuming($x)(Span::new_extra($y, [0; RECURSIVE_FLAG_WORDS]));
         if let $z = ret {
         } else {
             assert!(false, "{:?}", ret)

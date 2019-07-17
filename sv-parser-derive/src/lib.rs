@@ -137,7 +137,7 @@ fn impl_parser(attr: &AttributeArgs, item: &ItemFn) -> TokenStream {
     let checker = quote! {
         if thread_context::PARSER_INDEX.with(|p| {
             if let Some(i) = p.borrow_mut().get(stringify!(#ident)) {
-                return check_bit(s, i);
+                return check_recursive_flag(s, i);
             } else {
                 return false
             }
@@ -154,7 +154,7 @@ fn impl_parser(attr: &AttributeArgs, item: &ItemFn) -> TokenStream {
     let before = quote! {
         let s = thread_context::PARSER_INDEX.with(|p| {
             if let Some(i) = p.borrow_mut().get(stringify!(#ident)) {
-                set_bit(s, i, true)
+                set_recursive_flag(s, i, true)
             } else {
                 if cfg!(feature = "trace") {
                     println!("{:<64} : allocate failed", stringify!(#ident));
@@ -180,7 +180,7 @@ fn impl_parser(attr: &AttributeArgs, item: &ItemFn) -> TokenStream {
     let body = parse_macro_input!(body as Stmt);
 
     let after = quote! {
-        Ok((clear_bit(s), ret))
+        Ok((clear_recursive_flags(s), ret))
     };
     let after: TokenStream = after.into();
     let after = parse_macro_input!(after as Expr);

@@ -188,6 +188,13 @@ where
     }
 }
 
+pub fn none<'a, O, F>(_f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Option<O>>
+where
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+{
+    move |s: Span<'a>| Ok((s, None))
+}
+
 // -----------------------------------------------------------------------------
 
 #[parser]

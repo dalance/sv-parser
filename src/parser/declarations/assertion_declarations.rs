@@ -172,7 +172,7 @@ pub struct PropertyPortItem<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
         Option<(Local<'a>, Option<PropertyLvarPortDirection<'a>>)>,
-        PropertyFormalType<'a>,
+        Option<PropertyFormalType<'a>>,
         FormalPortIdentifier<'a>,
         Vec<VariableDimension<'a>>,
         Option<(Symbol<'a>, PropertyActualArg<'a>)>,
@@ -472,7 +472,7 @@ pub struct SequencePortItem<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
         Option<(Local<'a>, Option<SequenceLvarPortDirection<'a>>)>,
-        SequenceFormalType<'a>,
+        Option<SequenceFormalType<'a>>,
         FormalPortIdentifier<'a>,
         Vec<VariableDimension<'a>>,
         Option<(Symbol<'a>, SequenceActualArg<'a>)>,
@@ -975,11 +975,11 @@ pub fn property_port_list(s: Span) -> IResult<Span, PropertyPortList> {
     Ok((s, PropertyPortList { nodes: (a,) }))
 }
 
-#[parser]
+#[parser(Ambiguous)]
 pub fn property_port_item(s: Span) -> IResult<Span, PropertyPortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = opt(pair(local, opt(property_lvar_port_direction)))(s)?;
-    let (s, c) = property_formal_type(s)?;
+    let (s, c) = ambiguous_opt(property_formal_type)(s)?;
     let (s, d) = formal_port_identifier(s)?;
     let (s, e) = many0(variable_dimension)(s)?;
     let (s, f) = opt(pair(symbol("="), property_actual_arg))(s)?;
@@ -1448,11 +1448,11 @@ pub fn sequence_port_list(s: Span) -> IResult<Span, SequencePortList> {
     Ok((s, SequencePortList { nodes: (a,) }))
 }
 
-#[parser]
+#[parser(Ambiguous)]
 pub fn sequence_port_item(s: Span) -> IResult<Span, SequencePortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = opt(pair(local, opt(sequence_lvar_port_direction)))(s)?;
-    let (s, c) = sequence_formal_type(s)?;
+    let (s, c) = ambiguous_opt(sequence_formal_type)(s)?;
     let (s, d) = formal_port_identifier(s)?;
     let (s, e) = many0(variable_dimension)(s)?;
     let (s, f) = opt(pair(symbol("="), sequence_actual_arg))(s)?;

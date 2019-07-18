@@ -16,7 +16,7 @@ pub enum LocalParameterDeclaration<'a> {
 pub struct LocalParameterDeclarationParam<'a> {
     pub nodes: (
         Symbol<'a>,
-        DataTypeOrImplicit<'a>,
+        Option<DataTypeOrImplicit<'a>>,
         ListOfParamAssignments<'a>,
     ),
 }
@@ -36,7 +36,7 @@ pub enum ParameterDeclaration<'a> {
 pub struct ParameterDeclarationParam<'a> {
     pub nodes: (
         Symbol<'a>,
-        DataTypeOrImplicit<'a>,
+        Option<DataTypeOrImplicit<'a>>,
         ListOfParamAssignments<'a>,
     ),
 }
@@ -66,10 +66,10 @@ pub fn local_parameter_declaration(s: Span) -> IResult<Span, LocalParameterDecla
     ))(s)
 }
 
-#[parser]
+#[parser(Ambiguous)]
 pub fn local_parameter_declaration_param(s: Span) -> IResult<Span, LocalParameterDeclaration> {
     let (s, a) = symbol("localparam")(s)?;
-    let (s, b) = data_type_or_implicit(s)?;
+    let (s, b) = ambiguous_opt(data_type_or_implicit)(s)?;
     let (s, c) = list_of_param_assignments(s)?;
     Ok((
         s,
@@ -93,10 +93,10 @@ pub fn parameter_declaration(s: Span) -> IResult<Span, ParameterDeclaration> {
     alt((parameter_declaration_param, parameter_declaration_type))(s)
 }
 
-#[parser]
+#[parser(Ambiguous)]
 pub fn parameter_declaration_param(s: Span) -> IResult<Span, ParameterDeclaration> {
     let (s, a) = symbol("parameter")(s)?;
-    let (s, b) = data_type_or_implicit(s)?;
+    let (s, b) = ambiguous_opt(data_type_or_implicit)(s)?;
     let (s, c) = list_of_param_assignments(s)?;
     Ok((
         s,

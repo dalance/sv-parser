@@ -34,7 +34,7 @@ pub struct LetPortList<'a> {
 pub struct LetPortItem<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        LetFormalType<'a>,
+        Option<LetFormalType<'a>>,
         FormalPortIdentifier<'a>,
         Vec<VariableDimension<'a>>,
         Option<(Symbol<'a>, Expression<'a>)>,
@@ -124,10 +124,10 @@ pub fn let_port_list(s: Span) -> IResult<Span, LetPortList> {
     Ok((s, LetPortList { nodes: (a,) }))
 }
 
-#[parser]
+#[parser(Ambiguous)]
 pub fn let_port_item(s: Span) -> IResult<Span, LetPortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = let_formal_type(s)?;
+    let (s, b) = ambiguous_opt(let_formal_type)(s)?;
     let (s, c) = formal_port_identifier(s)?;
     let (s, d) = many0(variable_dimension)(s)?;
     let (s, e) = opt(pair(symbol("="), expression))(s)?;

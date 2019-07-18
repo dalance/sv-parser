@@ -715,10 +715,10 @@ pub fn hierarchical_identifier_or_class_scope(
     ))(s)
 }
 
-#[parser]
+#[parser(Ambiguous)]
 pub fn cover_point(s: Span) -> IResult<Span, CoverPoint> {
     let (s, a) = opt(triple(
-        opt(data_type_or_implicit),
+        ambiguous_opt(data_type_or_implicit),
         cover_point_identifier,
         symbol(":"),
     ))(s)?;

@@ -533,12 +533,12 @@ pub fn net_type(s: Span) -> IResult<Span, NetType> {
     alt((
         map(symbol("supply0"), |x| NetType::Supply0(x)),
         map(symbol("supply1"), |x| NetType::Supply1(x)),
-        map(symbol("tri"), |x| NetType::Tri(x)),
         map(symbol("triand"), |x| NetType::Triand(x)),
         map(symbol("trior"), |x| NetType::Trior(x)),
         map(symbol("trireg"), |x| NetType::Trireg(x)),
         map(symbol("tri0"), |x| NetType::Tri0(x)),
         map(symbol("tri1"), |x| NetType::Tri1(x)),
+        map(symbol("tri"), |x| NetType::Tri(x)),
         map(symbol("uwire"), |x| NetType::Uwire(x)),
         map(symbol("wire"), |x| NetType::Wire(x)),
         map(symbol("wand"), |x| NetType::Wand(x)),

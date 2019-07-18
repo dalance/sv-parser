@@ -9,7 +9,11 @@ use nom::IResult;
 
 #[derive(Debug, Node)]
 pub struct InoutDeclaration<'a> {
-    pub nodes: (Symbol<'a>, NetPortType<'a>, ListOfPortIdentifiers<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        Option<NetPortType<'a>>,
+        ListOfPortIdentifiers<'a>,
+    ),
 }
 
 #[derive(Debug, Node)]
@@ -20,7 +24,11 @@ pub enum InputDeclaration<'a> {
 
 #[derive(Debug, Node)]
 pub struct InputDeclarationNet<'a> {
-    pub nodes: (Symbol<'a>, NetPortType<'a>, ListOfPortIdentifiers<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        Option<NetPortType<'a>>,
+        ListOfPortIdentifiers<'a>,
+    ),
 }
 
 #[derive(Debug, Node)]
@@ -40,7 +48,11 @@ pub enum OutputDeclaration<'a> {
 
 #[derive(Debug, Node)]
 pub struct OutputDeclarationNet<'a> {
-    pub nodes: (Symbol<'a>, NetPortType<'a>, ListOfPortIdentifiers<'a>),
+    pub nodes: (
+        Symbol<'a>,
+        Option<NetPortType<'a>>,
+        ListOfPortIdentifiers<'a>,
+    ),
 }
 
 #[derive(Debug, Node)]
@@ -72,10 +84,10 @@ pub struct RefDeclaration<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[parser(Ambiguous)]
 pub fn inout_declaration(s: Span) -> IResult<Span, InoutDeclaration> {
     let (s, a) = symbol("inout")(s)?;
-    let (s, b) = net_port_type(s)?;
+    let (s, b) = ambiguous_opt(net_port_type)(s)?;
     let (s, c) = list_of_port_identifiers(s)?;
     Ok((s, InoutDeclaration { nodes: (a, b, c) }))
 }
@@ -85,10 +97,10 @@ pub fn input_declaration(s: Span) -> IResult<Span, InputDeclaration> {
     alt((input_declaration_net, input_declaration_variable))(s)
 }
 
-#[parser]
+#[parser(Ambiguous)]
 pub fn input_declaration_net(s: Span) -> IResult<Span, InputDeclaration> {
     let (s, a) = symbol("input")(s)?;
-    let (s, b) = net_port_type(s)?;
+    let (s, b) = ambiguous_opt(net_port_type)(s)?;
     let (s, c) = list_of_port_identifiers(s)?;
     Ok((
         s,
@@ -112,10 +124,10 @@ pub fn output_declaration(s: Span) -> IResult<Span, OutputDeclaration> {
     alt((output_declaration_net, output_declaration_variable))(s)
 }
 
-#[parser]
+#[parser(Ambiguous)]
 pub fn output_declaration_net(s: Span) -> IResult<Span, OutputDeclaration> {
     let (s, a) = symbol("output")(s)?;
-    let (s, b) = net_port_type(s)?;
+    let (s, b) = ambiguous_opt(net_port_type)(s)?;
     let (s, c) = list_of_port_identifiers(s)?;
     Ok((
         s,
@@ -148,4 +160,19 @@ pub fn ref_declaration(s: Span) -> IResult<Span, RefDeclaration> {
     let (s, b) = variable_port_type(s)?;
     let (s, c) = list_of_variable_identifiers(s)?;
     Ok((s, RefDeclaration { nodes: (a, b, c) }))
+}
+
+// -----------------------------------------------------------------------------
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_inout_declaration() {
+        parser_test!(inout_declaration, "inout a", Ok((_, _)));
+        parser_test!(inout_declaration, "inout [7:0] a", Ok((_, _)));
+        parser_test!(inout_declaration, "inout signed [7:0] a", Ok((_, _)));
+        parser_test!(inout_declaration, "inout var a", Ok((_, _)));
+    }
 }

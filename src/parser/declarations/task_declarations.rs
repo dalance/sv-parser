@@ -63,7 +63,7 @@ pub struct TfPortItem<'a> {
         Vec<AttributeInstance<'a>>,
         Option<TfPortDirection<'a>>,
         Option<Var<'a>>,
-        DataTypeOrImplicit<'a>,
+        Option<DataTypeOrImplicit<'a>>,
         Option<(
             PortIdentifier<'a>,
             Vec<VariableDimension<'a>>,
@@ -84,7 +84,7 @@ pub struct TfPortDeclaration<'a> {
         Vec<AttributeInstance<'a>>,
         TfPortDirection<'a>,
         Option<Var<'a>>,
-        DataTypeOrImplicit<'a>,
+        Option<DataTypeOrImplicit<'a>>,
         ListOfTfVariableIdentifiers<'a>,
         Symbol<'a>,
     ),
@@ -170,12 +170,12 @@ pub fn tf_port_list(s: Span) -> IResult<Span, TfPortList> {
     Ok((s, TfPortList { nodes: (a,) }))
 }
 
-#[parser]
+#[parser(Ambiguous)]
 pub fn tf_port_item(s: Span) -> IResult<Span, TfPortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = opt(tf_port_direction)(s)?;
     let (s, c) = opt(var)(s)?;
-    let (s, d) = data_type_or_implicit(s)?;
+    let (s, d) = ambiguous_opt(data_type_or_implicit)(s)?;
     let (s, e) = opt(triple(
         port_identifier,
         many0(variable_dimension),
@@ -199,12 +199,12 @@ pub fn tf_port_direction(s: Span) -> IResult<Span, TfPortDirection> {
     ))(s)
 }
 
-#[parser]
+#[parser(Ambiguous)]
 pub fn tf_port_declaration(s: Span) -> IResult<Span, TfPortDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = tf_port_direction(s)?;
     let (s, c) = opt(var)(s)?;
-    let (s, d) = data_type_or_implicit(s)?;
+    let (s, d) = ambiguous_opt(data_type_or_implicit)(s)?;
     let (s, e) = list_of_tf_variable_identifiers(s)?;
     let (s, f) = symbol(";")(s)?;
     Ok((

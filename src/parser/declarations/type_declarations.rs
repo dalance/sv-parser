@@ -22,7 +22,7 @@ pub struct DataDeclarationVariable<'a> {
         Option<Const<'a>>,
         Option<Var<'a>>,
         Option<Lifetime<'a>>,
-        DataTypeOrImplicit<'a>,
+        Option<DataTypeOrImplicit<'a>>,
         ListOfVariableDeclAssignments<'a>,
         Symbol<'a>,
     ),
@@ -96,7 +96,7 @@ pub struct NetDeclarationNetType<'a> {
         NetType<'a>,
         Option<Strength<'a>>,
         Option<VectorScalar<'a>>,
-        DataTypeOrImplicit<'a>,
+        Option<DataTypeOrImplicit<'a>>,
         Option<Delay3<'a>>,
         ListOfNetDeclAssignments<'a>,
         Symbol<'a>,
@@ -242,12 +242,12 @@ pub fn data_declaration(s: Span) -> IResult<Span, DataDeclaration> {
     ))(s)
 }
 
-#[parser]
+#[parser(Ambiguous)]
 pub fn data_declaration_variable(s: Span) -> IResult<Span, DataDeclaration> {
     let (s, a) = opt(r#const)(s)?;
     let (s, b) = opt(var)(s)?;
     let (s, c) = opt(lifetime)(s)?;
-    let (s, d) = data_type_or_implicit(s)?;
+    let (s, d) = ambiguous_opt(data_type_or_implicit)(s)?;
     let (s, e) = list_of_variable_decl_assignments(s)?;
     let (s, f) = symbol(";")(s)?;
     Ok((
@@ -340,18 +340,18 @@ pub fn genvar_declaration(s: Span) -> IResult<Span, GenvarDeclaration> {
 #[parser]
 pub fn net_declaration(s: Span) -> IResult<Span, NetDeclaration> {
     alt((
+        net_declaration_interconnect,
         net_declaration_net_type,
         net_declaration_net_type_identifier,
-        net_declaration_interconnect,
     ))(s)
 }
 
-#[parser]
+#[parser(Ambiguous)]
 pub fn net_declaration_net_type(s: Span) -> IResult<Span, NetDeclaration> {
     let (s, a) = net_type(s)?;
     let (s, b) = opt(strength)(s)?;
     let (s, c) = opt(vector_scalar)(s)?;
-    let (s, d) = data_type_or_implicit(s)?;
+    let (s, d) = ambiguous_opt(data_type_or_implicit)(s)?;
     let (s, e) = opt(delay3)(s)?;
     let (s, f) = list_of_net_decl_assignments(s)?;
     let (s, g) = symbol(";")(s)?;
@@ -530,4 +530,76 @@ pub fn lifetime(s: Span) -> IResult<Span, Lifetime> {
         map(symbol("static"), |x| Lifetime::Static(x)),
         map(symbol("automatic"), |x| Lifetime::Automatic(x)),
     ))(s)
+}
+
+// -----------------------------------------------------------------------------
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_net_type_declaration() {
+        parser_test!(
+            net_type_declaration,
+            "nettype T wT;",
+            Ok((_, NetTypeDeclaration::DataType(_)))
+        );
+        parser_test!(
+            net_type_declaration,
+            "nettype T wTsum with Tsum;",
+            Ok((_, NetTypeDeclaration::DataType(_)))
+        );
+        parser_test!(
+            net_type_declaration,
+            "nettype MyBaseT::T narrowTsum with MyBaseT::Tsum;",
+            Ok((_, NetTypeDeclaration::DataType(_)))
+        );
+    }
+
+    #[test]
+    fn test_net_declaration() {
+        parser_test!(
+            net_declaration,
+            "trireg (large) logic #(0,0,0) cap1;",
+            Ok((_, NetDeclaration::NetType(_)))
+        );
+        parser_test!(
+            net_declaration,
+            "wire addressT w1;",
+            Ok((_, NetDeclaration::NetType(_)))
+        );
+        parser_test!(
+            net_declaration,
+            "wire struct packed { logic ecc; logic [7:0] data; } memsig;",
+            Ok((_, NetDeclaration::NetType(_)))
+        );
+        parser_test!(
+            net_declaration,
+            "wire w;",
+            Ok((_, NetDeclaration::NetType(_)))
+        );
+        parser_test!(
+            net_declaration,
+            "wire [15:0] w;",
+            Ok((_, NetDeclaration::NetType(_)))
+        );
+        parser_test!(
+            net_declaration,
+            "interconnect w1;",
+            Ok((_, NetDeclaration::Interconnect(_)))
+        );
+        parser_test!(
+            net_declaration,
+            "interconnect [3:0] w2;",
+            Ok((_, NetDeclaration::Interconnect(_)))
+        );
+        parser_test!(
+            net_declaration,
+            "interconnect [3:0] w3 [1:0];",
+            Ok((_, NetDeclaration::Interconnect(_)))
+        );
+        parser_test!(net_declaration, "interconnect logic [3:0] w4;", Err(_));
+        parser_test!(net_declaration, "interconnect #(1,2,3) w5;", Err(_));
+    }
 }

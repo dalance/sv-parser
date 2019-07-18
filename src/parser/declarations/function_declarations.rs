@@ -32,7 +32,7 @@ pub enum FunctionBodyDeclaration<'a> {
 #[derive(Debug, Node)]
 pub struct FunctionBodyDeclarationWithoutPort<'a> {
     pub nodes: (
-        FunctionDataTypeOrImplicit<'a>,
+        Option<FunctionDataTypeOrImplicit<'a>>,
         Option<InterfaceIdentifierOrClassScope<'a>>,
         FunctionIdentifier<'a>,
         Symbol<'a>,
@@ -46,7 +46,7 @@ pub struct FunctionBodyDeclarationWithoutPort<'a> {
 #[derive(Debug, Node)]
 pub struct FunctionBodyDeclarationWithPort<'a> {
     pub nodes: (
-        FunctionDataTypeOrImplicit<'a>,
+        Option<FunctionDataTypeOrImplicit<'a>>,
         Option<InterfaceIdentifierOrClassScope<'a>>,
         FunctionIdentifier<'a>,
         Paren<'a, Option<TfPortList<'a>>>,
@@ -187,9 +187,9 @@ pub fn function_body_declaration(s: Span) -> IResult<Span, FunctionBodyDeclarati
     ))(s)
 }
 
-#[parser]
+#[parser(Ambiguous)]
 pub fn function_body_declaration_without_port(s: Span) -> IResult<Span, FunctionBodyDeclaration> {
-    let (s, a) = function_data_type_or_implicit(s)?;
+    let (s, a) = ambiguous_opt(function_data_type_or_implicit)(s)?;
     let (s, b) = opt(interface_identifier_or_class_scope)(s)?;
     let (s, c) = function_identifier(s)?;
     let (s, d) = symbol(";")(s)?;
@@ -205,9 +205,9 @@ pub fn function_body_declaration_without_port(s: Span) -> IResult<Span, Function
     ))
 }
 
-#[parser]
+#[parser(Ambiguous)]
 pub fn function_body_declaration_with_port(s: Span) -> IResult<Span, FunctionBodyDeclaration> {
-    let (s, a) = function_data_type_or_implicit(s)?;
+    let (s, a) = ambiguous_opt(function_data_type_or_implicit)(s)?;
     let (s, b) = opt(interface_identifier_or_class_scope)(s)?;
     let (s, c) = function_identifier(s)?;
     let (s, d) = paren(opt(tf_port_list))(s)?;

@@ -93,7 +93,7 @@ pub fn extern_tf_declaration(s: Span) -> IResult<Span, ExternTfDeclaration> {
 
 #[parser]
 pub fn extern_tf_declaration_method(s: Span) -> IResult<Span, ExternTfDeclaration> {
-    let (s, a) = symbol("extern")(s)?;
+    let (s, a) = keyword("extern")(s)?;
     let (s, b) = method_prototype(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((
@@ -104,8 +104,8 @@ pub fn extern_tf_declaration_method(s: Span) -> IResult<Span, ExternTfDeclaratio
 
 #[parser]
 pub fn extern_tf_declaration_task(s: Span) -> IResult<Span, ExternTfDeclaration> {
-    let (s, a) = symbol("extern")(s)?;
-    let (s, b) = symbol("forkjoin")(s)?;
+    let (s, a) = keyword("extern")(s)?;
+    let (s, b) = keyword("forkjoin")(s)?;
     let (s, c) = task_prototype(s)?;
     let (s, d) = symbol(";")(s)?;
     Ok((

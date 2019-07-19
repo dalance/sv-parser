@@ -117,8 +117,8 @@ pub fn checker_port_item(s: Span) -> IResult<Span, CheckerPortItem> {
 #[parser]
 pub fn checker_port_direction(s: Span) -> IResult<Span, CheckerPortDirection> {
     alt((
-        map(symbol("input"), |x| CheckerPortDirection::Input(x)),
-        map(symbol("output"), |x| CheckerPortDirection::Output(x)),
+        map(keyword("input"), |x| CheckerPortDirection::Input(x)),
+        map(keyword("output"), |x| CheckerPortDirection::Output(x)),
     ))(s)
 }
 
@@ -193,7 +193,7 @@ pub fn checker_or_generate_item_declaration_data(
 
 #[parser]
 pub fn rand(s: Span) -> IResult<Span, Rand> {
-    let (s, a) = symbol("rand")(s)?;
+    let (s, a) = keyword("rand")(s)?;
     Ok((s, Rand { nodes: (a,) }))
 }
 
@@ -201,8 +201,8 @@ pub fn rand(s: Span) -> IResult<Span, Rand> {
 pub fn checker_or_generate_item_declaration_clocking(
     s: Span,
 ) -> IResult<Span, CheckerOrGenerateItemDeclaration> {
-    let (s, a) = symbol("default")(s)?;
-    let (s, b) = symbol("clocking")(s)?;
+    let (s, a) = keyword("default")(s)?;
+    let (s, b) = keyword("clocking")(s)?;
     let (s, c) = clocking_identifier(s)?;
     let (s, d) = symbol(";")(s)?;
     Ok((
@@ -217,9 +217,9 @@ pub fn checker_or_generate_item_declaration_clocking(
 pub fn checker_or_generate_item_declaration_disable(
     s: Span,
 ) -> IResult<Span, CheckerOrGenerateItemDeclaration> {
-    let (s, a) = symbol("default")(s)?;
-    let (s, b) = symbol("disable")(s)?;
-    let (s, c) = symbol("iff")(s)?;
+    let (s, a) = keyword("default")(s)?;
+    let (s, b) = keyword("disable")(s)?;
+    let (s, c) = keyword("iff")(s)?;
     let (s, d) = expression_or_dist(s)?;
     let (s, e) = symbol(";")(s)?;
     Ok((

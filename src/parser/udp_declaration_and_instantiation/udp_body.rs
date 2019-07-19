@@ -137,10 +137,10 @@ pub fn udp_body(s: Span) -> IResult<Span, UdpBody> {
 
 #[parser]
 pub fn combinational_body(s: Span) -> IResult<Span, CombinationalBody> {
-    let (s, a) = symbol("table")(s)?;
+    let (s, a) = keyword("table")(s)?;
     let (s, b) = combinational_entry(s)?;
     let (s, c) = many0(combinational_entry)(s)?;
-    let (s, d) = symbol("endtable")(s)?;
+    let (s, d) = keyword("endtable")(s)?;
     Ok((
         s,
         CombinationalBody {
@@ -166,10 +166,10 @@ pub fn combinational_entry(s: Span) -> IResult<Span, CombinationalEntry> {
 #[parser]
 pub fn sequential_body(s: Span) -> IResult<Span, SequentialBody> {
     let (s, a) = opt(udp_initial_statement)(s)?;
-    let (s, b) = symbol("table")(s)?;
+    let (s, b) = keyword("table")(s)?;
     let (s, c) = sequential_entry(s)?;
     let (s, d) = many0(sequential_entry)(s)?;
-    let (s, e) = symbol("endtable")(s)?;
+    let (s, e) = keyword("endtable")(s)?;
     Ok((
         s,
         SequentialBody {
@@ -180,7 +180,7 @@ pub fn sequential_body(s: Span) -> IResult<Span, SequentialBody> {
 
 #[parser]
 pub fn udp_initial_statement(s: Span) -> IResult<Span, UdpInitialStatement> {
-    let (s, a) = symbol("initial")(s)?;
+    let (s, a) = keyword("initial")(s)?;
     let (s, b) = output_port_identifier(s)?;
     let (s, c) = symbol("=")(s)?;
     let (s, d) = init_val(s)?;
@@ -196,16 +196,16 @@ pub fn udp_initial_statement(s: Span) -> IResult<Span, UdpInitialStatement> {
 #[parser]
 pub fn init_val(s: Span) -> IResult<Span, InitVal> {
     alt((
-        map(symbol("1'b0"), |x| InitVal { nodes: (x,) }),
-        map(symbol("1'b1"), |x| InitVal { nodes: (x,) }),
-        map(symbol("1'bx"), |x| InitVal { nodes: (x,) }),
-        map(symbol("1'bX"), |x| InitVal { nodes: (x,) }),
-        map(symbol("1'B0"), |x| InitVal { nodes: (x,) }),
-        map(symbol("1'B1"), |x| InitVal { nodes: (x,) }),
-        map(symbol("1'Bx"), |x| InitVal { nodes: (x,) }),
-        map(symbol("1'BX"), |x| InitVal { nodes: (x,) }),
-        map(symbol("1"), |x| InitVal { nodes: (x,) }),
-        map(symbol("0"), |x| InitVal { nodes: (x,) }),
+        map(keyword("1'b0"), |x| InitVal { nodes: (x,) }),
+        map(keyword("1'b1"), |x| InitVal { nodes: (x,) }),
+        map(keyword("1'bx"), |x| InitVal { nodes: (x,) }),
+        map(keyword("1'bX"), |x| InitVal { nodes: (x,) }),
+        map(keyword("1'B0"), |x| InitVal { nodes: (x,) }),
+        map(keyword("1'B1"), |x| InitVal { nodes: (x,) }),
+        map(keyword("1'Bx"), |x| InitVal { nodes: (x,) }),
+        map(keyword("1'BX"), |x| InitVal { nodes: (x,) }),
+        map(keyword("1"), |x| InitVal { nodes: (x,) }),
+        map(keyword("0"), |x| InitVal { nodes: (x,) }),
     ))(s)
 }
 
@@ -279,37 +279,37 @@ pub fn next_state(s: Span) -> IResult<Span, NextState> {
 #[parser]
 pub fn output_symbol(s: Span) -> IResult<Span, OutputSymbol> {
     alt((
-        map(symbol("0"), |x| OutputSymbol { nodes: (x,) }),
-        map(symbol("1"), |x| OutputSymbol { nodes: (x,) }),
-        map(symbol("x"), |x| OutputSymbol { nodes: (x,) }),
-        map(symbol("X"), |x| OutputSymbol { nodes: (x,) }),
+        map(keyword("0"), |x| OutputSymbol { nodes: (x,) }),
+        map(keyword("1"), |x| OutputSymbol { nodes: (x,) }),
+        map(keyword("x"), |x| OutputSymbol { nodes: (x,) }),
+        map(keyword("X"), |x| OutputSymbol { nodes: (x,) }),
     ))(s)
 }
 
 #[parser]
 pub fn level_symbol(s: Span) -> IResult<Span, LevelSymbol> {
     alt((
-        map(symbol("0"), |x| LevelSymbol { nodes: (x,) }),
-        map(symbol("1"), |x| LevelSymbol { nodes: (x,) }),
-        map(symbol("x"), |x| LevelSymbol { nodes: (x,) }),
-        map(symbol("X"), |x| LevelSymbol { nodes: (x,) }),
-        map(symbol("?"), |x| LevelSymbol { nodes: (x,) }),
-        map(symbol("b"), |x| LevelSymbol { nodes: (x,) }),
-        map(symbol("B"), |x| LevelSymbol { nodes: (x,) }),
+        map(keyword("0"), |x| LevelSymbol { nodes: (x,) }),
+        map(keyword("1"), |x| LevelSymbol { nodes: (x,) }),
+        map(keyword("x"), |x| LevelSymbol { nodes: (x,) }),
+        map(keyword("X"), |x| LevelSymbol { nodes: (x,) }),
+        map(keyword("?"), |x| LevelSymbol { nodes: (x,) }),
+        map(keyword("b"), |x| LevelSymbol { nodes: (x,) }),
+        map(keyword("B"), |x| LevelSymbol { nodes: (x,) }),
     ))(s)
 }
 
 #[parser]
 pub fn edge_symbol(s: Span) -> IResult<Span, EdgeSymbol> {
     alt((
-        map(symbol("r"), |x| EdgeSymbol { nodes: (x,) }),
-        map(symbol("R"), |x| EdgeSymbol { nodes: (x,) }),
-        map(symbol("f"), |x| EdgeSymbol { nodes: (x,) }),
-        map(symbol("F"), |x| EdgeSymbol { nodes: (x,) }),
-        map(symbol("p"), |x| EdgeSymbol { nodes: (x,) }),
-        map(symbol("P"), |x| EdgeSymbol { nodes: (x,) }),
-        map(symbol("n"), |x| EdgeSymbol { nodes: (x,) }),
-        map(symbol("N"), |x| EdgeSymbol { nodes: (x,) }),
-        map(symbol("*"), |x| EdgeSymbol { nodes: (x,) }),
+        map(keyword("r"), |x| EdgeSymbol { nodes: (x,) }),
+        map(keyword("R"), |x| EdgeSymbol { nodes: (x,) }),
+        map(keyword("f"), |x| EdgeSymbol { nodes: (x,) }),
+        map(keyword("F"), |x| EdgeSymbol { nodes: (x,) }),
+        map(keyword("p"), |x| EdgeSymbol { nodes: (x,) }),
+        map(keyword("P"), |x| EdgeSymbol { nodes: (x,) }),
+        map(keyword("n"), |x| EdgeSymbol { nodes: (x,) }),
+        map(keyword("N"), |x| EdgeSymbol { nodes: (x,) }),
+        map(keyword("*"), |x| EdgeSymbol { nodes: (x,) }),
     ))(s)
 }

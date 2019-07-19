@@ -134,7 +134,7 @@ pub fn loop_statement(s: Span) -> IResult<Span, LoopStatement> {
 
 #[parser]
 pub fn loop_statement_forever(s: Span) -> IResult<Span, LoopStatement> {
-    let (s, a) = symbol("forever")(s)?;
+    let (s, a) = keyword("forever")(s)?;
     let (s, b) = statement_or_null(s)?;
     Ok((
         s,
@@ -144,7 +144,7 @@ pub fn loop_statement_forever(s: Span) -> IResult<Span, LoopStatement> {
 
 #[parser]
 pub fn loop_statement_repeat(s: Span) -> IResult<Span, LoopStatement> {
-    let (s, a) = symbol("repeat")(s)?;
+    let (s, a) = keyword("repeat")(s)?;
     let (s, b) = paren(expression)(s)?;
     let (s, c) = statement_or_null(s)?;
     Ok((
@@ -155,7 +155,7 @@ pub fn loop_statement_repeat(s: Span) -> IResult<Span, LoopStatement> {
 
 #[parser]
 pub fn loop_statement_while(s: Span) -> IResult<Span, LoopStatement> {
-    let (s, a) = symbol("while")(s)?;
+    let (s, a) = keyword("while")(s)?;
     let (s, b) = paren(expression)(s)?;
     let (s, c) = statement_or_null(s)?;
     Ok((
@@ -166,7 +166,7 @@ pub fn loop_statement_while(s: Span) -> IResult<Span, LoopStatement> {
 
 #[parser]
 pub fn loop_statement_for(s: Span) -> IResult<Span, LoopStatement> {
-    let (s, a) = symbol("for")(s)?;
+    let (s, a) = keyword("for")(s)?;
     let (s, b) = paren(tuple((
         opt(for_initialization),
         symbol(":"),
@@ -180,9 +180,9 @@ pub fn loop_statement_for(s: Span) -> IResult<Span, LoopStatement> {
 
 #[parser]
 pub fn loop_statement_do_while(s: Span) -> IResult<Span, LoopStatement> {
-    let (s, a) = symbol("do")(s)?;
+    let (s, a) = keyword("do")(s)?;
     let (s, b) = statement_or_null(s)?;
-    let (s, c) = symbol("while")(s)?;
+    let (s, c) = keyword("while")(s)?;
     let (s, d) = paren(expression)(s)?;
     let (s, e) = symbol(";")(s)?;
     Ok((
@@ -195,7 +195,7 @@ pub fn loop_statement_do_while(s: Span) -> IResult<Span, LoopStatement> {
 
 #[parser]
 pub fn loop_statement_foreach(s: Span) -> IResult<Span, LoopStatement> {
-    let (s, a) = symbol("foreach")(s)?;
+    let (s, a) = keyword("foreach")(s)?;
     let (s, b) = paren(pair(
         ps_or_hierarchical_array_identifier,
         bracket(loop_variables),
@@ -239,7 +239,7 @@ pub fn for_variable_declaration(s: Span) -> IResult<Span, ForVariableDeclaration
 
 #[parser]
 pub fn var(s: Span) -> IResult<Span, Var> {
-    let (s, a) = symbol("var")(s)?;
+    let (s, a) = keyword("var")(s)?;
     Ok((s, Var { nodes: (a,) }))
 }
 

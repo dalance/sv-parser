@@ -152,11 +152,11 @@ pub struct RsCaseItemDefault<'a> {
 
 #[parser]
 pub fn randsequence_statement(s: Span) -> IResult<Span, RandsequenceStatement> {
-    let (s, a) = symbol("randsequence")(s)?;
+    let (s, a) = keyword("randsequence")(s)?;
     let (s, b) = paren(opt(production_identifier))(s)?;
     let (s, c) = production(s)?;
     let (s, d) = many0(production)(s)?;
-    let (s, e) = symbol("endsequence")(s)?;
+    let (s, e) = keyword("endsequence")(s)?;
     Ok((
         s,
         RandsequenceStatement {
@@ -209,8 +209,8 @@ pub fn rs_production_list_prod(s: Span) -> IResult<Span, RsProductionList> {
 
 #[parser]
 pub fn rs_production_list_join(s: Span) -> IResult<Span, RsProductionList> {
-    let (s, a) = symbol("rand")(s)?;
-    let (s, b) = symbol("join")(s)?;
+    let (s, a) = keyword("rand")(s)?;
+    let (s, b) = keyword("join")(s)?;
     let (s, c) = opt(paren(expression))(s)?;
     let (s, d) = production_item(s)?;
     let (s, e) = production_item(s)?;
@@ -267,10 +267,10 @@ pub fn production_item(s: Span) -> IResult<Span, ProductionItem> {
 
 #[parser]
 pub fn rs_if_else(s: Span) -> IResult<Span, RsIfElse> {
-    let (s, a) = symbol("if")(s)?;
+    let (s, a) = keyword("if")(s)?;
     let (s, b) = paren(expression)(s)?;
     let (s, c) = production_item(s)?;
-    let (s, d) = opt(pair(symbol("else"), production_item))(s)?;
+    let (s, d) = opt(pair(keyword("else"), production_item))(s)?;
     Ok((
         s,
         RsIfElse {
@@ -281,7 +281,7 @@ pub fn rs_if_else(s: Span) -> IResult<Span, RsIfElse> {
 
 #[parser]
 pub fn rs_repeat(s: Span) -> IResult<Span, RsRepeat> {
-    let (s, a) = symbol("repeat")(s)?;
+    let (s, a) = keyword("repeat")(s)?;
     let (s, b) = paren(expression)(s)?;
     let (s, c) = production_item(s)?;
     Ok((s, RsRepeat { nodes: (a, b, c) }))
@@ -289,11 +289,11 @@ pub fn rs_repeat(s: Span) -> IResult<Span, RsRepeat> {
 
 #[parser]
 pub fn rs_case(s: Span) -> IResult<Span, RsCase> {
-    let (s, a) = symbol("case")(s)?;
+    let (s, a) = keyword("case")(s)?;
     let (s, b) = paren(case_expression)(s)?;
     let (s, c) = rs_case_item(s)?;
     let (s, d) = many0(rs_case_item)(s)?;
-    let (s, e) = symbol("endcase")(s)?;
+    let (s, e) = keyword("endcase")(s)?;
     Ok((
         s,
         RsCase {
@@ -323,7 +323,7 @@ pub fn rs_case_item_nondefault(s: Span) -> IResult<Span, RsCaseItem> {
 
 #[parser]
 pub fn rs_case_item_default(s: Span) -> IResult<Span, RsCaseItem> {
-    let (s, a) = symbol("default")(s)?;
+    let (s, a) = keyword("default")(s)?;
     let (s, b) = opt(symbol(":"))(s)?;
     let (s, c) = production_item(s)?;
     let (s, d) = symbol(";")(s)?;

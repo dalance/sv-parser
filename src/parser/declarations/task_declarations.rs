@@ -103,7 +103,7 @@ pub struct TaskPrototype<'a> {
 
 #[parser]
 pub fn task_declaration(s: Span) -> IResult<Span, TaskDeclaration> {
-    let (s, a) = symbol("task")(s)?;
+    let (s, a) = keyword("task")(s)?;
     let (s, b) = opt(lifetime)(s)?;
     let (s, c) = task_body_declaration(s)?;
     Ok((s, TaskDeclaration { nodes: (a, b, c) }))
@@ -124,7 +124,7 @@ pub fn task_body_declaration_without_port(s: Span) -> IResult<Span, TaskBodyDecl
     let (s, c) = symbol(";")(s)?;
     let (s, d) = many0(tf_item_declaration)(s)?;
     let (s, e) = many0(statement_or_null)(s)?;
-    let (s, f) = symbol("endtask")(s)?;
+    let (s, f) = keyword("endtask")(s)?;
     let (s, g) = opt(pair(symbol(":"), task_identifier))(s)?;
     Ok((
         s,
@@ -142,7 +142,7 @@ pub fn task_body_declaration_with_port(s: Span) -> IResult<Span, TaskBodyDeclara
     let (s, d) = symbol(";")(s)?;
     let (s, e) = many0(block_item_declaration)(s)?;
     let (s, f) = many0(statement_or_null)(s)?;
-    let (s, g) = symbol("endtask")(s)?;
+    let (s, g) = keyword("endtask")(s)?;
     let (s, h) = opt(pair(symbol(":"), task_identifier))(s)?;
     Ok((
         s,
@@ -193,7 +193,7 @@ pub fn tf_port_item(s: Span) -> IResult<Span, TfPortItem> {
 pub fn tf_port_direction(s: Span) -> IResult<Span, TfPortDirection> {
     alt((
         map(port_direction, |x| TfPortDirection::PortDirection(x)),
-        map(pair(symbol("const"), symbol("ref")), |x| {
+        map(pair(keyword("const"), keyword("ref")), |x| {
             TfPortDirection::ConstRef(x)
         }),
     ))(s)
@@ -217,7 +217,7 @@ pub fn tf_port_declaration(s: Span) -> IResult<Span, TfPortDeclaration> {
 
 #[parser]
 pub fn task_prototype(s: Span) -> IResult<Span, TaskPrototype> {
-    let (s, a) = symbol("task")(s)?;
+    let (s, a) = keyword("task")(s)?;
     let (s, b) = task_identifier(s)?;
     let (s, c) = opt(paren(opt(tf_port_list)))(s)?;
     Ok((s, TaskPrototype { nodes: (a, b, c) }))

@@ -106,9 +106,9 @@ pub fn controlled_timing_check_event(s: Span) -> IResult<Span, ControlledTimingC
 #[parser]
 pub fn timing_check_event_control(s: Span) -> IResult<Span, TimingCheckEventControl> {
     alt((
-        map(symbol("posedge"), |x| TimingCheckEventControl::Posedge(x)),
-        map(symbol("negedge"), |x| TimingCheckEventControl::Negedge(x)),
-        map(symbol("edge"), |x| TimingCheckEventControl::Edge(x)),
+        map(keyword("posedge"), |x| TimingCheckEventControl::Posedge(x)),
+        map(keyword("negedge"), |x| TimingCheckEventControl::Negedge(x)),
+        map(keyword("edge"), |x| TimingCheckEventControl::Edge(x)),
         map(edge_control_specifier, |x| {
             TimingCheckEventControl::EdgeControlSpecifier(x)
         }),
@@ -129,7 +129,7 @@ pub fn specify_terminal_descriptor(s: Span) -> IResult<Span, SpecifyTerminalDesc
 
 #[parser]
 pub fn edge_control_specifier(s: Span) -> IResult<Span, EdgeControlSpecifier> {
-    let (s, a) = symbol("edge")(s)?;
+    let (s, a) = keyword("edge")(s)?;
     let (s, b) = bracket(list(symbol(","), edge_descriptor))(s)?;
     Ok((s, EdgeControlSpecifier { nodes: (a, b) }))
 }
@@ -137,24 +137,24 @@ pub fn edge_control_specifier(s: Span) -> IResult<Span, EdgeControlSpecifier> {
 #[parser]
 pub fn edge_descriptor(s: Span) -> IResult<Span, EdgeDescriptor> {
     alt((
-        map(symbol("01"), |x| EdgeDescriptor { nodes: (x,) }),
-        map(symbol("10"), |x| EdgeDescriptor { nodes: (x,) }),
-        map(symbol("x0"), |x| EdgeDescriptor { nodes: (x,) }),
-        map(symbol("x1"), |x| EdgeDescriptor { nodes: (x,) }),
-        map(symbol("X0"), |x| EdgeDescriptor { nodes: (x,) }),
-        map(symbol("X1"), |x| EdgeDescriptor { nodes: (x,) }),
-        map(symbol("z0"), |x| EdgeDescriptor { nodes: (x,) }),
-        map(symbol("z1"), |x| EdgeDescriptor { nodes: (x,) }),
-        map(symbol("Z0"), |x| EdgeDescriptor { nodes: (x,) }),
-        map(symbol("Z1"), |x| EdgeDescriptor { nodes: (x,) }),
-        map(symbol("0x"), |x| EdgeDescriptor { nodes: (x,) }),
-        map(symbol("1x"), |x| EdgeDescriptor { nodes: (x,) }),
-        map(symbol("0X"), |x| EdgeDescriptor { nodes: (x,) }),
-        map(symbol("1X"), |x| EdgeDescriptor { nodes: (x,) }),
-        map(symbol("0z"), |x| EdgeDescriptor { nodes: (x,) }),
-        map(symbol("1z"), |x| EdgeDescriptor { nodes: (x,) }),
-        map(symbol("0Z"), |x| EdgeDescriptor { nodes: (x,) }),
-        map(symbol("1Z"), |x| EdgeDescriptor { nodes: (x,) }),
+        map(keyword("01"), |x| EdgeDescriptor { nodes: (x,) }),
+        map(keyword("10"), |x| EdgeDescriptor { nodes: (x,) }),
+        map(keyword("x0"), |x| EdgeDescriptor { nodes: (x,) }),
+        map(keyword("x1"), |x| EdgeDescriptor { nodes: (x,) }),
+        map(keyword("X0"), |x| EdgeDescriptor { nodes: (x,) }),
+        map(keyword("X1"), |x| EdgeDescriptor { nodes: (x,) }),
+        map(keyword("z0"), |x| EdgeDescriptor { nodes: (x,) }),
+        map(keyword("z1"), |x| EdgeDescriptor { nodes: (x,) }),
+        map(keyword("Z0"), |x| EdgeDescriptor { nodes: (x,) }),
+        map(keyword("Z1"), |x| EdgeDescriptor { nodes: (x,) }),
+        map(keyword("0x"), |x| EdgeDescriptor { nodes: (x,) }),
+        map(keyword("1x"), |x| EdgeDescriptor { nodes: (x,) }),
+        map(keyword("0X"), |x| EdgeDescriptor { nodes: (x,) }),
+        map(keyword("1X"), |x| EdgeDescriptor { nodes: (x,) }),
+        map(keyword("0z"), |x| EdgeDescriptor { nodes: (x,) }),
+        map(keyword("1z"), |x| EdgeDescriptor { nodes: (x,) }),
+        map(keyword("0Z"), |x| EdgeDescriptor { nodes: (x,) }),
+        map(keyword("1Z"), |x| EdgeDescriptor { nodes: (x,) }),
     ))(s)
 }
 
@@ -210,15 +210,15 @@ pub fn scalar_timing_check_condition_binary(s: Span) -> IResult<Span, ScalarTimi
 #[parser]
 pub fn scalar_constant(s: Span) -> IResult<Span, ScalarConstant> {
     alt((
-        map(symbol("1'b0"), |x| ScalarConstant { nodes: (x,) }),
-        map(symbol("1'b1"), |x| ScalarConstant { nodes: (x,) }),
-        map(symbol("1'B0"), |x| ScalarConstant { nodes: (x,) }),
-        map(symbol("1'B1"), |x| ScalarConstant { nodes: (x,) }),
-        map(symbol("'b0"), |x| ScalarConstant { nodes: (x,) }),
-        map(symbol("'b1"), |x| ScalarConstant { nodes: (x,) }),
-        map(symbol("'B0"), |x| ScalarConstant { nodes: (x,) }),
-        map(symbol("'B1"), |x| ScalarConstant { nodes: (x,) }),
-        map(symbol("1"), |x| ScalarConstant { nodes: (x,) }),
-        map(symbol("0"), |x| ScalarConstant { nodes: (x,) }),
+        map(keyword("1'b0"), |x| ScalarConstant { nodes: (x,) }),
+        map(keyword("1'b1"), |x| ScalarConstant { nodes: (x,) }),
+        map(keyword("1'B0"), |x| ScalarConstant { nodes: (x,) }),
+        map(keyword("1'B1"), |x| ScalarConstant { nodes: (x,) }),
+        map(keyword("'b0"), |x| ScalarConstant { nodes: (x,) }),
+        map(keyword("'b1"), |x| ScalarConstant { nodes: (x,) }),
+        map(keyword("'B0"), |x| ScalarConstant { nodes: (x,) }),
+        map(keyword("'B1"), |x| ScalarConstant { nodes: (x,) }),
+        map(keyword("1"), |x| ScalarConstant { nodes: (x,) }),
+        map(keyword("0"), |x| ScalarConstant { nodes: (x,) }),
     ))(s)
 }

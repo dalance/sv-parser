@@ -158,7 +158,7 @@ pub fn pattern_variable(s: Span) -> IResult<Span, Pattern> {
 
 #[parser]
 pub fn pattern_tagged(s: Span) -> IResult<Span, Pattern> {
-    let (s, a) = symbol("tagged")(s)?;
+    let (s, a) = keyword("tagged")(s)?;
     let (s, b) = member_identifier(s)?;
     let (s, c) = opt(pattern)(s)?;
     Ok((
@@ -268,7 +268,7 @@ pub fn array_pattern_key(s: Span) -> IResult<Span, ArrayPatternKey> {
 pub fn assignment_pattern_key(s: Span) -> IResult<Span, AssignmentPatternKey> {
     alt((
         map(simple_type, |x| AssignmentPatternKey::SimpleType(x)),
-        map(symbol("default"), |x| AssignmentPatternKey::Default(x)),
+        map(keyword("default"), |x| AssignmentPatternKey::Default(x)),
     ))(s)
 }
 

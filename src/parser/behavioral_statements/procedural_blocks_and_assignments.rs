@@ -132,7 +132,7 @@ pub struct VariableAssignment<'a> {
 
 #[parser]
 pub fn initial_construct(s: Span) -> IResult<Span, InitialConstruct> {
-    let (s, a) = symbol("initial")(s)?;
+    let (s, a) = keyword("initial")(s)?;
     let (s, b) = statement_or_null(s)?;
     Ok((s, InitialConstruct { nodes: (a, b) }))
 }
@@ -147,16 +147,16 @@ pub fn always_construct(s: Span) -> IResult<Span, AlwaysConstruct> {
 #[parser]
 pub fn always_keyword(s: Span) -> IResult<Span, AlwaysKeyword> {
     alt((
-        map(symbol("always_comb"), |x| AlwaysKeyword::AlwaysComb(x)),
-        map(symbol("always_latch"), |x| AlwaysKeyword::AlwaysLatch(x)),
-        map(symbol("always_ff"), |x| AlwaysKeyword::AlwaysFf(x)),
-        map(symbol("always"), |x| AlwaysKeyword::Always(x)),
+        map(keyword("always_comb"), |x| AlwaysKeyword::AlwaysComb(x)),
+        map(keyword("always_latch"), |x| AlwaysKeyword::AlwaysLatch(x)),
+        map(keyword("always_ff"), |x| AlwaysKeyword::AlwaysFf(x)),
+        map(keyword("always"), |x| AlwaysKeyword::Always(x)),
     ))(s)
 }
 
 #[parser]
 pub fn final_construct(s: Span) -> IResult<Span, FinalConstruct> {
-    let (s, a) = symbol("final")(s)?;
+    let (s, a) = keyword("final")(s)?;
     let (s, b) = function_statement(s)?;
     Ok((s, FinalConstruct { nodes: (a, b) }))
 }
@@ -272,7 +272,7 @@ pub fn procedural_continuous_assignment(s: Span) -> IResult<Span, ProceduralCont
 pub fn procedural_continuous_assignment_assign(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
-    let (s, a) = symbol("assign")(s)?;
+    let (s, a) = keyword("assign")(s)?;
     let (s, b) = variable_assignment(s)?;
     Ok((
         s,
@@ -286,7 +286,7 @@ pub fn procedural_continuous_assignment_assign(
 pub fn procedural_continuous_assignment_deassign(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
-    let (s, a) = symbol("deassign")(s)?;
+    let (s, a) = keyword("deassign")(s)?;
     let (s, b) = variable_lvalue(s)?;
     Ok((
         s,
@@ -300,7 +300,7 @@ pub fn procedural_continuous_assignment_deassign(
 pub fn procedural_continuous_assignment_force_variable(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
-    let (s, a) = symbol("force")(s)?;
+    let (s, a) = keyword("force")(s)?;
     let (s, b) = variable_assignment(s)?;
     Ok((
         s,
@@ -314,7 +314,7 @@ pub fn procedural_continuous_assignment_force_variable(
 pub fn procedural_continuous_assignment_force_net(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
-    let (s, a) = symbol("force")(s)?;
+    let (s, a) = keyword("force")(s)?;
     let (s, b) = net_assignment(s)?;
     Ok((
         s,
@@ -328,7 +328,7 @@ pub fn procedural_continuous_assignment_force_net(
 pub fn procedural_continuous_assignment_release_variable(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
-    let (s, a) = symbol("release")(s)?;
+    let (s, a) = keyword("release")(s)?;
     let (s, b) = variable_lvalue(s)?;
     Ok((
         s,
@@ -342,7 +342,7 @@ pub fn procedural_continuous_assignment_release_variable(
 pub fn procedural_continuous_assignment_release_net(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
-    let (s, a) = symbol("release")(s)?;
+    let (s, a) = keyword("release")(s)?;
     let (s, b) = net_lvalue(s)?;
     Ok((
         s,

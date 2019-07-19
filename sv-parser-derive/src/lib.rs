@@ -260,6 +260,10 @@ fn impl_parser_body_ambiguous(item: &ItemFn) -> TokenStream {
             let rest = rest.replacen("ambiguous_opt", &format!("amb_temporary{}", i), 1);
             token = format!("{}{}", head, rest);
             replace_parsers.push(("opt", "none"));
+        } else if rest.starts_with("ambiguous_alt") {
+            let rest = rest.replacen("ambiguous_alt", &format!("amb_temporary{}", i), 1);
+            token = format!("{}{}", head, rest);
+            replace_parsers.push(("alt_left", "alt_right"));
         }
     }
 

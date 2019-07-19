@@ -799,8 +799,8 @@ pub fn concurrent_assertion_statement(s: Span) -> IResult<Span, ConcurrentAssert
 
 #[parser]
 pub fn assert_property_statement(s: Span) -> IResult<Span, AssertPropertyStatement> {
-    let (s, a) = symbol("assert")(s)?;
-    let (s, b) = symbol("property")(s)?;
+    let (s, a) = keyword("assert")(s)?;
+    let (s, b) = keyword("property")(s)?;
     let (s, c) = paren(property_spec)(s)?;
     let (s, d) = action_block(s)?;
     Ok((
@@ -813,8 +813,8 @@ pub fn assert_property_statement(s: Span) -> IResult<Span, AssertPropertyStateme
 
 #[parser]
 pub fn assume_property_statement(s: Span) -> IResult<Span, AssumePropertyStatement> {
-    let (s, a) = symbol("assume")(s)?;
-    let (s, b) = symbol("property")(s)?;
+    let (s, a) = keyword("assume")(s)?;
+    let (s, b) = keyword("property")(s)?;
     let (s, c) = paren(property_spec)(s)?;
     let (s, d) = action_block(s)?;
     Ok((
@@ -827,8 +827,8 @@ pub fn assume_property_statement(s: Span) -> IResult<Span, AssumePropertyStateme
 
 #[parser]
 pub fn cover_property_statement(s: Span) -> IResult<Span, CoverPropertyStatement> {
-    let (s, a) = symbol("cover")(s)?;
-    let (s, b) = symbol("property")(s)?;
+    let (s, a) = keyword("cover")(s)?;
+    let (s, b) = keyword("property")(s)?;
     let (s, c) = paren(property_spec)(s)?;
     let (s, d) = statement_or_null(s)?;
     Ok((
@@ -841,7 +841,7 @@ pub fn cover_property_statement(s: Span) -> IResult<Span, CoverPropertyStatement
 
 #[parser]
 pub fn expect_property_statement(s: Span) -> IResult<Span, ExpectPropertyStatement> {
-    let (s, a) = symbol("expect")(s)?;
+    let (s, a) = keyword("expect")(s)?;
     let (s, b) = paren(property_spec)(s)?;
     let (s, c) = action_block(s)?;
     Ok((s, ExpectPropertyStatement { nodes: (a, b, c) }))
@@ -849,13 +849,13 @@ pub fn expect_property_statement(s: Span) -> IResult<Span, ExpectPropertyStateme
 
 #[parser]
 pub fn cover_sequence_statement(s: Span) -> IResult<Span, CoverSequenceStatement> {
-    let (s, a) = symbol("cover")(s)?;
-    let (s, b) = symbol("sequence")(s)?;
+    let (s, a) = keyword("cover")(s)?;
+    let (s, b) = keyword("sequence")(s)?;
     let (s, c) = paren(triple(
         opt(clocking_event),
         opt(triple(
-            symbol("disable"),
-            symbol("iff"),
+            keyword("disable"),
+            keyword("iff"),
             paren(expression_or_dist),
         )),
         sequence_expr,
@@ -871,8 +871,8 @@ pub fn cover_sequence_statement(s: Span) -> IResult<Span, CoverSequenceStatement
 
 #[parser]
 pub fn restrict_property_statement(s: Span) -> IResult<Span, RestrictPropertyStatement> {
-    let (s, a) = symbol("restrict")(s)?;
-    let (s, b) = symbol("property")(s)?;
+    let (s, a) = keyword("restrict")(s)?;
+    let (s, b) = keyword("property")(s)?;
     let (s, c) = paren(property_spec)(s)?;
     let (s, d) = symbol(";")(s)?;
     Ok((
@@ -952,14 +952,14 @@ pub fn assertion_item_declaration(s: Span) -> IResult<Span, AssertionItemDeclara
 
 #[parser]
 pub fn property_declaration(s: Span) -> IResult<Span, PropertyDeclaration> {
-    let (s, a) = symbol("property")(s)?;
+    let (s, a) = keyword("property")(s)?;
     let (s, b) = property_identifier(s)?;
     let (s, c) = opt(paren(opt(property_port_list)))(s)?;
     let (s, d) = symbol(";")(s)?;
     let (s, e) = many0(assertion_variable_declaration)(s)?;
     let (s, f) = property_spec(s)?;
     let (s, g) = opt(symbol(";"))(s)?;
-    let (s, h) = symbol("endproperty")(s)?;
+    let (s, h) = keyword("endproperty")(s)?;
     let (s, i) = opt(pair(symbol(":"), property_identifier))(s)?;
     Ok((
         s,
@@ -993,7 +993,7 @@ pub fn property_port_item(s: Span) -> IResult<Span, PropertyPortItem> {
 
 #[parser]
 pub fn property_lvar_port_direction(s: Span) -> IResult<Span, PropertyLvarPortDirection> {
-    let (s, a) = symbol("input")(s)?;
+    let (s, a) = keyword("input")(s)?;
     Ok((s, PropertyLvarPortDirection::Input(a)))
 }
 
@@ -1003,7 +1003,7 @@ pub fn property_formal_type(s: Span) -> IResult<Span, PropertyFormalType> {
         map(sequence_formal_type, |x| {
             PropertyFormalType::SequenceFormalType(x)
         }),
-        map(symbol("property"), |x| PropertyFormalType::Property(x)),
+        map(keyword("property"), |x| PropertyFormalType::Property(x)),
     ))(s)
 }
 
@@ -1011,8 +1011,8 @@ pub fn property_formal_type(s: Span) -> IResult<Span, PropertyFormalType> {
 pub fn property_spec(s: Span) -> IResult<Span, PropertySpec> {
     let (s, a) = opt(clocking_event)(s)?;
     let (s, b) = opt(triple(
-        symbol("disable"),
-        symbol("iff"),
+        keyword("disable"),
+        keyword("iff"),
         paren(expression_or_dist),
     ))(s)?;
     let (s, c) = property_expr(s)?;
@@ -1064,7 +1064,7 @@ pub fn property_expr(s: Span) -> IResult<Span, PropertyExpr> {
 
 #[parser]
 pub fn property_expr_strong(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = symbol("strong")(s)?;
+    let (s, a) = keyword("strong")(s)?;
     let (s, b) = paren(sequence_expr)(s)?;
     Ok((
         s,
@@ -1074,7 +1074,7 @@ pub fn property_expr_strong(s: Span) -> IResult<Span, PropertyExpr> {
 
 #[parser]
 pub fn property_expr_weak(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = symbol("weak")(s)?;
+    let (s, a) = keyword("weak")(s)?;
     let (s, b) = paren(sequence_expr)(s)?;
     Ok((
         s,
@@ -1093,7 +1093,7 @@ pub fn property_expr_paren(s: Span) -> IResult<Span, PropertyExpr> {
 
 #[parser]
 pub fn property_expr_not(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = symbol("not")(s)?;
+    let (s, a) = keyword("not")(s)?;
     let (s, b) = property_expr(s)?;
     Ok((
         s,
@@ -1104,7 +1104,7 @@ pub fn property_expr_not(s: Span) -> IResult<Span, PropertyExpr> {
 #[parser(MaybeRecursive)]
 pub fn property_expr_or(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
-    let (s, b) = symbol("or")(s)?;
+    let (s, b) = keyword("or")(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
         s,
@@ -1115,7 +1115,7 @@ pub fn property_expr_or(s: Span) -> IResult<Span, PropertyExpr> {
 #[parser(MaybeRecursive)]
 pub fn property_expr_and(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
-    let (s, b) = symbol("and")(s)?;
+    let (s, b) = keyword("and")(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
         s,
@@ -1151,10 +1151,10 @@ pub fn property_expr_implication_nonoverlapped(s: Span) -> IResult<Span, Propert
 
 #[parser]
 pub fn property_expr_if(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = symbol("if")(s)?;
+    let (s, a) = keyword("if")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
     let (s, c) = property_expr(s)?;
-    let (s, d) = opt(pair(symbol("else"), property_expr))(s)?;
+    let (s, d) = opt(pair(keyword("else"), property_expr))(s)?;
     Ok((
         s,
         PropertyExpr::If(Box::new(PropertyExprIf {
@@ -1165,11 +1165,11 @@ pub fn property_expr_if(s: Span) -> IResult<Span, PropertyExpr> {
 
 #[parser]
 pub fn property_expr_case(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = symbol("case")(s)?;
+    let (s, a) = keyword("case")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
     let (s, c) = property_case_item(s)?;
     let (s, d) = many0(property_case_item)(s)?;
-    let (s, e) = symbol("endcase")(s)?;
+    let (s, e) = keyword("endcase")(s)?;
     Ok((
         s,
         PropertyExpr::Case(Box::new(PropertyExprCase {
@@ -1206,7 +1206,7 @@ pub fn property_expr_followed_by_nonoverlapped(s: Span) -> IResult<Span, Propert
 
 #[parser]
 pub fn property_expr_nexttime(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = symbol("nexttime")(s)?;
+    let (s, a) = keyword("nexttime")(s)?;
     let (s, b) = opt(bracket(constant_expression))(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
@@ -1217,7 +1217,7 @@ pub fn property_expr_nexttime(s: Span) -> IResult<Span, PropertyExpr> {
 
 #[parser]
 pub fn property_expr_s_nexttime(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = symbol("s_nexttime")(s)?;
+    let (s, a) = keyword("s_nexttime")(s)?;
     let (s, b) = opt(bracket(constant_expression))(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
@@ -1228,7 +1228,7 @@ pub fn property_expr_s_nexttime(s: Span) -> IResult<Span, PropertyExpr> {
 
 #[parser]
 pub fn property_expr_always(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = symbol("always")(s)?;
+    let (s, a) = keyword("always")(s)?;
     let (s, b) = opt(bracket(cycle_delay_const_range_expression))(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
@@ -1239,7 +1239,7 @@ pub fn property_expr_always(s: Span) -> IResult<Span, PropertyExpr> {
 
 #[parser]
 pub fn property_expr_s_always(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = symbol("s_always")(s)?;
+    let (s, a) = keyword("s_always")(s)?;
     let (s, b) = bracket(cycle_delay_const_range_expression)(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
@@ -1250,7 +1250,7 @@ pub fn property_expr_s_always(s: Span) -> IResult<Span, PropertyExpr> {
 
 #[parser]
 pub fn property_expr_eventually(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = symbol("eventually")(s)?;
+    let (s, a) = keyword("eventually")(s)?;
     let (s, b) = bracket(constant_range)(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
@@ -1261,7 +1261,7 @@ pub fn property_expr_eventually(s: Span) -> IResult<Span, PropertyExpr> {
 
 #[parser]
 pub fn property_expr_s_eventually(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = symbol("s_eventually")(s)?;
+    let (s, a) = keyword("s_eventually")(s)?;
     let (s, b) = opt(bracket(cycle_delay_const_range_expression))(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
@@ -1273,7 +1273,7 @@ pub fn property_expr_s_eventually(s: Span) -> IResult<Span, PropertyExpr> {
 #[parser(MaybeRecursive)]
 pub fn property_expr_until(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
-    let (s, b) = symbol("until")(s)?;
+    let (s, b) = keyword("until")(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
         s,
@@ -1284,7 +1284,7 @@ pub fn property_expr_until(s: Span) -> IResult<Span, PropertyExpr> {
 #[parser(MaybeRecursive)]
 pub fn property_expr_s_until(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
-    let (s, b) = symbol("s_until")(s)?;
+    let (s, b) = keyword("s_until")(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
         s,
@@ -1295,7 +1295,7 @@ pub fn property_expr_s_until(s: Span) -> IResult<Span, PropertyExpr> {
 #[parser(MaybeRecursive)]
 pub fn property_expr_until_with(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
-    let (s, b) = symbol("until_with")(s)?;
+    let (s, b) = keyword("until_with")(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
         s,
@@ -1306,7 +1306,7 @@ pub fn property_expr_until_with(s: Span) -> IResult<Span, PropertyExpr> {
 #[parser(MaybeRecursive)]
 pub fn property_expr_s_until_with(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
-    let (s, b) = symbol("s_until_with")(s)?;
+    let (s, b) = keyword("s_until_with")(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
         s,
@@ -1317,7 +1317,7 @@ pub fn property_expr_s_until_with(s: Span) -> IResult<Span, PropertyExpr> {
 #[parser(MaybeRecursive)]
 pub fn property_expr_implies(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
-    let (s, b) = symbol("implies")(s)?;
+    let (s, b) = keyword("implies")(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
         s,
@@ -1328,7 +1328,7 @@ pub fn property_expr_implies(s: Span) -> IResult<Span, PropertyExpr> {
 #[parser(MaybeRecursive)]
 pub fn property_expr_iff(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
-    let (s, b) = symbol("iff")(s)?;
+    let (s, b) = keyword("iff")(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
         s,
@@ -1338,7 +1338,7 @@ pub fn property_expr_iff(s: Span) -> IResult<Span, PropertyExpr> {
 
 #[parser]
 pub fn property_expr_accept_on(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = symbol("accept_on")(s)?;
+    let (s, a) = keyword("accept_on")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
@@ -1349,7 +1349,7 @@ pub fn property_expr_accept_on(s: Span) -> IResult<Span, PropertyExpr> {
 
 #[parser]
 pub fn property_expr_reject_on(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = symbol("reject_on")(s)?;
+    let (s, a) = keyword("reject_on")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
@@ -1360,7 +1360,7 @@ pub fn property_expr_reject_on(s: Span) -> IResult<Span, PropertyExpr> {
 
 #[parser]
 pub fn property_expr_sync_accept_on(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = symbol("sync_accept_on")(s)?;
+    let (s, a) = keyword("sync_accept_on")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
@@ -1371,7 +1371,7 @@ pub fn property_expr_sync_accept_on(s: Span) -> IResult<Span, PropertyExpr> {
 
 #[parser]
 pub fn property_expr_sync_reject_on(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = symbol("sync_reject_on")(s)?;
+    let (s, a) = keyword("sync_reject_on")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
@@ -1411,7 +1411,7 @@ pub fn property_case_item_nondefault(s: Span) -> IResult<Span, PropertyCaseItem>
 
 #[parser]
 pub fn property_case_item_default(s: Span) -> IResult<Span, PropertyCaseItem> {
-    let (s, a) = symbol("default")(s)?;
+    let (s, a) = keyword("default")(s)?;
     let (s, b) = opt(symbol(":"))(s)?;
     let (s, c) = property_expr(s)?;
     let (s, d) = symbol(";")(s)?;
@@ -1425,14 +1425,14 @@ pub fn property_case_item_default(s: Span) -> IResult<Span, PropertyCaseItem> {
 
 #[parser]
 pub fn sequence_declaration(s: Span) -> IResult<Span, SequenceDeclaration> {
-    let (s, a) = symbol("sequence")(s)?;
+    let (s, a) = keyword("sequence")(s)?;
     let (s, b) = sequence_identifier(s)?;
     let (s, c) = opt(paren(opt(sequence_port_list)))(s)?;
     let (s, d) = symbol(";")(s)?;
     let (s, e) = many0(assertion_variable_declaration)(s)?;
     let (s, f) = sequence_expr(s)?;
     let (s, g) = opt(symbol(";"))(s)?;
-    let (s, h) = symbol("endsequence")(s)?;
+    let (s, h) = keyword("endsequence")(s)?;
     let (s, i) = opt(pair(symbol(":"), sequence_identifier))(s)?;
     Ok((
         s,
@@ -1467,9 +1467,9 @@ pub fn sequence_port_item(s: Span) -> IResult<Span, SequencePortItem> {
 #[parser]
 pub fn sequence_lvar_port_direction(s: Span) -> IResult<Span, SequenceLvarPortDirection> {
     alt((
-        map(symbol("input"), |x| SequenceLvarPortDirection::Input(x)),
-        map(symbol("inout"), |x| SequenceLvarPortDirection::Inout(x)),
-        map(symbol("output"), |x| SequenceLvarPortDirection::Output(x)),
+        map(keyword("input"), |x| SequenceLvarPortDirection::Input(x)),
+        map(keyword("inout"), |x| SequenceLvarPortDirection::Inout(x)),
+        map(keyword("output"), |x| SequenceLvarPortDirection::Output(x)),
     ))(s)
 }
 
@@ -1479,8 +1479,8 @@ pub fn sequence_formal_type(s: Span) -> IResult<Span, SequenceFormalType> {
         map(data_type_or_implicit, |x| {
             SequenceFormalType::DataTypeOrImplicit(x)
         }),
-        map(symbol("sequence"), |x| SequenceFormalType::Sequence(x)),
-        map(symbol("untyped"), |x| SequenceFormalType::Untyped(x)),
+        map(keyword("sequence"), |x| SequenceFormalType::Sequence(x)),
+        map(keyword("untyped"), |x| SequenceFormalType::Untyped(x)),
     ))(s)
 }
 
@@ -1563,7 +1563,7 @@ pub fn sequence_expr_paren(s: Span) -> IResult<Span, SequenceExpr> {
 #[parser(MaybeRecursive)]
 pub fn sequence_expr_and(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
-    let (s, b) = symbol("and")(s)?;
+    let (s, b) = keyword("and")(s)?;
     let (s, c) = sequence_expr(s)?;
     Ok((
         s,
@@ -1574,7 +1574,7 @@ pub fn sequence_expr_and(s: Span) -> IResult<Span, SequenceExpr> {
 #[parser(MaybeRecursive)]
 pub fn sequence_expr_intersect(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
-    let (s, b) = symbol("intersect")(s)?;
+    let (s, b) = keyword("intersect")(s)?;
     let (s, c) = sequence_expr(s)?;
     Ok((
         s,
@@ -1585,7 +1585,7 @@ pub fn sequence_expr_intersect(s: Span) -> IResult<Span, SequenceExpr> {
 #[parser(MaybeRecursive)]
 pub fn sequence_expr_or(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
-    let (s, b) = symbol("or")(s)?;
+    let (s, b) = keyword("or")(s)?;
     let (s, c) = sequence_expr(s)?;
     Ok((
         s,
@@ -1595,7 +1595,7 @@ pub fn sequence_expr_or(s: Span) -> IResult<Span, SequenceExpr> {
 
 #[parser]
 pub fn sequence_expr_first_match(s: Span) -> IResult<Span, SequenceExpr> {
-    let (s, a) = symbol("first_match")(s)?;
+    let (s, a) = keyword("first_match")(s)?;
     let (s, b) = paren(pair(
         sequence_expr,
         many0(pair(symbol(","), sequence_match_item)),
@@ -1609,7 +1609,7 @@ pub fn sequence_expr_first_match(s: Span) -> IResult<Span, SequenceExpr> {
 #[parser(MaybeRecursive)]
 pub fn sequence_expr_throughout(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = expression_or_dist(s)?;
-    let (s, b) = symbol("throughout")(s)?;
+    let (s, b) = keyword("throughout")(s)?;
     let (s, c) = sequence_expr(s)?;
     Ok((
         s,
@@ -1620,7 +1620,7 @@ pub fn sequence_expr_throughout(s: Span) -> IResult<Span, SequenceExpr> {
 #[parser(MaybeRecursive)]
 pub fn sequence_expr_within(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
-    let (s, b) = symbol("within")(s)?;
+    let (s, b) = keyword("within")(s)?;
     let (s, c) = sequence_expr(s)?;
     Ok((
         s,
@@ -1881,7 +1881,7 @@ pub fn cycle_delay_const_range_expression_dollar(
 #[parser(MaybeRecursive)]
 pub fn expression_or_dist(s: Span) -> IResult<Span, ExpressionOrDist> {
     let (s, a) = expression(s)?;
-    let (s, b) = opt(pair(symbol("dist"), brace(dist_list)))(s)?;
+    let (s, b) = opt(pair(keyword("dist"), brace(dist_list)))(s)?;
     Ok((s, ExpressionOrDist { nodes: (a, b) }))
 }
 

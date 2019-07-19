@@ -284,7 +284,7 @@ pub fn parameter_port_declaration_param_list(s: Span) -> IResult<Span, Parameter
 
 #[parser]
 pub fn parameter_port_declaration_type_list(s: Span) -> IResult<Span, ParameterPortDeclaration> {
-    let (s, a) = symbol("type")(s)?;
+    let (s, a) = keyword("type")(s)?;
     let (s, b) = list_of_type_assignments(s)?;
     Ok((
         s,
@@ -414,10 +414,10 @@ pub fn port_reference(s: Span) -> IResult<Span, PortReference> {
 #[parser]
 pub fn port_direction(s: Span) -> IResult<Span, PortDirection> {
     alt((
-        map(symbol("input"), |x| PortDirection::Input(x)),
-        map(symbol("output"), |x| PortDirection::Output(x)),
-        map(symbol("inout"), |x| PortDirection::Inout(x)),
-        map(symbol("ref"), |x| PortDirection::Ref(x)),
+        map(keyword("input"), |x| PortDirection::Input(x)),
+        map(keyword("output"), |x| PortDirection::Output(x)),
+        map(keyword("inout"), |x| PortDirection::Inout(x)),
+        map(keyword("ref"), |x| PortDirection::Ref(x)),
     ))(s)
 }
 
@@ -455,7 +455,7 @@ pub fn interface_port_header_identifier(s: Span) -> IResult<Span, InterfacePortH
 
 #[parser]
 pub fn interface_port_header_interface(s: Span) -> IResult<Span, InterfacePortHeader> {
-    let (s, a) = symbol("interface")(s)?;
+    let (s, a) = keyword("interface")(s)?;
     let (s, b) = opt(pair(symbol("."), modport_identifier))(s)?;
     Ok((
         s,

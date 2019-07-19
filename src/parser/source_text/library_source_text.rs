@@ -68,10 +68,10 @@ pub fn library_description(s: Span) -> IResult<Span, LibraryDescription> {
 
 #[parser]
 pub fn library_declaration(s: Span) -> IResult<Span, LibraryDeclaration> {
-    let (s, a) = symbol("library")(s)?;
+    let (s, a) = keyword("library")(s)?;
     let (s, b) = library_identifier(s)?;
     let (s, c) = list(symbol(","), file_path_spec)(s)?;
-    let (s, d) = opt(pair(symbol("-incdir"), list(symbol(","), file_path_spec)))(s)?;
+    let (s, d) = opt(pair(keyword("-incdir"), list(symbol(","), file_path_spec)))(s)?;
     let (s, e) = symbol(";")(s)?;
     Ok((
         s,
@@ -83,7 +83,7 @@ pub fn library_declaration(s: Span) -> IResult<Span, LibraryDeclaration> {
 
 #[parser]
 pub fn include_statement(s: Span) -> IResult<Span, IncludeStatement> {
-    let (s, a) = symbol("include")(s)?;
+    let (s, a) = keyword("include")(s)?;
     let (s, b) = file_path_spec(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((s, IncludeStatement { nodes: (a, b, c) }))

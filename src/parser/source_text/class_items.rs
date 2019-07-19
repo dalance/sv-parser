@@ -279,7 +279,7 @@ pub fn class_property_non_const(s: Span) -> IResult<Span, ClassProperty> {
 
 #[parser]
 pub fn class_property_const(s: Span) -> IResult<Span, ClassProperty> {
-    let (s, a) = symbol("const")(s)?;
+    let (s, a) = keyword("const")(s)?;
     let (s, b) = many0(class_item_qualifier)(s)?;
     let (s, c) = data_type(s)?;
     let (s, d) = const_identifier(s)?;
@@ -324,8 +324,8 @@ pub fn class_method_function(s: Span) -> IResult<Span, ClassMethod> {
 
 #[parser]
 pub fn class_method_pure_virtual(s: Span) -> IResult<Span, ClassMethod> {
-    let (s, a) = symbol("pure")(s)?;
-    let (s, b) = symbol("virtual")(s)?;
+    let (s, a) = keyword("pure")(s)?;
+    let (s, b) = keyword("virtual")(s)?;
     let (s, c) = many0(class_item_qualifier)(s)?;
     let (s, d) = method_prototype(s)?;
     let (s, e) = symbol(";")(s)?;
@@ -339,7 +339,7 @@ pub fn class_method_pure_virtual(s: Span) -> IResult<Span, ClassMethod> {
 
 #[parser]
 pub fn class_method_extern_method(s: Span) -> IResult<Span, ClassMethod> {
-    let (s, a) = symbol("extern")(s)?;
+    let (s, a) = keyword("extern")(s)?;
     let (s, b) = many0(method_qualifier)(s)?;
     let (s, c) = method_prototype(s)?;
     let (s, d) = symbol(";")(s)?;
@@ -363,7 +363,7 @@ pub fn class_method_constructor(s: Span) -> IResult<Span, ClassMethod> {
 
 #[parser]
 pub fn class_method_extern_constructor(s: Span) -> IResult<Span, ClassMethod> {
-    let (s, a) = symbol("extern")(s)?;
+    let (s, a) = keyword("extern")(s)?;
     let (s, b) = many0(method_qualifier)(s)?;
     let (s, c) = class_constructor_prototype(s)?;
     Ok((
@@ -374,8 +374,8 @@ pub fn class_method_extern_constructor(s: Span) -> IResult<Span, ClassMethod> {
 
 #[parser]
 pub fn class_constructor_prototype(s: Span) -> IResult<Span, ClassConstructorPrototype> {
-    let (s, a) = symbol("function")(s)?;
-    let (s, b) = symbol("new")(s)?;
+    let (s, a) = keyword("function")(s)?;
+    let (s, b) = keyword("new")(s)?;
     let (s, c) = opt(paren(opt(tf_port_list)))(s)?;
     let (s, d) = symbol(";")(s)?;
     Ok((
@@ -401,9 +401,9 @@ pub fn class_constraint(s: Span) -> IResult<Span, ClassConstraint> {
 #[parser]
 pub fn class_item_qualifier(s: Span) -> IResult<Span, ClassItemQualifier> {
     alt((
-        map(symbol("static"), |x| ClassItemQualifier::Static(x)),
-        map(symbol("protected"), |x| ClassItemQualifier::Protected(x)),
-        map(symbol("local"), |x| ClassItemQualifier::Local(x)),
+        map(keyword("static"), |x| ClassItemQualifier::Static(x)),
+        map(keyword("protected"), |x| ClassItemQualifier::Protected(x)),
+        map(keyword("local"), |x| ClassItemQualifier::Local(x)),
     ))(s)
 }
 
@@ -420,18 +420,18 @@ pub fn property_qualifier(s: Span) -> IResult<Span, PropertyQualifier> {
 #[parser]
 pub fn random_qualifier(s: Span) -> IResult<Span, RandomQualifier> {
     alt((
-        map(symbol("randc"), |x| RandomQualifier::Randc(x)),
-        map(symbol("rand"), |x| RandomQualifier::Rand(x)),
+        map(keyword("randc"), |x| RandomQualifier::Randc(x)),
+        map(keyword("rand"), |x| RandomQualifier::Rand(x)),
     ))(s)
 }
 
 #[parser]
 pub fn method_qualifier(s: Span) -> IResult<Span, MethodQualifier> {
     alt((
-        map(pair(symbol("pure"), symbol("virtual")), |x| {
+        map(pair(keyword("pure"), keyword("virtual")), |x| {
             MethodQualifier::PureVirtual(x)
         }),
-        map(symbol("virtual"), |x| MethodQualifier::Virtual(x)),
+        map(keyword("virtual"), |x| MethodQualifier::Virtual(x)),
         map(class_item_qualifier, |x| {
             MethodQualifier::ClassItemQualifier(x)
         }),
@@ -450,21 +450,21 @@ pub fn method_prototype(s: Span) -> IResult<Span, MethodPrototype> {
 
 #[parser]
 pub fn class_constructor_declaration(s: Span) -> IResult<Span, ClassConstructorDeclaration> {
-    let (s, a) = symbol("function")(s)?;
+    let (s, a) = keyword("function")(s)?;
     let (s, b) = opt(class_scope)(s)?;
-    let (s, c) = symbol("new")(s)?;
+    let (s, c) = keyword("new")(s)?;
     let (s, d) = opt(paren(opt(tf_port_list)))(s)?;
     let (s, e) = symbol(";")(s)?;
     let (s, f) = many0(block_item_declaration)(s)?;
     let (s, g) = opt(tuple((
-        symbol("super"),
+        keyword("super"),
         symbol("."),
-        symbol("new"),
+        keyword("new"),
         opt(paren(list_of_arguments)),
         symbol(";"),
     )))(s)?;
     let (s, h) = many0(function_statement_or_null)(s)?;
-    let (s, i) = symbol("end")(s)?;
+    let (s, i) = keyword("end")(s)?;
     let (s, j) = opt(pair(symbol(":"), new))(s)?;
     Ok((
         s,
@@ -476,6 +476,6 @@ pub fn class_constructor_declaration(s: Span) -> IResult<Span, ClassConstructorD
 
 #[parser]
 pub fn new(s: Span) -> IResult<Span, New> {
-    let (s, a) = symbol("new")(s)?;
+    let (s, a) = keyword("new")(s)?;
     Ok((s, New { nodes: (a,) }))
 }

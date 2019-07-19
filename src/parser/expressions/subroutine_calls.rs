@@ -254,7 +254,7 @@ pub fn subroutine_call(s: Span) -> IResult<Span, SubroutineCall> {
 
 #[parser]
 pub fn subroutine_call_randomize(s: Span) -> IResult<Span, SubroutineCall> {
-    let (s, a) = opt(pair(symbol("std"), symbol("::")))(s)?;
+    let (s, a) = opt(pair(keyword("std"), symbol("::")))(s)?;
     let (s, b) = randomize_call(s)?;
     Ok((
         s,
@@ -351,7 +351,7 @@ pub fn array_manipulation_call(s: Span) -> IResult<Span, ArrayManipulationCall> 
     let (s, a) = array_method_name(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
     let (s, c) = opt(paren(list_of_arguments))(s)?;
-    let (s, d) = opt(pair(symbol("with"), paren(expression)))(s)?;
+    let (s, d) = opt(pair(keyword("with"), paren(expression)))(s)?;
     Ok((
         s,
         ArrayManipulationCall {
@@ -362,11 +362,11 @@ pub fn array_manipulation_call(s: Span) -> IResult<Span, ArrayManipulationCall> 
 
 #[parser]
 pub fn randomize_call(s: Span) -> IResult<Span, RandomizeCall> {
-    let (s, a) = symbol("randomize")(s)?;
+    let (s, a) = keyword("randomize")(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
     let (s, c) = opt(paren(opt(variable_identifier_list_or_null)))(s)?;
     let (s, d) = opt(triple(
-        symbol("with"),
+        keyword("with"),
         opt(paren(opt(identifier_list))),
         constraint_block,
     ))(s)?;
@@ -384,7 +384,7 @@ pub fn variable_identifier_list_or_null(s: Span) -> IResult<Span, VariableIdenti
         map(variable_identifier_list, |x| {
             VariableIdentifierListOrNull::VariableIdentifierList(x)
         }),
-        map(symbol("null"), |x| VariableIdentifierListOrNull::Null(x)),
+        map(keyword("null"), |x| VariableIdentifierListOrNull::Null(x)),
     ))(s)
 }
 
@@ -401,10 +401,10 @@ pub fn method_call_root(s: Span) -> IResult<Span, MethodCallRoot> {
 #[parser]
 pub fn array_method_name(s: Span) -> IResult<Span, ArrayMethodName> {
     alt((
-        map(symbol("unique"), |x| ArrayMethodName::Unique(x)),
-        map(symbol("and"), |x| ArrayMethodName::And(x)),
-        map(symbol("or"), |x| ArrayMethodName::Or(x)),
-        map(symbol("xor"), |x| ArrayMethodName::Xor(x)),
+        map(keyword("unique"), |x| ArrayMethodName::Unique(x)),
+        map(keyword("and"), |x| ArrayMethodName::And(x)),
+        map(keyword("or"), |x| ArrayMethodName::Or(x)),
+        map(keyword("xor"), |x| ArrayMethodName::Xor(x)),
         map(method_identifier, |x| ArrayMethodName::MethodIdentifier(x)),
     ))(s)
 }

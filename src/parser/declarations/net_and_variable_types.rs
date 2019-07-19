@@ -305,8 +305,8 @@ pub fn casting_type(s: Span) -> IResult<Span, CastingType> {
             CastingType::ConstantPrimary(Box::new(x))
         }),
         map(signing, |x| CastingType::Signing(Box::new(x))),
-        map(symbol("string"), |x| CastingType::String(x)),
-        map(symbol("const"), |x| CastingType::Const(x)),
+        map(keyword("string"), |x| CastingType::String(x)),
+        map(keyword("const"), |x| CastingType::Const(x)),
     ))(s)
 }
 
@@ -318,12 +318,12 @@ pub fn data_type(s: Span) -> IResult<Span, DataType> {
         map(non_integer_type, |x| DataType::NonIntegerType(x)),
         data_type_union,
         data_type_enum,
-        map(symbol("string"), |x| DataType::String(x)),
-        map(symbol("chandle"), |x| DataType::Chandle(x)),
+        map(keyword("string"), |x| DataType::String(x)),
+        map(keyword("chandle"), |x| DataType::Chandle(x)),
         data_type_virtual,
         data_type_type,
         map(class_type, |x| DataType::ClassType(x)),
-        map(symbol("event"), |x| DataType::Chandle(x)),
+        map(keyword("event"), |x| DataType::Chandle(x)),
         map(ps_covergroup_identifier, |x| {
             DataType::PsCovergroupIdentifier(x)
         }),
@@ -362,13 +362,13 @@ pub fn data_type_union(s: Span) -> IResult<Span, DataType> {
 
 #[parser]
 pub fn packed(s: Span) -> IResult<Span, Packed> {
-    let (s, a) = symbol("packed")(s)?;
+    let (s, a) = keyword("packed")(s)?;
     Ok((s, Packed { nodes: (a,) }))
 }
 
 #[parser]
 pub fn data_type_enum(s: Span) -> IResult<Span, DataType> {
-    let (s, a) = symbol("enum")(s)?;
+    let (s, a) = keyword("enum")(s)?;
     let (s, b) = opt(enum_base_type)(s)?;
     let (s, c) = brace(list(symbol(","), enum_name_declaration))(s)?;
     let (s, d) = many0(packed_dimension)(s)?;
@@ -382,7 +382,7 @@ pub fn data_type_enum(s: Span) -> IResult<Span, DataType> {
 
 #[parser]
 pub fn data_type_virtual(s: Span) -> IResult<Span, DataType> {
-    let (s, a) = symbol("virtual")(s)?;
+    let (s, a) = keyword("virtual")(s)?;
     let (s, b) = opt(interface)(s)?;
     let (s, c) = interface_identifier(s)?;
     let (s, d) = opt(parameter_value_assignment)(s)?;
@@ -397,7 +397,7 @@ pub fn data_type_virtual(s: Span) -> IResult<Span, DataType> {
 
 #[parser]
 pub fn interface(s: Span) -> IResult<Span, Interface> {
-    let (s, a) = symbol("interface")(s)?;
+    let (s, a) = keyword("interface")(s)?;
     Ok((s, Interface { nodes: (a,) }))
 }
 
@@ -501,48 +501,48 @@ pub fn integer_type(s: Span) -> IResult<Span, IntegerType> {
 #[parser]
 pub fn integer_atom_type(s: Span) -> IResult<Span, IntegerAtomType> {
     alt((
-        map(symbol("byte"), |x| IntegerAtomType::Byte(x)),
-        map(symbol("shortint"), |x| IntegerAtomType::Shortint(x)),
-        map(symbol("int"), |x| IntegerAtomType::Int(x)),
-        map(symbol("longint"), |x| IntegerAtomType::Longint(x)),
-        map(symbol("integer"), |x| IntegerAtomType::Integer(x)),
-        map(symbol("time"), |x| IntegerAtomType::Time(x)),
+        map(keyword("byte"), |x| IntegerAtomType::Byte(x)),
+        map(keyword("shortint"), |x| IntegerAtomType::Shortint(x)),
+        map(keyword("int"), |x| IntegerAtomType::Int(x)),
+        map(keyword("longint"), |x| IntegerAtomType::Longint(x)),
+        map(keyword("integer"), |x| IntegerAtomType::Integer(x)),
+        map(keyword("time"), |x| IntegerAtomType::Time(x)),
     ))(s)
 }
 
 #[parser]
 pub fn integer_vector_type(s: Span) -> IResult<Span, IntegerVectorType> {
     alt((
-        map(symbol("bit"), |x| IntegerVectorType::Bit(x)),
-        map(symbol("logic"), |x| IntegerVectorType::Logic(x)),
-        map(symbol("reg"), |x| IntegerVectorType::Reg(x)),
+        map(keyword("bit"), |x| IntegerVectorType::Bit(x)),
+        map(keyword("logic"), |x| IntegerVectorType::Logic(x)),
+        map(keyword("reg"), |x| IntegerVectorType::Reg(x)),
     ))(s)
 }
 
 #[parser]
 pub fn non_integer_type(s: Span) -> IResult<Span, NonIntegerType> {
     alt((
-        map(symbol("shortreal"), |x| NonIntegerType::Shortreal(x)),
-        map(symbol("realtime"), |x| NonIntegerType::Realtime(x)),
-        map(symbol("real"), |x| NonIntegerType::Real(x)),
+        map(keyword("shortreal"), |x| NonIntegerType::Shortreal(x)),
+        map(keyword("realtime"), |x| NonIntegerType::Realtime(x)),
+        map(keyword("real"), |x| NonIntegerType::Real(x)),
     ))(s)
 }
 
 #[parser]
 pub fn net_type(s: Span) -> IResult<Span, NetType> {
     alt((
-        map(symbol("supply0"), |x| NetType::Supply0(x)),
-        map(symbol("supply1"), |x| NetType::Supply1(x)),
-        map(symbol("triand"), |x| NetType::Triand(x)),
-        map(symbol("trior"), |x| NetType::Trior(x)),
-        map(symbol("trireg"), |x| NetType::Trireg(x)),
-        map(symbol("tri0"), |x| NetType::Tri0(x)),
-        map(symbol("tri1"), |x| NetType::Tri1(x)),
-        map(symbol("tri"), |x| NetType::Tri(x)),
-        map(symbol("uwire"), |x| NetType::Uwire(x)),
-        map(symbol("wire"), |x| NetType::Wire(x)),
-        map(symbol("wand"), |x| NetType::Wand(x)),
-        map(symbol("wor"), |x| NetType::Wor(x)),
+        map(keyword("supply0"), |x| NetType::Supply0(x)),
+        map(keyword("supply1"), |x| NetType::Supply1(x)),
+        map(keyword("triand"), |x| NetType::Triand(x)),
+        map(keyword("trior"), |x| NetType::Trior(x)),
+        map(keyword("trireg"), |x| NetType::Trireg(x)),
+        map(keyword("tri0"), |x| NetType::Tri0(x)),
+        map(keyword("tri1"), |x| NetType::Tri1(x)),
+        map(keyword("tri"), |x| NetType::Tri(x)),
+        map(keyword("uwire"), |x| NetType::Uwire(x)),
+        map(keyword("wire"), |x| NetType::Wire(x)),
+        map(keyword("wand"), |x| NetType::Wand(x)),
+        map(keyword("wor"), |x| NetType::Wor(x)),
     ))(s)
 }
 
@@ -567,7 +567,7 @@ pub fn net_port_type_data_type(s: Span) -> IResult<Span, NetPortType> {
 
 #[parser]
 pub fn net_port_type_interconnect(s: Span) -> IResult<Span, NetPortType> {
-    let (s, a) = symbol("interconnect")(s)?;
+    let (s, a) = keyword("interconnect")(s)?;
     let (s, b) = implicit_data_type(s)?;
     Ok((
         s,
@@ -591,7 +591,7 @@ pub fn var_data_type(s: Span) -> IResult<Span, VarDataType> {
 
 #[parser]
 pub fn var_data_type_var(s: Span) -> IResult<Span, VarDataType> {
-    let (s, a) = symbol("var")(s)?;
+    let (s, a) = keyword("var")(s)?;
     let (s, b) = data_type_or_implicit(s)?;
     Ok((s, VarDataType::Var(VarDataTypeVar { nodes: (a, b) })))
 }
@@ -599,8 +599,8 @@ pub fn var_data_type_var(s: Span) -> IResult<Span, VarDataType> {
 #[parser]
 pub fn signing(s: Span) -> IResult<Span, Signing> {
     alt((
-        map(symbol("signed"), |x| Signing::Signed(x)),
-        map(symbol("unsigned"), |x| Signing::Unsigned(x)),
+        map(keyword("signed"), |x| Signing::Signed(x)),
+        map(keyword("unsigned"), |x| Signing::Unsigned(x)),
     ))(s)
 }
 
@@ -635,18 +635,18 @@ pub fn struct_union_member(s: Span) -> IResult<Span, StructUnionMember> {
 pub fn data_type_or_void(s: Span) -> IResult<Span, DataTypeOrVoid> {
     alt((
         map(data_type, |x| DataTypeOrVoid::DataType(x)),
-        map(symbol("void"), |x| DataTypeOrVoid::Void(x)),
+        map(keyword("void"), |x| DataTypeOrVoid::Void(x)),
     ))(s)
 }
 
 #[parser]
 pub fn struct_union(s: Span) -> IResult<Span, StructUnion> {
     alt((
-        map(symbol("struct"), |x| StructUnion::Struct(x)),
-        map(pair(symbol("union"), symbol("tagged")), |x| {
+        map(keyword("struct"), |x| StructUnion::Struct(x)),
+        map(pair(keyword("union"), keyword("tagged")), |x| {
             StructUnion::UnionTagged(x)
         }),
-        map(symbol("union"), |x| StructUnion::Union(x)),
+        map(keyword("union"), |x| StructUnion::Union(x)),
     ))(s)
 }
 
@@ -657,7 +657,7 @@ pub fn type_reference(s: Span) -> IResult<Span, TypeReference> {
 
 #[parser]
 pub fn type_reference_expression(s: Span) -> IResult<Span, TypeReference> {
-    let (s, a) = symbol("type")(s)?;
+    let (s, a) = keyword("type")(s)?;
     let (s, b) = paren(expression)(s)?;
     Ok((
         s,
@@ -667,7 +667,7 @@ pub fn type_reference_expression(s: Span) -> IResult<Span, TypeReference> {
 
 #[parser]
 pub fn type_reference_data_type(s: Span) -> IResult<Span, TypeReference> {
-    let (s, a) = symbol("type")(s)?;
+    let (s, a) = keyword("type")(s)?;
     let (s, b) = paren(data_type)(s)?;
     Ok((
         s,

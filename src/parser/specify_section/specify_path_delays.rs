@@ -273,9 +273,9 @@ pub fn data_source_expression(s: Span) -> IResult<Span, DataSourceExpression> {
 #[parser]
 pub fn edge_identifier(s: Span) -> IResult<Span, EdgeIdentifier> {
     alt((
-        map(symbol("posedge"), |x| EdgeIdentifier::Posedge(x)),
-        map(symbol("negedge"), |x| EdgeIdentifier::Negedge(x)),
-        map(symbol("edge"), |x| EdgeIdentifier::Edge(x)),
+        map(keyword("posedge"), |x| EdgeIdentifier::Posedge(x)),
+        map(keyword("negedge"), |x| EdgeIdentifier::Negedge(x)),
+        map(keyword("edge"), |x| EdgeIdentifier::Edge(x)),
     ))(s)
 }
 
@@ -292,7 +292,7 @@ pub fn state_dependent_path_declaration(s: Span) -> IResult<Span, StateDependent
 pub fn state_dependent_path_declaration_if_simple(
     s: Span,
 ) -> IResult<Span, StateDependentPathDeclaration> {
-    let (s, a) = symbol("if")(s)?;
+    let (s, a) = keyword("if")(s)?;
     let (s, b) = paren(module_path_expression)(s)?;
     let (s, c) = simple_path_declaration(s)?;
     Ok((
@@ -307,7 +307,7 @@ pub fn state_dependent_path_declaration_if_simple(
 pub fn state_dependent_path_declaration_if_edge_sensitive(
     s: Span,
 ) -> IResult<Span, StateDependentPathDeclaration> {
-    let (s, a) = symbol("if")(s)?;
+    let (s, a) = keyword("if")(s)?;
     let (s, b) = paren(module_path_expression)(s)?;
     let (s, c) = edge_sensitive_path_declaration(s)?;
     Ok((
@@ -322,7 +322,7 @@ pub fn state_dependent_path_declaration_if_edge_sensitive(
 pub fn state_dependent_path_declaration_if_none(
     s: Span,
 ) -> IResult<Span, StateDependentPathDeclaration> {
-    let (s, a) = symbol("ifnone")(s)?;
+    let (s, a) = keyword("ifnone")(s)?;
     let (s, b) = simple_path_declaration(s)?;
     Ok((
         s,

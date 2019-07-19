@@ -146,13 +146,13 @@ pub struct Config<'a> {
 
 #[parser]
 pub fn config_declaration(s: Span) -> IResult<Span, ConfigDeclaration> {
-    let (s, a) = symbol("config")(s)?;
+    let (s, a) = keyword("config")(s)?;
     let (s, b) = config_identifier(s)?;
     let (s, c) = symbol(";")(s)?;
     let (s, d) = many0(pair(local_parameter_declaration, symbol(";")))(s)?;
     let (s, e) = design_statement(s)?;
     let (s, f) = many0(config_rule_statement)(s)?;
-    let (s, g) = symbol("endconfig")(s)?;
+    let (s, g) = keyword("endconfig")(s)?;
     let (s, h) = opt(pair(symbol(":"), config_identifier))(s)?;
     Ok((
         s,
@@ -164,7 +164,7 @@ pub fn config_declaration(s: Span) -> IResult<Span, ConfigDeclaration> {
 
 #[parser]
 pub fn design_statement(s: Span) -> IResult<Span, DesignStatement> {
-    let (s, a) = symbol("design")(s)?;
+    let (s, a) = keyword("design")(s)?;
     let (s, b) = many0(pair(
         opt(pair(library_identifier, symbol("."))),
         cell_identifier,
@@ -241,13 +241,13 @@ pub fn config_rule_statement_cell_use(s: Span) -> IResult<Span, ConfigRuleStatem
 
 #[parser]
 pub fn default_clause(s: Span) -> IResult<Span, DefaultClause> {
-    let (s, a) = symbol("default")(s)?;
+    let (s, a) = keyword("default")(s)?;
     Ok((s, DefaultClause { nodes: (a,) }))
 }
 
 #[parser]
 pub fn inst_clause(s: Span) -> IResult<Span, InstClause> {
-    let (s, a) = symbol("instance")(s)?;
+    let (s, a) = keyword("instance")(s)?;
     let (s, b) = inst_name(s)?;
     Ok((s, InstClause { nodes: (a, b) }))
 }
@@ -261,7 +261,7 @@ pub fn inst_name(s: Span) -> IResult<Span, InstName> {
 
 #[parser]
 pub fn cell_clause(s: Span) -> IResult<Span, CellClause> {
-    let (s, a) = symbol("cell")(s)?;
+    let (s, a) = keyword("cell")(s)?;
     let (s, b) = opt(pair(library_identifier, symbol(".")))(s)?;
     let (s, c) = cell_identifier(s)?;
     Ok((s, CellClause { nodes: (a, b, c) }))
@@ -269,7 +269,7 @@ pub fn cell_clause(s: Span) -> IResult<Span, CellClause> {
 
 #[parser]
 pub fn liblist_clause(s: Span) -> IResult<Span, LiblistClause> {
-    let (s, a) = symbol("liblist")(s)?;
+    let (s, a) = keyword("liblist")(s)?;
     let (s, b) = many0(library_identifier)(s)?;
     Ok((s, LiblistClause { nodes: (a, b) }))
 }
@@ -281,7 +281,7 @@ pub fn use_clause(s: Span) -> IResult<Span, UseClause> {
 
 #[parser]
 pub fn use_clause_cell(s: Span) -> IResult<Span, UseClause> {
-    let (s, a) = symbol("use")(s)?;
+    let (s, a) = keyword("use")(s)?;
     let (s, b) = opt(pair(library_identifier, symbol(".")))(s)?;
     let (s, c) = cell_identifier(s)?;
     let (s, d) = opt(pair(symbol(":"), config))(s)?;
@@ -295,7 +295,7 @@ pub fn use_clause_cell(s: Span) -> IResult<Span, UseClause> {
 
 #[parser]
 pub fn use_clause_named(s: Span) -> IResult<Span, UseClause> {
-    let (s, a) = symbol("use")(s)?;
+    let (s, a) = keyword("use")(s)?;
     let (s, b) = list(symbol(","), named_parameter_assignment)(s)?;
     let (s, c) = opt(pair(symbol(":"), config))(s)?;
     Ok((s, UseClause::Named(UseClauseNamed { nodes: (a, b, c) })))
@@ -303,7 +303,7 @@ pub fn use_clause_named(s: Span) -> IResult<Span, UseClause> {
 
 #[parser]
 pub fn use_clause_cell_named(s: Span) -> IResult<Span, UseClause> {
-    let (s, a) = symbol("use")(s)?;
+    let (s, a) = keyword("use")(s)?;
     let (s, b) = opt(pair(library_identifier, symbol(".")))(s)?;
     let (s, c) = cell_identifier(s)?;
     let (s, d) = list(symbol(","), named_parameter_assignment)(s)?;
@@ -318,6 +318,6 @@ pub fn use_clause_cell_named(s: Span) -> IResult<Span, UseClause> {
 
 #[parser]
 pub fn config(s: Span) -> IResult<Span, Config> {
-    let (s, a) = symbol("config")(s)?;
+    let (s, a) = keyword("config")(s)?;
     Ok((s, Config { nodes: (a,) }))
 }

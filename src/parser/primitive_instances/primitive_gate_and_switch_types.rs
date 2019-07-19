@@ -44,17 +44,17 @@ pub struct PassSwitchtype<'a> {
 
 #[parser]
 pub fn cmos_switchtype(s: Span) -> IResult<Span, CmosSwitchtype> {
-    let (s, a) = alt((symbol("cmos"), symbol("rcmos")))(s)?;
+    let (s, a) = alt((keyword("cmos"), keyword("rcmos")))(s)?;
     Ok((s, CmosSwitchtype { nodes: (a,) }))
 }
 
 #[parser]
 pub fn enable_gatetype(s: Span) -> IResult<Span, EnableGatetype> {
     let (s, a) = alt((
-        symbol("bufif0"),
-        symbol("bufif1"),
-        symbol("notif0"),
-        symbol("notif1"),
+        keyword("bufif0"),
+        keyword("bufif1"),
+        keyword("notif0"),
+        keyword("notif1"),
     ))(s)?;
     Ok((s, EnableGatetype { nodes: (a,) }))
 }
@@ -62,10 +62,10 @@ pub fn enable_gatetype(s: Span) -> IResult<Span, EnableGatetype> {
 #[parser]
 pub fn mos_switchtype(s: Span) -> IResult<Span, MosSwitchtype> {
     let (s, a) = alt((
-        symbol("nmos"),
-        symbol("pmos"),
-        symbol("rnmos"),
-        symbol("rpmos"),
+        keyword("nmos"),
+        keyword("pmos"),
+        keyword("rnmos"),
+        keyword("rpmos"),
     ))(s)?;
     Ok((s, MosSwitchtype { nodes: (a,) }))
 }
@@ -73,36 +73,36 @@ pub fn mos_switchtype(s: Span) -> IResult<Span, MosSwitchtype> {
 #[parser]
 pub fn n_input_gatetype(s: Span) -> IResult<Span, NInputGatetype> {
     let (s, a) = alt((
-        symbol("and"),
-        symbol("nand"),
-        symbol("or"),
-        symbol("nor"),
-        symbol("xor"),
-        symbol("xnor"),
+        keyword("and"),
+        keyword("nand"),
+        keyword("or"),
+        keyword("nor"),
+        keyword("xor"),
+        keyword("xnor"),
     ))(s)?;
     Ok((s, NInputGatetype { nodes: (a,) }))
 }
 
 #[parser]
 pub fn n_output_gatetype(s: Span) -> IResult<Span, NOutputGatetype> {
-    let (s, a) = alt((symbol("buf"), symbol("not")))(s)?;
+    let (s, a) = alt((keyword("buf"), keyword("not")))(s)?;
     Ok((s, NOutputGatetype { nodes: (a,) }))
 }
 
 #[parser]
 pub fn pass_en_switchtype(s: Span) -> IResult<Span, PassEnSwitchtype> {
     let (s, a) = alt((
-        symbol("tranif0"),
-        symbol("tranif1"),
-        symbol("rtranif0"),
-        symbol("rtranif1"),
+        keyword("tranif0"),
+        keyword("tranif1"),
+        keyword("rtranif0"),
+        keyword("rtranif1"),
     ))(s)?;
     Ok((s, PassEnSwitchtype { nodes: (a,) }))
 }
 
 #[parser]
 pub fn pass_switchtype(s: Span) -> IResult<Span, PassSwitchtype> {
-    let (s, a) = alt((symbol("tran"), symbol("rtran")))(s)?;
+    let (s, a) = alt((keyword("tran"), keyword("rtran")))(s)?;
     Ok((s, PassSwitchtype { nodes: (a,) }))
 }
 

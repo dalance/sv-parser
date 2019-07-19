@@ -147,15 +147,15 @@ pub enum GenerateItem<'a> {
 
 #[parser]
 pub fn generate_region(s: Span) -> IResult<Span, GenerateRegion> {
-    let (s, a) = symbol("generate")(s)?;
+    let (s, a) = keyword("generate")(s)?;
     let (s, b) = many0(generate_item)(s)?;
-    let (s, c) = symbol("endgenerate")(s)?;
+    let (s, c) = keyword("endgenerate")(s)?;
     Ok((s, GenerateRegion { nodes: (a, b, c) }))
 }
 
 #[parser]
 pub fn loop_generate_construct(s: Span) -> IResult<Span, LoopGenerateConstruct> {
-    let (s, a) = symbol("for")(s)?;
+    let (s, a) = keyword("for")(s)?;
     let (s, b) = paren(tuple((
         generate_initialization,
         symbol(";"),
@@ -169,7 +169,7 @@ pub fn loop_generate_construct(s: Span) -> IResult<Span, LoopGenerateConstruct> 
 
 #[parser]
 pub fn generate_initialization(s: Span) -> IResult<Span, GenvarInitialization> {
-    let (s, a) = opt(map(symbol("genvar"), |x| Genvar { nodes: (x,) }))(s)?;
+    let (s, a) = opt(map(keyword("genvar"), |x| Genvar { nodes: (x,) }))(s)?;
     let (s, b) = genvar_identifier(s)?;
     let (s, c) = symbol("=")(s)?;
     let (s, d) = constant_expression(s)?;
@@ -235,10 +235,10 @@ pub fn conditional_generate_construct(s: Span) -> IResult<Span, ConditionalGener
 
 #[parser]
 pub fn if_generate_construct(s: Span) -> IResult<Span, IfGenerateConstruct> {
-    let (s, a) = symbol("if")(s)?;
+    let (s, a) = keyword("if")(s)?;
     let (s, b) = paren(constant_expression)(s)?;
     let (s, c) = generate_block(s)?;
-    let (s, d) = opt(pair(symbol("else"), generate_block))(s)?;
+    let (s, d) = opt(pair(keyword("else"), generate_block))(s)?;
     Ok((
         s,
         IfGenerateConstruct {
@@ -249,10 +249,10 @@ pub fn if_generate_construct(s: Span) -> IResult<Span, IfGenerateConstruct> {
 
 #[parser]
 pub fn case_generate_construct(s: Span) -> IResult<Span, CaseGenerateConstruct> {
-    let (s, a) = symbol("case")(s)?;
+    let (s, a) = keyword("case")(s)?;
     let (s, b) = paren(constant_expression)(s)?;
     let (s, c) = many1(case_generate_item)(s)?;
-    let (s, d) = symbol("endcase")(s)?;
+    let (s, d) = keyword("endcase")(s)?;
     Ok((
         s,
         CaseGenerateConstruct {
@@ -279,7 +279,7 @@ pub fn case_generate_item_nondefault(s: Span) -> IResult<Span, CaseGenerateItem>
 
 #[parser]
 pub fn case_generate_item_default(s: Span) -> IResult<Span, CaseGenerateItem> {
-    let (s, a) = symbol("default")(s)?;
+    let (s, a) = keyword("default")(s)?;
     let (s, b) = opt(symbol(":"))(s)?;
     let (s, c) = generate_block(s)?;
     Ok((
@@ -299,10 +299,10 @@ pub fn generate_block(s: Span) -> IResult<Span, GenerateBlock> {
 #[parser]
 pub fn generate_block_multiple(s: Span) -> IResult<Span, GenerateBlock> {
     let (s, a) = opt(pair(generate_block_identifier, symbol(":")))(s)?;
-    let (s, b) = symbol("begin")(s)?;
+    let (s, b) = keyword("begin")(s)?;
     let (s, c) = opt(pair(symbol(":"), generate_block_identifier))(s)?;
     let (s, d) = many0(generate_item)(s)?;
-    let (s, e) = symbol("end")(s)?;
+    let (s, e) = keyword("end")(s)?;
     let (s, f) = opt(pair(symbol(":"), generate_block_identifier))(s)?;
     Ok((
         s,

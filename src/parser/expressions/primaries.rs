@@ -264,7 +264,7 @@ pub struct Cast<'a> {
 #[parser]
 pub fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
     alt((
-        map(symbol("null"), |x| ConstantPrimary::Null(x)),
+        map(keyword("null"), |x| ConstantPrimary::Null(x)),
         map(primary_literal, |x| ConstantPrimary::PrimaryLiteral(x)),
         constant_primary_ps_parameter,
         constant_primary_specparam,
@@ -389,9 +389,9 @@ pub fn module_path_primary_mintypmax_expression(s: Span) -> IResult<Span, Module
 #[parser]
 pub fn primary(s: Span) -> IResult<Span, Primary> {
     alt((
-        map(symbol("this"), |x| Primary::This(x)),
+        map(keyword("this"), |x| Primary::This(x)),
         map(symbol("$"), |x| Primary::Dollar(x)),
-        map(symbol("null"), |x| Primary::Null(x)),
+        map(keyword("null"), |x| Primary::Null(x)),
         map(primary_literal, |x| Primary::PrimaryLiteral(x)),
         primary_hierarchical,
         map(empty_unpacked_array_concatenation, |x| {
@@ -521,12 +521,12 @@ pub fn time_literal_fixed_point(s: Span) -> IResult<Span, TimeLiteral> {
 #[parser]
 pub fn time_unit(s: Span) -> IResult<Span, TimeUnit> {
     alt((
-        map(symbol("s"), |x| TimeUnit::S(x)),
-        map(symbol("ms"), |x| TimeUnit::MS(x)),
-        map(symbol("us"), |x| TimeUnit::US(x)),
-        map(symbol("ns"), |x| TimeUnit::NS(x)),
-        map(symbol("ps"), |x| TimeUnit::PS(x)),
-        map(symbol("fs"), |x| TimeUnit::FS(x)),
+        map(keyword("s"), |x| TimeUnit::S(x)),
+        map(keyword("ms"), |x| TimeUnit::MS(x)),
+        map(keyword("us"), |x| TimeUnit::US(x)),
+        map(keyword("ns"), |x| TimeUnit::NS(x)),
+        map(keyword("ps"), |x| TimeUnit::PS(x)),
+        map(keyword("fs"), |x| TimeUnit::FS(x)),
     ))(s)
 }
 
@@ -534,11 +534,11 @@ pub fn time_unit(s: Span) -> IResult<Span, TimeUnit> {
 pub fn implicit_class_handle(s: Span) -> IResult<Span, ImplicitClassHandle> {
     alt((
         map(
-            triple(symbol("this"), symbol("."), symbol("super")),
+            triple(keyword("this"), symbol("."), keyword("super")),
             |(x, y, z)| ImplicitClassHandle::ThisSuper((x, y, z)),
         ),
-        map(symbol("this"), |x| ImplicitClassHandle::This(x)),
-        map(symbol("super"), |x| ImplicitClassHandle::Super(x)),
+        map(keyword("this"), |x| ImplicitClassHandle::This(x)),
+        map(keyword("super"), |x| ImplicitClassHandle::Super(x)),
     ))(s)
 }
 

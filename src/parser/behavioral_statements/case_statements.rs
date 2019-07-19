@@ -160,7 +160,7 @@ pub fn case_statement_normal(s: Span) -> IResult<Span, CaseStatement> {
     let (s, c) = paren(case_expression)(s)?;
     let (s, d) = case_item(s)?;
     let (s, e) = many0(case_item)(s)?;
-    let (s, f) = symbol("endcase")(s)?;
+    let (s, f) = keyword("endcase")(s)?;
     Ok((
         s,
         CaseStatement::Normal(CaseStatementNormal {
@@ -174,10 +174,10 @@ pub fn case_statement_matches(s: Span) -> IResult<Span, CaseStatement> {
     let (s, a) = opt(unique_priority)(s)?;
     let (s, b) = case_keyword(s)?;
     let (s, c) = paren(case_expression)(s)?;
-    let (s, d) = symbol("matches")(s)?;
+    let (s, d) = keyword("matches")(s)?;
     let (s, e) = case_pattern_item(s)?;
     let (s, f) = many0(case_pattern_item)(s)?;
-    let (s, g) = symbol("endcase")(s)?;
+    let (s, g) = keyword("endcase")(s)?;
     Ok((
         s,
         CaseStatement::Matches(CaseStatementMatches {
@@ -189,12 +189,12 @@ pub fn case_statement_matches(s: Span) -> IResult<Span, CaseStatement> {
 #[parser]
 pub fn case_statement_inside(s: Span) -> IResult<Span, CaseStatement> {
     let (s, a) = opt(unique_priority)(s)?;
-    let (s, b) = symbol("case")(s)?;
+    let (s, b) = keyword("case")(s)?;
     let (s, c) = paren(case_expression)(s)?;
-    let (s, d) = symbol("inside")(s)?;
+    let (s, d) = keyword("inside")(s)?;
     let (s, e) = case_inside_item(s)?;
     let (s, f) = many0(case_inside_item)(s)?;
-    let (s, g) = symbol("endcase")(s)?;
+    let (s, g) = keyword("endcase")(s)?;
     Ok((
         s,
         CaseStatement::Inside(CaseStatementInside {
@@ -206,9 +206,9 @@ pub fn case_statement_inside(s: Span) -> IResult<Span, CaseStatement> {
 #[parser]
 pub fn case_keyword(s: Span) -> IResult<Span, CaseKeyword> {
     alt((
-        map(symbol("casez"), |x| CaseKeyword::Casez(x)),
-        map(symbol("casex"), |x| CaseKeyword::Casex(x)),
-        map(symbol("case"), |x| CaseKeyword::Case(x)),
+        map(keyword("casez"), |x| CaseKeyword::Casez(x)),
+        map(keyword("casex"), |x| CaseKeyword::Casex(x)),
+        map(keyword("case"), |x| CaseKeyword::Case(x)),
     ))(s)
 }
 
@@ -239,7 +239,7 @@ pub fn case_item_nondefault(s: Span) -> IResult<Span, CaseItem> {
 
 #[parser]
 pub fn case_item_default(s: Span) -> IResult<Span, CaseItemDefault> {
-    let (s, a) = symbol("default")(s)?;
+    let (s, a) = keyword("default")(s)?;
     let (s, b) = opt(symbol(":"))(s)?;
     let (s, c) = statement_or_null(s)?;
     Ok((s, CaseItemDefault { nodes: (a, b, c) }))
@@ -294,10 +294,10 @@ pub fn case_item_expression(s: Span) -> IResult<Span, CaseItemExpression> {
 
 #[parser]
 pub fn randcase_statement(s: Span) -> IResult<Span, RandcaseStatement> {
-    let (s, a) = symbol("randcase")(s)?;
+    let (s, a) = keyword("randcase")(s)?;
     let (s, b) = randcase_item(s)?;
     let (s, c) = many0(randcase_item)(s)?;
-    let (s, d) = symbol("endcase")(s)?;
+    let (s, d) = keyword("endcase")(s)?;
     Ok((
         s,
         RandcaseStatement {

@@ -96,7 +96,7 @@ pub enum ImportExport<'a> {
 
 #[parser]
 pub fn modport_declaration(s: Span) -> IResult<Span, ModportDeclaration> {
-    let (s, a) = symbol("modport")(s)?;
+    let (s, a) = keyword("modport")(s)?;
     let (s, b) = list(symbol(","), modport_item)(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((s, ModportDeclaration { nodes: (a, b, c) }))
@@ -150,7 +150,7 @@ pub fn modport_ports_declaration_clocking(s: Span) -> IResult<Span, ModportPorts
 
 #[parser]
 pub fn modport_clocking_declaration(s: Span) -> IResult<Span, ModportClockingDeclaration> {
-    let (s, a) = symbol("clocking")(s)?;
+    let (s, a) = keyword("clocking")(s)?;
     let (s, b) = clocking_identifier(s)?;
     Ok((s, ModportClockingDeclaration { nodes: (a, b) }))
 }
@@ -205,7 +205,7 @@ pub fn modport_tf_port(s: Span) -> IResult<Span, ModportTfPort> {
 #[parser]
 pub fn import_export(s: Span) -> IResult<Span, ImportExport> {
     alt((
-        map(symbol("import"), |x| ImportExport::Import(x)),
-        map(symbol("export"), |x| ImportExport::Export(x)),
+        map(keyword("import"), |x| ImportExport::Import(x)),
+        map(keyword("export"), |x| ImportExport::Export(x)),
     ))(s)
 }

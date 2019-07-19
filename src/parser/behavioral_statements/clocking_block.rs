@@ -210,12 +210,12 @@ pub fn clocking_declaration(s: Span) -> IResult<Span, ClockingDeclaration> {
 #[parser]
 pub fn clocking_declaration_local(s: Span) -> IResult<Span, ClockingDeclaration> {
     let (s, a) = opt(default)(s)?;
-    let (s, b) = symbol("clocking")(s)?;
+    let (s, b) = keyword("clocking")(s)?;
     let (s, c) = opt(clocking_identifier)(s)?;
     let (s, d) = clocking_event(s)?;
     let (s, e) = symbol(";")(s)?;
     let (s, f) = many0(clocking_item)(s)?;
-    let (s, g) = symbol("endclocking")(s)?;
+    let (s, g) = keyword("endclocking")(s)?;
     let (s, h) = opt(pair(symbol(":"), clocking_identifier))(s)?;
     Ok((
         s,
@@ -227,18 +227,18 @@ pub fn clocking_declaration_local(s: Span) -> IResult<Span, ClockingDeclaration>
 
 #[parser]
 pub fn default(s: Span) -> IResult<Span, Default> {
-    let (s, a) = symbol("default")(s)?;
+    let (s, a) = keyword("default")(s)?;
     Ok((s, Default { nodes: (a,) }))
 }
 
 #[parser]
 pub fn clocking_declaration_global(s: Span) -> IResult<Span, ClockingDeclaration> {
-    let (s, a) = symbol("global")(s)?;
-    let (s, b) = symbol("clocking")(s)?;
+    let (s, a) = keyword("global")(s)?;
+    let (s, b) = keyword("clocking")(s)?;
     let (s, c) = opt(clocking_identifier)(s)?;
     let (s, d) = clocking_event(s)?;
     let (s, e) = symbol(";")(s)?;
-    let (s, f) = symbol("endclocking")(s)?;
+    let (s, f) = keyword("endclocking")(s)?;
     let (s, g) = opt(pair(symbol(":"), clocking_identifier))(s)?;
     Ok((
         s,
@@ -284,7 +284,7 @@ pub fn clocking_item(s: Span) -> IResult<Span, ClockingItem> {
 
 #[parser]
 pub fn clocking_item_default(s: Span) -> IResult<Span, ClockingItem> {
-    let (s, a) = symbol("default")(s)?;
+    let (s, a) = keyword("default")(s)?;
     let (s, b) = default_skew(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((
@@ -325,23 +325,23 @@ pub fn default_skew(s: Span) -> IResult<Span, DefaultSkew> {
 
 #[parser]
 pub fn default_skew_input(s: Span) -> IResult<Span, DefaultSkew> {
-    let (s, a) = symbol("input")(s)?;
+    let (s, a) = keyword("input")(s)?;
     let (s, b) = clocking_skew(s)?;
     Ok((s, DefaultSkew::Input(DefaultSkewInput { nodes: (a, b) })))
 }
 
 #[parser]
 pub fn default_skew_output(s: Span) -> IResult<Span, DefaultSkew> {
-    let (s, a) = symbol("output")(s)?;
+    let (s, a) = keyword("output")(s)?;
     let (s, b) = clocking_skew(s)?;
     Ok((s, DefaultSkew::Output(DefaultSkewOutput { nodes: (a, b) })))
 }
 
 #[parser]
 pub fn default_skew_input_output(s: Span) -> IResult<Span, DefaultSkew> {
-    let (s, a) = symbol("input")(s)?;
+    let (s, a) = keyword("input")(s)?;
     let (s, b) = clocking_skew(s)?;
-    let (s, c) = symbol("output")(s)?;
+    let (s, c) = keyword("output")(s)?;
     let (s, d) = clocking_skew(s)?;
     Ok((
         s,
@@ -363,7 +363,7 @@ pub fn clocking_direction(s: Span) -> IResult<Span, ClockingDirection> {
 
 #[parser]
 pub fn clocking_direction_input(s: Span) -> IResult<Span, ClockingDirection> {
-    let (s, a) = symbol("input")(s)?;
+    let (s, a) = keyword("input")(s)?;
     let (s, b) = opt(clocking_skew)(s)?;
     Ok((
         s,
@@ -373,7 +373,7 @@ pub fn clocking_direction_input(s: Span) -> IResult<Span, ClockingDirection> {
 
 #[parser]
 pub fn clocking_direction_output(s: Span) -> IResult<Span, ClockingDirection> {
-    let (s, a) = symbol("output")(s)?;
+    let (s, a) = keyword("output")(s)?;
     let (s, b) = opt(clocking_skew)(s)?;
     Ok((
         s,
@@ -383,9 +383,9 @@ pub fn clocking_direction_output(s: Span) -> IResult<Span, ClockingDirection> {
 
 #[parser]
 pub fn clocking_direction_input_output(s: Span) -> IResult<Span, ClockingDirection> {
-    let (s, a) = symbol("input")(s)?;
+    let (s, a) = keyword("input")(s)?;
     let (s, b) = opt(clocking_skew)(s)?;
-    let (s, c) = symbol("output")(s)?;
+    let (s, c) = keyword("output")(s)?;
     let (s, d) = opt(clocking_skew)(s)?;
     Ok((
         s,
@@ -397,7 +397,7 @@ pub fn clocking_direction_input_output(s: Span) -> IResult<Span, ClockingDirecti
 
 #[parser]
 pub fn clocking_direction_inout(s: Span) -> IResult<Span, ClockingDirection> {
-    let (s, a) = symbol("inout")(s)?;
+    let (s, a) = keyword("inout")(s)?;
     Ok((s, ClockingDirection::Inout(a)))
 }
 

@@ -164,7 +164,7 @@ pub fn simple_immediate_assertion_statement(
 
 #[parser]
 pub fn simple_immediate_assert_statement(s: Span) -> IResult<Span, SimpleImmediateAssertStatement> {
-    let (s, a) = symbol("assert")(s)?;
+    let (s, a) = keyword("assert")(s)?;
     let (s, b) = paren(expression)(s)?;
     let (s, c) = action_block(s)?;
     Ok((s, SimpleImmediateAssertStatement { nodes: (a, b, c) }))
@@ -172,7 +172,7 @@ pub fn simple_immediate_assert_statement(s: Span) -> IResult<Span, SimpleImmedia
 
 #[parser]
 pub fn simple_immediate_assume_statement(s: Span) -> IResult<Span, SimpleImmediateAssumeStatement> {
-    let (s, a) = symbol("assume")(s)?;
+    let (s, a) = keyword("assume")(s)?;
     let (s, b) = paren(expression)(s)?;
     let (s, c) = action_block(s)?;
     Ok((s, SimpleImmediateAssumeStatement { nodes: (a, b, c) }))
@@ -180,7 +180,7 @@ pub fn simple_immediate_assume_statement(s: Span) -> IResult<Span, SimpleImmedia
 
 #[parser]
 pub fn simple_immediate_cover_statement(s: Span) -> IResult<Span, SimpleImmediateCoverStatement> {
-    let (s, a) = symbol("cover")(s)?;
+    let (s, a) = keyword("cover")(s)?;
     let (s, b) = paren(expression)(s)?;
     let (s, c) = statement_or_null(s)?;
     Ok((s, SimpleImmediateCoverStatement { nodes: (a, b, c) }))
@@ -207,7 +207,7 @@ pub fn deferred_immediate_assertion_statement(
 pub fn deferred_immediate_assert_statement(
     s: Span,
 ) -> IResult<Span, DeferredImmediateAssertStatement> {
-    let (s, a) = symbol("assert")(s)?;
+    let (s, a) = keyword("assert")(s)?;
     let (s, b) = assert_timing(s)?;
     let (s, c) = paren(expression)(s)?;
     let (s, d) = action_block(s)?;
@@ -223,7 +223,7 @@ pub fn deferred_immediate_assert_statement(
 pub fn deferred_immediate_assume_statement(
     s: Span,
 ) -> IResult<Span, DeferredImmediateAssumeStatement> {
-    let (s, a) = symbol("assume")(s)?;
+    let (s, a) = keyword("assume")(s)?;
     let (s, b) = assert_timing(s)?;
     let (s, c) = paren(expression)(s)?;
     let (s, d) = action_block(s)?;
@@ -239,7 +239,7 @@ pub fn deferred_immediate_assume_statement(
 pub fn deferred_immediate_cover_statement(
     s: Span,
 ) -> IResult<Span, DeferredImmediateCoverStatement> {
-    let (s, a) = symbol("cover")(s)?;
+    let (s, a) = keyword("cover")(s)?;
     let (s, b) = assert_timing(s)?;
     let (s, c) = paren(expression)(s)?;
     let (s, d) = statement_or_null(s)?;
@@ -255,7 +255,7 @@ pub fn deferred_immediate_cover_statement(
 pub fn assert_timing(s: Span) -> IResult<Span, AssertTiming> {
     alt((
         map(symbol("#0"), |x| AssertTiming::Zero(x)),
-        map(symbol("final"), |x| AssertTiming::Final(x)),
+        map(keyword("final"), |x| AssertTiming::Final(x)),
     ))(s)
 }
 

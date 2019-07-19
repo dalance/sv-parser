@@ -98,7 +98,7 @@ pub struct LetActualArg<'a> {
 
 #[parser]
 pub fn let_declaration(s: Span) -> IResult<Span, LetDeclaration> {
-    let (s, a) = symbol("let")(s)?;
+    let (s, a) = keyword("let")(s)?;
     let (s, b) = let_identifier(s)?;
     let (s, c) = opt(paren(opt(let_port_list)))(s)?;
     let (s, d) = symbol("=")(s)?;
@@ -145,7 +145,7 @@ pub fn let_formal_type(s: Span) -> IResult<Span, LetFormalType> {
         map(data_type_or_implicit, |x| {
             LetFormalType::DataTypeOrImplicit(x)
         }),
-        map(symbol("untyped"), |x| LetFormalType::Untyped(x)),
+        map(keyword("untyped"), |x| LetFormalType::Untyped(x)),
     ))(s)
 }
 

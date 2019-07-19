@@ -76,8 +76,3 @@ A parser library for System Verilog.
 | general                           | attributes                            | x    | x      | x    |
 | general                           | comments                              | x    | x      | x    |
 | general                           | identifiers                           | x    | x      | x    |
-
-## TODO
-
-* Exclude reserved keyword from identifiers.
-* Implement ambiguous_alt for varirble_port_type.

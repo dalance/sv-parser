@@ -68,7 +68,7 @@ pub fn continuous_assign(s: Span) -> IResult<Span, ContinuousAssign> {
 
 #[parser]
 pub fn continuous_assign_net(s: Span) -> IResult<Span, ContinuousAssign> {
-    let (s, a) = symbol("assign")(s)?;
+    let (s, a) = keyword("assign")(s)?;
     let (s, b) = opt(drive_strength)(s)?;
     let (s, c) = opt(delay3)(s)?;
     let (s, d) = list_of_net_assignments(s)?;
@@ -84,7 +84,7 @@ pub fn continuous_assign_net(s: Span) -> IResult<Span, ContinuousAssign> {
 
 #[parser]
 pub fn continuous_assign_variable(s: Span) -> IResult<Span, ContinuousAssign> {
-    let (s, a) = symbol("assign")(s)?;
+    let (s, a) = keyword("assign")(s)?;
     let (s, b) = opt(delay_control)(s)?;
     let (s, c) = list_of_variable_assignments(s)?;
     let (s, d) = symbol(";")(s)?;
@@ -111,7 +111,7 @@ pub fn list_of_variable_assignments(s: Span) -> IResult<Span, ListOfVariableAssi
 
 #[parser]
 pub fn net_alias(s: Span) -> IResult<Span, NetAlias> {
-    let (s, a) = symbol("alias")(s)?;
+    let (s, a) = keyword("alias")(s)?;
     let (s, b) = net_lvalue(s)?;
     let (s, c) = symbol("=")(s)?;
     let (s, d) = list(symbol("="), net_lvalue)(s)?;

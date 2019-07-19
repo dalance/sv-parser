@@ -35,9 +35,9 @@ pub struct ShowcancelledDeclaration<'a> {
 
 #[parser]
 pub fn specify_block(s: Span) -> IResult<Span, SpecifyBlock> {
-    let (s, a) = symbol("specify")(s)?;
+    let (s, a) = keyword("specify")(s)?;
     let (s, b) = many0(specify_item)(s)?;
-    let (s, c) = symbol("endspecify")(s)?;
+    let (s, c) = keyword("endspecify")(s)?;
     Ok((s, SpecifyBlock { nodes: (a, b, c) }))
 }
 
@@ -60,7 +60,10 @@ pub fn specify_item(s: Span) -> IResult<Span, SpecifyItem> {
 
 #[parser]
 pub fn pulsestyle_declaration(s: Span) -> IResult<Span, PulsestyleDeclaration> {
-    let (s, a) = alt((symbol("pulsestyle_onevent"), symbol("pulsestyle_ondetect")))(s)?;
+    let (s, a) = alt((
+        keyword("pulsestyle_onevent"),
+        keyword("pulsestyle_ondetect"),
+    ))(s)?;
     let (s, b) = list_of_path_outputs(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((s, PulsestyleDeclaration { nodes: (a, b, c) }))
@@ -68,7 +71,7 @@ pub fn pulsestyle_declaration(s: Span) -> IResult<Span, PulsestyleDeclaration> {
 
 #[parser]
 pub fn showcancelled_declaration(s: Span) -> IResult<Span, ShowcancelledDeclaration> {
-    let (s, a) = alt((symbol("showcalcelled"), symbol("noshowcancelled")))(s)?;
+    let (s, a) = alt((keyword("showcalcelled"), keyword("noshowcancelled")))(s)?;
     let (s, b) = list_of_path_outputs(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((s, ShowcancelledDeclaration { nodes: (a, b, c) }))

@@ -53,16 +53,16 @@ pub struct CondPattern<'a> {
 #[parser]
 pub fn conditional_statement(s: Span) -> IResult<Span, ConditionalStatement> {
     let (s, a) = opt(unique_priority)(s)?;
-    let (s, b) = symbol("if")(s)?;
+    let (s, b) = keyword("if")(s)?;
     let (s, c) = paren(cond_predicate)(s)?;
     let (s, d) = statement_or_null(s)?;
     let (s, e) = many0(tuple((
-        symbol("else"),
-        symbol("if"),
+        keyword("else"),
+        keyword("if"),
         paren(cond_predicate),
         statement_or_null,
     )))(s)?;
-    let (s, f) = opt(pair(symbol("else"), statement_or_null))(s)?;
+    let (s, f) = opt(pair(keyword("else"), statement_or_null))(s)?;
 
     Ok((
         s,
@@ -75,9 +75,9 @@ pub fn conditional_statement(s: Span) -> IResult<Span, ConditionalStatement> {
 #[parser]
 pub fn unique_priority(s: Span) -> IResult<Span, UniquePriority> {
     alt((
-        map(symbol("unique0"), |x| UniquePriority::Unique0(x)),
-        map(symbol("unique"), |x| UniquePriority::Unique(x)),
-        map(symbol("priority"), |x| UniquePriority::Priority(x)),
+        map(keyword("unique0"), |x| UniquePriority::Unique0(x)),
+        map(keyword("unique"), |x| UniquePriority::Unique(x)),
+        map(keyword("priority"), |x| UniquePriority::Priority(x)),
     ))(s)
 }
 
@@ -98,7 +98,7 @@ pub fn expression_or_cond_pattern(s: Span) -> IResult<Span, ExpressionOrCondPatt
 #[parser(MaybeRecursive)]
 pub fn cond_pattern(s: Span) -> IResult<Span, CondPattern> {
     let (s, a) = expression(s)?;
-    let (s, b) = symbol("matches")(s)?;
+    let (s, b) = keyword("matches")(s)?;
     let (s, c) = pattern(s)?;
     Ok((s, CondPattern { nodes: (a, b, c) }))
 }

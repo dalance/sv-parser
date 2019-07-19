@@ -68,7 +68,7 @@ pub fn local_parameter_declaration(s: Span) -> IResult<Span, LocalParameterDecla
 
 #[parser(Ambiguous)]
 pub fn local_parameter_declaration_param(s: Span) -> IResult<Span, LocalParameterDeclaration> {
-    let (s, a) = symbol("localparam")(s)?;
+    let (s, a) = keyword("localparam")(s)?;
     let (s, b) = ambiguous_opt(data_type_or_implicit)(s)?;
     let (s, c) = list_of_param_assignments(s)?;
     Ok((
@@ -79,8 +79,8 @@ pub fn local_parameter_declaration_param(s: Span) -> IResult<Span, LocalParamete
 
 #[parser]
 pub fn local_parameter_declaration_type(s: Span) -> IResult<Span, LocalParameterDeclaration> {
-    let (s, a) = symbol("localparam")(s)?;
-    let (s, b) = symbol("type")(s)?;
+    let (s, a) = keyword("localparam")(s)?;
+    let (s, b) = keyword("type")(s)?;
     let (s, c) = list_of_type_assignments(s)?;
     Ok((
         s,
@@ -95,7 +95,7 @@ pub fn parameter_declaration(s: Span) -> IResult<Span, ParameterDeclaration> {
 
 #[parser(Ambiguous)]
 pub fn parameter_declaration_param(s: Span) -> IResult<Span, ParameterDeclaration> {
-    let (s, a) = symbol("parameter")(s)?;
+    let (s, a) = keyword("parameter")(s)?;
     let (s, b) = ambiguous_opt(data_type_or_implicit)(s)?;
     let (s, c) = list_of_param_assignments(s)?;
     Ok((
@@ -106,8 +106,8 @@ pub fn parameter_declaration_param(s: Span) -> IResult<Span, ParameterDeclaratio
 
 #[parser]
 pub fn parameter_declaration_type(s: Span) -> IResult<Span, ParameterDeclaration> {
-    let (s, a) = symbol("parameter")(s)?;
-    let (s, b) = symbol("type")(s)?;
+    let (s, a) = keyword("parameter")(s)?;
+    let (s, b) = keyword("type")(s)?;
     let (s, c) = list_of_type_assignments(s)?;
     Ok((
         s,
@@ -117,7 +117,7 @@ pub fn parameter_declaration_type(s: Span) -> IResult<Span, ParameterDeclaration
 
 #[parser]
 pub fn specparam_declaration(s: Span) -> IResult<Span, SpecparamDeclaration> {
-    let (s, a) = symbol("specparam")(s)?;
+    let (s, a) = keyword("specparam")(s)?;
     let (s, b) = opt(packed_dimension)(s)?;
     let (s, c) = list_of_specparam_assignments(s)?;
     let (s, d) = symbol(";")(s)?;

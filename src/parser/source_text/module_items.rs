@@ -228,7 +228,7 @@ pub fn elaboration_system_task(s: Span) -> IResult<Span, ElaborationSystemTask> 
 
 #[parser]
 pub fn elaboration_system_task_fatal(s: Span) -> IResult<Span, ElaborationSystemTask> {
-    let (s, a) = symbol("$fatal")(s)?;
+    let (s, a) = keyword("$fatal")(s)?;
     let (s, b) = opt(paren(pair(
         finish_number,
         opt(pair(symbol(","), list_of_arguments)),
@@ -242,7 +242,7 @@ pub fn elaboration_system_task_fatal(s: Span) -> IResult<Span, ElaborationSystem
 
 #[parser]
 pub fn elaboration_system_task_error(s: Span) -> IResult<Span, ElaborationSystemTask> {
-    let (s, a) = symbol("$error")(s)?;
+    let (s, a) = keyword("$error")(s)?;
     let (s, b) = opt(paren(opt(list_of_arguments)))(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((
@@ -253,7 +253,7 @@ pub fn elaboration_system_task_error(s: Span) -> IResult<Span, ElaborationSystem
 
 #[parser]
 pub fn elaboration_system_task_warning(s: Span) -> IResult<Span, ElaborationSystemTask> {
-    let (s, a) = symbol("$warning")(s)?;
+    let (s, a) = keyword("$warning")(s)?;
     let (s, b) = opt(paren(opt(list_of_arguments)))(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((
@@ -264,7 +264,7 @@ pub fn elaboration_system_task_warning(s: Span) -> IResult<Span, ElaborationSyst
 
 #[parser]
 pub fn elaboration_system_task_info(s: Span) -> IResult<Span, ElaborationSystemTask> {
-    let (s, a) = symbol("$info")(s)?;
+    let (s, a) = keyword("$info")(s)?;
     let (s, b) = opt(paren(opt(list_of_arguments)))(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((
@@ -409,8 +409,8 @@ pub fn module_or_generate_item_declaration(
 pub fn module_or_generate_item_declaration_clocking(
     s: Span,
 ) -> IResult<Span, ModuleOrGenerateItemDeclaration> {
-    let (s, a) = symbol("default")(s)?;
-    let (s, b) = symbol("clocking")(s)?;
+    let (s, a) = keyword("default")(s)?;
+    let (s, b) = keyword("clocking")(s)?;
     let (s, c) = clocking_identifier(s)?;
     let (s, d) = symbol(";")(s)?;
     Ok((
@@ -425,9 +425,9 @@ pub fn module_or_generate_item_declaration_clocking(
 pub fn module_or_generate_item_declaration_disable(
     s: Span,
 ) -> IResult<Span, ModuleOrGenerateItemDeclaration> {
-    let (s, a) = symbol("default")(s)?;
-    let (s, b) = symbol("disable")(s)?;
-    let (s, c) = symbol("iff")(s)?;
+    let (s, a) = keyword("default")(s)?;
+    let (s, b) = keyword("disable")(s)?;
+    let (s, c) = keyword("iff")(s)?;
     let (s, d) = expression_or_dist(s)?;
     let (s, e) = symbol(";")(s)?;
     Ok((
@@ -474,7 +474,7 @@ pub fn non_port_module_item_specparam(s: Span) -> IResult<Span, NonPortModuleIte
 
 #[parser]
 pub fn parameter_override(s: Span) -> IResult<Span, ParameterOverride> {
-    let (s, a) = symbol("defparam")(s)?;
+    let (s, a) = keyword("defparam")(s)?;
     let (s, b) = list_of_defparam_assignments(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((s, ParameterOverride { nodes: (a, b, c) }))
@@ -487,7 +487,7 @@ pub fn bind_directive(s: Span) -> IResult<Span, BindDirective> {
 
 #[parser]
 pub fn bind_directive_scope(s: Span) -> IResult<Span, BindDirective> {
-    let (s, a) = symbol("bind")(s)?;
+    let (s, a) = keyword("bind")(s)?;
     let (s, b) = bind_target_scope(s)?;
     let (s, c) = opt(pair(symbol(":"), bind_target_instance_list))(s)?;
     let (s, d) = bind_instantiation(s)?;
@@ -502,7 +502,7 @@ pub fn bind_directive_scope(s: Span) -> IResult<Span, BindDirective> {
 
 #[parser]
 pub fn bind_directive_instance(s: Span) -> IResult<Span, BindDirective> {
-    let (s, a) = symbol("bind")(s)?;
+    let (s, a) = keyword("bind")(s)?;
     let (s, b) = bind_target_instance(s)?;
     let (s, c) = bind_instantiation(s)?;
     let (s, d) = symbol(";")(s)?;

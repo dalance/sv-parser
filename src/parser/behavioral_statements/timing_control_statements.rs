@@ -232,7 +232,7 @@ pub fn delay_or_event_control(s: Span) -> IResult<Span, DelayOrEventControl> {
 
 #[parser]
 pub fn delay_or_event_control_repeat(s: Span) -> IResult<Span, DelayOrEventControl> {
-    let (s, a) = symbol("repeat")(s)?;
+    let (s, a) = keyword("repeat")(s)?;
     let (s, b) = paren(expression)(s)?;
     let (s, c) = event_control(s)?;
     Ok((
@@ -338,7 +338,7 @@ pub fn event_expression(s: Span) -> IResult<Span, EventExpression> {
 pub fn event_expression_expression(s: Span) -> IResult<Span, EventExpression> {
     let (s, a) = opt(edge_identifier)(s)?;
     let (s, b) = expression(s)?;
-    let (s, c) = opt(pair(symbol("iff"), expression))(s)?;
+    let (s, c) = opt(pair(keyword("iff"), expression))(s)?;
     Ok((
         s,
         EventExpression::Expression(Box::new(EventExpressionExpression { nodes: (a, b, c) })),
@@ -348,7 +348,7 @@ pub fn event_expression_expression(s: Span) -> IResult<Span, EventExpression> {
 #[parser]
 pub fn event_expression_sequence(s: Span) -> IResult<Span, EventExpression> {
     let (s, a) = sequence_instance(s)?;
-    let (s, b) = opt(pair(symbol("iff"), expression))(s)?;
+    let (s, b) = opt(pair(keyword("iff"), expression))(s)?;
     Ok((
         s,
         EventExpression::Sequence(Box::new(EventExpressionSequence { nodes: (a, b) })),
@@ -358,7 +358,7 @@ pub fn event_expression_sequence(s: Span) -> IResult<Span, EventExpression> {
 #[parser(MaybeRecursive)]
 pub fn event_expression_or(s: Span) -> IResult<Span, EventExpression> {
     let (s, a) = event_expression(s)?;
-    let (s, b) = symbol("or")(s)?;
+    let (s, b) = keyword("or")(s)?;
     let (s, c) = event_expression(s)?;
     Ok((
         s,
@@ -406,7 +406,7 @@ pub fn jump_statement(s: Span) -> IResult<Span, JumpStatement> {
 
 #[parser]
 pub fn jump_statement_return(s: Span) -> IResult<Span, JumpStatement> {
-    let (s, a) = symbol("return")(s)?;
+    let (s, a) = keyword("return")(s)?;
     let (s, b) = opt(expression)(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((
@@ -417,7 +417,7 @@ pub fn jump_statement_return(s: Span) -> IResult<Span, JumpStatement> {
 
 #[parser]
 pub fn jump_statement_break(s: Span) -> IResult<Span, JumpStatement> {
-    let (s, a) = symbol("break")(s)?;
+    let (s, a) = keyword("break")(s)?;
     let (s, b) = symbol(";")(s)?;
     Ok((
         s,
@@ -427,7 +427,7 @@ pub fn jump_statement_break(s: Span) -> IResult<Span, JumpStatement> {
 
 #[parser]
 pub fn jump_statement_continue(s: Span) -> IResult<Span, JumpStatement> {
-    let (s, a) = symbol("continue")(s)?;
+    let (s, a) = keyword("continue")(s)?;
     let (s, b) = symbol(";")(s)?;
     Ok((
         s,
@@ -446,7 +446,7 @@ pub fn wait_statement(s: Span) -> IResult<Span, WaitStatement> {
 
 #[parser]
 pub fn wait_statement_wait(s: Span) -> IResult<Span, WaitStatement> {
-    let (s, a) = symbol("wait")(s)?;
+    let (s, a) = keyword("wait")(s)?;
     let (s, b) = paren(expression)(s)?;
     let (s, c) = statement_or_null(s)?;
     Ok((
@@ -457,8 +457,8 @@ pub fn wait_statement_wait(s: Span) -> IResult<Span, WaitStatement> {
 
 #[parser]
 pub fn wait_statement_fork(s: Span) -> IResult<Span, WaitStatement> {
-    let (s, a) = symbol("wait")(s)?;
-    let (s, b) = symbol("fork")(s)?;
+    let (s, a) = keyword("wait")(s)?;
+    let (s, b) = keyword("fork")(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
@@ -468,7 +468,7 @@ pub fn wait_statement_fork(s: Span) -> IResult<Span, WaitStatement> {
 
 #[parser]
 pub fn wait_statement_order(s: Span) -> IResult<Span, WaitStatement> {
-    let (s, a) = symbol("wait_order")(s)?;
+    let (s, a) = keyword("wait_order")(s)?;
     let (s, b) = paren(list(symbol(","), hierarchical_identifier))(s)?;
     let (s, c) = action_block(s)?;
     Ok((
@@ -518,7 +518,7 @@ pub fn disable_statement(s: Span) -> IResult<Span, DisableStatement> {
 
 #[parser]
 pub fn disable_statement_task(s: Span) -> IResult<Span, DisableStatement> {
-    let (s, a) = symbol("disable")(s)?;
+    let (s, a) = keyword("disable")(s)?;
     let (s, b) = hierarchical_task_identifier(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((
@@ -529,7 +529,7 @@ pub fn disable_statement_task(s: Span) -> IResult<Span, DisableStatement> {
 
 #[parser]
 pub fn disable_statement_block(s: Span) -> IResult<Span, DisableStatement> {
-    let (s, a) = symbol("disable")(s)?;
+    let (s, a) = keyword("disable")(s)?;
     let (s, b) = hierarchical_block_identifier(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((
@@ -540,8 +540,8 @@ pub fn disable_statement_block(s: Span) -> IResult<Span, DisableStatement> {
 
 #[parser]
 pub fn disable_statement_fork(s: Span) -> IResult<Span, DisableStatement> {
-    let (s, a) = symbol("disable")(s)?;
-    let (s, b) = symbol("fork")(s)?;
+    let (s, a) = keyword("disable")(s)?;
+    let (s, b) = keyword("fork")(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,

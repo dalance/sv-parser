@@ -522,7 +522,7 @@ pub fn expression_binary(s: Span) -> IResult<Span, Expression> {
 
 #[parser]
 pub fn tagged_union_expression(s: Span) -> IResult<Span, TaggedUnionExpression> {
-    let (s, a) = symbol("tagged")(s)?;
+    let (s, a) = keyword("tagged")(s)?;
     let (s, b) = member_identifier(s)?;
     let (s, c) = opt(expression)(s)?;
     Ok((s, TaggedUnionExpression { nodes: (a, b, c) }))
@@ -531,7 +531,7 @@ pub fn tagged_union_expression(s: Span) -> IResult<Span, TaggedUnionExpression> 
 #[parser(MaybeRecursive)]
 pub fn inside_expression(s: Span) -> IResult<Span, InsideExpression> {
     let (s, a) = expression(s)?;
-    let (s, b) = symbol("inside")(s)?;
+    let (s, b) = keyword("inside")(s)?;
     let (s, c) = brace(open_range_list)(s)?;
     Ok((s, InsideExpression { nodes: (a, b, c) }))
 }

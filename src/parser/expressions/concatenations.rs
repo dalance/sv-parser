@@ -178,7 +178,7 @@ pub fn stream_concatenation(s: Span) -> IResult<Span, StreamConcatenation> {
 #[parser(MaybeRecursive)]
 pub fn stream_expression(s: Span) -> IResult<Span, StreamExpression> {
     let (s, a) = expression(s)?;
-    let (s, b) = opt(pair(symbol("with"), bracket(array_range_expression)))(s)?;
+    let (s, b) = opt(pair(keyword("with"), bracket(array_range_expression)))(s)?;
     Ok((s, StreamExpression { nodes: (a, b) }))
 }
 

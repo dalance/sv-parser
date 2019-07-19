@@ -5,9 +5,261 @@ use nom::bytes::complete::*;
 use nom::character::complete::*;
 use nom::combinator::*;
 use nom::multi::*;
+use nom::sequence::*;
 use nom::IResult;
 
 // -----------------------------------------------------------------------------
+
+const KEYWORDS: &[&str] = &[
+    "accept_on",
+    "alias",
+    "always",
+    "always_comb",
+    "always_ff",
+    "always_latch",
+    "and",
+    "assert",
+    "assign",
+    "assume",
+    "automatic",
+    "before",
+    "begin",
+    "bind",
+    "bins",
+    "binsof",
+    "bit",
+    "break",
+    "buf",
+    "bufif0",
+    "bufif1",
+    "byte",
+    "case",
+    "casex",
+    "casez",
+    "cell",
+    "chandle",
+    "checker",
+    "class",
+    "clocking",
+    "cmos",
+    "config",
+    "const",
+    "constraint",
+    "context",
+    "continue",
+    "cover",
+    "covergroup",
+    "coverpoint",
+    "cross",
+    "deassign",
+    "default",
+    "defparam",
+    "design",
+    "disable",
+    "dist",
+    "do",
+    "edge",
+    "else",
+    "end",
+    "endcase",
+    "endchecker",
+    "endclass",
+    "endclocking",
+    "endconfig",
+    "endfunction",
+    "endgenerate",
+    "endgroup",
+    "endinterface",
+    "endmodule",
+    "endpackage",
+    "endprimitive",
+    "endprogram",
+    "endproperty",
+    "endspecify",
+    "endsequence",
+    "endtable",
+    "endtask",
+    "enum",
+    "event",
+    "eventually",
+    "expect",
+    "export",
+    "extends",
+    "extern",
+    "final",
+    "first_match",
+    "for",
+    "force",
+    "foreach",
+    "forever",
+    "fork",
+    "forkjoin",
+    "function",
+    "generate",
+    "genvar",
+    "global",
+    "highz0",
+    "highz1",
+    "if",
+    "iff",
+    "ifnone",
+    "ignore_bins",
+    "illegal_bins",
+    "implements",
+    "implies",
+    "import",
+    "incdir",
+    "include",
+    "initial",
+    "inout",
+    "input",
+    "inside",
+    "instance",
+    "int",
+    "integer",
+    "interconnect",
+    "interface",
+    "intersect",
+    "join",
+    "join_any",
+    "join_none",
+    "large",
+    "let",
+    "liblist",
+    "library",
+    "local",
+    "localparam",
+    "logic",
+    "longint",
+    "macromodule",
+    "matches",
+    "medium",
+    "modport",
+    "module",
+    "nand",
+    "negedge",
+    "nettype",
+    "new",
+    "nexttime",
+    "nmos",
+    "nor",
+    "noshowcancelled",
+    "not",
+    "notif0",
+    "notif1",
+    "null",
+    "or",
+    "output",
+    "package",
+    "packed",
+    "parameter",
+    "pmos",
+    "posedge",
+    "primitive",
+    "priority",
+    "program",
+    "property",
+    "protected",
+    "pull0",
+    "pull1",
+    "pulldown",
+    "pullup",
+    "pulsestyle_ondetect",
+    "pulsestyle_onevent",
+    "pure",
+    "rand",
+    "randc",
+    "randcase",
+    "randsequence",
+    "rcmos",
+    "real",
+    "realtime",
+    "ref",
+    "reg",
+    "reject_on",
+    "release",
+    "repeat",
+    "restrict",
+    "return",
+    "rnmos",
+    "rpmos",
+    "rtran",
+    "rtranif0",
+    "rtranif1",
+    "s_always",
+    "s_eventually",
+    "s_nexttime",
+    "s_until",
+    "s_until_with",
+    "scalared",
+    "sequence",
+    "shortint",
+    "shortreal",
+    "showcancelled",
+    "signed",
+    "small",
+    "soft",
+    "solve",
+    "specify",
+    "specparam",
+    "static",
+    "string",
+    "strong",
+    "strong0",
+    "strong1",
+    "struct",
+    "super",
+    "supply0",
+    "supply1",
+    "sync_accept_on",
+    "sync_reject_on",
+    "table",
+    "tagged",
+    "task",
+    "this",
+    "throughout",
+    "time",
+    "timeprecision",
+    "timeunit",
+    "tran",
+    "tranif0",
+    "tranif1",
+    "tri",
+    "tri0",
+    "tri1",
+    "triand",
+    "trior",
+    "trireg",
+    "type",
+    "typedef",
+    "union",
+    "unique",
+    "unique0",
+    "unsigned",
+    "until",
+    "until_with",
+    "untyped",
+    "use",
+    "uwire",
+    "var",
+    "vectored",
+    "virtual",
+    "void",
+    "wait",
+    "wait_order",
+    "wand",
+    "weak",
+    "weak0",
+    "weak1",
+    "while",
+    "wildcard",
+    "wire",
+    "with",
+    "within",
+    "wor",
+    "xnor",
+    "xor",
+];
 
 #[derive(Debug, Node)]
 pub struct Symbol<'a> {
@@ -70,6 +322,24 @@ pub fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol<'
             );
         }
         let (s, x) = map(ws(tag(t.clone())), |x| Symbol { nodes: x })(s)?;
+        Ok((clear_recursive_flags(s), x))
+    }
+}
+
+pub fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol<'a>> {
+    move |s: Span<'a>| {
+        if cfg!(feature = "trace") {
+            println!(
+                "{:<64} : {:<4},{:>032x} : {}",
+                format!("keyword(\"{}\")", t),
+                s.offset,
+                s.extra[0],
+                s.fragment
+            );
+        }
+        let (s, x) = map(ws(terminated(tag(t.clone()), peek(none_of(AZ09_)))), |x| {
+            Symbol { nodes: x }
+        })(s)?;
         Ok((clear_recursive_flags(s), x))
     }
 }
@@ -195,6 +465,28 @@ where
     move |s: Span<'a>| Ok((s, None))
 }
 
+pub fn alt_left<'a, O, F, G>(f: F, _g: G) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
+where
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+    G: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+{
+    move |s: Span<'a>| {
+        let (s, x) = f(s)?;
+        Ok((s, x))
+    }
+}
+
+pub fn alt_right<'a, O, F, G>(_f: F, g: G) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
+where
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+    G: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+{
+    move |s: Span<'a>| {
+        let (s, x) = g(s)?;
+        Ok((s, x))
+    }
+}
+
 // -----------------------------------------------------------------------------
 
 #[parser]
@@ -252,6 +544,15 @@ pub fn clear_recursive_flags(s: Span) -> Span {
         fragment: s.fragment,
         extra: [0; RECURSIVE_FLAG_WORDS],
     }
+}
+
+pub fn is_keyword(s: &Span) -> bool {
+    for k in KEYWORDS {
+        if &s.fragment == k {
+            return true;
+        }
+    }
+    false
 }
 
 // -----------------------------------------------------------------------------

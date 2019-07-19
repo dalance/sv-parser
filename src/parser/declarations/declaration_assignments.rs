@@ -339,14 +339,14 @@ pub fn class_new(s: Span) -> IResult<Span, ClassNew> {
 #[parser]
 pub fn class_new_argument(s: Span) -> IResult<Span, ClassNew> {
     let (s, a) = opt(class_scope)(s)?;
-    let (s, b) = symbol("new")(s)?;
+    let (s, b) = keyword("new")(s)?;
     let (s, c) = opt(paren(list_of_arguments))(s)?;
     Ok((s, ClassNew::Argument(ClassNewArgument { nodes: (a, b, c) })))
 }
 
 #[parser]
 pub fn class_new_expression(s: Span) -> IResult<Span, ClassNew> {
-    let (s, a) = symbol("new")(s)?;
+    let (s, a) = keyword("new")(s)?;
     let (s, b) = expression(s)?;
     Ok((
         s,
@@ -356,7 +356,7 @@ pub fn class_new_expression(s: Span) -> IResult<Span, ClassNew> {
 
 #[parser]
 pub fn dynamic_array_new(s: Span) -> IResult<Span, DynamicArrayNew> {
-    let (s, a) = symbol("new")(s)?;
+    let (s, a) = keyword("new")(s)?;
     let (s, b) = bracket(expression)(s)?;
     let (s, c) = opt(paren(expression))(s)?;
     Ok((s, DynamicArrayNew { nodes: (a, b, c) }))

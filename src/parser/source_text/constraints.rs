@@ -194,7 +194,7 @@ pub struct IdentifierList<'a> {
 #[parser]
 pub fn constraint_declaration(s: Span) -> IResult<Span, ConstraintDeclaration> {
     let (s, a) = opt(r#static)(s)?;
-    let (s, b) = symbol("constraint")(s)?;
+    let (s, b) = keyword("constraint")(s)?;
     let (s, c) = constraint_identifier(s)?;
     let (s, d) = constraint_block(s)?;
     Ok((
@@ -207,7 +207,7 @@ pub fn constraint_declaration(s: Span) -> IResult<Span, ConstraintDeclaration> {
 
 #[parser]
 pub fn r#static(s: Span) -> IResult<Span, Static> {
-    let (s, a) = symbol("static")(s)?;
+    let (s, a) = keyword("static")(s)?;
     Ok((s, Static { nodes: (a,) }))
 }
 
@@ -229,9 +229,9 @@ pub fn constraint_block_item(s: Span) -> IResult<Span, ConstraintBlockItem> {
 
 #[parser]
 pub fn constraint_block_item_solve(s: Span) -> IResult<Span, ConstraintBlockItem> {
-    let (s, a) = symbol("solve")(s)?;
+    let (s, a) = keyword("solve")(s)?;
     let (s, b) = solve_before_list(s)?;
-    let (s, c) = symbol("before")(s)?;
+    let (s, c) = keyword("before")(s)?;
     let (s, d) = solve_before_list(s)?;
     let (s, e) = symbol(";")(s)?;
     Ok((
@@ -283,7 +283,7 @@ pub fn constraint_expression_expression(s: Span) -> IResult<Span, ConstraintExpr
 
 #[parser]
 pub fn soft(s: Span) -> IResult<Span, Soft> {
-    let (s, a) = symbol("soft")(s)?;
+    let (s, a) = keyword("soft")(s)?;
     Ok((s, Soft { nodes: (a,) }))
 }
 
@@ -300,10 +300,10 @@ pub fn constraint_expression_arrow(s: Span) -> IResult<Span, ConstraintExpressio
 
 #[parser]
 pub fn constraint_expression_if(s: Span) -> IResult<Span, ConstraintExpression> {
-    let (s, a) = symbol("if")(s)?;
+    let (s, a) = keyword("if")(s)?;
     let (s, b) = paren(expression)(s)?;
     let (s, c) = constraint_set(s)?;
-    let (s, d) = opt(pair(symbol("else"), constraint_set))(s)?;
+    let (s, d) = opt(pair(keyword("else"), constraint_set))(s)?;
     Ok((
         s,
         ConstraintExpression::If(ConstraintExpressionIf {
@@ -314,7 +314,7 @@ pub fn constraint_expression_if(s: Span) -> IResult<Span, ConstraintExpression> 
 
 #[parser]
 pub fn constraint_expression_foreach(s: Span) -> IResult<Span, ConstraintExpression> {
-    let (s, a) = symbol("foreach")(s)?;
+    let (s, a) = keyword("foreach")(s)?;
     let (s, b) = paren(pair(
         ps_or_hierarchical_array_identifier,
         bracket(loop_variables),
@@ -328,8 +328,8 @@ pub fn constraint_expression_foreach(s: Span) -> IResult<Span, ConstraintExpress
 
 #[parser]
 pub fn constraint_expression_disable(s: Span) -> IResult<Span, ConstraintExpression> {
-    let (s, a) = symbol("disable")(s)?;
-    let (s, b) = symbol("soft")(s)?;
+    let (s, a) = keyword("disable")(s)?;
+    let (s, b) = keyword("soft")(s)?;
     let (s, c) = constraint_primary(s)?;
     let (s, d) = symbol(";")(s)?;
     Ok((
@@ -342,7 +342,7 @@ pub fn constraint_expression_disable(s: Span) -> IResult<Span, ConstraintExpress
 
 #[parser]
 pub fn uniqueness_constraint(s: Span) -> IResult<Span, UniquenessConstraint> {
-    let (s, a) = symbol("unique")(s)?;
+    let (s, a) = keyword("unique")(s)?;
     let (s, b) = brace(open_range_list)(s)?;
     Ok((s, UniquenessConstraint { nodes: (a, b) }))
 }
@@ -399,7 +399,7 @@ pub fn dist_weight_divide(s: Span) -> IResult<Span, DistWeight> {
 pub fn constraint_prototype(s: Span) -> IResult<Span, ConstraintPrototype> {
     let (s, a) = opt(constraint_prototype_qualifier)(s)?;
     let (s, b) = opt(r#static)(s)?;
-    let (s, c) = symbol("constraint")(s)?;
+    let (s, c) = keyword("constraint")(s)?;
     let (s, d) = constraint_identifier(s)?;
     let (s, e) = symbol(";")(s)?;
     Ok((
@@ -413,17 +413,17 @@ pub fn constraint_prototype(s: Span) -> IResult<Span, ConstraintPrototype> {
 #[parser]
 pub fn constraint_prototype_qualifier(s: Span) -> IResult<Span, ConstraintPrototypeQualifier> {
     alt((
-        map(symbol("extern"), |x| {
+        map(keyword("extern"), |x| {
             ConstraintPrototypeQualifier::Extern(x)
         }),
-        map(symbol("pure"), |x| ConstraintPrototypeQualifier::Pure(x)),
+        map(keyword("pure"), |x| ConstraintPrototypeQualifier::Pure(x)),
     ))(s)
 }
 
 #[parser]
 pub fn extern_constraint_declaration(s: Span) -> IResult<Span, ExternConstraintDeclaration> {
     let (s, a) = opt(r#static)(s)?;
-    let (s, b) = symbol("constraint")(s)?;
+    let (s, b) = keyword("constraint")(s)?;
     let (s, c) = class_scope(s)?;
     let (s, d) = constraint_identifier(s)?;
     let (s, e) = constraint_block(s)?;

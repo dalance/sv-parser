@@ -173,7 +173,7 @@ pub struct TypeDeclarationInterface<'a> {
 pub struct TypeDeclarationReserved<'a> {
     pub nodes: (
         Symbol<'a>,
-        TypeDeclarationKeyword<'a>,
+        Option<TypeDeclarationKeyword<'a>>,
         TypeIdentifier<'a>,
         Symbol<'a>,
     ),
@@ -260,13 +260,13 @@ pub fn data_declaration_variable(s: Span) -> IResult<Span, DataDeclaration> {
 
 #[parser]
 pub fn r#const(s: Span) -> IResult<Span, Const> {
-    let (s, a) = symbol("const")(s)?;
+    let (s, a) = keyword("const")(s)?;
     Ok((s, Const { nodes: (a,) }))
 }
 
 #[parser]
 pub fn package_import_declaration(s: Span) -> IResult<Span, PackageImportDeclaration> {
-    let (s, a) = symbol("import")(s)?;
+    let (s, a) = keyword("import")(s)?;
     let (s, b) = list(symbol(","), package_import_item)(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((s, PackageImportDeclaration { nodes: (a, b, c) }))
@@ -309,7 +309,7 @@ pub fn package_export_declaration(s: Span) -> IResult<Span, PackageExportDeclara
 
 #[parser]
 pub fn package_export_declaration_asterisk(s: Span) -> IResult<Span, PackageExportDeclaration> {
-    let (s, a) = symbol("export")(s)?;
+    let (s, a) = keyword("export")(s)?;
     let (s, b) = symbol("*::*")(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((
@@ -320,7 +320,7 @@ pub fn package_export_declaration_asterisk(s: Span) -> IResult<Span, PackageExpo
 
 #[parser]
 pub fn package_export_declaration_item(s: Span) -> IResult<Span, PackageExportDeclaration> {
-    let (s, a) = symbol("export")(s)?;
+    let (s, a) = keyword("export")(s)?;
     let (s, b) = list(symbol(","), package_import_item)(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((
@@ -331,7 +331,7 @@ pub fn package_export_declaration_item(s: Span) -> IResult<Span, PackageExportDe
 
 #[parser]
 pub fn genvar_declaration(s: Span) -> IResult<Span, GenvarDeclaration> {
-    let (s, a) = symbol("genvar")(s)?;
+    let (s, a) = keyword("genvar")(s)?;
     let (s, b) = list_of_genvar_identifiers(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((s, GenvarDeclaration { nodes: (a, b, c) }))
@@ -374,8 +374,8 @@ pub fn strength(s: Span) -> IResult<Span, Strength> {
 #[parser]
 pub fn vector_scalar(s: Span) -> IResult<Span, VectorScalar> {
     alt((
-        map(symbol("vectored"), |x| VectorScalar::Vectored(x)),
-        map(symbol("scalared"), |x| VectorScalar::Scalared(x)),
+        map(keyword("vectored"), |x| VectorScalar::Vectored(x)),
+        map(keyword("scalared"), |x| VectorScalar::Scalared(x)),
     ))(s)
 }
 
@@ -395,7 +395,7 @@ pub fn net_declaration_net_type_identifier(s: Span) -> IResult<Span, NetDeclarat
 
 #[parser]
 pub fn net_declaration_interconnect(s: Span) -> IResult<Span, NetDeclaration> {
-    let (s, a) = symbol("interconnect")(s)?;
+    let (s, a) = keyword("interconnect")(s)?;
     let (s, b) = implicit_data_type(s)?;
     let (s, c) = opt(pair(symbol("#"), delay_value))(s)?;
     let (s, d) = net_identifier(s)?;
@@ -425,7 +425,7 @@ pub fn type_declaration(s: Span) -> IResult<Span, TypeDeclaration> {
 
 #[parser]
 pub fn type_declaration_data_type(s: Span) -> IResult<Span, TypeDeclaration> {
-    let (s, a) = symbol("typedef")(s)?;
+    let (s, a) = keyword("typedef")(s)?;
     let (s, b) = data_type(s)?;
     let (s, c) = type_identifier(s)?;
     let (s, d) = many0(variable_dimension)(s)?;
@@ -440,7 +440,7 @@ pub fn type_declaration_data_type(s: Span) -> IResult<Span, TypeDeclaration> {
 
 #[parser]
 pub fn type_declaration_interface(s: Span) -> IResult<Span, TypeDeclaration> {
-    let (s, a) = symbol("typedef")(s)?;
+    let (s, a) = keyword("typedef")(s)?;
     let (s, b) = interface_instance_identifier(s)?;
     let (s, c) = constant_bit_select(s)?;
     let (s, d) = symbol(".")(s)?;
@@ -457,8 +457,8 @@ pub fn type_declaration_interface(s: Span) -> IResult<Span, TypeDeclaration> {
 
 #[parser]
 pub fn type_declaration_reserved(s: Span) -> IResult<Span, TypeDeclaration> {
-    let (s, a) = symbol("typedef")(s)?;
-    let (s, b) = type_declaration_keyword(s)?;
+    let (s, a) = keyword("typedef")(s)?;
+    let (s, b) = opt(type_declaration_keyword)(s)?;
     let (s, c) = type_identifier(s)?;
     let (s, d) = symbol(";")(s)?;
     Ok((
@@ -472,11 +472,11 @@ pub fn type_declaration_reserved(s: Span) -> IResult<Span, TypeDeclaration> {
 #[parser]
 pub fn type_declaration_keyword(s: Span) -> IResult<Span, TypeDeclarationKeyword> {
     alt((
-        map(symbol("enum"), |x| TypeDeclarationKeyword::Enum(x)),
-        map(symbol("struct"), |x| TypeDeclarationKeyword::Struct(x)),
-        map(symbol("union"), |x| TypeDeclarationKeyword::Union(x)),
-        map(symbol("class"), |x| TypeDeclarationKeyword::Class(x)),
-        map(pair(symbol("interface"), symbol("class")), |x| {
+        map(keyword("enum"), |x| TypeDeclarationKeyword::Enum(x)),
+        map(keyword("struct"), |x| TypeDeclarationKeyword::Struct(x)),
+        map(keyword("union"), |x| TypeDeclarationKeyword::Union(x)),
+        map(keyword("class"), |x| TypeDeclarationKeyword::Class(x)),
+        map(pair(keyword("interface"), keyword("class")), |x| {
             TypeDeclarationKeyword::InterfaceClass(x)
         }),
     ))(s)
@@ -492,11 +492,11 @@ pub fn net_type_declaration(s: Span) -> IResult<Span, NetTypeDeclaration> {
 
 #[parser]
 pub fn net_type_declaration_data_type(s: Span) -> IResult<Span, NetTypeDeclaration> {
-    let (s, a) = symbol("nettype")(s)?;
+    let (s, a) = keyword("nettype")(s)?;
     let (s, b) = data_type(s)?;
     let (s, c) = net_type_identifier(s)?;
     let (s, d) = opt(triple(
-        symbol("with"),
+        keyword("with"),
         opt(package_scope_or_class_scope),
         tf_identifier,
     ))(s)?;
@@ -511,7 +511,7 @@ pub fn net_type_declaration_data_type(s: Span) -> IResult<Span, NetTypeDeclarati
 
 #[parser]
 pub fn net_type_declaration_net_type(s: Span) -> IResult<Span, NetTypeDeclaration> {
-    let (s, a) = symbol("nettype")(s)?;
+    let (s, a) = keyword("nettype")(s)?;
     let (s, b) = opt(package_scope_or_class_scope)(s)?;
     let (s, c) = net_type_identifier(s)?;
     let (s, d) = net_type_identifier(s)?;
@@ -527,8 +527,8 @@ pub fn net_type_declaration_net_type(s: Span) -> IResult<Span, NetTypeDeclaratio
 #[parser]
 pub fn lifetime(s: Span) -> IResult<Span, Lifetime> {
     alt((
-        map(symbol("static"), |x| Lifetime::Static(x)),
-        map(symbol("automatic"), |x| Lifetime::Automatic(x)),
+        map(keyword("static"), |x| Lifetime::Static(x)),
+        map(keyword("automatic"), |x| Lifetime::Automatic(x)),
     ))(s)
 }
 
@@ -601,5 +601,189 @@ mod tests {
         );
         parser_test!(net_declaration, "interconnect logic [3:0] w4;", Err(_));
         parser_test!(net_declaration, "interconnect #(1,2,3) w5;", Err(_));
+        parser_test!(
+            net_declaration,
+            "wand w;",
+            Ok((_, NetDeclaration::NetType(_)))
+        );
+        parser_test!(
+            net_declaration,
+            "tri [15:0] busa;",
+            Ok((_, NetDeclaration::NetType(_)))
+        );
+        parser_test!(
+            net_declaration,
+            "trireg (small) storeit;",
+            Ok((_, NetDeclaration::NetType(_)))
+        );
+        parser_test!(
+            net_declaration,
+            "wire w1, w2;",
+            Ok((_, NetDeclaration::NetType(_)))
+        );
+        parser_test!(
+            net_declaration,
+            "tri1 scalared [63:0] bus64;",
+            Ok((_, NetDeclaration::NetType(_)))
+        );
+        parser_test!(
+            net_declaration,
+            "tri vectored [31:0] data;",
+            Ok((_, NetDeclaration::NetType(_)))
+        );
+    }
+
+    #[test]
+    fn test_data_declaration() {
+        parser_test!(
+            data_declaration,
+            "shortint s1, s2[0:9];",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "var byte my_byte;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "var v;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "var [15:0] vw;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "var enum bit { clear, error } status;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "var reg r;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "int i = 0;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "logic a;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "logic[3:0] v;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "logic signed [3:0] signed_reg;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "logic [-1:4] b;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "logic [4:0] x, y, z;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "int unsigned ui;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "int signed si;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "string myName = default_name;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "byte c = \"A\";",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "bit [10:0] b = \"x41\";",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "bit [1:4][7:0] h = \"hello\" ;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "event done;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "event done_too = done;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "event empty = null;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "typedef int intP;",
+            Ok((_, DataDeclaration::TypeDeclaration(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "intP a, b;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "typedef enum type_identifier;",
+            Ok((_, DataDeclaration::TypeDeclaration(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "typedef struct type_identifier;",
+            Ok((_, DataDeclaration::TypeDeclaration(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "typedef union type_identifier;",
+            Ok((_, DataDeclaration::TypeDeclaration(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "typedef class type_identifier;",
+            Ok((_, DataDeclaration::TypeDeclaration(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "typedef interface class type_identifier;",
+            Ok((_, DataDeclaration::TypeDeclaration(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "typedef type_identifier;",
+            Ok((_, DataDeclaration::TypeDeclaration(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "typedef C::T c_t;",
+            Ok((_, DataDeclaration::TypeDeclaration(_)))
+        );
     }
 }

@@ -347,7 +347,7 @@ pub fn system_timing_check(s: Span) -> IResult<Span, SystemTimingCheck> {
 
 #[parser]
 pub fn setup_timing_check(s: Span) -> IResult<Span, SetupTimingCheck> {
-    let (s, a) = symbol("$setup")(s)?;
+    let (s, a) = keyword("$setup")(s)?;
     let (s, b) = paren(tuple((
         data_event,
         symbol(","),
@@ -362,7 +362,7 @@ pub fn setup_timing_check(s: Span) -> IResult<Span, SetupTimingCheck> {
 
 #[parser]
 pub fn hold_timing_check(s: Span) -> IResult<Span, HoldTimingCheck> {
-    let (s, a) = symbol("$setup")(s)?;
+    let (s, a) = keyword("$setup")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
         symbol(","),
@@ -377,7 +377,7 @@ pub fn hold_timing_check(s: Span) -> IResult<Span, HoldTimingCheck> {
 
 #[parser]
 pub fn setuphold_timing_check(s: Span) -> IResult<Span, SetupholdTimingCheck> {
-    let (s, a) = symbol("$setuphold")(s)?;
+    let (s, a) = keyword("$setuphold")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
         symbol(","),
@@ -410,7 +410,7 @@ pub fn setuphold_timing_check(s: Span) -> IResult<Span, SetupholdTimingCheck> {
 
 #[parser]
 pub fn recovery_timing_check(s: Span) -> IResult<Span, RecoveryTimingCheck> {
-    let (s, a) = symbol("$recovery")(s)?;
+    let (s, a) = keyword("$recovery")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
         symbol(","),
@@ -425,7 +425,7 @@ pub fn recovery_timing_check(s: Span) -> IResult<Span, RecoveryTimingCheck> {
 
 #[parser]
 pub fn removal_timing_check(s: Span) -> IResult<Span, RemovalTimingCheck> {
-    let (s, a) = symbol("$removal")(s)?;
+    let (s, a) = keyword("$removal")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
         symbol(","),
@@ -440,7 +440,7 @@ pub fn removal_timing_check(s: Span) -> IResult<Span, RemovalTimingCheck> {
 
 #[parser]
 pub fn recrem_timing_check(s: Span) -> IResult<Span, RecremTimingCheck> {
-    let (s, a) = symbol("$recrem")(s)?;
+    let (s, a) = keyword("$recrem")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
         symbol(","),
@@ -473,7 +473,7 @@ pub fn recrem_timing_check(s: Span) -> IResult<Span, RecremTimingCheck> {
 
 #[parser]
 pub fn skew_timing_check(s: Span) -> IResult<Span, SkewTimingCheck> {
-    let (s, a) = symbol("$skew")(s)?;
+    let (s, a) = keyword("$skew")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
         symbol(","),
@@ -488,7 +488,7 @@ pub fn skew_timing_check(s: Span) -> IResult<Span, SkewTimingCheck> {
 
 #[parser]
 pub fn timeskew_timing_check(s: Span) -> IResult<Span, TimeskewTimingCheck> {
-    let (s, a) = symbol("$timeskew")(s)?;
+    let (s, a) = keyword("$timeskew")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
         symbol(","),
@@ -511,7 +511,7 @@ pub fn timeskew_timing_check(s: Span) -> IResult<Span, TimeskewTimingCheck> {
 
 #[parser]
 pub fn fullskew_timing_check(s: Span) -> IResult<Span, FullskewTimingCheck> {
-    let (s, a) = symbol("$fullskew")(s)?;
+    let (s, a) = keyword("$fullskew")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
         symbol(","),
@@ -536,7 +536,7 @@ pub fn fullskew_timing_check(s: Span) -> IResult<Span, FullskewTimingCheck> {
 
 #[parser]
 pub fn period_timing_check(s: Span) -> IResult<Span, PeriodTimingCheck> {
-    let (s, a) = symbol("$period")(s)?;
+    let (s, a) = keyword("$period")(s)?;
     let (s, b) = paren(tuple((
         controlled_referecne_event,
         symbol(","),
@@ -549,7 +549,7 @@ pub fn period_timing_check(s: Span) -> IResult<Span, PeriodTimingCheck> {
 
 #[parser]
 pub fn width_timing_check(s: Span) -> IResult<Span, WidthTimingCheck> {
-    let (s, a) = symbol("$width")(s)?;
+    let (s, a) = keyword("$width")(s)?;
     let (s, b) = paren(tuple((
         controlled_referecne_event,
         symbol(","),
@@ -564,7 +564,7 @@ pub fn width_timing_check(s: Span) -> IResult<Span, WidthTimingCheck> {
 
 #[parser]
 pub fn nocharge_timing_check(s: Span) -> IResult<Span, NochargeTimingCheck> {
-    let (s, a) = symbol("$nocharge")(s)?;
+    let (s, a) = keyword("$nocharge")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
         symbol(","),

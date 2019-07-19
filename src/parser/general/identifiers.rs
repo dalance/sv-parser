@@ -3,15 +3,16 @@ use crate::parser::*;
 use nom::branch::*;
 use nom::bytes::complete::*;
 use nom::combinator::*;
+use nom::error::*;
 use nom::multi::*;
 use nom::sequence::*;
-use nom::IResult;
+use nom::{Err, IResult};
 
 // -----------------------------------------------------------------------------
 
-const AZ_: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
-const AZ09_: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
-const AZ09_DOLLAR: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$";
+pub const AZ_: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
+pub const AZ09_: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+pub const AZ09_DOLLAR: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$";
 
 #[derive(Debug, Node)]
 pub struct ArrayIdentifier<'a> {
@@ -577,7 +578,11 @@ pub fn c_identifier_impl(s: Span) -> IResult<Span, Span> {
     } else {
         a
     };
-    Ok((s, a))
+    if is_keyword(&a) {
+        Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    } else {
+        Ok((s, a))
+    }
 }
 
 #[parser]
@@ -736,7 +741,7 @@ pub fn hierarchical_identifier(s: Span) -> IResult<Span, HierarchicalIdentifier>
 
 #[parser]
 pub fn root(s: Span) -> IResult<Span, Root> {
-    let (s, a) = symbol("$root")(s)?;
+    let (s, a) = keyword("$root")(s)?;
     let (s, b) = symbol(".")(s)?;
     Ok((s, Root { nodes: (a, b) }))
 }
@@ -900,7 +905,7 @@ pub fn package_scope_package(s: Span) -> IResult<Span, PackageScope> {
 
 #[parser]
 pub fn unit(s: Span) -> IResult<Span, Unit> {
-    let (s, a) = symbol("$unit")(s)?;
+    let (s, a) = keyword("$unit")(s)?;
     let (s, b) = symbol("::")(s)?;
     Ok((s, Unit { nodes: (a, b) }))
 }
@@ -1138,7 +1143,11 @@ pub fn simple_identifier_impl(s: Span) -> IResult<Span, Span> {
     } else {
         a
     };
-    Ok((s, a))
+    if is_keyword(&a) {
+        Err(Err::Error(make_error(s, ErrorKind::Fix)))
+    } else {
+        Ok((s, a))
+    }
 }
 
 #[parser]
@@ -1273,7 +1282,7 @@ pub fn local_or_package_scope_or_class_scope(
 
 #[parser]
 pub fn local(s: Span) -> IResult<Span, Local> {
-    let (s, a) = symbol("local")(s)?;
+    let (s, a) = keyword("local")(s)?;
     let (s, b) = symbol("::")(s)?;
     Ok((s, Local { nodes: (a, b) }))
 }

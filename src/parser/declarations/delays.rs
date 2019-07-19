@@ -127,6 +127,6 @@ pub fn delay_value(s: Span) -> IResult<Span, DelayValue> {
         map(real_number, |x| DelayValue::RealNumber(x)),
         map(ps_identifier, |x| DelayValue::PsIdentifier(x)),
         map(time_literal, |x| DelayValue::TimeLiteral(x)),
-        map(symbol("1step"), |x| DelayValue::Step1(x)),
+        map(keyword("1step"), |x| DelayValue::Step1(x)),
     ))(s)
 }

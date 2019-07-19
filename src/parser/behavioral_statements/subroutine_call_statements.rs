@@ -37,7 +37,7 @@ pub fn subroutine_call_statement(s: Span) -> IResult<Span, SubroutineCallStateme
 
 #[parser]
 pub fn subroutine_call_statement_function(s: Span) -> IResult<Span, SubroutineCallStatement> {
-    let (s, a) = symbol("void")(s)?;
+    let (s, a) = keyword("void")(s)?;
     let (s, b) = symbol("'")(s)?;
     let (s, c) = paren(function_subroutine_call)(s)?;
     let (s, d) = symbol(";")(s)?;

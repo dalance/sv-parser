@@ -122,10 +122,10 @@ pub fn package_or_generate_item_declaration(
 
 #[parser]
 pub fn anonymous_program(s: Span) -> IResult<Span, AnonymousProgram> {
-    let (s, a) = symbol("program")(s)?;
+    let (s, a) = keyword("program")(s)?;
     let (s, b) = symbol(";")(s)?;
     let (s, c) = many0(anonymous_program_item)(s)?;
-    let (s, d) = symbol("endprogram")(s)?;
+    let (s, d) = keyword("endprogram")(s)?;
     Ok((
         s,
         AnonymousProgram {

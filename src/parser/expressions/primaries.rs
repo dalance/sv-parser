@@ -649,8 +649,8 @@ mod tests {
             "\"aaa\"",
             Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::StringLiteral(_))))
         );
-        parser_test!(primary, "this", Ok((_, Primary::This(_))));
+        parser_test!(primary, "this ", Ok((_, Primary::This(_))));
         parser_test!(primary, "$", Ok((_, Primary::Dollar(_))));
-        parser_test!(primary, "null", Ok((_, Primary::Null(_))));
+        parser_test!(primary, "null ", Ok((_, Primary::Null(_))));
     }
 }

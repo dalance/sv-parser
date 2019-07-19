@@ -52,7 +52,7 @@ pub struct ParameterPortDeclarationParamList<'a> {
 
 #[derive(Debug, Node)]
 pub struct ParameterPortDeclarationTypeList<'a> {
-    pub nodes: (Symbol<'a>, ListOfTypeAssignments<'a>),
+    pub nodes: (Keyword<'a>, ListOfTypeAssignments<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -139,10 +139,10 @@ pub struct PortReference<'a> {
 
 #[derive(Debug, Node)]
 pub enum PortDirection<'a> {
-    Input(Symbol<'a>),
-    Output(Symbol<'a>),
-    Inout(Symbol<'a>),
-    Ref(Symbol<'a>),
+    Input(Keyword<'a>),
+    Output(Keyword<'a>),
+    Inout(Keyword<'a>),
+    Ref(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -171,7 +171,7 @@ pub struct InterfacePortHeaderIdentifier<'a> {
 
 #[derive(Debug, Node)]
 pub struct InterfacePortHeaderInterface<'a> {
-    pub nodes: (Symbol<'a>, Option<(Symbol<'a>, ModportIdentifier<'a>)>),
+    pub nodes: (Keyword<'a>, Option<(Symbol<'a>, ModportIdentifier<'a>)>),
 }
 
 #[derive(Debug, Node)]

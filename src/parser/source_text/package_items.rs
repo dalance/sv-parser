@@ -37,10 +37,10 @@ pub enum PackageOrGenerateItemDeclaration<'a> {
 #[derive(Debug, Node)]
 pub struct AnonymousProgram<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Symbol<'a>,
         Vec<AnonymousProgramItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
     ),
 }
 

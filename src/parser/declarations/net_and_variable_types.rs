@@ -13,8 +13,8 @@ pub enum CastingType<'a> {
     SimpleType(Box<SimpleType<'a>>),
     ConstantPrimary(Box<ConstantPrimary<'a>>),
     Signing(Box<Signing<'a>>),
-    String(Symbol<'a>),
-    Const(Symbol<'a>),
+    String(Keyword<'a>),
+    Const(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -24,12 +24,12 @@ pub enum DataType<'a> {
     NonIntegerType(NonIntegerType<'a>),
     Union(Box<DataTypeUnion<'a>>),
     Enum(DataTypeEnum<'a>),
-    String(Symbol<'a>),
-    Chandle(Symbol<'a>),
+    String(Keyword<'a>),
+    Chandle(Keyword<'a>),
     Virtual(DataTypeVirtual<'a>),
     Type(DataTypeType<'a>),
     ClassType(ClassType<'a>),
-    Event(Symbol<'a>),
+    Event(Keyword<'a>),
     PsCovergroupIdentifier(PsCovergroupIdentifier<'a>),
     TypeReference(Box<TypeReference<'a>>),
 }
@@ -60,13 +60,13 @@ pub struct DataTypeUnion<'a> {
 
 #[derive(Debug, Node)]
 pub struct Packed<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
 pub struct DataTypeEnum<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<EnumBaseType<'a>>,
         Brace<'a, List<Symbol<'a>, EnumNameDeclaration<'a>>>,
         Vec<PackedDimension<'a>>,
@@ -76,7 +76,7 @@ pub struct DataTypeEnum<'a> {
 #[derive(Debug, Node)]
 pub struct DataTypeVirtual<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<Interface<'a>>,
         InterfaceIdentifier<'a>,
         Option<ParameterValueAssignment<'a>>,
@@ -86,7 +86,7 @@ pub struct DataTypeVirtual<'a> {
 
 #[derive(Debug, Node)]
 pub struct Interface<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
@@ -170,42 +170,42 @@ pub enum IntegerType<'a> {
 
 #[derive(Debug, Node)]
 pub enum IntegerAtomType<'a> {
-    Byte(Symbol<'a>),
-    Shortint(Symbol<'a>),
-    Int(Symbol<'a>),
-    Longint(Symbol<'a>),
-    Integer(Symbol<'a>),
-    Time(Symbol<'a>),
+    Byte(Keyword<'a>),
+    Shortint(Keyword<'a>),
+    Int(Keyword<'a>),
+    Longint(Keyword<'a>),
+    Integer(Keyword<'a>),
+    Time(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
 pub enum IntegerVectorType<'a> {
-    Bit(Symbol<'a>),
-    Logic(Symbol<'a>),
-    Reg(Symbol<'a>),
+    Bit(Keyword<'a>),
+    Logic(Keyword<'a>),
+    Reg(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
 pub enum NonIntegerType<'a> {
-    Shortreal(Symbol<'a>),
-    Real(Symbol<'a>),
-    Realtime(Symbol<'a>),
+    Shortreal(Keyword<'a>),
+    Real(Keyword<'a>),
+    Realtime(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
 pub enum NetType<'a> {
-    Supply0(Symbol<'a>),
-    Supply1(Symbol<'a>),
-    Tri(Symbol<'a>),
-    Triand(Symbol<'a>),
-    Trior(Symbol<'a>),
-    Trireg(Symbol<'a>),
-    Tri0(Symbol<'a>),
-    Tri1(Symbol<'a>),
-    Uwire(Symbol<'a>),
-    Wire(Symbol<'a>),
-    Wand(Symbol<'a>),
-    Wor(Symbol<'a>),
+    Supply0(Keyword<'a>),
+    Supply1(Keyword<'a>),
+    Tri(Keyword<'a>),
+    Triand(Keyword<'a>),
+    Trior(Keyword<'a>),
+    Trireg(Keyword<'a>),
+    Tri0(Keyword<'a>),
+    Tri1(Keyword<'a>),
+    Uwire(Keyword<'a>),
+    Wire(Keyword<'a>),
+    Wand(Keyword<'a>),
+    Wor(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -222,7 +222,7 @@ pub struct NetPortTypeDataType<'a> {
 
 #[derive(Debug, Node)]
 pub struct NetPortTypeInterconnect<'a> {
-    pub nodes: (Symbol<'a>, ImplicitDataType<'a>),
+    pub nodes: (Keyword<'a>, ImplicitDataType<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -238,13 +238,13 @@ pub enum VarDataType<'a> {
 
 #[derive(Debug, Node)]
 pub struct VarDataTypeVar<'a> {
-    pub nodes: (Symbol<'a>, DataTypeOrImplicit<'a>),
+    pub nodes: (Keyword<'a>, DataTypeOrImplicit<'a>),
 }
 
 #[derive(Debug, Node)]
 pub enum Signing<'a> {
-    Signed(Symbol<'a>),
-    Unsigned(Symbol<'a>),
+    Signed(Keyword<'a>),
+    Unsigned(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -269,14 +269,14 @@ pub struct StructUnionMember<'a> {
 #[derive(Debug, Node)]
 pub enum DataTypeOrVoid<'a> {
     DataType(DataType<'a>),
-    Void(Symbol<'a>),
+    Void(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
 pub enum StructUnion<'a> {
-    Struct(Symbol<'a>),
-    Union(Symbol<'a>),
-    UnionTagged((Symbol<'a>, Symbol<'a>)),
+    Struct(Keyword<'a>),
+    Union(Keyword<'a>),
+    UnionTagged((Keyword<'a>, Keyword<'a>)),
 }
 
 #[derive(Debug, Node)]
@@ -287,12 +287,12 @@ pub enum TypeReference<'a> {
 
 #[derive(Debug, Node)]
 pub struct TypeReferenceExpression<'a> {
-    pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>),
+    pub nodes: (Keyword<'a>, Paren<'a, Expression<'a>>),
 }
 
 #[derive(Debug, Node)]
 pub struct TypeReferenceDataType<'a> {
-    pub nodes: (Symbol<'a>, Paren<'a, DataType<'a>>),
+    pub nodes: (Keyword<'a>, Paren<'a, DataType<'a>>),
 }
 
 // -----------------------------------------------------------------------------

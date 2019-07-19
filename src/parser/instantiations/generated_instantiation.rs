@@ -10,13 +10,13 @@ use nom::IResult;
 
 #[derive(Debug, Node)]
 pub struct GenerateRegion<'a> {
-    pub nodes: (Symbol<'a>, Vec<GenerateItem<'a>>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, Vec<GenerateItem<'a>>, Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct LoopGenerateConstruct<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<
             'a,
             (
@@ -43,7 +43,7 @@ pub struct GenvarInitialization<'a> {
 
 #[derive(Debug, Node)]
 pub struct Genvar<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
@@ -81,20 +81,20 @@ pub enum ConditionalGenerateConstruct<'a> {
 #[derive(Debug, Node)]
 pub struct IfGenerateConstruct<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<'a, ConstantExpression<'a>>,
         GenerateBlock<'a>,
-        Option<(Symbol<'a>, GenerateBlock<'a>)>,
+        Option<(Keyword<'a>, GenerateBlock<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct CaseGenerateConstruct<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<'a, ConstantExpression<'a>>,
         Vec<CaseGenerateItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
     ),
 }
 
@@ -115,7 +115,7 @@ pub struct CaseGenerateItemNondefault<'a> {
 
 #[derive(Debug, Node)]
 pub struct CaseGenerateItemDefault<'a> {
-    pub nodes: (Symbol<'a>, Option<Symbol<'a>>, GenerateBlock<'a>),
+    pub nodes: (Keyword<'a>, Option<Symbol<'a>>, GenerateBlock<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -128,10 +128,10 @@ pub enum GenerateBlock<'a> {
 pub struct GenerateBlockMultiple<'a> {
     pub nodes: (
         Option<(GenerateBlockIdentifier<'a>, Symbol<'a>)>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, GenerateBlockIdentifier<'a>)>,
         Vec<GenerateItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, GenerateBlockIdentifier<'a>)>,
     ),
 }

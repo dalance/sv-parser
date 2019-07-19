@@ -15,7 +15,7 @@ pub enum LocalParameterDeclaration<'a> {
 #[derive(Debug, Node)]
 pub struct LocalParameterDeclarationParam<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<DataTypeOrImplicit<'a>>,
         ListOfParamAssignments<'a>,
     ),
@@ -23,7 +23,7 @@ pub struct LocalParameterDeclarationParam<'a> {
 
 #[derive(Debug, Node)]
 pub struct LocalParameterDeclarationType<'a> {
-    pub nodes: (Symbol<'a>, Symbol<'a>, ListOfTypeAssignments<'a>),
+    pub nodes: (Keyword<'a>, Keyword<'a>, ListOfTypeAssignments<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -35,7 +35,7 @@ pub enum ParameterDeclaration<'a> {
 #[derive(Debug, Node)]
 pub struct ParameterDeclarationParam<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<DataTypeOrImplicit<'a>>,
         ListOfParamAssignments<'a>,
     ),
@@ -43,13 +43,13 @@ pub struct ParameterDeclarationParam<'a> {
 
 #[derive(Debug, Node)]
 pub struct ParameterDeclarationType<'a> {
-    pub nodes: (Symbol<'a>, Symbol<'a>, ListOfTypeAssignments<'a>),
+    pub nodes: (Keyword<'a>, Keyword<'a>, ListOfTypeAssignments<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct SpecparamDeclaration<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<PackedDimension<'a>>,
         ListOfSpecparamAssignments<'a>,
         Symbol<'a>,

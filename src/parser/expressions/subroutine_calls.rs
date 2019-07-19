@@ -69,7 +69,7 @@ pub enum SubroutineCall<'a> {
 
 #[derive(Debug, Node)]
 pub struct SubroutineCallRandomize<'a> {
-    pub nodes: (Option<(Symbol<'a>, Symbol<'a>)>, RandomizeCall<'a>),
+    pub nodes: (Option<(Keyword<'a>, Symbol<'a>)>, RandomizeCall<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -143,18 +143,18 @@ pub struct ArrayManipulationCall<'a> {
         ArrayMethodName<'a>,
         Vec<AttributeInstance<'a>>,
         Option<Paren<'a, ListOfArguments<'a>>>,
-        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
+        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct RandomizeCall<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Vec<AttributeInstance<'a>>,
         Option<Paren<'a, Option<VariableIdentifierListOrNull<'a>>>>,
         Option<(
-            Symbol<'a>,
+            Keyword<'a>,
             Option<Paren<'a, Option<IdentifierList<'a>>>>,
             ConstraintBlock<'a>,
         )>,
@@ -164,7 +164,7 @@ pub struct RandomizeCall<'a> {
 #[derive(Debug, Node)]
 pub enum VariableIdentifierListOrNull<'a> {
     VariableIdentifierList(VariableIdentifierList<'a>),
-    Null(Symbol<'a>),
+    Null(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -176,10 +176,10 @@ pub enum MethodCallRoot<'a> {
 #[derive(Debug, Node)]
 pub enum ArrayMethodName<'a> {
     MethodIdentifier(MethodIdentifier<'a>),
-    Unique(Symbol<'a>),
-    And(Symbol<'a>),
-    Or(Symbol<'a>),
-    Xor(Symbol<'a>),
+    Unique(Keyword<'a>),
+    And(Keyword<'a>),
+    Or(Keyword<'a>),
+    Xor(Keyword<'a>),
 }
 
 // -----------------------------------------------------------------------------

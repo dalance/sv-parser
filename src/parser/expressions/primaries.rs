@@ -23,7 +23,7 @@ pub enum ConstantPrimary<'a> {
     ConstantCast(ConstantCast<'a>),
     ConstantAssignmentPatternExpression(ConstantAssignmentPatternExpression<'a>),
     TypeReference(TypeReference<'a>),
-    Null(Symbol<'a>),
+    Null(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -99,9 +99,9 @@ pub enum Primary<'a> {
     AssignmentPatternExpression(AssignmentPatternExpression<'a>),
     StreamingConcatenation(StreamingConcatenation<'a>),
     SequenceMethodCall(SequenceMethodCall<'a>),
-    This(Symbol<'a>),
+    This(Keyword<'a>),
     Dollar(Symbol<'a>),
-    Null(Symbol<'a>),
+    Null(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -177,19 +177,19 @@ pub struct TimeLiteralFixedPoint<'a> {
 
 #[derive(Debug, Node)]
 pub enum TimeUnit<'a> {
-    S(Symbol<'a>),
-    MS(Symbol<'a>),
-    US(Symbol<'a>),
-    NS(Symbol<'a>),
-    PS(Symbol<'a>),
-    FS(Symbol<'a>),
+    S(Keyword<'a>),
+    MS(Keyword<'a>),
+    US(Keyword<'a>),
+    NS(Keyword<'a>),
+    PS(Keyword<'a>),
+    FS(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
 pub enum ImplicitClassHandle<'a> {
-    This(Symbol<'a>),
-    Super(Symbol<'a>),
-    ThisSuper((Symbol<'a>, Symbol<'a>, Symbol<'a>)),
+    This(Keyword<'a>),
+    Super(Keyword<'a>),
+    ThisSuper((Keyword<'a>, Symbol<'a>, Keyword<'a>)),
 }
 
 #[derive(Debug, Node)]
@@ -621,12 +621,12 @@ mod tests {
     fn test_primary() {
         parser_test!(
             primary,
-            "2.1ns",
+            "2.1ns ",
             Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::TimeLiteral(_))))
         );
         parser_test!(
             primary,
-            "40 ps",
+            "40 ps ",
             Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::TimeLiteral(_))))
         );
         parser_test!(

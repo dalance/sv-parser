@@ -21,7 +21,7 @@ pub enum DelayOrEventControl<'a> {
 
 #[derive(Debug, Node)]
 pub struct DelayOrEventControlRepeat<'a> {
-    pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>, EventControl<'a>),
+    pub nodes: (Keyword<'a>, Paren<'a, Expression<'a>>, EventControl<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -88,18 +88,18 @@ pub struct EventExpressionExpression<'a> {
     pub nodes: (
         Option<EdgeIdentifier<'a>>,
         Expression<'a>,
-        Option<(Symbol<'a>, Expression<'a>)>,
+        Option<(Keyword<'a>, Expression<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct EventExpressionSequence<'a> {
-    pub nodes: (SequenceInstance<'a>, Option<(Symbol<'a>, Expression<'a>)>),
+    pub nodes: (SequenceInstance<'a>, Option<(Keyword<'a>, Expression<'a>)>),
 }
 
 #[derive(Debug, Node)]
 pub struct EventExpressionOr<'a> {
-    pub nodes: (EventExpression<'a>, Symbol<'a>, EventExpression<'a>),
+    pub nodes: (EventExpression<'a>, Keyword<'a>, EventExpression<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -128,17 +128,17 @@ pub enum JumpStatement<'a> {
 
 #[derive(Debug, Node)]
 pub struct JumpStatementReturn<'a> {
-    pub nodes: (Symbol<'a>, Option<Expression<'a>>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, Option<Expression<'a>>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct JumpStatementBreak<'a> {
-    pub nodes: (Symbol<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct JumpStatementContinue<'a> {
-    pub nodes: (Symbol<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -150,18 +150,18 @@ pub enum WaitStatement<'a> {
 
 #[derive(Debug, Node)]
 pub struct WaitStatementWait<'a> {
-    pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>, StatementOrNull<'a>),
+    pub nodes: (Keyword<'a>, Paren<'a, Expression<'a>>, StatementOrNull<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct WaitStatementFork<'a> {
-    pub nodes: (Symbol<'a>, Symbol<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, Keyword<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct WaitStatementOrder<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<'a, List<Symbol<'a>, HierarchicalIdentifier<'a>>>,
         ActionBlock<'a>,
     ),
@@ -197,17 +197,17 @@ pub enum DisableStatement<'a> {
 
 #[derive(Debug, Node)]
 pub struct DisableStatementTask<'a> {
-    pub nodes: (Symbol<'a>, HierarchicalTaskIdentifier<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, HierarchicalTaskIdentifier<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct DisableStatementBlock<'a> {
-    pub nodes: (Symbol<'a>, HierarchicalBlockIdentifier<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, HierarchicalBlockIdentifier<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct DisableStatementFork<'a> {
-    pub nodes: (Symbol<'a>, Symbol<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, Keyword<'a>, Symbol<'a>),
 }
 
 // -----------------------------------------------------------------------------

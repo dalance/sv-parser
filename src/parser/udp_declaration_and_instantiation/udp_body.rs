@@ -17,10 +17,10 @@ pub enum UdpBody<'a> {
 #[derive(Debug, Node)]
 pub struct CombinationalBody<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         CombinationalEntry<'a>,
         Vec<CombinationalEntry<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
     ),
 }
 
@@ -33,17 +33,17 @@ pub struct CombinationalEntry<'a> {
 pub struct SequentialBody<'a> {
     pub nodes: (
         Option<UdpInitialStatement<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         SequentialEntry<'a>,
         Vec<SequentialEntry<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct UdpInitialStatement<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         OutputPortIdentifier<'a>,
         Symbol<'a>,
         InitVal<'a>,
@@ -53,7 +53,7 @@ pub struct UdpInitialStatement<'a> {
 
 #[derive(Debug, Node)]
 pub struct InitVal<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
@@ -112,17 +112,17 @@ pub enum NextState<'a> {
 
 #[derive(Debug, Node)]
 pub struct OutputSymbol<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
 pub struct LevelSymbol<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
 pub struct EdgeSymbol<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 // -----------------------------------------------------------------------------

@@ -67,7 +67,7 @@ pub enum DelayValue<'a> {
     RealNumber(RealNumber<'a>),
     PsIdentifier(PsIdentifier<'a>),
     TimeLiteral(TimeLiteral<'a>),
-    Step1(Symbol<'a>),
+    Step1(Keyword<'a>),
 }
 
 // -----------------------------------------------------------------------------

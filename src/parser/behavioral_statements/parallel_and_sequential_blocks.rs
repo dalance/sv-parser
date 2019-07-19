@@ -16,17 +16,17 @@ pub enum ActionBlock<'a> {
 
 #[derive(Debug, Node)]
 pub struct ActionBlockElse<'a> {
-    pub nodes: (Option<Statement<'a>>, Symbol<'a>, StatementOrNull<'a>),
+    pub nodes: (Option<Statement<'a>>, Keyword<'a>, StatementOrNull<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct SeqBlock<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, BlockIdentifier<'a>)>,
         Vec<BlockItemDeclaration<'a>>,
         Vec<StatementOrNull<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, BlockIdentifier<'a>)>,
     ),
 }
@@ -34,7 +34,7 @@ pub struct SeqBlock<'a> {
 #[derive(Debug, Node)]
 pub struct ParBlock<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, BlockIdentifier<'a>)>,
         Vec<BlockItemDeclaration<'a>>,
         Vec<StatementOrNull<'a>>,
@@ -45,9 +45,9 @@ pub struct ParBlock<'a> {
 
 #[derive(Debug, Node)]
 pub enum JoinKeyword<'a> {
-    Join(Symbol<'a>),
-    JoinAny(Symbol<'a>),
-    JoinNone(Symbol<'a>),
+    Join(Keyword<'a>),
+    JoinAny(Keyword<'a>),
+    JoinNone(Keyword<'a>),
 }
 
 // -----------------------------------------------------------------------------

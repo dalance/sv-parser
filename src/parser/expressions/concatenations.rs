@@ -71,7 +71,7 @@ pub struct StreamConcatenation<'a> {
 pub struct StreamExpression<'a> {
     pub nodes: (
         Expression<'a>,
-        Option<(Symbol<'a>, Bracket<'a, ArrayRangeExpression<'a>>)>,
+        Option<(Keyword<'a>, Bracket<'a, ArrayRangeExpression<'a>>)>,
     ),
 }
 

@@ -12,24 +12,24 @@ use nom::IResult;
 pub struct ConditionalStatement<'a> {
     pub nodes: (
         Option<UniquePriority<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<'a, CondPredicate<'a>>,
         StatementOrNull<'a>,
         Vec<(
-            Symbol<'a>,
-            Symbol<'a>,
+            Keyword<'a>,
+            Keyword<'a>,
             Paren<'a, CondPredicate<'a>>,
             StatementOrNull<'a>,
         )>,
-        Option<(Symbol<'a>, StatementOrNull<'a>)>,
+        Option<(Keyword<'a>, StatementOrNull<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub enum UniquePriority<'a> {
-    Unique(Symbol<'a>),
-    Unique0(Symbol<'a>),
-    Priority(Symbol<'a>),
+    Unique(Keyword<'a>),
+    Unique0(Keyword<'a>),
+    Priority(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -45,7 +45,7 @@ pub enum ExpressionOrCondPattern<'a> {
 
 #[derive(Debug, Node)]
 pub struct CondPattern<'a> {
-    pub nodes: (Expression<'a>, Symbol<'a>, Pattern<'a>),
+    pub nodes: (Expression<'a>, Keyword<'a>, Pattern<'a>),
 }
 
 // -----------------------------------------------------------------------------

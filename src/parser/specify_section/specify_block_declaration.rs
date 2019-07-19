@@ -9,7 +9,7 @@ use nom::IResult;
 
 #[derive(Debug, Node)]
 pub struct SpecifyBlock<'a> {
-    pub nodes: (Symbol<'a>, Vec<SpecifyItem<'a>>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, Vec<SpecifyItem<'a>>, Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -23,12 +23,12 @@ pub enum SpecifyItem<'a> {
 
 #[derive(Debug, Node)]
 pub struct PulsestyleDeclaration<'a> {
-    pub nodes: (Symbol<'a>, ListOfPathOutputs<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, ListOfPathOutputs<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ShowcancelledDeclaration<'a> {
-    pub nodes: (Symbol<'a>, ListOfPathOutputs<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, ListOfPathOutputs<'a>, Symbol<'a>),
 }
 
 // -----------------------------------------------------------------------------

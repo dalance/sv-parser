@@ -43,17 +43,17 @@ pub enum SimpleImmediateAssertionStatement<'a> {
 
 #[derive(Debug, Node)]
 pub struct SimpleImmediateAssertStatement<'a> {
-    pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>, ActionBlock<'a>),
+    pub nodes: (Keyword<'a>, Paren<'a, Expression<'a>>, ActionBlock<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct SimpleImmediateAssumeStatement<'a> {
-    pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>, ActionBlock<'a>),
+    pub nodes: (Keyword<'a>, Paren<'a, Expression<'a>>, ActionBlock<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct SimpleImmediateCoverStatement<'a> {
-    pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>, StatementOrNull<'a>),
+    pub nodes: (Keyword<'a>, Paren<'a, Expression<'a>>, StatementOrNull<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -66,7 +66,7 @@ pub enum DeferredImmediateAssertionStatement<'a> {
 #[derive(Debug, Node)]
 pub struct DeferredImmediateAssertStatement<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         AssertTiming<'a>,
         Paren<'a, Expression<'a>>,
         ActionBlock<'a>,
@@ -76,7 +76,7 @@ pub struct DeferredImmediateAssertStatement<'a> {
 #[derive(Debug, Node)]
 pub struct DeferredImmediateAssumeStatement<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         AssertTiming<'a>,
         Paren<'a, Expression<'a>>,
         ActionBlock<'a>,
@@ -86,7 +86,7 @@ pub struct DeferredImmediateAssumeStatement<'a> {
 #[derive(Debug, Node)]
 pub struct DeferredImmediateCoverStatement<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         AssertTiming<'a>,
         Paren<'a, Expression<'a>>,
         StatementOrNull<'a>,
@@ -96,7 +96,7 @@ pub struct DeferredImmediateCoverStatement<'a> {
 #[derive(Debug, Node)]
 pub enum AssertTiming<'a> {
     Zero(Symbol<'a>),
-    Final(Symbol<'a>),
+    Final(Keyword<'a>),
 }
 
 // -----------------------------------------------------------------------------

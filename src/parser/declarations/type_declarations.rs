@@ -30,13 +30,13 @@ pub struct DataDeclarationVariable<'a> {
 
 #[derive(Debug, Node)]
 pub struct Const<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
 pub struct PackageImportDeclaration<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         List<Symbol<'a>, PackageImportItem<'a>>,
         Symbol<'a>,
     ),
@@ -66,13 +66,13 @@ pub enum PackageExportDeclaration<'a> {
 
 #[derive(Debug, Node)]
 pub struct PackageExportDeclarationAsterisk<'a> {
-    pub nodes: (Symbol<'a>, Symbol<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, Symbol<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct PackageExportDeclarationItem<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         List<Symbol<'a>, PackageImportItem<'a>>,
         Symbol<'a>,
     ),
@@ -80,7 +80,7 @@ pub struct PackageExportDeclarationItem<'a> {
 
 #[derive(Debug, Node)]
 pub struct GenvarDeclaration<'a> {
-    pub nodes: (Symbol<'a>, ListOfGenvarIdentifiers<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, ListOfGenvarIdentifiers<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -111,8 +111,8 @@ pub enum Strength<'a> {
 
 #[derive(Debug, Node)]
 pub enum VectorScalar<'a> {
-    Vectored(Symbol<'a>),
-    Scalared(Symbol<'a>),
+    Vectored(Keyword<'a>),
+    Scalared(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -128,7 +128,7 @@ pub struct NetDeclarationNetTypeIdentifier<'a> {
 #[derive(Debug, Node)]
 pub struct NetDeclarationInterconnect<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         ImplicitDataType<'a>,
         Option<(Symbol<'a>, DelayValue<'a>)>,
         NetIdentifier<'a>,
@@ -148,7 +148,7 @@ pub enum TypeDeclaration<'a> {
 #[derive(Debug, Node)]
 pub struct TypeDeclarationDataType<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         DataType<'a>,
         TypeIdentifier<'a>,
         Vec<VariableDimension<'a>>,
@@ -159,7 +159,7 @@ pub struct TypeDeclarationDataType<'a> {
 #[derive(Debug, Node)]
 pub struct TypeDeclarationInterface<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         InterfaceInstanceIdentifier<'a>,
         ConstantBitSelect<'a>,
         Symbol<'a>,
@@ -172,7 +172,7 @@ pub struct TypeDeclarationInterface<'a> {
 #[derive(Debug, Node)]
 pub struct TypeDeclarationReserved<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<TypeDeclarationKeyword<'a>>,
         TypeIdentifier<'a>,
         Symbol<'a>,
@@ -181,11 +181,11 @@ pub struct TypeDeclarationReserved<'a> {
 
 #[derive(Debug, Node)]
 pub enum TypeDeclarationKeyword<'a> {
-    Enum(Symbol<'a>),
-    Struct(Symbol<'a>),
-    Union(Symbol<'a>),
-    Class(Symbol<'a>),
-    InterfaceClass((Symbol<'a>, Symbol<'a>)),
+    Enum(Keyword<'a>),
+    Struct(Keyword<'a>),
+    Union(Keyword<'a>),
+    Class(Keyword<'a>),
+    InterfaceClass((Keyword<'a>, Keyword<'a>)),
 }
 
 #[derive(Debug, Node)]
@@ -197,11 +197,11 @@ pub enum NetTypeDeclaration<'a> {
 #[derive(Debug, Node)]
 pub struct NetTypeDeclarationDataType<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         DataType<'a>,
         NetTypeIdentifier<'a>,
         Option<(
-            Symbol<'a>,
+            Keyword<'a>,
             Option<PackageScopeOrClassScope<'a>>,
             TfIdentifier<'a>,
         )>,
@@ -212,7 +212,7 @@ pub struct NetTypeDeclarationDataType<'a> {
 #[derive(Debug, Node)]
 pub struct NetTypeDeclarationNetType<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<PackageScopeOrClassScope<'a>>,
         NetTypeIdentifier<'a>,
         NetTypeIdentifier<'a>,
@@ -222,8 +222,8 @@ pub struct NetTypeDeclarationNetType<'a> {
 
 #[derive(Debug, Node)]
 pub enum Lifetime<'a> {
-    Static(Symbol<'a>),
-    Automatic(Symbol<'a>),
+    Static(Keyword<'a>),
+    Automatic(Keyword<'a>),
 }
 
 // -----------------------------------------------------------------------------

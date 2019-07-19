@@ -27,8 +27,8 @@ pub struct CheckerPortItem<'a> {
 
 #[derive(Debug, Node)]
 pub enum CheckerPortDirection<'a> {
-    Input(Symbol<'a>),
-    Output(Symbol<'a>),
+    Input(Keyword<'a>),
+    Output(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -63,20 +63,20 @@ pub struct CheckerOrGenerateItemDeclarationData<'a> {
 
 #[derive(Debug, Node)]
 pub struct Rand<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
 pub struct CheckerOrGenerateItemDeclarationClocking<'a> {
-    pub nodes: (Symbol<'a>, Symbol<'a>, ClockingIdentifier<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, Keyword<'a>, ClockingIdentifier<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct CheckerOrGenerateItemDeclarationDisable<'a> {
     pub nodes: (
-        Symbol<'a>,
-        Symbol<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
+        Keyword<'a>,
+        Keyword<'a>,
         ExpressionOrDist<'a>,
         Symbol<'a>,
     ),

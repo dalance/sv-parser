@@ -41,15 +41,15 @@ pub enum UdpOutputDeclaration<'a> {
 
 #[derive(Debug, Node)]
 pub struct UdpOutputDeclarationNonreg<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, Symbol<'a>, PortIdentifier<'a>),
+    pub nodes: (Vec<AttributeInstance<'a>>, Keyword<'a>, PortIdentifier<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct UdpOutputDeclarationReg<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Symbol<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
+        Keyword<'a>,
         PortIdentifier<'a>,
         Option<(Symbol<'a>, ConstantExpression<'a>)>,
     ),
@@ -59,7 +59,7 @@ pub struct UdpOutputDeclarationReg<'a> {
 pub struct UdpInputDeclaration<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         ListOfUdpPortIdentifiers<'a>,
     ),
 }
@@ -68,7 +68,7 @@ pub struct UdpInputDeclaration<'a> {
 pub struct UdpRegDeclaration<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         VariableIdentifier<'a>,
     ),
 }

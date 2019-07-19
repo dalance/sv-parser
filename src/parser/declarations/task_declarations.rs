@@ -10,7 +10,7 @@ use nom::IResult;
 
 #[derive(Debug, Node)]
 pub struct TaskDeclaration<'a> {
-    pub nodes: (Symbol<'a>, Option<Lifetime<'a>>, TaskBodyDeclaration<'a>),
+    pub nodes: (Keyword<'a>, Option<Lifetime<'a>>, TaskBodyDeclaration<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -27,7 +27,7 @@ pub struct TaskBodyDeclarationWithoutPort<'a> {
         Symbol<'a>,
         Vec<TfItemDeclaration<'a>>,
         Vec<StatementOrNull<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, TaskIdentifier<'a>)>,
     ),
 }
@@ -41,7 +41,7 @@ pub struct TaskBodyDeclarationWithPort<'a> {
         Symbol<'a>,
         Vec<BlockItemDeclaration<'a>>,
         Vec<StatementOrNull<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, TaskIdentifier<'a>)>,
     ),
 }
@@ -75,7 +75,7 @@ pub struct TfPortItem<'a> {
 #[derive(Debug, Node)]
 pub enum TfPortDirection<'a> {
     PortDirection(PortDirection<'a>),
-    ConstRef((Symbol<'a>, Symbol<'a>)),
+    ConstRef((Keyword<'a>, Keyword<'a>)),
 }
 
 #[derive(Debug, Node)]
@@ -93,7 +93,7 @@ pub struct TfPortDeclaration<'a> {
 #[derive(Debug, Node)]
 pub struct TaskPrototype<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         TaskIdentifier<'a>,
         Option<Paren<'a, Option<TfPortList<'a>>>>,
     ),

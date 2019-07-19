@@ -26,7 +26,7 @@ pub enum SystemTimingCheck<'a> {
 #[derive(Debug, Node)]
 pub struct SetupTimingCheck<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<
             'a,
             (
@@ -45,7 +45,7 @@ pub struct SetupTimingCheck<'a> {
 #[derive(Debug, Node)]
 pub struct HoldTimingCheck<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<
             'a,
             (
@@ -64,7 +64,7 @@ pub struct HoldTimingCheck<'a> {
 #[derive(Debug, Node)]
 pub struct SetupholdTimingCheck<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<
             'a,
             (
@@ -101,7 +101,7 @@ pub struct SetupholdTimingCheck<'a> {
 #[derive(Debug, Node)]
 pub struct RecoveryTimingCheck<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<
             'a,
             (
@@ -120,7 +120,7 @@ pub struct RecoveryTimingCheck<'a> {
 #[derive(Debug, Node)]
 pub struct RemovalTimingCheck<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<
             'a,
             (
@@ -139,7 +139,7 @@ pub struct RemovalTimingCheck<'a> {
 #[derive(Debug, Node)]
 pub struct RecremTimingCheck<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<
             'a,
             (
@@ -176,7 +176,7 @@ pub struct RecremTimingCheck<'a> {
 #[derive(Debug, Node)]
 pub struct SkewTimingCheck<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<
             'a,
             (
@@ -195,7 +195,7 @@ pub struct SkewTimingCheck<'a> {
 #[derive(Debug, Node)]
 pub struct TimeskewTimingCheck<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<
             'a,
             (
@@ -222,7 +222,7 @@ pub struct TimeskewTimingCheck<'a> {
 #[derive(Debug, Node)]
 pub struct FullskewTimingCheck<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<
             'a,
             (
@@ -251,7 +251,7 @@ pub struct FullskewTimingCheck<'a> {
 #[derive(Debug, Node)]
 pub struct PeriodTimingCheck<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<
             'a,
             (
@@ -268,7 +268,7 @@ pub struct PeriodTimingCheck<'a> {
 #[derive(Debug, Node)]
 pub struct WidthTimingCheck<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<
             'a,
             (
@@ -287,7 +287,7 @@ pub struct WidthTimingCheck<'a> {
 #[derive(Debug, Node)]
 pub struct NochargeTimingCheck<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<
             'a,
             (

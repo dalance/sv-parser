@@ -78,7 +78,7 @@ pub struct ModuleDeclarationNonansi<'a> {
         ModuleNonansiHeader<'a>,
         Option<TimeunitsDeclaration<'a>>,
         Vec<ModuleItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, ModuleIdentifier<'a>)>,
     ),
 }
@@ -89,7 +89,7 @@ pub struct ModuleDeclarationAnsi<'a> {
         ModuleAnsiHeader<'a>,
         Option<TimeunitsDeclaration<'a>>,
         Vec<NonPortModuleItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, ModuleIdentifier<'a>)>,
     ),
 }
@@ -105,25 +105,25 @@ pub struct ModuleDeclarationWildcard<'a> {
         Symbol<'a>,
         Option<TimeunitsDeclaration<'a>>,
         Vec<ModuleItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, ModuleIdentifier<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct ModuleDeclarationExternNonansi<'a> {
-    pub nodes: (Symbol<'a>, ModuleNonansiHeader<'a>),
+    pub nodes: (Keyword<'a>, ModuleNonansiHeader<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ModuleDeclarationExternAnsi<'a> {
-    pub nodes: (Symbol<'a>, ModuleAnsiHeader<'a>),
+    pub nodes: (Keyword<'a>, ModuleAnsiHeader<'a>),
 }
 
 #[derive(Debug, Node)]
 pub enum ModuleKeyword<'a> {
-    Module(Symbol<'a>),
-    Macromodule(Symbol<'a>),
+    Module(Keyword<'a>),
+    Macromodule(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -141,7 +141,7 @@ pub struct InterfaceDeclarationNonansi<'a> {
         InterfaceNonansiHeader<'a>,
         Option<TimeunitsDeclaration<'a>>,
         Vec<InterfaceItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, InterfaceIdentifier<'a>)>,
     ),
 }
@@ -152,7 +152,7 @@ pub struct InterfaceDeclarationAnsi<'a> {
         InterfaceAnsiHeader<'a>,
         Option<TimeunitsDeclaration<'a>>,
         Vec<NonPortInterfaceItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, InterfaceIdentifier<'a>)>,
     ),
 }
@@ -161,33 +161,33 @@ pub struct InterfaceDeclarationAnsi<'a> {
 pub struct InterfaceDeclarationWildcard<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<Lifetime<'a>>,
         InterfaceIdentifier<'a>,
         Paren<'a, Symbol<'a>>,
         Symbol<'a>,
         Option<TimeunitsDeclaration<'a>>,
         Vec<InterfaceItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, InterfaceIdentifier<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct InterfaceDeclarationExternNonansi<'a> {
-    pub nodes: (Symbol<'a>, InterfaceNonansiHeader<'a>),
+    pub nodes: (Keyword<'a>, InterfaceNonansiHeader<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct InterfaceDeclarationExternAnsi<'a> {
-    pub nodes: (Symbol<'a>, InterfaceAnsiHeader<'a>),
+    pub nodes: (Keyword<'a>, InterfaceAnsiHeader<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct InterfaceNonansiHeader<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<Lifetime<'a>>,
         InterfaceIdentifier<'a>,
         Vec<PackageImportDeclaration<'a>>,
@@ -201,7 +201,7 @@ pub struct InterfaceNonansiHeader<'a> {
 pub struct InterfaceAnsiHeader<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<Lifetime<'a>>,
         InterfaceIdentifier<'a>,
         Vec<PackageImportDeclaration<'a>>,
@@ -226,7 +226,7 @@ pub struct ProgramDeclarationNonansi<'a> {
         ProgramNonansiHeader<'a>,
         Option<TimeunitsDeclaration<'a>>,
         Vec<ProgramItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, ProgramIdentifier<'a>)>,
     ),
 }
@@ -237,7 +237,7 @@ pub struct ProgramDeclarationAnsi<'a> {
         ProgramAnsiHeader<'a>,
         Option<TimeunitsDeclaration<'a>>,
         Vec<NonPortProgramItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, ProgramIdentifier<'a>)>,
     ),
 }
@@ -246,32 +246,32 @@ pub struct ProgramDeclarationAnsi<'a> {
 pub struct ProgramDeclarationWildcard<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         ProgramIdentifier<'a>,
         Paren<'a, Symbol<'a>>,
         Symbol<'a>,
         Option<TimeunitsDeclaration<'a>>,
         Vec<ProgramItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, ProgramIdentifier<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct ProgramDeclarationExternNonansi<'a> {
-    pub nodes: (Symbol<'a>, ProgramNonansiHeader<'a>),
+    pub nodes: (Keyword<'a>, ProgramNonansiHeader<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ProgramDeclarationExternAnsi<'a> {
-    pub nodes: (Symbol<'a>, ProgramAnsiHeader<'a>),
+    pub nodes: (Keyword<'a>, ProgramAnsiHeader<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ProgramNonansiHeader<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<Lifetime<'a>>,
         ProgramIdentifier<'a>,
         Vec<PackageImportDeclaration<'a>>,
@@ -285,7 +285,7 @@ pub struct ProgramNonansiHeader<'a> {
 pub struct ProgramAnsiHeader<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<Lifetime<'a>>,
         ProgramIdentifier<'a>,
         Vec<PackageImportDeclaration<'a>>,
@@ -298,12 +298,12 @@ pub struct ProgramAnsiHeader<'a> {
 #[derive(Debug, Node)]
 pub struct CheckerDeclaration<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         CheckerIdentifier<'a>,
         Option<Paren<'a, Option<CheckerPortList<'a>>>>,
         Symbol<'a>,
         Vec<(Vec<AttributeInstance<'a>>, CheckerOrGenerateItem<'a>)>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, CheckerIdentifier<'a>)>,
     ),
 }
@@ -312,26 +312,26 @@ pub struct CheckerDeclaration<'a> {
 pub struct ClassDeclaration<'a> {
     pub nodes: (
         Option<Virtual<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<Lifetime<'a>>,
         ClassIdentifier<'a>,
         Option<ParameterPortList<'a>>,
         Option<(
-            Symbol<'a>,
+            Keyword<'a>,
             ClassType<'a>,
             Option<Paren<'a, ListOfArguments<'a>>>,
         )>,
-        Option<(Symbol<'a>, List<Symbol<'a>, InterfaceClassType<'a>>)>,
+        Option<(Keyword<'a>, List<Symbol<'a>, InterfaceClassType<'a>>)>,
         Symbol<'a>,
         Vec<ClassItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, ClassIdentifier<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct Virtual<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
@@ -342,14 +342,14 @@ pub struct InterfaceClassType<'a> {
 #[derive(Debug, Node)]
 pub struct InterfaceClassDeclaration<'a> {
     pub nodes: (
-        Symbol<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
+        Keyword<'a>,
         ClassIdentifier<'a>,
         Option<ParameterPortList<'a>>,
-        Option<(Symbol<'a>, List<Symbol<'a>, InterfaceClassType<'a>>)>,
+        Option<(Keyword<'a>, List<Symbol<'a>, InterfaceClassType<'a>>)>,
         Symbol<'a>,
         Vec<InterfaceClassItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, ClassIdentifier<'a>)>,
     ),
 }
@@ -370,20 +370,20 @@ pub struct InterfaceClassItemMethod<'a> {
 
 #[derive(Debug, Node)]
 pub struct InterfaceClassMethod<'a> {
-    pub nodes: (Symbol<'a>, Symbol<'a>, MethodPrototype<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, Keyword<'a>, MethodPrototype<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct PackageDeclaration<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<Lifetime<'a>>,
         PackageIdentifier<'a>,
         Symbol<'a>,
         Option<TimeunitsDeclaration<'a>>,
         Vec<(Vec<AttributeInstance<'a>>, PackageItem<'a>)>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, PackageIdentifier<'a>)>,
     ),
 }
@@ -399,7 +399,7 @@ pub enum TimeunitsDeclaration<'a> {
 #[derive(Debug, Node)]
 pub struct TimeunitsDeclarationTimeunit<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         TimeLiteral<'a>,
         Option<(Symbol<'a>, TimeLiteral<'a>)>,
         Symbol<'a>,
@@ -408,16 +408,16 @@ pub struct TimeunitsDeclarationTimeunit<'a> {
 
 #[derive(Debug, Node)]
 pub struct TimeunitsDeclarationTimeprecision<'a> {
-    pub nodes: (Symbol<'a>, TimeLiteral<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, TimeLiteral<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct TimeunitsDeclarationTimeunitTimeprecision<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         TimeLiteral<'a>,
         Symbol<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
         TimeLiteral<'a>,
         Symbol<'a>,
     ),
@@ -426,10 +426,10 @@ pub struct TimeunitsDeclarationTimeunitTimeprecision<'a> {
 #[derive(Debug, Node)]
 pub struct TimeunitsDeclarationTimeprecisionTimeunit<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         TimeLiteral<'a>,
         Symbol<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
         TimeLiteral<'a>,
         Symbol<'a>,
     ),

@@ -11,13 +11,13 @@ use nom::IResult;
 #[derive(Debug, Node)]
 pub struct ConfigDeclaration<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         ConfigIdentifier<'a>,
         Symbol<'a>,
         Vec<(LocalParameterDeclaration<'a>, Symbol<'a>)>,
         DesignStatement<'a>,
         Vec<ConfigRuleStatement<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, ConfigIdentifier<'a>)>,
     ),
 }
@@ -25,7 +25,7 @@ pub struct ConfigDeclaration<'a> {
 #[derive(Debug, Node)]
 pub struct DesignStatement<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Vec<(
             Option<(LibraryIdentifier<'a>, Symbol<'a>)>,
             CellIdentifier<'a>,
@@ -70,12 +70,12 @@ pub struct ConfigRuleStatementCellUse<'a> {
 
 #[derive(Debug, Node)]
 pub struct DefaultClause<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
 pub struct InstClause<'a> {
-    pub nodes: (Symbol<'a>, InstName<'a>),
+    pub nodes: (Keyword<'a>, InstName<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -89,7 +89,7 @@ pub struct InstName<'a> {
 #[derive(Debug, Node)]
 pub struct CellClause<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(LibraryIdentifier<'a>, Symbol<'a>)>,
         CellIdentifier<'a>,
     ),
@@ -97,7 +97,7 @@ pub struct CellClause<'a> {
 
 #[derive(Debug, Node)]
 pub struct LiblistClause<'a> {
-    pub nodes: (Symbol<'a>, Vec<LibraryIdentifier<'a>>),
+    pub nodes: (Keyword<'a>, Vec<LibraryIdentifier<'a>>),
 }
 
 #[derive(Debug, Node)]
@@ -110,7 +110,7 @@ pub enum UseClause<'a> {
 #[derive(Debug, Node)]
 pub struct UseClauseCell<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(LibraryIdentifier<'a>, Symbol<'a>)>,
         CellIdentifier<'a>,
         Option<(Symbol<'a>, Config<'a>)>,
@@ -120,7 +120,7 @@ pub struct UseClauseCell<'a> {
 #[derive(Debug, Node)]
 pub struct UseClauseNamed<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         List<Symbol<'a>, NamedParameterAssignment<'a>>,
         Option<(Symbol<'a>, Config<'a>)>,
     ),
@@ -129,7 +129,7 @@ pub struct UseClauseNamed<'a> {
 #[derive(Debug, Node)]
 pub struct UseClauseCellNamed<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(LibraryIdentifier<'a>, Symbol<'a>)>,
         CellIdentifier<'a>,
         List<Symbol<'a>, NamedParameterAssignment<'a>>,
@@ -139,7 +139,7 @@ pub struct UseClauseCellNamed<'a> {
 
 #[derive(Debug, Node)]
 pub struct Config<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 // -----------------------------------------------------------------------------

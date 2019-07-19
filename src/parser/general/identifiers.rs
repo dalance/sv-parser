@@ -160,7 +160,7 @@ pub struct HierarchicalIdentifier<'a> {
 
 #[derive(Debug, Node)]
 pub struct Root<'a> {
-    pub nodes: (Symbol<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -292,7 +292,7 @@ pub struct PackageScopePackage<'a> {
 
 #[derive(Debug, Node)]
 pub struct Unit<'a> {
-    pub nodes: (Symbol<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -455,7 +455,7 @@ pub enum LocalOrPackageScopeOrClassScope<'a> {
 
 #[derive(Debug, Node)]
 pub struct Local<'a> {
-    pub nodes: (Symbol<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]

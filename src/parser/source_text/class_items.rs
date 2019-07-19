@@ -59,7 +59,7 @@ pub struct ClassPropertyNonConst<'a> {
 #[derive(Debug, Node)]
 pub struct ClassPropertyConst<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Vec<ClassItemQualifier<'a>>,
         DataType<'a>,
         ConstIdentifier<'a>,
@@ -91,8 +91,8 @@ pub struct ClassMethodFunction<'a> {
 #[derive(Debug, Node)]
 pub struct ClassMethodPureVirtual<'a> {
     pub nodes: (
-        Symbol<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
+        Keyword<'a>,
         Vec<ClassItemQualifier<'a>>,
         MethodPrototype<'a>,
         Symbol<'a>,
@@ -102,7 +102,7 @@ pub struct ClassMethodPureVirtual<'a> {
 #[derive(Debug, Node)]
 pub struct ClassMethodExternMethod<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Vec<MethodQualifier<'a>>,
         MethodPrototype<'a>,
         Symbol<'a>,
@@ -117,7 +117,7 @@ pub struct ClassMethodConstructor<'a> {
 #[derive(Debug, Node)]
 pub struct ClassMethodExternConstructor<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Vec<MethodQualifier<'a>>,
         ClassConstructorPrototype<'a>,
     ),
@@ -126,8 +126,8 @@ pub struct ClassMethodExternConstructor<'a> {
 #[derive(Debug, Node)]
 pub struct ClassConstructorPrototype<'a> {
     pub nodes: (
-        Symbol<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
+        Keyword<'a>,
         Option<Paren<'a, Option<TfPortList<'a>>>>,
         Symbol<'a>,
     ),
@@ -141,9 +141,9 @@ pub enum ClassConstraint<'a> {
 
 #[derive(Debug, Node)]
 pub enum ClassItemQualifier<'a> {
-    Static(Symbol<'a>),
-    Protected(Symbol<'a>),
-    Local(Symbol<'a>),
+    Static(Keyword<'a>),
+    Protected(Keyword<'a>),
+    Local(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -154,14 +154,14 @@ pub enum PropertyQualifier<'a> {
 
 #[derive(Debug, Node)]
 pub enum RandomQualifier<'a> {
-    Rand(Symbol<'a>),
-    Randc(Symbol<'a>),
+    Rand(Keyword<'a>),
+    Randc(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
 pub enum MethodQualifier<'a> {
-    Virtual(Symbol<'a>),
-    PureVirtual((Symbol<'a>, Symbol<'a>)),
+    Virtual(Keyword<'a>),
+    PureVirtual((Keyword<'a>, Keyword<'a>)),
     ClassItemQualifier(ClassItemQualifier<'a>),
 }
 
@@ -174,28 +174,28 @@ pub enum MethodPrototype<'a> {
 #[derive(Debug, Node)]
 pub struct ClassConstructorDeclaration<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<ClassScope<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<Paren<'a, Option<TfPortList<'a>>>>,
         Symbol<'a>,
         Vec<BlockItemDeclaration<'a>>,
         Option<(
+            Keyword<'a>,
             Symbol<'a>,
-            Symbol<'a>,
-            Symbol<'a>,
+            Keyword<'a>,
             Option<Paren<'a, ListOfArguments<'a>>>,
             Symbol<'a>,
         )>,
         Vec<FunctionStatementOrNull<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, New<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct New<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 // -----------------------------------------------------------------------------

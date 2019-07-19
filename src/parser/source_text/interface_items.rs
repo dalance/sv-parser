@@ -32,12 +32,12 @@ pub enum ExternTfDeclaration<'a> {
 
 #[derive(Debug, Node)]
 pub struct ExternTfDeclarationMethod<'a> {
-    pub nodes: (Symbol<'a>, MethodPrototype<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, MethodPrototype<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ExternTfDeclarationTask<'a> {
-    pub nodes: (Symbol<'a>, Symbol<'a>, TaskPrototype<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, Keyword<'a>, TaskPrototype<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]

@@ -28,38 +28,38 @@ pub struct DriveStrength10<'a> {
 
 #[derive(Debug, Node)]
 pub struct DriveStrength0z<'a> {
-    pub nodes: (Paren<'a, (Strength0<'a>, Symbol<'a>, Symbol<'a>)>,),
+    pub nodes: (Paren<'a, (Strength0<'a>, Symbol<'a>, Keyword<'a>)>,),
 }
 
 #[derive(Debug, Node)]
 pub struct DriveStrength1z<'a> {
-    pub nodes: (Paren<'a, (Strength1<'a>, Symbol<'a>, Symbol<'a>)>,),
+    pub nodes: (Paren<'a, (Strength1<'a>, Symbol<'a>, Keyword<'a>)>,),
 }
 
 #[derive(Debug, Node)]
 pub struct DriveStrengthz1<'a> {
-    pub nodes: (Paren<'a, (Symbol<'a>, Symbol<'a>, Strength1<'a>)>,),
+    pub nodes: (Paren<'a, (Keyword<'a>, Symbol<'a>, Strength1<'a>)>,),
 }
 
 #[derive(Debug, Node)]
 pub struct DriveStrengthz0<'a> {
-    pub nodes: (Paren<'a, (Symbol<'a>, Symbol<'a>, Strength0<'a>)>,),
+    pub nodes: (Paren<'a, (Keyword<'a>, Symbol<'a>, Strength0<'a>)>,),
 }
 
 #[derive(Debug, Node)]
 pub enum Strength0<'a> {
-    Supply0(Symbol<'a>),
-    Strong0(Symbol<'a>),
-    Pull0(Symbol<'a>),
-    Weak0(Symbol<'a>),
+    Supply0(Keyword<'a>),
+    Strong0(Keyword<'a>),
+    Pull0(Keyword<'a>),
+    Weak0(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
 pub enum Strength1<'a> {
-    Supply1(Symbol<'a>),
-    Strong1(Symbol<'a>),
-    Pull1(Symbol<'a>),
-    Weak1(Symbol<'a>),
+    Supply1(Keyword<'a>),
+    Strong1(Keyword<'a>),
+    Pull1(Keyword<'a>),
+    Weak1(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -71,17 +71,17 @@ pub enum ChargeStrength<'a> {
 
 #[derive(Debug, Node)]
 pub struct ChargeStrengthSmall<'a> {
-    pub nodes: (Paren<'a, Symbol<'a>>,),
+    pub nodes: (Paren<'a, Keyword<'a>>,),
 }
 
 #[derive(Debug, Node)]
 pub struct ChargeStrengthMedium<'a> {
-    pub nodes: (Paren<'a, Symbol<'a>>,),
+    pub nodes: (Paren<'a, Keyword<'a>>,),
 }
 
 #[derive(Debug, Node)]
 pub struct ChargeStrengthLarge<'a> {
-    pub nodes: (Paren<'a, Symbol<'a>>,),
+    pub nodes: (Paren<'a, Keyword<'a>>,),
 }
 
 // -----------------------------------------------------------------------------

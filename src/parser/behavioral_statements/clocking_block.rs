@@ -18,30 +18,30 @@ pub enum ClockingDeclaration<'a> {
 pub struct ClockingDeclarationLocal<'a> {
     pub nodes: (
         Option<Default<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<ClockingIdentifier<'a>>,
         ClockingEvent<'a>,
         Symbol<'a>,
         Vec<ClockingItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, ClockingIdentifier<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct Default<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
 pub struct ClockingDeclarationGlobal<'a> {
     pub nodes: (
-        Symbol<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
+        Keyword<'a>,
         Option<ClockingIdentifier<'a>>,
         ClockingEvent<'a>,
         Symbol<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, ClockingIdentifier<'a>)>,
     ),
 }
@@ -71,7 +71,7 @@ pub enum ClockingItem<'a> {
 
 #[derive(Debug, Node)]
 pub struct ClockingItemDefault<'a> {
-    pub nodes: (Symbol<'a>, DefaultSkew<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, DefaultSkew<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -97,17 +97,17 @@ pub enum DefaultSkew<'a> {
 
 #[derive(Debug, Node)]
 pub struct DefaultSkewInput<'a> {
-    pub nodes: (Symbol<'a>, ClockingSkew<'a>),
+    pub nodes: (Keyword<'a>, ClockingSkew<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct DefaultSkewOutput<'a> {
-    pub nodes: (Symbol<'a>, ClockingSkew<'a>),
+    pub nodes: (Keyword<'a>, ClockingSkew<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct DefaultSkewInputOutput<'a> {
-    pub nodes: (Symbol<'a>, ClockingSkew<'a>, Symbol<'a>, ClockingSkew<'a>),
+    pub nodes: (Keyword<'a>, ClockingSkew<'a>, Keyword<'a>, ClockingSkew<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -115,25 +115,25 @@ pub enum ClockingDirection<'a> {
     Input(ClockingDirectionInput<'a>),
     Output(ClockingDirectionOutput<'a>),
     InputOutput(ClockingDirectionInputOutput<'a>),
-    Inout(Symbol<'a>),
+    Inout(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ClockingDirectionInput<'a> {
-    pub nodes: (Symbol<'a>, Option<ClockingSkew<'a>>),
+    pub nodes: (Keyword<'a>, Option<ClockingSkew<'a>>),
 }
 
 #[derive(Debug, Node)]
 pub struct ClockingDirectionOutput<'a> {
-    pub nodes: (Symbol<'a>, Option<ClockingSkew<'a>>),
+    pub nodes: (Keyword<'a>, Option<ClockingSkew<'a>>),
 }
 
 #[derive(Debug, Node)]
 pub struct ClockingDirectionInputOutput<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<ClockingSkew<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<ClockingSkew<'a>>,
     ),
 }

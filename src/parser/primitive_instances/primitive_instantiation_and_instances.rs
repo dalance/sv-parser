@@ -95,7 +95,7 @@ pub struct GateInstantiationPass<'a> {
 #[derive(Debug, Node)]
 pub struct GateInstantiationPulldown<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<PulldownStrength<'a>>,
         List<Symbol<'a>, PullGateInstance<'a>>,
         Symbol<'a>,
@@ -105,7 +105,7 @@ pub struct GateInstantiationPulldown<'a> {
 #[derive(Debug, Node)]
 pub struct GateInstantiationPullup<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<PullupStrength<'a>>,
         List<Symbol<'a>, PullGateInstance<'a>>,
         Symbol<'a>,
@@ -342,7 +342,7 @@ pub fn gate_instantiation_pass(s: Span) -> IResult<Span, GateInstantiation> {
 
 #[parser]
 pub fn gate_instantiation_pulldown(s: Span) -> IResult<Span, GateInstantiation> {
-    let (s, a) = symbol("pulldown")(s)?;
+    let (s, a) = keyword("pulldown")(s)?;
     let (s, b) = opt(pulldown_strength)(s)?;
     let (s, c) = list(symbol(","), pull_gate_instance)(s)?;
     let (s, d) = symbol(";")(s)?;
@@ -356,7 +356,7 @@ pub fn gate_instantiation_pulldown(s: Span) -> IResult<Span, GateInstantiation> 
 
 #[parser]
 pub fn gate_instantiation_pullup(s: Span) -> IResult<Span, GateInstantiation> {
-    let (s, a) = symbol("pullup")(s)?;
+    let (s, a) = keyword("pullup")(s)?;
     let (s, b) = opt(pullup_strength)(s)?;
     let (s, c) = list(symbol(","), pull_gate_instance)(s)?;
     let (s, d) = symbol(";")(s)?;

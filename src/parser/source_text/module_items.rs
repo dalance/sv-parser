@@ -19,7 +19,7 @@ pub enum ElaborationSystemTask<'a> {
 #[derive(Debug, Node)]
 pub struct ElaborationSystemTaskFatal<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<Paren<'a, (FinishNumber<'a>, Option<(Symbol<'a>, ListOfArguments<'a>)>)>>,
         Symbol<'a>,
     ),
@@ -28,7 +28,7 @@ pub struct ElaborationSystemTaskFatal<'a> {
 #[derive(Debug, Node)]
 pub struct ElaborationSystemTaskError<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<Paren<'a, Option<ListOfArguments<'a>>>>,
         Symbol<'a>,
     ),
@@ -37,7 +37,7 @@ pub struct ElaborationSystemTaskError<'a> {
 #[derive(Debug, Node)]
 pub struct ElaborationSystemTaskWarning<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<Paren<'a, Option<ListOfArguments<'a>>>>,
         Symbol<'a>,
     ),
@@ -46,7 +46,7 @@ pub struct ElaborationSystemTaskWarning<'a> {
 #[derive(Debug, Node)]
 pub struct ElaborationSystemTaskInfo<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<Paren<'a, Option<ListOfArguments<'a>>>>,
         Symbol<'a>,
     ),
@@ -127,15 +127,15 @@ pub enum ModuleOrGenerateItemDeclaration<'a> {
 
 #[derive(Debug, Node)]
 pub struct ModuleOrGenerateItemDeclarationClocking<'a> {
-    pub nodes: (Symbol<'a>, Symbol<'a>, ClockingIdentifier<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, Keyword<'a>, ClockingIdentifier<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ModuleOrGenerateItemDeclarationDisable<'a> {
     pub nodes: (
-        Symbol<'a>,
-        Symbol<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
+        Keyword<'a>,
+        Keyword<'a>,
         ExpressionOrDist<'a>,
         Symbol<'a>,
     ),
@@ -160,7 +160,7 @@ pub struct NonPortModuleItemSpecparam<'a> {
 
 #[derive(Debug, Node)]
 pub struct ParameterOverride<'a> {
-    pub nodes: (Symbol<'a>, ListOfDefparamAssignments<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, ListOfDefparamAssignments<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -172,7 +172,7 @@ pub enum BindDirective<'a> {
 #[derive(Debug, Node)]
 pub struct BindDirectiveScope<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         BindTargetScope<'a>,
         Option<(Symbol<'a>, BindTargetInstanceList<'a>)>,
         BindInstantiation<'a>,
@@ -183,7 +183,7 @@ pub struct BindDirectiveScope<'a> {
 #[derive(Debug, Node)]
 pub struct BindDirectiveInstance<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         BindTargetInstance<'a>,
         BindInstantiation<'a>,
         Symbol<'a>,

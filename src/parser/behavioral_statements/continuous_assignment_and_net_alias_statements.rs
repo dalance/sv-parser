@@ -15,7 +15,7 @@ pub enum ContinuousAssign<'a> {
 #[derive(Debug, Node)]
 pub struct ContinuousAssignNet<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<DriveStrength<'a>>,
         Option<Delay3<'a>>,
         ListOfNetAssignments<'a>,
@@ -26,7 +26,7 @@ pub struct ContinuousAssignNet<'a> {
 #[derive(Debug, Node)]
 pub struct ContinuousAssignVariable<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<DelayControl<'a>>,
         ListOfVariableAssignments<'a>,
         Symbol<'a>,
@@ -46,7 +46,7 @@ pub struct ListOfVariableAssignments<'a> {
 #[derive(Debug, Node)]
 pub struct NetAlias<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         NetLvalue<'a>,
         Symbol<'a>,
         List<Symbol<'a>, NetLvalue<'a>>,

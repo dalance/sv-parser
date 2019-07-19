@@ -17,7 +17,7 @@ pub enum FunctionDataTypeOrImplicit<'a> {
 #[derive(Debug, Node)]
 pub struct FunctionDeclaration<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<Lifetime<'a>>,
         FunctionBodyDeclaration<'a>,
     ),
@@ -38,7 +38,7 @@ pub struct FunctionBodyDeclarationWithoutPort<'a> {
         Symbol<'a>,
         Vec<TfItemDeclaration<'a>>,
         Vec<FunctionStatementOrNull<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, FunctionIdentifier<'a>)>,
     ),
 }
@@ -53,7 +53,7 @@ pub struct FunctionBodyDeclarationWithPort<'a> {
         Symbol<'a>,
         Vec<BlockItemDeclaration<'a>>,
         Vec<FunctionStatementOrNull<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, FunctionIdentifier<'a>)>,
     ),
 }
@@ -67,7 +67,7 @@ pub enum InterfaceIdentifierOrClassScope<'a> {
 #[derive(Debug, Node)]
 pub struct FunctionPrototype<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         DataTypeOrVoid<'a>,
         FunctionIdentifier<'a>,
         Option<Paren<'a, Option<TfPortList<'a>>>>,
@@ -85,7 +85,7 @@ pub enum DpiImportExport<'a> {
 #[derive(Debug, Node)]
 pub struct DpiImportExportImportFunction<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         DpiSpecString<'a>,
         Option<DpiFunctionImportProperty<'a>>,
         Option<(CIdentifier<'a>, Symbol<'a>)>,
@@ -97,7 +97,7 @@ pub struct DpiImportExportImportFunction<'a> {
 #[derive(Debug, Node)]
 pub struct DpiImportExportImportTask<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         DpiSpecString<'a>,
         Option<DpiTaskImportProperty<'a>>,
         Option<(CIdentifier<'a>, Symbol<'a>)>,
@@ -109,10 +109,10 @@ pub struct DpiImportExportImportTask<'a> {
 #[derive(Debug, Node)]
 pub struct DpiImportExportExportFunction<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         DpiSpecString<'a>,
         Option<(CIdentifier<'a>, Symbol<'a>)>,
-        Symbol<'a>,
+        Keyword<'a>,
         FunctionIdentifier<'a>,
         Symbol<'a>,
     ),
@@ -121,10 +121,10 @@ pub struct DpiImportExportExportFunction<'a> {
 #[derive(Debug, Node)]
 pub struct DpiImportExportExportTask<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         DpiSpecString<'a>,
         Option<(CIdentifier<'a>, Symbol<'a>)>,
-        Symbol<'a>,
+        Keyword<'a>,
         TaskIdentifier<'a>,
         Symbol<'a>,
     ),
@@ -132,19 +132,19 @@ pub struct DpiImportExportExportTask<'a> {
 
 #[derive(Debug, Node)]
 pub enum DpiSpecString<'a> {
-    DpiC(Symbol<'a>),
-    Dpi(Symbol<'a>),
+    DpiC(Keyword<'a>),
+    Dpi(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
 pub enum DpiFunctionImportProperty<'a> {
-    Context(Symbol<'a>),
-    Pure(Symbol<'a>),
+    Context(Keyword<'a>),
+    Pure(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
 pub enum DpiTaskImportProperty<'a> {
-    Context(Symbol<'a>),
+    Context(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]

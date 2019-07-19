@@ -27,9 +27,9 @@ pub struct ControlledTimingCheckEvent<'a> {
 
 #[derive(Debug, Node)]
 pub enum TimingCheckEventControl<'a> {
-    Posedge(Symbol<'a>),
-    Negedge(Symbol<'a>),
-    Edge(Symbol<'a>),
+    Posedge(Keyword<'a>),
+    Negedge(Keyword<'a>),
+    Edge(Keyword<'a>),
     EdgeControlSpecifier(EdgeControlSpecifier<'a>),
 }
 
@@ -42,14 +42,14 @@ pub enum SpecifyTerminalDescriptor<'a> {
 #[derive(Debug, Node)]
 pub struct EdgeControlSpecifier<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Bracket<'a, List<Symbol<'a>, EdgeDescriptor<'a>>>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct EdgeDescriptor<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
@@ -82,7 +82,7 @@ pub struct ScalarTimingCheckConditionBinary<'a> {
 
 #[derive(Debug, Node)]
 pub struct ScalarConstant<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 // -----------------------------------------------------------------------------

@@ -19,23 +19,23 @@ pub enum LoopStatement<'a> {
 
 #[derive(Debug, Node)]
 pub struct LoopStatementForever<'a> {
-    pub nodes: (Symbol<'a>, StatementOrNull<'a>),
+    pub nodes: (Keyword<'a>, StatementOrNull<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct LoopStatementRepeat<'a> {
-    pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>, StatementOrNull<'a>),
+    pub nodes: (Keyword<'a>, Paren<'a, Expression<'a>>, StatementOrNull<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct LoopStatementWhile<'a> {
-    pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>, StatementOrNull<'a>),
+    pub nodes: (Keyword<'a>, Paren<'a, Expression<'a>>, StatementOrNull<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct LoopStatementFor<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<
             'a,
             (
@@ -53,9 +53,9 @@ pub struct LoopStatementFor<'a> {
 #[derive(Debug, Node)]
 pub struct LoopStatementDoWhile<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         StatementOrNull<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<'a, Expression<'a>>,
         Symbol<'a>,
     ),
@@ -64,7 +64,7 @@ pub struct LoopStatementDoWhile<'a> {
 #[derive(Debug, Node)]
 pub struct LoopStatementForeach<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<
             'a,
             (
@@ -98,7 +98,7 @@ pub struct ForVariableDeclaration<'a> {
 
 #[derive(Debug, Node)]
 pub struct Var<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]

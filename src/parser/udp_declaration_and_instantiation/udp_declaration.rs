@@ -12,7 +12,7 @@ use nom::IResult;
 pub struct UdpNonansiDeclaration<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         UdpIdentifier<'a>,
         Paren<'a, UdpPortList<'a>>,
         Symbol<'a>,
@@ -23,7 +23,7 @@ pub struct UdpNonansiDeclaration<'a> {
 pub struct UdpAnsiDeclaration<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         UdpIdentifier<'a>,
         Paren<'a, UdpDeclarationPortList<'a>>,
         Symbol<'a>,
@@ -46,7 +46,7 @@ pub struct UdpDeclarationNonansi<'a> {
         UdpPortDeclaration<'a>,
         Vec<UdpPortDeclaration<'a>>,
         UdpBody<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, UdpIdentifier<'a>)>,
     ),
 }
@@ -56,32 +56,32 @@ pub struct UdpDeclarationAnsi<'a> {
     pub nodes: (
         UdpAnsiDeclaration<'a>,
         UdpBody<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, UdpIdentifier<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct UdpDeclarationExternNonansi<'a> {
-    pub nodes: (Symbol<'a>, UdpNonansiDeclaration<'a>),
+    pub nodes: (Keyword<'a>, UdpNonansiDeclaration<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct UdpDeclarationExternAnsi<'a> {
-    pub nodes: (Symbol<'a>, UdpAnsiDeclaration<'a>),
+    pub nodes: (Keyword<'a>, UdpAnsiDeclaration<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct UdpDeclarationWildcard<'a> {
     pub nodes: (
         Vec<AttributeInstance<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         UdpIdentifier<'a>,
         Paren<'a, Symbol<'a>>,
         Symbol<'a>,
         Vec<UdpPortDeclaration<'a>>,
         UdpBody<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, UdpIdentifier<'a>)>,
     ),
 }

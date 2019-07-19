@@ -7,37 +7,37 @@ use nom::IResult;
 
 #[derive(Debug, Node)]
 pub struct CmosSwitchtype<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
 pub struct EnableGatetype<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
 pub struct MosSwitchtype<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
 pub struct NInputGatetype<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
 pub struct NOutputGatetype<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
 pub struct PassEnSwitchtype<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
 pub struct PassSwitchtype<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 // -----------------------------------------------------------------------------
@@ -115,53 +115,53 @@ mod tests {
 
     #[test]
     fn test_cmos_switchtype() {
-        parser_test!(cmos_switchtype, "cmos", Ok((_, _)));
-        parser_test!(cmos_switchtype, "rcmos", Ok((_, _)));
+        parser_test!(cmos_switchtype, "cmos ", Ok((_, _)));
+        parser_test!(cmos_switchtype, "rcmos ", Ok((_, _)));
     }
 
     #[test]
     fn test_enable_gatetype() {
-        parser_test!(enable_gatetype, "bufif0", Ok((_, _)));
-        parser_test!(enable_gatetype, "bufif1", Ok((_, _)));
-        parser_test!(enable_gatetype, "notif0", Ok((_, _)));
-        parser_test!(enable_gatetype, "notif1", Ok((_, _)));
+        parser_test!(enable_gatetype, "bufif0 ", Ok((_, _)));
+        parser_test!(enable_gatetype, "bufif1 ", Ok((_, _)));
+        parser_test!(enable_gatetype, "notif0 ", Ok((_, _)));
+        parser_test!(enable_gatetype, "notif1 ", Ok((_, _)));
     }
 
     #[test]
     fn test_mos_switchtype() {
-        parser_test!(mos_switchtype, "nmos", Ok((_, _)));
-        parser_test!(mos_switchtype, "pmos", Ok((_, _)));
-        parser_test!(mos_switchtype, "rnmos", Ok((_, _)));
-        parser_test!(mos_switchtype, "rpmos", Ok((_, _)));
+        parser_test!(mos_switchtype, "nmos ", Ok((_, _)));
+        parser_test!(mos_switchtype, "pmos ", Ok((_, _)));
+        parser_test!(mos_switchtype, "rnmos ", Ok((_, _)));
+        parser_test!(mos_switchtype, "rpmos ", Ok((_, _)));
     }
 
     #[test]
     fn test_n_input_gatetype() {
-        parser_test!(n_input_gatetype, "and", Ok((_, _)));
-        parser_test!(n_input_gatetype, "nand", Ok((_, _)));
-        parser_test!(n_input_gatetype, "or", Ok((_, _)));
-        parser_test!(n_input_gatetype, "nor", Ok((_, _)));
-        parser_test!(n_input_gatetype, "xor", Ok((_, _)));
-        parser_test!(n_input_gatetype, "xnor", Ok((_, _)));
+        parser_test!(n_input_gatetype, "and ", Ok((_, _)));
+        parser_test!(n_input_gatetype, "nand ", Ok((_, _)));
+        parser_test!(n_input_gatetype, "or ", Ok((_, _)));
+        parser_test!(n_input_gatetype, "nor ", Ok((_, _)));
+        parser_test!(n_input_gatetype, "xor ", Ok((_, _)));
+        parser_test!(n_input_gatetype, "xnor ", Ok((_, _)));
     }
 
     #[test]
     fn test_n_output_gatetype() {
-        parser_test!(n_output_gatetype, "buf", Ok((_, _)));
-        parser_test!(n_output_gatetype, "not", Ok((_, _)));
+        parser_test!(n_output_gatetype, "buf ", Ok((_, _)));
+        parser_test!(n_output_gatetype, "not ", Ok((_, _)));
     }
 
     #[test]
     fn test_pass_en_switchtype() {
-        parser_test!(pass_en_switchtype, "tranif0", Ok((_, _)));
-        parser_test!(pass_en_switchtype, "tranif1", Ok((_, _)));
-        parser_test!(pass_en_switchtype, "rtranif0", Ok((_, _)));
-        parser_test!(pass_en_switchtype, "rtranif1", Ok((_, _)));
+        parser_test!(pass_en_switchtype, "tranif0 ", Ok((_, _)));
+        parser_test!(pass_en_switchtype, "tranif1 ", Ok((_, _)));
+        parser_test!(pass_en_switchtype, "rtranif0 ", Ok((_, _)));
+        parser_test!(pass_en_switchtype, "rtranif1 ", Ok((_, _)));
     }
 
     #[test]
     fn test_pass_switchtype() {
-        parser_test!(pass_switchtype, "tran", Ok((_, _)));
-        parser_test!(pass_switchtype, "rtran", Ok((_, _)));
+        parser_test!(pass_switchtype, "tran ", Ok((_, _)));
+        parser_test!(pass_switchtype, "rtran ", Ok((_, _)));
     }
 }

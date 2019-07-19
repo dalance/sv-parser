@@ -153,20 +153,20 @@ pub enum ClassNew<'a> {
 pub struct ClassNewArgument<'a> {
     pub nodes: (
         Option<ClassScope<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<Paren<'a, ListOfArguments<'a>>>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct ClassNewExpression<'a> {
-    pub nodes: (Symbol<'a>, Expression<'a>),
+    pub nodes: (Keyword<'a>, Expression<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct DynamicArrayNew<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Bracket<'a, Expression<'a>>,
         Option<Paren<'a, Expression<'a>>>,
     ),

@@ -11,7 +11,7 @@ use nom::IResult;
 #[derive(Debug, Node)]
 pub struct LetDeclaration<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         LetIdentifier<'a>,
         Option<Paren<'a, Option<LetPortList<'a>>>>,
         Symbol<'a>,
@@ -44,7 +44,7 @@ pub struct LetPortItem<'a> {
 #[derive(Debug, Node)]
 pub enum LetFormalType<'a> {
     DataTypeOrImplicit(DataTypeOrImplicit<'a>),
-    Untyped(Symbol<'a>),
+    Untyped(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]

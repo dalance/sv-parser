@@ -9,7 +9,7 @@ use nom::IResult;
 
 #[derive(Debug, Node)]
 pub struct ModportDeclaration<'a> {
-    pub nodes: (Symbol<'a>, List<Symbol<'a>, ModportItem<'a>>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, List<Symbol<'a>, ModportItem<'a>>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -47,7 +47,7 @@ pub struct ModportPortsDeclaratonClocking<'a> {
 
 #[derive(Debug, Node)]
 pub struct ModportClockingDeclaration<'a> {
-    pub nodes: (Symbol<'a>, ClockingIdentifier<'a>),
+    pub nodes: (Keyword<'a>, ClockingIdentifier<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -88,8 +88,8 @@ pub enum ModportTfPort<'a> {
 
 #[derive(Debug, Node)]
 pub enum ImportExport<'a> {
-    Import(Symbol<'a>),
-    Export(Symbol<'a>),
+    Import(Keyword<'a>),
+    Export(Keyword<'a>),
 }
 
 // -----------------------------------------------------------------------------

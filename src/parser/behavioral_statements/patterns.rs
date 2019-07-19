@@ -24,7 +24,7 @@ pub struct PatternVariable<'a> {
 
 #[derive(Debug, Node)]
 pub struct PatternTagged<'a> {
-    pub nodes: (Symbol<'a>, MemberIdentifier<'a>, Option<Pattern<'a>>),
+    pub nodes: (Keyword<'a>, MemberIdentifier<'a>, Option<Pattern<'a>>),
 }
 
 #[derive(Debug, Node)]
@@ -96,7 +96,7 @@ pub enum ArrayPatternKey<'a> {
 #[derive(Debug, Node)]
 pub enum AssignmentPatternKey<'a> {
     SimpleType(SimpleType<'a>),
-    Default(Symbol<'a>),
+    Default(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]

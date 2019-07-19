@@ -10,7 +10,7 @@ use nom::IResult;
 #[derive(Debug, Node)]
 pub struct InoutDeclaration<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<NetPortType<'a>>,
         ListOfPortIdentifiers<'a>,
     ),
@@ -25,7 +25,7 @@ pub enum InputDeclaration<'a> {
 #[derive(Debug, Node)]
 pub struct InputDeclarationNet<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<NetPortType<'a>>,
         ListOfPortIdentifiers<'a>,
     ),
@@ -34,7 +34,7 @@ pub struct InputDeclarationNet<'a> {
 #[derive(Debug, Node)]
 pub struct InputDeclarationVariable<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         VariablePortType<'a>,
         ListOfVariableIdentifiers<'a>,
     ),
@@ -49,7 +49,7 @@ pub enum OutputDeclaration<'a> {
 #[derive(Debug, Node)]
 pub struct OutputDeclarationNet<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<NetPortType<'a>>,
         ListOfPortIdentifiers<'a>,
     ),
@@ -58,7 +58,7 @@ pub struct OutputDeclarationNet<'a> {
 #[derive(Debug, Node)]
 pub struct OutputDeclarationVariable<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         VariablePortType<'a>,
         ListOfVariableIdentifiers<'a>,
     ),
@@ -76,7 +76,7 @@ pub struct InterfacePortDeclaration<'a> {
 #[derive(Debug, Node)]
 pub struct RefDeclaration<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         VariablePortType<'a>,
         ListOfVariableIdentifiers<'a>,
     ),

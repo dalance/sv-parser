@@ -169,12 +169,12 @@ pub struct ExpressionBinary<'a> {
 
 #[derive(Debug, Node)]
 pub struct TaggedUnionExpression<'a> {
-    pub nodes: (Symbol<'a>, MemberIdentifier<'a>, Option<Expression<'a>>),
+    pub nodes: (Keyword<'a>, MemberIdentifier<'a>, Option<Expression<'a>>),
 }
 
 #[derive(Debug, Node)]
 pub struct InsideExpression<'a> {
-    pub nodes: (Expression<'a>, Symbol<'a>, Brace<'a, OpenRangeList<'a>>),
+    pub nodes: (Expression<'a>, Keyword<'a>, Brace<'a, OpenRangeList<'a>>),
 }
 
 #[derive(Debug, Node)]

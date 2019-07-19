@@ -111,9 +111,9 @@ pub struct DataSourceExpression<'a> {
 
 #[derive(Debug, Node)]
 pub enum EdgeIdentifier<'a> {
-    Posedge(Symbol<'a>),
-    Negedge(Symbol<'a>),
-    Edge(Symbol<'a>),
+    Posedge(Keyword<'a>),
+    Negedge(Keyword<'a>),
+    Edge(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -126,7 +126,7 @@ pub enum StateDependentPathDeclaration<'a> {
 #[derive(Debug, Node)]
 pub struct StateDependentPathDeclarationIfSimple<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<'a, ModulePathExpression<'a>>,
         SimplePathDeclaration<'a>,
     ),
@@ -135,7 +135,7 @@ pub struct StateDependentPathDeclarationIfSimple<'a> {
 #[derive(Debug, Node)]
 pub struct StateDependentPathDeclarationIfEdgeSensitive<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<'a, ModulePathExpression<'a>>,
         EdgeSensitivePathDeclaration<'a>,
     ),
@@ -143,7 +143,7 @@ pub struct StateDependentPathDeclarationIfEdgeSensitive<'a> {
 
 #[derive(Debug, Node)]
 pub struct StateDependentPathDeclarationIfNone<'a> {
-    pub nodes: (Symbol<'a>, SimplePathDeclaration<'a>),
+    pub nodes: (Keyword<'a>, SimplePathDeclaration<'a>),
 }
 
 #[derive(Debug, Node)]

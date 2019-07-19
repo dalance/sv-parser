@@ -8,7 +8,7 @@ use nom::IResult;
 
 #[derive(Debug, Node)]
 pub struct InitialConstruct<'a> {
-    pub nodes: (Symbol<'a>, StatementOrNull<'a>),
+    pub nodes: (Keyword<'a>, StatementOrNull<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -18,15 +18,15 @@ pub struct AlwaysConstruct<'a> {
 
 #[derive(Debug, Node)]
 pub enum AlwaysKeyword<'a> {
-    Always(Symbol<'a>),
-    AlwaysComb(Symbol<'a>),
-    AlwaysLatch(Symbol<'a>),
-    AlwaysFf(Symbol<'a>),
+    Always(Keyword<'a>),
+    AlwaysComb(Keyword<'a>),
+    AlwaysLatch(Keyword<'a>),
+    AlwaysFf(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct FinalConstruct<'a> {
-    pub nodes: (Symbol<'a>, FunctionStatement<'a>),
+    pub nodes: (Keyword<'a>, FunctionStatement<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -95,32 +95,32 @@ pub enum ProceduralContinuousAssignment<'a> {
 
 #[derive(Debug, Node)]
 pub struct ProceduralContinuousAssignmentAssign<'a> {
-    pub nodes: (Symbol<'a>, VariableAssignment<'a>),
+    pub nodes: (Keyword<'a>, VariableAssignment<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ProceduralContinuousAssignmentDeassign<'a> {
-    pub nodes: (Symbol<'a>, VariableLvalue<'a>),
+    pub nodes: (Keyword<'a>, VariableLvalue<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ProceduralContinuousAssignmentForceVariable<'a> {
-    pub nodes: (Symbol<'a>, VariableAssignment<'a>),
+    pub nodes: (Keyword<'a>, VariableAssignment<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ProceduralContinuousAssignmentForceNet<'a> {
-    pub nodes: (Symbol<'a>, NetAssignment<'a>),
+    pub nodes: (Keyword<'a>, NetAssignment<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ProceduralContinuousAssignmentReleaseVariable<'a> {
-    pub nodes: (Symbol<'a>, VariableLvalue<'a>),
+    pub nodes: (Keyword<'a>, VariableLvalue<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ProceduralContinuousAssignmentReleaseNet<'a> {
-    pub nodes: (Symbol<'a>, NetLvalue<'a>),
+    pub nodes: (Keyword<'a>, NetLvalue<'a>),
 }
 
 #[derive(Debug, Node)]

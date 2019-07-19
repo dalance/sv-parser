@@ -23,7 +23,7 @@ pub struct CaseStatementNormal<'a> {
         Paren<'a, CaseExpression<'a>>,
         CaseItem<'a>,
         Vec<CaseItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
     ),
 }
 
@@ -33,10 +33,10 @@ pub struct CaseStatementMatches<'a> {
         Option<UniquePriority<'a>>,
         CaseKeyword<'a>,
         Paren<'a, CaseExpression<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         CasePatternItem<'a>,
         Vec<CasePatternItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
     ),
 }
 
@@ -44,20 +44,20 @@ pub struct CaseStatementMatches<'a> {
 pub struct CaseStatementInside<'a> {
     pub nodes: (
         Option<UniquePriority<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<'a, CaseExpression<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         CaseInsideItem<'a>,
         Vec<CaseInsideItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub enum CaseKeyword<'a> {
-    Case(Symbol<'a>),
-    Casez(Symbol<'a>),
-    Casex(Symbol<'a>),
+    Case(Keyword<'a>),
+    Casez(Keyword<'a>),
+    Casex(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -82,7 +82,7 @@ pub struct CaseItemNondefault<'a> {
 
 #[derive(Debug, Node)]
 pub struct CaseItemDefault<'a> {
-    pub nodes: (Symbol<'a>, Option<Symbol<'a>>, StatementOrNull<'a>),
+    pub nodes: (Keyword<'a>, Option<Symbol<'a>>, StatementOrNull<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -120,10 +120,10 @@ pub struct CaseItemExpression<'a> {
 #[derive(Debug, Node)]
 pub struct RandcaseStatement<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         RandcaseItem<'a>,
         Vec<RandcaseItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
     ),
 }
 

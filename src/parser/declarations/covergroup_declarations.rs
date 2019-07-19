@@ -11,13 +11,13 @@ use nom::IResult;
 #[derive(Debug, Node)]
 pub struct CovergroupDeclaration<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         CovergroupIdentifier<'a>,
         Option<Paren<'a, Option<TfPortList<'a>>>>,
         Option<CoverageEvent<'a>>,
         Symbol<'a>,
         Vec<CoverageSpecOrOption<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         Option<(Symbol<'a>, CovergroupIdentifier<'a>)>,
     ),
 }
@@ -47,7 +47,7 @@ pub enum CoverageOption<'a> {
 #[derive(Debug, Node)]
 pub struct CoverageOptionOption<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Symbol<'a>,
         MemberIdentifier<'a>,
         Symbol<'a>,
@@ -58,7 +58,7 @@ pub struct CoverageOptionOption<'a> {
 #[derive(Debug, Node)]
 pub struct CoverageOptionTypeOption<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Symbol<'a>,
         MemberIdentifier<'a>,
         Symbol<'a>,
@@ -82,9 +82,9 @@ pub enum CoverageEvent<'a> {
 #[derive(Debug, Node)]
 pub struct CoverageEventSample<'a> {
     pub nodes: (
-        Symbol<'a>,
-        Symbol<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
+        Keyword<'a>,
+        Keyword<'a>,
         Paren<'a, Option<TfPortList<'a>>>,
     ),
 }
@@ -105,19 +105,19 @@ pub enum BlockEventExpression<'a> {
 pub struct BlockEventExpressionOr<'a> {
     pub nodes: (
         BlockEventExpression<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
         BlockEventExpression<'a>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct BlockEventExpressionBegin<'a> {
-    pub nodes: (Symbol<'a>, HierarchicalBtfIdentifier<'a>),
+    pub nodes: (Keyword<'a>, HierarchicalBtfIdentifier<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct BlockEventExpressionEnd<'a> {
-    pub nodes: (Symbol<'a>, HierarchicalBtfIdentifier<'a>),
+    pub nodes: (Keyword<'a>, HierarchicalBtfIdentifier<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -149,9 +149,9 @@ pub struct CoverPoint<'a> {
             CoverPointIdentifier<'a>,
             Symbol<'a>,
         )>,
-        Symbol<'a>,
+        Keyword<'a>,
         Expression<'a>,
-        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
+        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
         BinsOrEmpty<'a>,
     ),
 }
@@ -195,14 +195,14 @@ pub struct BinsOrOptionsCovergroup<'a> {
         Option<Bracket<'a, Option<CovergroupExpression<'a>>>>,
         Symbol<'a>,
         Brace<'a, CovergroupRangeList<'a>>,
-        Option<(Symbol<'a>, Paren<'a, WithCovergroupExpression<'a>>)>,
-        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
+        Option<(Keyword<'a>, Paren<'a, WithCovergroupExpression<'a>>)>,
+        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct Wildcard<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
@@ -214,9 +214,9 @@ pub struct BinsOrOptionsCoverPoint<'a> {
         Option<Bracket<'a, Option<CovergroupExpression<'a>>>>,
         Symbol<'a>,
         CoverPointIdentifier<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<'a, WithCovergroupExpression<'a>>,
-        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
+        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
     ),
 }
 
@@ -229,7 +229,7 @@ pub struct BinsOrOptionsSetCovergroup<'a> {
         Option<Bracket<'a, Option<CovergroupExpression<'a>>>>,
         Symbol<'a>,
         SetCovergroupExpression<'a>,
-        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
+        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
     ),
 }
 
@@ -242,7 +242,7 @@ pub struct BinsOrOptionsTransList<'a> {
         Option<(Symbol<'a>, Symbol<'a>)>,
         Symbol<'a>,
         TransList<'a>,
-        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
+        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
     ),
 }
 
@@ -253,8 +253,8 @@ pub struct BinsOrOptionsDefault<'a> {
         BinIdentifier<'a>,
         Option<Bracket<'a, Option<CovergroupExpression<'a>>>>,
         Symbol<'a>,
-        Symbol<'a>,
-        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
+        Keyword<'a>,
+        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
     ),
 }
 
@@ -264,17 +264,17 @@ pub struct BinsOrOptionsDefaultSequence<'a> {
         BinsKeyword<'a>,
         BinIdentifier<'a>,
         Symbol<'a>,
-        Symbol<'a>,
-        Symbol<'a>,
-        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
+        Keyword<'a>,
+        Keyword<'a>,
+        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub enum BinsKeyword<'a> {
-    Bins(Symbol<'a>),
-    IllegalBins(Symbol<'a>),
-    IgnoreBins(Symbol<'a>),
+    Bins(Keyword<'a>),
+    IllegalBins(Keyword<'a>),
+    IgnoreBins(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
@@ -334,9 +334,9 @@ pub struct RepeatRangeBinary<'a> {
 pub struct CoverCross<'a> {
     pub nodes: (
         Option<(CrossIdentifier<'a>, Symbol<'a>)>,
-        Symbol<'a>,
+        Keyword<'a>,
         ListOfCrossItems<'a>,
-        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
+        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
         CrossBody<'a>,
     ),
 }
@@ -392,7 +392,7 @@ pub struct BinsSelection<'a> {
         BinIdentifier<'a>,
         Symbol<'a>,
         SelectExpression<'a>,
-        Option<(Symbol<'a>, Paren<'a, Expression<'a>>)>,
+        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
     ),
 }
 
@@ -432,9 +432,9 @@ pub struct SelectExpressionParen<'a> {
 pub struct SelectExpressionWith<'a> {
     pub nodes: (
         SelectExpression<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<'a, WithCovergroupExpression<'a>>,
-        Option<(Symbol<'a>, IntegerCovergroupExpression<'a>)>,
+        Option<(Keyword<'a>, IntegerCovergroupExpression<'a>)>,
     ),
 }
 
@@ -442,16 +442,16 @@ pub struct SelectExpressionWith<'a> {
 pub struct SelectExpressionCrossSet<'a> {
     pub nodes: (
         CrossSetExpression<'a>,
-        Option<(Symbol<'a>, IntegerCovergroupExpression<'a>)>,
+        Option<(Keyword<'a>, IntegerCovergroupExpression<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct SelectCondition<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<'a, BinsExpression<'a>>,
-        Option<(Symbol<'a>, Brace<'a, CovergroupRangeList<'a>>)>,
+        Option<(Keyword<'a>, Brace<'a, CovergroupRangeList<'a>>)>,
     ),
 }
 

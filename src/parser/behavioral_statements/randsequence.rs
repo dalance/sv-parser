@@ -11,11 +11,11 @@ use nom::IResult;
 #[derive(Debug, Node)]
 pub struct RandsequenceStatement<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<'a, Option<ProductionIdentifier<'a>>>,
         Production<'a>,
         Vec<Production<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
     ),
 }
 
@@ -53,8 +53,8 @@ pub struct RsProductionListProd<'a> {
 #[derive(Debug, Node)]
 pub struct RsProductionListJoin<'a> {
     pub nodes: (
-        Symbol<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
+        Keyword<'a>,
         Option<Paren<'a, Expression<'a>>>,
         ProductionItem<'a>,
         ProductionItem<'a>,
@@ -99,26 +99,26 @@ pub struct ProductionItem<'a> {
 #[derive(Debug, Node)]
 pub struct RsIfElse<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<'a, Expression<'a>>,
         ProductionItem<'a>,
-        Option<(Symbol<'a>, ProductionItem<'a>)>,
+        Option<(Keyword<'a>, ProductionItem<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct RsRepeat<'a> {
-    pub nodes: (Symbol<'a>, Paren<'a, Expression<'a>>, ProductionItem<'a>),
+    pub nodes: (Keyword<'a>, Paren<'a, Expression<'a>>, ProductionItem<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct RsCase<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<'a, CaseExpression<'a>>,
         RsCaseItem<'a>,
         Vec<RsCaseItem<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
     ),
 }
 
@@ -141,7 +141,7 @@ pub struct RsCaseItemNondefault<'a> {
 #[derive(Debug, Node)]
 pub struct RsCaseItemDefault<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Option<Symbol<'a>>,
         ProductionItem<'a>,
         Symbol<'a>,

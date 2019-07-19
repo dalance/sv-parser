@@ -24,17 +24,17 @@ pub enum LibraryDescription<'a> {
 #[derive(Debug, Node)]
 pub struct LibraryDeclaration<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         LibraryIdentifier<'a>,
         List<Symbol<'a>, FilePathSpec<'a>>,
-        Option<(Symbol<'a>, List<Symbol<'a>, FilePathSpec<'a>>)>,
+        Option<(Keyword<'a>, List<Symbol<'a>, FilePathSpec<'a>>)>,
         Symbol<'a>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct IncludeStatement<'a> {
-    pub nodes: (Symbol<'a>, FilePathSpec<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, FilePathSpec<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]

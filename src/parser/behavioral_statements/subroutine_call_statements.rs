@@ -16,7 +16,7 @@ pub enum SubroutineCallStatement<'a> {
 #[derive(Debug, Node)]
 pub struct SubroutineCallStatementFunction<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Symbol<'a>,
         Paren<'a, FunctionSubroutineCall<'a>>,
         Symbol<'a>,

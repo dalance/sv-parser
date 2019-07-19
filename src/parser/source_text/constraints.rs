@@ -12,7 +12,7 @@ use nom::IResult;
 pub struct ConstraintDeclaration<'a> {
     pub nodes: (
         Option<Static<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         ConstraintIdentifier<'a>,
         ConstraintBlock<'a>,
     ),
@@ -20,7 +20,7 @@ pub struct ConstraintDeclaration<'a> {
 
 #[derive(Debug, Node)]
 pub struct Static<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
@@ -37,9 +37,9 @@ pub enum ConstraintBlockItem<'a> {
 #[derive(Debug, Node)]
 pub struct ConstraintBlockItemSolve<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         SolveBeforeList<'a>,
-        Symbol<'a>,
+        Keyword<'a>,
         SolveBeforeList<'a>,
         Symbol<'a>,
     ),
@@ -76,7 +76,7 @@ pub struct ConstraintExpressionExpression<'a> {
 
 #[derive(Debug, Node)]
 pub struct Soft<'a> {
-    pub nodes: (Symbol<'a>,),
+    pub nodes: (Keyword<'a>,),
 }
 
 #[derive(Debug, Node)]
@@ -87,17 +87,17 @@ pub struct ConstraintExpressionArrow<'a> {
 #[derive(Debug, Node)]
 pub struct ConstraintExpressionIf<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<'a, Expression<'a>>,
         ConstraintSet<'a>,
-        Option<(Symbol<'a>, ConstraintSet<'a>)>,
+        Option<(Keyword<'a>, ConstraintSet<'a>)>,
     ),
 }
 
 #[derive(Debug, Node)]
 pub struct ConstraintExpressionForeach<'a> {
     pub nodes: (
-        Symbol<'a>,
+        Keyword<'a>,
         Paren<
             'a,
             (
@@ -111,12 +111,12 @@ pub struct ConstraintExpressionForeach<'a> {
 
 #[derive(Debug, Node)]
 pub struct ConstraintExpressionDisable<'a> {
-    pub nodes: (Symbol<'a>, Symbol<'a>, ConstraintPrimary<'a>, Symbol<'a>),
+    pub nodes: (Keyword<'a>, Keyword<'a>, ConstraintPrimary<'a>, Symbol<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct UniquenessConstraint<'a> {
-    pub nodes: (Symbol<'a>, Brace<'a, OpenRangeList<'a>>),
+    pub nodes: (Keyword<'a>, Brace<'a, OpenRangeList<'a>>),
 }
 
 #[derive(Debug, Node)]
@@ -161,7 +161,7 @@ pub struct ConstraintPrototype<'a> {
     pub nodes: (
         Option<ConstraintPrototypeQualifier<'a>>,
         Option<Static<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         ConstraintIdentifier<'a>,
         Symbol<'a>,
     ),
@@ -169,15 +169,15 @@ pub struct ConstraintPrototype<'a> {
 
 #[derive(Debug, Node)]
 pub enum ConstraintPrototypeQualifier<'a> {
-    Extern(Symbol<'a>),
-    Pure(Symbol<'a>),
+    Extern(Keyword<'a>),
+    Pure(Keyword<'a>),
 }
 
 #[derive(Debug, Node)]
 pub struct ExternConstraintDeclaration<'a> {
     pub nodes: (
         Option<Static<'a>>,
-        Symbol<'a>,
+        Keyword<'a>,
         ClassScope<'a>,
         ConstraintIdentifier<'a>,
         ConstraintBlock<'a>,

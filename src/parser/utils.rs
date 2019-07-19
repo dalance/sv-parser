@@ -267,6 +267,11 @@ pub struct Symbol<'a> {
 }
 
 #[derive(Debug, Node)]
+pub struct Keyword<'a> {
+    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
+}
+
+#[derive(Debug, Node)]
 pub enum WhiteSpace<'a> {
     Space(Span<'a>),
     Comment(Comment<'a>),
@@ -326,7 +331,7 @@ pub fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol<'
     }
 }
 
-pub fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol<'a>> {
+pub fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Keyword<'a>> {
     move |s: Span<'a>| {
         if cfg!(feature = "trace") {
             println!(
@@ -338,7 +343,7 @@ pub fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol<
             );
         }
         let (s, x) = map(ws(terminated(tag(t.clone()), peek(none_of(AZ09_)))), |x| {
-            Symbol { nodes: x }
+            Keyword { nodes: x }
         })(s)?;
         Ok((clear_recursive_flags(s), x))
     }

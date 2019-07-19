@@ -41,9 +41,9 @@ A parser library for System Verilog.
 | instantiations                    | program_instantiation                 | x    | x      |      |
 | instantiations                    | checker_instantiation                 | x    | x      |      |
 | instantiations                    | generated_instantiation               | x    | x      |      |
-| udp_declaration_and_instantiation | udp_declaration                       |      |        |      |
-| udp_declaration_and_instantiation | udp_ports                             |      |        |      |
-| udp_declaration_and_instantiation | udp_body                              |      |        |      |
+| udp_declaration_and_instantiation | udp_declaration                       | x    | x      |      |
+| udp_declaration_and_instantiation | udp_ports                             | x    | x      |      |
+| udp_declaration_and_instantiation | udp_body                              | x    | x      |      |
 | udp_declaration_and_instantiation | udp_instantiation                     | x    | x      |      |
 | behavioral_statements             | continuous_assignment_and_net_alias   | x    | x      |      |
 | behavioral_statements             | procedural_blocks_and_assignments     | x    | x      |      |
@@ -58,13 +58,13 @@ A parser library for System Verilog.
 | behavioral_statements             | assertion_statements                  | x    | x      |      |
 | behavioral_statements             | clocking_block                        | x    | x      |      |
 | behavioral_statements             | randsequence                          | x    | x      |      |
-| specify_section                   | specify_block_declaration             |      |        |      |
-| specify_section                   | specify_path_declarations             |      |        |      |
-| specify_section                   | specify_block_terminals               |      |        |      |
-| specify_section                   | specify_path_delays                   |      |        |      |
-| specify_section                   | system_timing_check_commands          |      |        |      |
-| specify_section                   | system_timing_check_command_arguments |      |        |      |
-| specify_section                   | system_timing_check_event_definitions |      |        |      |
+| specify_section                   | specify_block_declaration             | x    | x      |      |
+| specify_section                   | specify_path_declarations             | x    | x      |      |
+| specify_section                   | specify_block_terminals               | x    | x      |      |
+| specify_section                   | specify_path_delays                   | x    | x      |      |
+| specify_section                   | system_timing_check_commands          | x    | x      |      |
+| specify_section                   | system_timing_check_command_arguments | x    | x      |      |
+| specify_section                   | system_timing_check_event_definitions | x    | x      |      |
 | expressions                       | concatenations                        | x    | x      |      |
 | expressions                       | subroutine_calls                      | x    | x      |      |
 | expressions                       | expressions                           | x    | x      |      |
@@ -76,3 +76,8 @@ A parser library for System Verilog.
 | general                           | attributes                            | x    | x      | x    |
 | general                           | comments                              | x    | x      | x    |
 | general                           | identifiers                           | x    | x      | x    |
+
+## TODO
+
+* Exclude reserved keyword from identifiers.
+* Implement ambiguous_alt for varirble_port_type.

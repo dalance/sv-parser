@@ -1697,7 +1697,7 @@ pub fn cycle_delay_range_plus(s: Span) -> IResult<Span, CycleDelayRange> {
     ))
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn sequence_method_call(s: Span) -> IResult<Span, SequenceMethodCall> {
     let (s, a) = sequence_instance(s)?;
     let (s, b) = symbol(".")(s)?;

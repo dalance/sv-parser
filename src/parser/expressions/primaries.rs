@@ -261,7 +261,7 @@ pub struct Cast<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[parser(Memoize)]
 pub fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
     alt((
         map(keyword("null"), |x| ConstantPrimary::Null(x)),
@@ -288,7 +288,7 @@ pub fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
     ))(s)
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn constant_primary_ps_parameter(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = ps_parameter_identifier(s)?;
     let (s, b) = constant_select(s)?;
@@ -298,7 +298,7 @@ pub fn constant_primary_ps_parameter(s: Span) -> IResult<Span, ConstantPrimary> 
     ))
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn constant_primary_specparam(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = specparam_identifier(s)?;
     let (s, b) = opt(bracket(constant_range_expression))(s)?;
@@ -308,7 +308,7 @@ pub fn constant_primary_specparam(s: Span) -> IResult<Span, ConstantPrimary> {
     ))
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn constant_primary_formal_port(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = formal_port_identifier(s)?;
     let (s, b) = constant_select(s)?;
@@ -318,7 +318,7 @@ pub fn constant_primary_formal_port(s: Span) -> IResult<Span, ConstantPrimary> {
     ))
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn constant_primary_enum(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = package_scope_or_class_scope(s)?;
     let (s, b) = enum_identifier(s)?;
@@ -328,7 +328,7 @@ pub fn constant_primary_enum(s: Span) -> IResult<Span, ConstantPrimary> {
     ))
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn constant_primary_concatenation(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = constant_concatenation(s)?;
     let (s, b) = opt(bracket(constant_range_expression))(s)?;
@@ -338,7 +338,7 @@ pub fn constant_primary_concatenation(s: Span) -> IResult<Span, ConstantPrimary>
     ))
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn constant_primary_multiple_concatenation(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = constant_multiple_concatenation(s)?;
     let (s, b) = opt(bracket(constant_range_expression))(s)?;
@@ -350,7 +350,7 @@ pub fn constant_primary_multiple_concatenation(s: Span) -> IResult<Span, Constan
     ))
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn constant_primary_mintypmax_expression(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = paren(constant_mintypmax_expression)(s)?;
     Ok((
@@ -386,7 +386,7 @@ pub fn module_path_primary_mintypmax_expression(s: Span) -> IResult<Span, Module
     ))
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn primary(s: Span) -> IResult<Span, Primary> {
     alt((
         map(keyword("this"), |x| Primary::This(x)),
@@ -414,7 +414,7 @@ pub fn primary(s: Span) -> IResult<Span, Primary> {
     ))(s)
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn primary_hierarchical(s: Span) -> IResult<Span, Primary> {
     let (s, a) = opt(class_qualifier_or_package_scope)(s)?;
     let (s, b) = hierarchical_identifier(s)?;
@@ -425,7 +425,7 @@ pub fn primary_hierarchical(s: Span) -> IResult<Span, Primary> {
     ))
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn primary_concatenation(s: Span) -> IResult<Span, Primary> {
     let (s, a) = concatenation(s)?;
     let (s, b) = opt(bracket(range_expression))(s)?;
@@ -445,7 +445,7 @@ pub fn primary_multiple_concatenation(s: Span) -> IResult<Span, Primary> {
     ))
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn primary_mintypmax_expression(s: Span) -> IResult<Span, Primary> {
     let (s, a) = paren(mintypmax_expression)(s)?;
     Ok((
@@ -481,7 +481,7 @@ pub fn range_expression(s: Span) -> IResult<Span, RangeExpression> {
     ))(s)
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn primary_literal(s: Span) -> IResult<Span, PrimaryLiteral> {
     alt((
         map(time_literal, |x| PrimaryLiteral::TimeLiteral(x)),
@@ -589,7 +589,7 @@ pub fn constant_select(s: Span) -> IResult<Span, ConstantSelect> {
     Ok((s, ConstantSelect { nodes: (a, b, c) }))
 }
 
-#[parser(MaybeRecursive)]
+#[parser(MaybeRecursive, Memoize)]
 pub fn constant_cast(s: Span) -> IResult<Span, ConstantCast> {
     let (s, a) = casting_type(s)?;
     let (s, b) = symbol("'")(s)?;
@@ -597,13 +597,13 @@ pub fn constant_cast(s: Span) -> IResult<Span, ConstantCast> {
     Ok((s, ConstantCast { nodes: (a, b, c) }))
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn constant_let_expression(s: Span) -> IResult<Span, ConstantLetExpression> {
     let (s, a) = let_expression(s)?;
     Ok((s, ConstantLetExpression { nodes: (a,) }))
 }
 
-#[parser(MaybeRecursive)]
+#[parser(MaybeRecursive, Memoize)]
 pub fn cast(s: Span) -> IResult<Span, Cast> {
     let (s, a) = casting_type(s)?;
     let (s, b) = symbol("'")(s)?;

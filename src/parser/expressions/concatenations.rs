@@ -143,7 +143,7 @@ pub fn multiple_concatenation(s: Span) -> IResult<Span, MultipleConcatenation> {
     Ok((s, MultipleConcatenation { nodes: (a,) }))
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn streaming_concatenation(s: Span) -> IResult<Span, StreamingConcatenation> {
     let (s, a) = brace(triple(
         stream_operator,

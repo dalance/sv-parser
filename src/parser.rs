@@ -69,4 +69,10 @@ mod thread_context {
             RefCell::new(ParserIndex{index: HashMap::new(), allocated: [0;RECURSIVE_FLAG_WORDS]})
         }
     );
+
+    thread_local!(
+        pub static FAILED_MEMO: RefCell<HashMap<(&'static str, usize), bool>> = {
+            RefCell::new(HashMap::new())
+        }
+    );
 }

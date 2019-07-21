@@ -149,7 +149,7 @@ pub fn let_formal_type(s: Span) -> IResult<Span, LetFormalType> {
     ))(s)
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn let_expression(s: Span) -> IResult<Span, LetExpression> {
     let (s, a) = opt(package_scope)(s)?;
     let (s, b) = let_identifier(s)?;

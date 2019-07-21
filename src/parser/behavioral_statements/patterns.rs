@@ -272,7 +272,7 @@ pub fn assignment_pattern_key(s: Span) -> IResult<Span, AssignmentPatternKey> {
     ))(s)
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn assignment_pattern_expression(s: Span) -> IResult<Span, AssignmentPatternExpression> {
     let (s, a) = opt(assignment_pattern_expression_type)(s)?;
     let (s, b) = assignment_pattern(s)?;
@@ -299,7 +299,7 @@ pub fn assignment_pattern_expression_type(
     ))(s)
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn constant_assignment_pattern_expression(
     s: Span,
 ) -> IResult<Span, ConstantAssignmentPatternExpression> {

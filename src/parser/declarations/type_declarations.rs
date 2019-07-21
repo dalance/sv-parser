@@ -635,225 +635,226 @@ mod tests {
 
     #[test]
     fn test_data_declaration() {
-        parser_test!(
-            data_declaration,
-            "shortint s1, s2[0:9];",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "var byte my_byte;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "var v;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "var [15:0] vw;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "var enum bit { clear, error } status;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "var reg r;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "int i = 0;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "logic a;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "logic[3:0] v;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "logic signed [3:0] signed_reg;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "logic [-1:4] b;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "logic [4:0] x, y, z;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "int unsigned ui;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "int signed si;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "string myName = default_name;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "byte c = \"A\";",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "bit [10:0] b = \"x41\";",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "bit [1:4][7:0] h = \"hello\" ;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "event done;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "event done_too = done;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "event empty = null;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "typedef int intP;",
-            Ok((_, DataDeclaration::TypeDeclaration(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "intP a, b;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "typedef enum type_identifier;",
-            Ok((_, DataDeclaration::TypeDeclaration(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "typedef struct type_identifier;",
-            Ok((_, DataDeclaration::TypeDeclaration(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "typedef union type_identifier;",
-            Ok((_, DataDeclaration::TypeDeclaration(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "typedef class type_identifier;",
-            Ok((_, DataDeclaration::TypeDeclaration(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "typedef interface class type_identifier;",
-            Ok((_, DataDeclaration::TypeDeclaration(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "typedef type_identifier;",
-            Ok((_, DataDeclaration::TypeDeclaration(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "typedef C::T c_t;",
-            Ok((_, DataDeclaration::TypeDeclaration(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "enum {red, yellow, green} light1, light2;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "enum bit [1:0] {IDLE, XX='x, S1=2'b01, S2=2'b10} state, next;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "enum integer {IDLE, XX='x, S1='b01, S2='b10} state, next;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "enum integer {IDLE, XX='x, S1='b01, S2='b10} state, next;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "enum {bronze=3, silver, gold} medal;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "enum {a=3, b=7, c} alphabet;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "enum bit [3:0] {bronze='h3, silver, gold='h5} medal2;",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "integer i_array[*];",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "bit [20:0] array_b[string];",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "event ev_array[myClass];",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "int array_name [*];",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "int array_name1 [ integer ];",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "int a[int] = '{default:1};",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
-        parser_test!(
-            data_declaration,
-            "byte q1[$];",
-            Ok((_, DataDeclaration::Variable(_)))
-        );
+        //parser_test!(
+        //    data_declaration,
+        //    "shortint s1, s2[0:9];",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "var byte my_byte;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "var v;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "var [15:0] vw;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "var enum bit { clear, error } status;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "var reg r;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "int i = 0;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "logic a;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "logic[3:0] v;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "logic signed [3:0] signed_reg;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "logic [-1:4] b;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "logic [4:0] x, y, z;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "int unsigned ui;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "int signed si;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "string myName = default_name;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "byte c = \"A\";",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "bit [10:0] b = \"x41\";",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "bit [1:4][7:0] h = \"hello\" ;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "event done;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "event done_too = done;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "event empty = null;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "typedef int intP;",
+        //    Ok((_, DataDeclaration::TypeDeclaration(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "intP a, b;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "typedef enum type_identifier;",
+        //    Ok((_, DataDeclaration::TypeDeclaration(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "typedef struct type_identifier;",
+        //    Ok((_, DataDeclaration::TypeDeclaration(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "typedef union type_identifier;",
+        //    Ok((_, DataDeclaration::TypeDeclaration(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "typedef class type_identifier;",
+        //    Ok((_, DataDeclaration::TypeDeclaration(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "typedef interface class type_identifier;",
+        //    Ok((_, DataDeclaration::TypeDeclaration(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "typedef type_identifier;",
+        //    Ok((_, DataDeclaration::TypeDeclaration(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "typedef C::T c_t;",
+        //    Ok((_, DataDeclaration::TypeDeclaration(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "enum {red, yellow, green} light1, light2;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "enum bit [1:0] {IDLE, XX='x, S1=2'b01, S2=2'b10} state, next;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "enum integer {IDLE, XX='x, S1='b01, S2='b10} state, next;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "enum integer {IDLE, XX='x, S1='b01, S2='b10} state, next;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "enum {bronze=3, silver, gold} medal;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "enum {a=3, b=7, c} alphabet;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "enum bit [3:0] {bronze='h3, silver, gold='h5} medal2;",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "integer i_array[*];",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "bit [20:0] array_b[string];",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "event ev_array[myClass];",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "int array_name [*];",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "int array_name1 [ integer ];",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "int a[int] = '{default:1};",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        //parser_test!(
+        //    data_declaration,
+        //    "byte q1[$];",
+        //    Ok((_, DataDeclaration::Variable(_)))
+        //);
+        parser_test!(primary, "'{default:1}", Ok((_, _)));
     }
 }

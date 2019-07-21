@@ -279,7 +279,7 @@ pub struct GenvarExpression<'a> {
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[parser(Memoize)]
 pub fn inc_or_dec_expression(s: Span) -> IResult<Span, IncOrDecExpression> {
     alt((inc_or_dec_expression_prefix, inc_or_dec_expression_suffix))(s)
 }
@@ -306,7 +306,7 @@ pub fn inc_or_dec_expression_suffix(s: Span) -> IResult<Span, IncOrDecExpression
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[parser(MaybeRecursive, Memoize)]
 pub fn conditional_expression(s: Span) -> IResult<Span, ConditionalExpression> {
     let (s, a) = cond_predicate(s)?;
     let (s, b) = symbol("?")(s)?;
@@ -322,7 +322,7 @@ pub fn conditional_expression(s: Span) -> IResult<Span, ConditionalExpression> {
     ))
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn constant_expression(s: Span) -> IResult<Span, ConstantExpression> {
     alt((
         constant_expression_unary,
@@ -334,7 +334,7 @@ pub fn constant_expression(s: Span) -> IResult<Span, ConstantExpression> {
     ))(s)
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn constant_expression_unary(s: Span) -> IResult<Span, ConstantExpression> {
     let (s, a) = unary_operator(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
@@ -345,7 +345,7 @@ pub fn constant_expression_unary(s: Span) -> IResult<Span, ConstantExpression> {
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[parser(MaybeRecursive, Memoize)]
 pub fn constant_expression_binary(s: Span) -> IResult<Span, ConstantExpression> {
     let (s, a) = constant_expression(s)?;
     let (s, b) = binary_operator(s)?;
@@ -359,7 +359,7 @@ pub fn constant_expression_binary(s: Span) -> IResult<Span, ConstantExpression> 
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[parser(MaybeRecursive, Memoize)]
 pub fn constant_expression_ternary(s: Span) -> IResult<Span, ConstantExpression> {
     let (s, a) = constant_expression(s)?;
     let (s, b) = symbol("?")(s)?;
@@ -464,7 +464,7 @@ pub fn constant_indexed_range(s: Span) -> IResult<Span, ConstantIndexedRange> {
     Ok((s, ConstantIndexedRange { nodes: (a, b, c) }))
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn expression(s: Span) -> IResult<Span, Expression> {
     alt((
         expression_unary,
@@ -486,7 +486,7 @@ pub fn expression(s: Span) -> IResult<Span, Expression> {
     ))(s)
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn expression_unary(s: Span) -> IResult<Span, Expression> {
     let (s, x) = unary_operator(s)?;
     let (s, y) = many0(attribute_instance)(s)?;
@@ -497,7 +497,7 @@ pub fn expression_unary(s: Span) -> IResult<Span, Expression> {
     ))
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn expression_operator_assignment(s: Span) -> IResult<Span, Expression> {
     let (s, a) = paren(operator_assignment)(s)?;
     Ok((
@@ -506,7 +506,7 @@ pub fn expression_operator_assignment(s: Span) -> IResult<Span, Expression> {
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[parser(MaybeRecursive, Memoize)]
 pub fn expression_binary(s: Span) -> IResult<Span, Expression> {
     let (s, a) = expression(s)?;
     let (s, b) = binary_operator(s)?;
@@ -520,7 +520,7 @@ pub fn expression_binary(s: Span) -> IResult<Span, Expression> {
     ))
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn tagged_union_expression(s: Span) -> IResult<Span, TaggedUnionExpression> {
     let (s, a) = keyword("tagged")(s)?;
     let (s, b) = member_identifier(s)?;
@@ -528,7 +528,7 @@ pub fn tagged_union_expression(s: Span) -> IResult<Span, TaggedUnionExpression> 
     Ok((s, TaggedUnionExpression { nodes: (a, b, c) }))
 }
 
-#[parser(MaybeRecursive)]
+#[parser(MaybeRecursive, Memoize)]
 pub fn inside_expression(s: Span) -> IResult<Span, InsideExpression> {
     let (s, a) = expression(s)?;
     let (s, b) = keyword("inside")(s)?;

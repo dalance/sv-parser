@@ -122,7 +122,7 @@ pub fn parser(attr: TokenStream, item: TokenStream) -> TokenStream {
 }
 
 fn impl_parser(attr: &AttributeArgs, item: &ItemFn) -> TokenStream {
-    let (maybe_recursive, ambiguous) = impl_parser_attribute(attr);
+    let (maybe_recursive, ambiguous, memoize) = impl_parser_attribute(attr);
 
     let trace = impl_parser_trace(&item);
     let trace = parse_macro_input!(trace as Stmt);
@@ -140,19 +140,35 @@ fn impl_parser(attr: &AttributeArgs, item: &ItemFn) -> TokenStream {
     };
     let body = parse_macro_input!(body as Stmt);
 
+    let body_unwrap = impl_parser_body_unwrap(&item);
+    let body_unwrap = parse_macro_input!(body_unwrap as Stmt);
+
     let clear_recursive_flags = impl_parser_clear_recursive_flags(&item);
     let clear_recursive_flags = parse_macro_input!(clear_recursive_flags as Expr);
     let clear_recursive_flags = Stmt::Expr(clear_recursive_flags);
+
+    let check_failed_memo = impl_parser_check_failed_memo(&item);
+    let check_failed_memo = parse_macro_input!(check_failed_memo as Stmt);
+
+    let set_failed_memo = impl_parser_set_failed_memo(&item);
+    let set_failed_memo = parse_macro_input!(set_failed_memo as Stmt);
 
     let mut item = item.clone();
 
     item.block.stmts.clear();
     item.block.stmts.push(trace);
+    if memoize {
+        item.block.stmts.push(check_failed_memo);
+    }
     if maybe_recursive {
         item.block.stmts.push(check_recursive_flag);
         item.block.stmts.push(set_recursive_flag);
     }
     item.block.stmts.push(body);
+    if memoize {
+        item.block.stmts.push(set_failed_memo);
+    }
+    item.block.stmts.push(body_unwrap);
     item.block.stmts.push(clear_recursive_flags);
 
     let gen = quote! {
@@ -161,19 +177,21 @@ fn impl_parser(attr: &AttributeArgs, item: &ItemFn) -> TokenStream {
     gen.into()
 }
 
-fn impl_parser_attribute(attr: &AttributeArgs) -> (bool, bool) {
+fn impl_parser_attribute(attr: &AttributeArgs) -> (bool, bool, bool) {
     let mut maybe_recursive = false;
     let mut ambiguous = false;
+    let mut memoize = false;
 
     for a in attr {
         match a {
             NestedMeta::Meta(Meta::Word(x)) if x == "MaybeRecursive" => maybe_recursive = true,
             NestedMeta::Meta(Meta::Word(x)) if x == "Ambiguous" => ambiguous = true,
+            NestedMeta::Meta(Meta::Word(x)) if x == "Memoize" => memoize = true,
             _ => panic!(),
         }
     }
 
-    (maybe_recursive, ambiguous)
+    (maybe_recursive, ambiguous, memoize)
 }
 
 fn impl_parser_trace(item: &ItemFn) -> TokenStream {
@@ -231,7 +249,7 @@ fn impl_parser_body(item: &ItemFn) -> TokenStream {
         };
     }
     let gen = quote! {
-        let (s, ret) = { #gen }?;
+        let body_ret = { #gen };
     };
     gen.into()
 }
@@ -288,15 +306,70 @@ fn impl_parser_body_ambiguous(item: &ItemFn) -> TokenStream {
     };
 
     let gen = quote! {
-        let (s, ret) = { #gen }?;
+        let body_ret = { #gen };
     };
 
+    gen.into()
+}
+
+fn impl_parser_body_unwrap(_item: &ItemFn) -> TokenStream {
+    let gen = quote! {
+        let (s, ret) = body_ret?;
+    };
     gen.into()
 }
 
 fn impl_parser_clear_recursive_flags(_item: &ItemFn) -> TokenStream {
     let gen = quote! {
         Ok((clear_recursive_flags(s), ret))
+    };
+    gen.into()
+}
+
+fn impl_parser_check_failed_memo(item: &ItemFn) -> TokenStream {
+    let ident = &item.ident;
+
+    let gen = quote! {
+        let offset = {
+            //if thread_context::FAILED_MEMO.with(|m| { m.borrow().get(&(stringify!(#ident), s.offset)).is_some() }) {
+            //    #[cfg(feature = "trace")]
+            //    println!("{:<128} : memoized failure", format!("{}{}", " ".repeat(s.extra.depth), stringify!(#ident)));
+            //    return Err(nom::Err::Error(nom::error::make_error(s, nom::error::ErrorKind::Fix)));
+            //}
+            if let Some(x) = thread_context::FAILED_MEMO.with(|m| { if let Some(x) = m.borrow().get(&(stringify!(#ident), s.offset)) { Some(*x) } else { None } }) {
+                if x {
+                    #[cfg(feature = "trace")]
+                    println!("{:<128} : memoized failure", format!("{}{}", " ".repeat(s.extra.depth), stringify!(#ident)));
+                    return Err(nom::Err::Error(nom::error::make_error(s, nom::error::ErrorKind::Fix)));
+                } else {
+                    #[cfg(feature = "trace")]
+                    println!("{:<128} : memoized success", format!("{}{}", " ".repeat(s.extra.depth), stringify!(#ident)));
+                }
+            }
+            s.offset
+        };
+    };
+    gen.into()
+}
+
+fn impl_parser_set_failed_memo(item: &ItemFn) -> TokenStream {
+    let ident = &item.ident;
+
+    let gen = quote! {
+        //if body_ret.is_err() {
+        //    thread_context::FAILED_MEMO.with(|m| {
+        //        m.borrow_mut().insert((stringify!(#ident), offset), ());
+        //    })
+        //}
+        if body_ret.is_err() {
+            thread_context::FAILED_MEMO.with(|m| {
+                m.borrow_mut().insert((stringify!(#ident), offset), true);
+            })
+        } else {
+            thread_context::FAILED_MEMO.with(|m| {
+                m.borrow_mut().insert((stringify!(#ident), offset), false);
+            })
+        }
     };
     gen.into()
 }

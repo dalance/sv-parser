@@ -262,7 +262,7 @@ pub fn subroutine_call_randomize(s: Span) -> IResult<Span, SubroutineCall> {
     ))
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn function_subroutine_call(s: Span) -> IResult<Span, FunctionSubroutineCall> {
     map(subroutine_call, |x| FunctionSubroutineCall { nodes: (x,) })(s)
 }

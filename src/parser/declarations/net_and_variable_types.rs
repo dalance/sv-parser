@@ -650,7 +650,7 @@ pub fn struct_union(s: Span) -> IResult<Span, StructUnion> {
     ))(s)
 }
 
-#[parser]
+#[parser(Memoize)]
 pub fn type_reference(s: Span) -> IResult<Span, TypeReference> {
     alt((type_reference_expression, type_reference_data_type))(s)
 }

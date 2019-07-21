@@ -785,5 +785,75 @@ mod tests {
             "typedef C::T c_t;",
             Ok((_, DataDeclaration::TypeDeclaration(_)))
         );
+        parser_test!(
+            data_declaration,
+            "enum {red, yellow, green} light1, light2;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "enum bit [1:0] {IDLE, XX='x, S1=2'b01, S2=2'b10} state, next;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "enum integer {IDLE, XX='x, S1='b01, S2='b10} state, next;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "enum integer {IDLE, XX='x, S1='b01, S2='b10} state, next;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "enum {bronze=3, silver, gold} medal;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "enum {a=3, b=7, c} alphabet;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "enum bit [3:0] {bronze='h3, silver, gold='h5} medal2;",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "integer i_array[*];",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "bit [20:0] array_b[string];",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "event ev_array[myClass];",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "int array_name [*];",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "int array_name1 [ integer ];",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "int a[int] = '{default:1};",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
+        parser_test!(
+            data_declaration,
+            "byte q1[$];",
+            Ok((_, DataDeclaration::Variable(_)))
+        );
     }
 }

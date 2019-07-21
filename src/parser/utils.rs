@@ -317,15 +317,8 @@ where
 
 pub fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol<'a>> {
     move |s: Span<'a>| {
-        if cfg!(feature = "trace") {
-            println!(
-                "{:<64} : {:<4},{:>032x} : {}",
-                format!("symbol(\"{}\")", t),
-                s.offset,
-                s.extra[0],
-                s.fragment
-            );
-        }
+        #[cfg(feature = "trace")]
+        let s = trace(s, &format!("symbol(\"{}\")", t));
         let (s, x) = map(ws(tag(t.clone())), |x| Symbol { nodes: x })(s)?;
         Ok((clear_recursive_flags(s), x))
     }
@@ -333,15 +326,8 @@ pub fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol<'
 
 pub fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Keyword<'a>> {
     move |s: Span<'a>| {
-        if cfg!(feature = "trace") {
-            println!(
-                "{:<64} : {:<4},{:>032x} : {}",
-                format!("keyword(\"{}\")", t),
-                s.offset,
-                s.extra[0],
-                s.fragment
-            );
-        }
+        #[cfg(feature = "trace")]
+        let s = trace(s, &format!("keyword(\"{}\")", t));
         let (s, x) = map(ws(terminated(tag(t.clone()), peek(none_of(AZ09_)))), |x| {
             Keyword { nodes: x }
         })(s)?;
@@ -354,12 +340,8 @@ where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
-        if cfg!(feature = "trace") {
-            println!(
-                "{:<64} : {:<4},{:>032x} : {}",
-                "paren", s.offset, s.extra[0], s.fragment
-            );
-        }
+        #[cfg(feature = "trace")]
+        let s = trace(s, "paren");
         let (s, a) = symbol("(")(s)?;
         let (s, b) = f(s)?;
         let (s, c) = symbol(")")(s)?;
@@ -372,12 +354,8 @@ where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
-        if cfg!(feature = "trace") {
-            println!(
-                "{:<64} : {:<4},{:>032x} : {}",
-                "bracket", s.offset, s.extra[0], s.fragment
-            );
-        }
+        #[cfg(feature = "trace")]
+        let s = trace(s, "bracket");
         let (s, a) = symbol("[")(s)?;
         let (s, b) = f(s)?;
         let (s, c) = symbol("]")(s)?;
@@ -390,12 +368,8 @@ where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
-        if cfg!(feature = "trace") {
-            println!(
-                "{:<64} : {:<4},{:>032x} : {}",
-                "brace", s.offset, s.extra[0], s.fragment
-            );
-        }
+        #[cfg(feature = "trace")]
+        let s = trace(s, "brace");
         let (s, a) = symbol("{")(s)?;
         let (s, b) = f(s)?;
         let (s, c) = symbol("}")(s)?;
@@ -410,12 +384,8 @@ where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
-        if cfg!(feature = "trace") {
-            println!(
-                "{:<64} : {:<4},{:>032x} : {}",
-                "apostrophe_brace", s.offset, s.extra[0], s.fragment
-            );
-        }
+        #[cfg(feature = "trace")]
+        let s = trace(s, "apostrophe_brace");
         let (s, a) = symbol("'{")(s)?;
         let (s, b) = f(s)?;
         let (s, c) = symbol("}")(s)?;
@@ -522,33 +492,25 @@ pub fn check_recursive_flag(s: Span, id: usize) -> bool {
     let upper = id / 128;
     let lower = id % 128;
 
-    ((s.extra[upper] >> lower) & 1) == 1
+    ((s.extra.recursive_flag[upper] >> lower) & 1) == 1
 }
 
-pub fn set_recursive_flag(s: Span, id: usize, bit: bool) -> Span {
+pub fn set_recursive_flag(mut s: Span, id: usize, bit: bool) -> Span {
     let upper = id / 128;
     let lower = id % 128;
 
     let val = if bit { 1u128 << lower } else { 0u128 };
     let mask = !(1u128 << lower);
 
-    let mut extra = s.extra;
-    extra[upper] = (extra[upper] & mask) | val;
-    Span {
-        offset: s.offset,
-        line: s.line,
-        fragment: s.fragment,
-        extra,
-    }
+    let mut recursive_flag = s.extra.recursive_flag;
+    recursive_flag[upper] = (recursive_flag[upper] & mask) | val;
+    s.extra.recursive_flag = recursive_flag;
+    s
 }
 
-pub fn clear_recursive_flags(s: Span) -> Span {
-    Span {
-        offset: s.offset,
-        line: s.line,
-        fragment: s.fragment,
-        extra: [0; RECURSIVE_FLAG_WORDS],
-    }
+pub fn clear_recursive_flags(mut s: Span) -> Span {
+    s.extra.recursive_flag = [0; RECURSIVE_FLAG_WORDS];
+    s
 }
 
 pub fn is_keyword(s: &Span) -> bool {
@@ -560,12 +522,25 @@ pub fn is_keyword(s: &Span) -> bool {
     false
 }
 
+#[cfg(feature = "trace")]
+pub fn trace<'a>(mut s: Span<'a>, name: &str) -> Span<'a> {
+    println!(
+        "{:<128} : {:<4},{:>032x} : {}",
+        format!("{}{}", " ".repeat(s.extra.depth), name),
+        s.offset,
+        s.extra.recursive_flag[0],
+        s.fragment
+    );
+    s.extra.depth += 1;
+    s
+}
+
 // -----------------------------------------------------------------------------
 
 #[cfg(test)]
 macro_rules! parser_test {
     ( $x:expr, $y:expr, $z:pat ) => {
-        let ret = all_consuming($x)(Span::new_extra($y, [0; RECURSIVE_FLAG_WORDS]));
+        let ret = all_consuming($x)(Span::new_extra($y, Extra::default()));
         if let $z = ret {
         } else {
             assert!(false, "{:?}", ret)

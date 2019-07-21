@@ -180,9 +180,8 @@ fn impl_parser_trace(item: &ItemFn) -> TokenStream {
     let ident = &item.ident;
 
     let gen = quote! {
-        if cfg!(feature = "trace") {
-            println!("{:<64} : {:<4},{:>032x} : {}", stringify!(#ident), s.offset, s.extra[0], s.fragment);
-        }
+        #[cfg(feature = "trace")]
+        let s = trace(s, stringify!(#ident));
     };
     gen.into()
 }
@@ -198,9 +197,8 @@ fn impl_parser_check_recursive_flag(item: &ItemFn) -> TokenStream {
                 return false
             }
         }) {
-            if cfg!(feature = "trace") {
-                println!("{:<64} : loop detect", stringify!(#ident));
-            }
+            #[cfg(feature = "trace")]
+            println!("{:<128} : loop detect", format!("{}{}", " ".repeat(s.extra.depth), stringify!(#ident)));
             return Err(nom::Err::Error(nom::error::make_error(s, nom::error::ErrorKind::Fix)));
         }
     };
@@ -215,9 +213,8 @@ fn impl_parser_set_recursive_flag(item: &ItemFn) -> TokenStream {
             if let Some(i) = p.borrow_mut().get(stringify!(#ident)) {
                 set_recursive_flag(s, i, true)
             } else {
-                if cfg!(feature = "trace") {
-                    println!("{:<64} : allocate failed", stringify!(#ident));
-                }
+                #[cfg(feature = "trace")]
+                println!("{:<128} : allocate failed", format!("{}{}", " ".repeat(s.extra.depth), stringify!(#ident)));
                 s
             }
         });

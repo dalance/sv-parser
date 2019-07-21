@@ -359,3 +359,19 @@ pub fn variable_assignment(s: Span) -> IResult<Span, VariableAssignment> {
     let (s, c) = expression(s)?;
     Ok((s, VariableAssignment { nodes: (a, b, c) }))
 }
+
+// -----------------------------------------------------------------------------
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_blocking_assignment() {
+        parser_test!(
+            blocking_assignment,
+            "idest = new [3] (isrc)",
+            Ok((_, BlockingAssignment::NonrangeVariable(_)))
+        );
+    }
+}

@@ -22,7 +22,15 @@ pub use specify_section::*;
 pub use udp_declaration_and_instantiation::*;
 
 pub const RECURSIVE_FLAG_WORDS: usize = 1;
-pub type Span<'a> = nom_locate::LocatedSpanEx<&'a str, [u128; RECURSIVE_FLAG_WORDS]>;
+
+#[derive(Copy, Clone, Default, Debug, PartialEq)]
+pub struct Extra {
+    #[cfg(feature = "trace")]
+    pub depth: usize,
+    pub recursive_flag: [u128; RECURSIVE_FLAG_WORDS],
+}
+
+pub type Span<'a> = nom_locate::LocatedSpanEx<&'a str, Extra>;
 
 mod thread_context {
 

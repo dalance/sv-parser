@@ -653,4 +653,13 @@ mod tests {
         parser_test!(primary, "$", Ok((_, Primary::Dollar(_))));
         parser_test!(primary, "null ", Ok((_, Primary::Null(_))));
     }
+
+    #[test]
+    fn test_cast() {
+        parser_test!(cast, "int'(2.0 * 3.0)", Ok((_, _)));
+        parser_test!(cast, "shortint'({8'hFA,8'hCE}) ", Ok((_, _)));
+        parser_test!(cast, "signed'(x)", Ok((_, _)));
+        parser_test!(cast, "const'(x)", Ok((_, _)));
+        parser_test!(cast, "type_t'(x)", Ok((_, _)));
+    }
 }

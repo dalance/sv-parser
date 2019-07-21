@@ -22,7 +22,7 @@ pub enum DataType<'a> {
     Vector(DataTypeVector<'a>),
     Atom(DataTypeAtom<'a>),
     NonIntegerType(NonIntegerType<'a>),
-    Union(Box<DataTypeUnion<'a>>),
+    StructUnion(Box<DataTypeStructUnion<'a>>),
     Enum(DataTypeEnum<'a>),
     String(Keyword<'a>),
     Chandle(Keyword<'a>),
@@ -49,7 +49,7 @@ pub struct DataTypeAtom<'a> {
 }
 
 #[derive(Debug, Node)]
-pub struct DataTypeUnion<'a> {
+pub struct DataTypeStructUnion<'a> {
     pub nodes: (
         StructUnion<'a>,
         Option<(Packed<'a>, Option<Signing<'a>>)>,
@@ -301,12 +301,12 @@ pub struct TypeReferenceDataType<'a> {
 pub fn casting_type(s: Span) -> IResult<Span, CastingType> {
     alt((
         map(simple_type, |x| CastingType::SimpleType(Box::new(x))),
-        map(constant_primary, |x| {
-            CastingType::ConstantPrimary(Box::new(x))
-        }),
         map(signing, |x| CastingType::Signing(Box::new(x))),
         map(keyword("string"), |x| CastingType::String(x)),
         map(keyword("const"), |x| CastingType::Const(x)),
+        map(constant_primary, |x| {
+            CastingType::ConstantPrimary(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -316,7 +316,7 @@ pub fn data_type(s: Span) -> IResult<Span, DataType> {
         data_type_vector,
         data_type_atom,
         map(non_integer_type, |x| DataType::NonIntegerType(x)),
-        data_type_union,
+        data_type_struct_union,
         data_type_enum,
         map(keyword("string"), |x| DataType::String(x)),
         map(keyword("chandle"), |x| DataType::Chandle(x)),
@@ -347,14 +347,14 @@ pub fn data_type_atom(s: Span) -> IResult<Span, DataType> {
 }
 
 #[parser]
-pub fn data_type_union(s: Span) -> IResult<Span, DataType> {
+pub fn data_type_struct_union(s: Span) -> IResult<Span, DataType> {
     let (s, a) = struct_union(s)?;
     let (s, b) = opt(pair(packed, opt(signing)))(s)?;
     let (s, c) = brace(pair(struct_union_member, many0(struct_union_member)))(s)?;
     let (s, d) = many0(packed_dimension)(s)?;
     Ok((
         s,
-        DataType::Union(Box::new(DataTypeUnion {
+        DataType::StructUnion(Box::new(DataTypeStructUnion {
             nodes: (a, b, c, d),
         })),
     ))
@@ -673,4 +673,45 @@ pub fn type_reference_data_type(s: Span) -> IResult<Span, TypeReference> {
         s,
         TypeReference::DataType(TypeReferenceDataType { nodes: (a, b) }),
     ))
+}
+
+// -----------------------------------------------------------------------------
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_data_type() {
+        parser_test!(
+            data_type,
+            "struct { bit [7:0] opcode; bit [23:0] addr; }",
+            Ok((_, DataType::StructUnion(_)))
+        );
+        parser_test!(
+            data_type,
+            "struct packed signed { int a; shortint b; byte c; bit [7:0] d; }",
+            Ok((_, DataType::StructUnion(_)))
+        );
+        parser_test!(
+            data_type,
+            "union { int i; shortreal f; } ",
+            Ok((_, DataType::StructUnion(_)))
+        );
+        parser_test!(
+            data_type,
+            "struct { bit isfloat; union { int i; shortreal f; } n; }",
+            Ok((_, DataType::StructUnion(_)))
+        );
+        parser_test!(
+            data_type,
+            "union packed { s_atmcell acell; bit [423:0] bit_slice; bit [52:0][7:0] byte_slice; }",
+            Ok((_, DataType::StructUnion(_)))
+        );
+        parser_test!(
+            data_type,
+            "union tagged { void Invalid; int Valid; }",
+            Ok((_, DataType::StructUnion(_)))
+        );
+    }
 }

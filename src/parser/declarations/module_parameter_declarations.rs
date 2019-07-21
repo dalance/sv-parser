@@ -128,3 +128,73 @@ pub fn specparam_declaration(s: Span) -> IResult<Span, SpecparamDeclaration> {
         },
     ))
 }
+
+// -----------------------------------------------------------------------------
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_local_parameter_declaration() {
+        parser_test!(
+            local_parameter_declaration,
+            "localparam byte colon1 = \":\" ",
+            Ok((_, LocalParameterDeclaration::Param(_)))
+        );
+    }
+
+    #[test]
+    fn test_parameter_declaration() {
+        parser_test!(
+            parameter_declaration,
+            "parameter logic flag = 1 ",
+            Ok((_, ParameterDeclaration::Param(_)))
+        );
+        parser_test!(
+            parameter_declaration,
+            "parameter e = 25, f = 9 ",
+            Ok((_, ParameterDeclaration::Param(_)))
+        );
+        parser_test!(
+            parameter_declaration,
+            "parameter byte_size = 8, byte_mask = byte_size - 1",
+            Ok((_, ParameterDeclaration::Param(_)))
+        );
+        parser_test!(
+            parameter_declaration,
+            "parameter signed [3:0] mux_selector = 0",
+            Ok((_, ParameterDeclaration::Param(_)))
+        );
+        parser_test!(
+            parameter_declaration,
+            "parameter real r1 = 3.5e17",
+            Ok((_, ParameterDeclaration::Param(_)))
+        );
+        parser_test!(
+            parameter_declaration,
+            "parameter logic [31:0] P1 [3:0] = '{ 1, 2, 3, 4 } ",
+            Ok((_, ParameterDeclaration::Param(_)))
+        );
+        parser_test!(
+            parameter_declaration,
+            "parameter r2 = $ ",
+            Ok((_, ParameterDeclaration::Param(_)))
+        );
+        parser_test!(
+            parameter_declaration,
+            "parameter type p2 = shortint ",
+            Ok((_, ParameterDeclaration::Type(_)))
+        );
+    }
+
+    #[test]
+    fn test_specparam_declaration() {
+        parser_test!(specparam_declaration, "specparam delay = 10 ; ", Ok((_, _)));
+        parser_test!(
+            specparam_declaration,
+            "specparam tRise_clk_q = 150, tFall_clk_q = 200;",
+            Ok((_, _))
+        );
+    }
+}

@@ -325,12 +325,12 @@ pub fn conditional_expression(s: Span) -> IResult<Span, ConditionalExpression> {
 #[parser]
 pub fn constant_expression(s: Span) -> IResult<Span, ConstantExpression> {
     alt((
-        map(constant_primary, |x| {
-            ConstantExpression::ConstantPrimary(Box::new(x))
-        }),
         constant_expression_unary,
         constant_expression_binary,
         constant_expression_ternary,
+        map(constant_primary, |x| {
+            ConstantExpression::ConstantPrimary(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -467,7 +467,6 @@ pub fn constant_indexed_range(s: Span) -> IResult<Span, ConstantIndexedRange> {
 #[parser]
 pub fn expression(s: Span) -> IResult<Span, Expression> {
     alt((
-        map(primary, |x| Expression::Primary(Box::new(x))),
         expression_unary,
         map(inc_or_dec_expression, |x| {
             Expression::IncOrDecExpression(Box::new(x))
@@ -483,6 +482,7 @@ pub fn expression(s: Span) -> IResult<Span, Expression> {
         map(tagged_union_expression, |x| {
             Expression::TaggedUnionExpression(Box::new(x))
         }),
+        map(primary, |x| Expression::Primary(Box::new(x))),
     ))(s)
 }
 

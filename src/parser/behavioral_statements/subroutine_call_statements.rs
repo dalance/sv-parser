@@ -8,19 +8,14 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum SubroutineCallStatement<'a> {
-    SubroutineCall((SubroutineCall<'a>, Symbol<'a>)),
-    Function(SubroutineCallStatementFunction<'a>),
+pub enum SubroutineCallStatement {
+    SubroutineCall((SubroutineCall, Symbol)),
+    Function(SubroutineCallStatementFunction),
 }
 
 #[derive(Debug, Node)]
-pub struct SubroutineCallStatementFunction<'a> {
-    pub nodes: (
-        Keyword<'a>,
-        Symbol<'a>,
-        Paren<'a, FunctionSubroutineCall<'a>>,
-        Symbol<'a>,
-    ),
+pub struct SubroutineCallStatementFunction {
+    pub nodes: (Keyword, Symbol, Paren<FunctionSubroutineCall>, Symbol),
 }
 
 // -----------------------------------------------------------------------------

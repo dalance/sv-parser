@@ -9,45 +9,45 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum ActionBlock<'a> {
-    StatementOrNull(StatementOrNull<'a>),
-    Else(ActionBlockElse<'a>),
+pub enum ActionBlock {
+    StatementOrNull(StatementOrNull),
+    Else(ActionBlockElse),
 }
 
 #[derive(Debug, Node)]
-pub struct ActionBlockElse<'a> {
-    pub nodes: (Option<Statement<'a>>, Keyword<'a>, StatementOrNull<'a>),
+pub struct ActionBlockElse {
+    pub nodes: (Option<Statement>, Keyword, StatementOrNull),
 }
 
 #[derive(Debug, Node)]
-pub struct SeqBlock<'a> {
+pub struct SeqBlock {
     pub nodes: (
-        Keyword<'a>,
-        Option<(Symbol<'a>, BlockIdentifier<'a>)>,
-        Vec<BlockItemDeclaration<'a>>,
-        Vec<StatementOrNull<'a>>,
-        Keyword<'a>,
-        Option<(Symbol<'a>, BlockIdentifier<'a>)>,
+        Keyword,
+        Option<(Symbol, BlockIdentifier)>,
+        Vec<BlockItemDeclaration>,
+        Vec<StatementOrNull>,
+        Keyword,
+        Option<(Symbol, BlockIdentifier)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ParBlock<'a> {
+pub struct ParBlock {
     pub nodes: (
-        Keyword<'a>,
-        Option<(Symbol<'a>, BlockIdentifier<'a>)>,
-        Vec<BlockItemDeclaration<'a>>,
-        Vec<StatementOrNull<'a>>,
-        JoinKeyword<'a>,
-        Option<(Symbol<'a>, BlockIdentifier<'a>)>,
+        Keyword,
+        Option<(Symbol, BlockIdentifier)>,
+        Vec<BlockItemDeclaration>,
+        Vec<StatementOrNull>,
+        JoinKeyword,
+        Option<(Symbol, BlockIdentifier)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum JoinKeyword<'a> {
-    Join(Keyword<'a>),
-    JoinAny(Keyword<'a>),
-    JoinNone(Keyword<'a>),
+pub enum JoinKeyword {
+    Join(Keyword),
+    JoinAny(Keyword),
+    JoinNone(Keyword),
 }
 
 // -----------------------------------------------------------------------------

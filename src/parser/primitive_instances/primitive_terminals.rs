@@ -5,33 +5,33 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct EnableTerminal<'a> {
-    pub nodes: (Expression<'a>,),
+pub struct EnableTerminal {
+    pub nodes: (Expression,),
 }
 
 #[derive(Debug, Node)]
-pub struct InoutTerminal<'a> {
-    pub nodes: (NetLvalue<'a>,),
+pub struct InoutTerminal {
+    pub nodes: (NetLvalue,),
 }
 
 #[derive(Debug, Node)]
-pub struct InputTerminal<'a> {
-    pub nodes: (Expression<'a>,),
+pub struct InputTerminal {
+    pub nodes: (Expression,),
 }
 
 #[derive(Debug, Node)]
-pub struct NcontrolTerminal<'a> {
-    pub nodes: (Expression<'a>,),
+pub struct NcontrolTerminal {
+    pub nodes: (Expression,),
 }
 
 #[derive(Debug, Node)]
-pub struct OutputTerminal<'a> {
-    pub nodes: (NetLvalue<'a>,),
+pub struct OutputTerminal {
+    pub nodes: (NetLvalue,),
 }
 
 #[derive(Debug, Node)]
-pub struct PcontrolTerminal<'a> {
-    pub nodes: (Expression<'a>,),
+pub struct PcontrolTerminal {
+    pub nodes: (Expression,),
 }
 
 // -----------------------------------------------------------------------------

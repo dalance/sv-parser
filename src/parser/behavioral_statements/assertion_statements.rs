@@ -8,95 +8,80 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum AssertionItem<'a> {
-    Concurrent(ConcurrentAssertionItem<'a>),
-    Immediate(DeferredImmediateAssetionItem<'a>),
+pub enum AssertionItem {
+    Concurrent(ConcurrentAssertionItem),
+    Immediate(DeferredImmediateAssetionItem),
 }
 
 #[derive(Debug, Node)]
-pub struct DeferredImmediateAssetionItem<'a> {
+pub struct DeferredImmediateAssetionItem {
     pub nodes: (
-        Option<(BlockIdentifier<'a>, Symbol<'a>)>,
-        DeferredImmediateAssertionStatement<'a>,
+        Option<(BlockIdentifier, Symbol)>,
+        DeferredImmediateAssertionStatement,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum ProceduralAssertionStatement<'a> {
-    Concurrent(ConcurrentAssertionStatement<'a>),
-    Immediate(ImmediateAssetionStatement<'a>),
-    Checker(CheckerInstantiation<'a>),
+pub enum ProceduralAssertionStatement {
+    Concurrent(ConcurrentAssertionStatement),
+    Immediate(ImmediateAssetionStatement),
+    Checker(CheckerInstantiation),
 }
 
 #[derive(Debug, Node)]
-pub enum ImmediateAssetionStatement<'a> {
-    Simple(SimpleImmediateAssertionStatement<'a>),
-    Deferred(DeferredImmediateAssertionStatement<'a>),
+pub enum ImmediateAssetionStatement {
+    Simple(SimpleImmediateAssertionStatement),
+    Deferred(DeferredImmediateAssertionStatement),
 }
 
 #[derive(Debug, Node)]
-pub enum SimpleImmediateAssertionStatement<'a> {
-    Assert(SimpleImmediateAssertStatement<'a>),
-    Assume(SimpleImmediateAssumeStatement<'a>),
-    Cover(SimpleImmediateCoverStatement<'a>),
+pub enum SimpleImmediateAssertionStatement {
+    Assert(SimpleImmediateAssertStatement),
+    Assume(SimpleImmediateAssumeStatement),
+    Cover(SimpleImmediateCoverStatement),
 }
 
 #[derive(Debug, Node)]
-pub struct SimpleImmediateAssertStatement<'a> {
-    pub nodes: (Keyword<'a>, Paren<'a, Expression<'a>>, ActionBlock<'a>),
+pub struct SimpleImmediateAssertStatement {
+    pub nodes: (Keyword, Paren<Expression>, ActionBlock),
 }
 
 #[derive(Debug, Node)]
-pub struct SimpleImmediateAssumeStatement<'a> {
-    pub nodes: (Keyword<'a>, Paren<'a, Expression<'a>>, ActionBlock<'a>),
+pub struct SimpleImmediateAssumeStatement {
+    pub nodes: (Keyword, Paren<Expression>, ActionBlock),
 }
 
 #[derive(Debug, Node)]
-pub struct SimpleImmediateCoverStatement<'a> {
-    pub nodes: (Keyword<'a>, Paren<'a, Expression<'a>>, StatementOrNull<'a>),
+pub struct SimpleImmediateCoverStatement {
+    pub nodes: (Keyword, Paren<Expression>, StatementOrNull),
 }
 
 #[derive(Debug, Node)]
-pub enum DeferredImmediateAssertionStatement<'a> {
-    Assert(DeferredImmediateAssertStatement<'a>),
-    Assume(DeferredImmediateAssumeStatement<'a>),
-    Cover(DeferredImmediateCoverStatement<'a>),
+pub enum DeferredImmediateAssertionStatement {
+    Assert(DeferredImmediateAssertStatement),
+    Assume(DeferredImmediateAssumeStatement),
+    Cover(DeferredImmediateCoverStatement),
 }
 
 #[derive(Debug, Node)]
-pub struct DeferredImmediateAssertStatement<'a> {
-    pub nodes: (
-        Keyword<'a>,
-        AssertTiming<'a>,
-        Paren<'a, Expression<'a>>,
-        ActionBlock<'a>,
-    ),
+pub struct DeferredImmediateAssertStatement {
+    pub nodes: (Keyword, AssertTiming, Paren<Expression>, ActionBlock),
 }
 
 #[derive(Debug, Node)]
-pub struct DeferredImmediateAssumeStatement<'a> {
-    pub nodes: (
-        Keyword<'a>,
-        AssertTiming<'a>,
-        Paren<'a, Expression<'a>>,
-        ActionBlock<'a>,
-    ),
+pub struct DeferredImmediateAssumeStatement {
+    pub nodes: (Keyword, AssertTiming, Paren<Expression>, ActionBlock),
 }
 
 #[derive(Debug, Node)]
-pub struct DeferredImmediateCoverStatement<'a> {
-    pub nodes: (
-        Keyword<'a>,
-        AssertTiming<'a>,
-        Paren<'a, Expression<'a>>,
-        StatementOrNull<'a>,
-    ),
+pub struct DeferredImmediateCoverStatement {
+    pub nodes: (Keyword, AssertTiming, Paren<Expression>, StatementOrNull),
 }
 
 #[derive(Debug, Node)]
-pub enum AssertTiming<'a> {
-    Zero(Symbol<'a>),
-    Final(Keyword<'a>),
+pub enum AssertTiming {
+    Zero(Symbol),
+    Final(Keyword),
 }
 
 // -----------------------------------------------------------------------------

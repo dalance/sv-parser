@@ -9,514 +9,468 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct CovergroupDeclaration<'a> {
+pub struct CovergroupDeclaration {
     pub nodes: (
-        Keyword<'a>,
-        CovergroupIdentifier<'a>,
-        Option<Paren<'a, Option<TfPortList<'a>>>>,
-        Option<CoverageEvent<'a>>,
-        Symbol<'a>,
-        Vec<CoverageSpecOrOption<'a>>,
-        Keyword<'a>,
-        Option<(Symbol<'a>, CovergroupIdentifier<'a>)>,
+        Keyword,
+        CovergroupIdentifier,
+        Option<Paren<Option<TfPortList>>>,
+        Option<CoverageEvent>,
+        Symbol,
+        Vec<CoverageSpecOrOption>,
+        Keyword,
+        Option<(Symbol, CovergroupIdentifier)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum CoverageSpecOrOption<'a> {
-    Spec(CoverageSpecOrOptionSpec<'a>),
-    Option(CoverageSpecOrOptionOption<'a>),
+pub enum CoverageSpecOrOption {
+    Spec(CoverageSpecOrOptionSpec),
+    Option(CoverageSpecOrOptionOption),
 }
 
 #[derive(Debug, Node)]
-pub struct CoverageSpecOrOptionSpec<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, CoverageSpec<'a>),
+pub struct CoverageSpecOrOptionSpec {
+    pub nodes: (Vec<AttributeInstance>, CoverageSpec),
 }
 
 #[derive(Debug, Node)]
-pub struct CoverageSpecOrOptionOption<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, CoverageOption<'a>, Symbol<'a>),
+pub struct CoverageSpecOrOptionOption {
+    pub nodes: (Vec<AttributeInstance>, CoverageOption, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub enum CoverageOption<'a> {
-    Option(CoverageOptionOption<'a>),
-    TypeOption(CoverageOptionTypeOption<'a>),
+pub enum CoverageOption {
+    Option(CoverageOptionOption),
+    TypeOption(CoverageOptionTypeOption),
 }
 
 #[derive(Debug, Node)]
-pub struct CoverageOptionOption<'a> {
+pub struct CoverageOptionOption {
+    pub nodes: (Keyword, Symbol, MemberIdentifier, Symbol, Expression),
+}
+
+#[derive(Debug, Node)]
+pub struct CoverageOptionTypeOption {
     pub nodes: (
-        Keyword<'a>,
-        Symbol<'a>,
-        MemberIdentifier<'a>,
-        Symbol<'a>,
-        Expression<'a>,
+        Keyword,
+        Symbol,
+        MemberIdentifier,
+        Symbol,
+        ConstantExpression,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct CoverageOptionTypeOption<'a> {
+pub enum CoverageSpec {
+    CoverPoint(CoverPoint),
+    CoverCross(CoverCross),
+}
+
+#[derive(Debug, Node)]
+pub enum CoverageEvent {
+    ClockingEvent(ClockingEvent),
+    Sample(CoverageEventSample),
+    At(CoverageEventAt),
+}
+
+#[derive(Debug, Node)]
+pub struct CoverageEventSample {
+    pub nodes: (Keyword, Keyword, Keyword, Paren<Option<TfPortList>>),
+}
+
+#[derive(Debug, Node)]
+pub struct CoverageEventAt {
+    pub nodes: (Symbol, Paren<BlockEventExpression>),
+}
+
+#[derive(Debug, Node)]
+pub enum BlockEventExpression {
+    Or(Box<BlockEventExpressionOr>),
+    Begin(BlockEventExpressionBegin),
+    End(BlockEventExpressionEnd),
+}
+
+#[derive(Debug, Node)]
+pub struct BlockEventExpressionOr {
+    pub nodes: (BlockEventExpression, Keyword, BlockEventExpression),
+}
+
+#[derive(Debug, Node)]
+pub struct BlockEventExpressionBegin {
+    pub nodes: (Keyword, HierarchicalBtfIdentifier),
+}
+
+#[derive(Debug, Node)]
+pub struct BlockEventExpressionEnd {
+    pub nodes: (Keyword, HierarchicalBtfIdentifier),
+}
+
+#[derive(Debug, Node)]
+pub enum HierarchicalBtfIdentifier {
+    HierarchicalTfIdentifier(HierarchicalTfIdentifier),
+    HierarchicalBlockIdentifier(HierarchicalBlockIdentifier),
+    Method(HierarchicalBtfIdentifierMethod),
+}
+
+#[derive(Debug, Node)]
+pub struct HierarchicalBtfIdentifierMethod {
+    pub nodes: (Option<HierarchicalIdentifierOrClassScope>, MethodIdentifier),
+}
+
+#[derive(Debug, Node)]
+pub enum HierarchicalIdentifierOrClassScope {
+    HierarchicalIdentifier((HierarchicalIdentifier, Symbol)),
+    ClassScope(ClassScope),
+}
+
+#[derive(Debug, Node)]
+pub struct CoverPoint {
     pub nodes: (
-        Keyword<'a>,
-        Symbol<'a>,
-        MemberIdentifier<'a>,
-        Symbol<'a>,
-        ConstantExpression<'a>,
+        Option<(Option<DataTypeOrImplicit>, CoverPointIdentifier, Symbol)>,
+        Keyword,
+        Expression,
+        Option<(Keyword, Paren<Expression>)>,
+        BinsOrEmpty,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum CoverageSpec<'a> {
-    CoverPoint(CoverPoint<'a>),
-    CoverCross(CoverCross<'a>),
+pub enum BinsOrEmpty {
+    NonEmpty(BinsOrEmptyNonEmpty),
+    Empty(Symbol),
 }
 
 #[derive(Debug, Node)]
-pub enum CoverageEvent<'a> {
-    ClockingEvent(ClockingEvent<'a>),
-    Sample(CoverageEventSample<'a>),
-    At(CoverageEventAt<'a>),
+pub struct BinsOrEmptyNonEmpty {
+    pub nodes: (Brace<(Vec<AttributeInstance>, Vec<(BinsOrOptions, Symbol)>)>,),
 }
 
 #[derive(Debug, Node)]
-pub struct CoverageEventSample<'a> {
+pub enum BinsOrOptions {
+    CoverageOption(CoverageOption),
+    Covergroup(BinsOrOptionsCovergroup),
+    CoverPoint(BinsOrOptionsCoverPoint),
+    SetCovergroup(BinsOrOptionsSetCovergroup),
+    TransList(BinsOrOptionsTransList),
+    Default(BinsOrOptionsDefault),
+    DefaultSequence(BinsOrOptionsDefaultSequence),
+}
+
+#[derive(Debug, Node)]
+pub struct BinsOrOptionsCovergroup {
     pub nodes: (
-        Keyword<'a>,
-        Keyword<'a>,
-        Keyword<'a>,
-        Paren<'a, Option<TfPortList<'a>>>,
+        Option<Wildcard>,
+        BinsKeyword,
+        BinIdentifier,
+        Option<Bracket<Option<CovergroupExpression>>>,
+        Symbol,
+        Brace<CovergroupRangeList>,
+        Option<(Keyword, Paren<WithCovergroupExpression>)>,
+        Option<(Keyword, Paren<Expression>)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct CoverageEventAt<'a> {
-    pub nodes: (Symbol<'a>, Paren<'a, BlockEventExpression<'a>>),
+pub struct Wildcard {
+    pub nodes: (Keyword,),
 }
 
 #[derive(Debug, Node)]
-pub enum BlockEventExpression<'a> {
-    Or(Box<BlockEventExpressionOr<'a>>),
-    Begin(BlockEventExpressionBegin<'a>),
-    End(BlockEventExpressionEnd<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct BlockEventExpressionOr<'a> {
+pub struct BinsOrOptionsCoverPoint {
     pub nodes: (
-        BlockEventExpression<'a>,
-        Keyword<'a>,
-        BlockEventExpression<'a>,
+        Option<Wildcard>,
+        BinsKeyword,
+        BinIdentifier,
+        Option<Bracket<Option<CovergroupExpression>>>,
+        Symbol,
+        CoverPointIdentifier,
+        Keyword,
+        Paren<WithCovergroupExpression>,
+        Option<(Keyword, Paren<Expression>)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct BlockEventExpressionBegin<'a> {
-    pub nodes: (Keyword<'a>, HierarchicalBtfIdentifier<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct BlockEventExpressionEnd<'a> {
-    pub nodes: (Keyword<'a>, HierarchicalBtfIdentifier<'a>),
-}
-
-#[derive(Debug, Node)]
-pub enum HierarchicalBtfIdentifier<'a> {
-    HierarchicalTfIdentifier(HierarchicalTfIdentifier<'a>),
-    HierarchicalBlockIdentifier(HierarchicalBlockIdentifier<'a>),
-    Method(HierarchicalBtfIdentifierMethod<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct HierarchicalBtfIdentifierMethod<'a> {
+pub struct BinsOrOptionsSetCovergroup {
     pub nodes: (
-        Option<HierarchicalIdentifierOrClassScope<'a>>,
-        MethodIdentifier<'a>,
+        Option<Wildcard>,
+        BinsKeyword,
+        BinIdentifier,
+        Option<Bracket<Option<CovergroupExpression>>>,
+        Symbol,
+        SetCovergroupExpression,
+        Option<(Keyword, Paren<Expression>)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum HierarchicalIdentifierOrClassScope<'a> {
-    HierarchicalIdentifier((HierarchicalIdentifier<'a>, Symbol<'a>)),
-    ClassScope(ClassScope<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct CoverPoint<'a> {
+pub struct BinsOrOptionsTransList {
     pub nodes: (
-        Option<(
-            Option<DataTypeOrImplicit<'a>>,
-            CoverPointIdentifier<'a>,
-            Symbol<'a>,
-        )>,
-        Keyword<'a>,
-        Expression<'a>,
-        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
-        BinsOrEmpty<'a>,
+        Option<Wildcard>,
+        BinsKeyword,
+        BinIdentifier,
+        Option<(Symbol, Symbol)>,
+        Symbol,
+        TransList,
+        Option<(Keyword, Paren<Expression>)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum BinsOrEmpty<'a> {
-    NonEmpty(BinsOrEmptyNonEmpty<'a>),
-    Empty(Symbol<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct BinsOrEmptyNonEmpty<'a> {
+pub struct BinsOrOptionsDefault {
     pub nodes: (
-        Brace<
-            'a,
-            (
-                Vec<AttributeInstance<'a>>,
-                Vec<(BinsOrOptions<'a>, Symbol<'a>)>,
-            ),
-        >,
+        BinsKeyword,
+        BinIdentifier,
+        Option<Bracket<Option<CovergroupExpression>>>,
+        Symbol,
+        Keyword,
+        Option<(Keyword, Paren<Expression>)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum BinsOrOptions<'a> {
-    CoverageOption(CoverageOption<'a>),
-    Covergroup(BinsOrOptionsCovergroup<'a>),
-    CoverPoint(BinsOrOptionsCoverPoint<'a>),
-    SetCovergroup(BinsOrOptionsSetCovergroup<'a>),
-    TransList(BinsOrOptionsTransList<'a>),
-    Default(BinsOrOptionsDefault<'a>),
-    DefaultSequence(BinsOrOptionsDefaultSequence<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct BinsOrOptionsCovergroup<'a> {
+pub struct BinsOrOptionsDefaultSequence {
     pub nodes: (
-        Option<Wildcard<'a>>,
-        BinsKeyword<'a>,
-        BinIdentifier<'a>,
-        Option<Bracket<'a, Option<CovergroupExpression<'a>>>>,
-        Symbol<'a>,
-        Brace<'a, CovergroupRangeList<'a>>,
-        Option<(Keyword<'a>, Paren<'a, WithCovergroupExpression<'a>>)>,
-        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
+        BinsKeyword,
+        BinIdentifier,
+        Symbol,
+        Keyword,
+        Keyword,
+        Option<(Keyword, Paren<Expression>)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct Wildcard<'a> {
-    pub nodes: (Keyword<'a>,),
+pub enum BinsKeyword {
+    Bins(Keyword),
+    IllegalBins(Keyword),
+    IgnoreBins(Keyword),
 }
 
 #[derive(Debug, Node)]
-pub struct BinsOrOptionsCoverPoint<'a> {
+pub struct TransList {
+    pub nodes: (List<Symbol, Paren<TransSet>>,),
+}
+
+#[derive(Debug, Node)]
+pub struct TransSet {
+    pub nodes: (List<Symbol, TransRangeList>,),
+}
+
+#[derive(Debug, Node)]
+pub enum TransRangeList {
+    TransItem(TransItem),
+    Asterisk(TransRangeListAsterisk),
+    Arrow(TransRangeListArrow),
+    Equal(TransRangeListEqual),
+}
+
+#[derive(Debug, Node)]
+pub struct TransRangeListAsterisk {
+    pub nodes: (TransItem, Bracket<(Symbol, RepeatRange)>),
+}
+
+#[derive(Debug, Node)]
+pub struct TransRangeListArrow {
+    pub nodes: (TransItem, Bracket<(Symbol, RepeatRange)>),
+}
+
+#[derive(Debug, Node)]
+pub struct TransRangeListEqual {
+    pub nodes: (TransItem, Bracket<(Symbol, RepeatRange)>),
+}
+
+#[derive(Debug, Node)]
+pub struct TransItem {
+    pub nodes: (CovergroupRangeList,),
+}
+
+#[derive(Debug, Node)]
+pub enum RepeatRange {
+    CovergroupExpression(CovergroupExpression),
+    Binary(RepeatRangeBinary),
+}
+
+#[derive(Debug, Node)]
+pub struct RepeatRangeBinary {
+    pub nodes: (CovergroupExpression, Symbol, CovergroupExpression),
+}
+
+#[derive(Debug, Node)]
+pub struct CoverCross {
     pub nodes: (
-        Option<Wildcard<'a>>,
-        BinsKeyword<'a>,
-        BinIdentifier<'a>,
-        Option<Bracket<'a, Option<CovergroupExpression<'a>>>>,
-        Symbol<'a>,
-        CoverPointIdentifier<'a>,
-        Keyword<'a>,
-        Paren<'a, WithCovergroupExpression<'a>>,
-        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
+        Option<(CrossIdentifier, Symbol)>,
+        Keyword,
+        ListOfCrossItems,
+        Option<(Keyword, Paren<Expression>)>,
+        CrossBody,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct BinsOrOptionsSetCovergroup<'a> {
+pub struct ListOfCrossItems {
+    pub nodes: (CrossItem, List<Symbol, CrossItem>),
+}
+
+#[derive(Debug, Node)]
+pub enum CrossItem {
+    CoverPointIdentifier(CoverPointIdentifier),
+    VariableIdentifier(VariableIdentifier),
+}
+
+#[derive(Debug, Node)]
+pub enum CrossBody {
+    NonEmpty(CrossBodyNonEmpty),
+    Empty(Symbol),
+}
+
+#[derive(Debug, Node)]
+pub struct CrossBodyNonEmpty {
+    pub nodes: (Brace<Vec<(CrossBodyItem, Symbol)>>,),
+}
+
+#[derive(Debug, Node)]
+pub enum CrossBodyItem {
+    FunctionDeclaration(FunctionDeclaration),
+    BinsSelectionOrOption((BinsSelectionOrOption, Symbol)),
+}
+
+#[derive(Debug, Node)]
+pub enum BinsSelectionOrOption {
+    Coverage(BinsSelectionOrOptionCoverage),
+    Bins(BinsSelectionOrOptionBins),
+}
+
+#[derive(Debug, Node)]
+pub struct BinsSelectionOrOptionCoverage {
+    pub nodes: (Vec<AttributeInstance>, CoverageOption),
+}
+
+#[derive(Debug, Node)]
+pub struct BinsSelectionOrOptionBins {
+    pub nodes: (Vec<AttributeInstance>, BinsSelection),
+}
+
+#[derive(Debug, Node)]
+pub struct BinsSelection {
     pub nodes: (
-        Option<Wildcard<'a>>,
-        BinsKeyword<'a>,
-        BinIdentifier<'a>,
-        Option<Bracket<'a, Option<CovergroupExpression<'a>>>>,
-        Symbol<'a>,
-        SetCovergroupExpression<'a>,
-        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
+        BinsKeyword,
+        BinIdentifier,
+        Symbol,
+        SelectExpression,
+        Option<(Keyword, Paren<Expression>)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct BinsOrOptionsTransList<'a> {
+pub enum SelectExpression {
+    SelectCondition(SelectCondition),
+    Not(SelectExpressionNot),
+    And(Box<SelectExpressionAnd>),
+    Or(Box<SelectExpressionOr>),
+    Paren(Box<SelectExpressionParen>),
+    With(Box<SelectExpressionWith>),
+    CrossIdentifier(CrossIdentifier),
+    CrossSet(SelectExpressionCrossSet),
+}
+
+#[derive(Debug, Node)]
+pub struct SelectExpressionNot {
+    pub nodes: (Symbol, SelectCondition),
+}
+
+#[derive(Debug, Node)]
+pub struct SelectExpressionAnd {
+    pub nodes: (SelectExpression, Symbol, SelectExpression),
+}
+
+#[derive(Debug, Node)]
+pub struct SelectExpressionOr {
+    pub nodes: (SelectExpression, Symbol, SelectExpression),
+}
+
+#[derive(Debug, Node)]
+pub struct SelectExpressionParen {
+    pub nodes: (Paren<SelectExpression>,),
+}
+
+#[derive(Debug, Node)]
+pub struct SelectExpressionWith {
     pub nodes: (
-        Option<Wildcard<'a>>,
-        BinsKeyword<'a>,
-        BinIdentifier<'a>,
-        Option<(Symbol<'a>, Symbol<'a>)>,
-        Symbol<'a>,
-        TransList<'a>,
-        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
+        SelectExpression,
+        Keyword,
+        Paren<WithCovergroupExpression>,
+        Option<(Keyword, IntegerCovergroupExpression)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct BinsOrOptionsDefault<'a> {
+pub struct SelectExpressionCrossSet {
     pub nodes: (
-        BinsKeyword<'a>,
-        BinIdentifier<'a>,
-        Option<Bracket<'a, Option<CovergroupExpression<'a>>>>,
-        Symbol<'a>,
-        Keyword<'a>,
-        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
+        CrossSetExpression,
+        Option<(Keyword, IntegerCovergroupExpression)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct BinsOrOptionsDefaultSequence<'a> {
+pub struct SelectCondition {
     pub nodes: (
-        BinsKeyword<'a>,
-        BinIdentifier<'a>,
-        Symbol<'a>,
-        Keyword<'a>,
-        Keyword<'a>,
-        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
+        Keyword,
+        Paren<BinsExpression>,
+        Option<(Keyword, Brace<CovergroupRangeList>)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum BinsKeyword<'a> {
-    Bins(Keyword<'a>),
-    IllegalBins(Keyword<'a>),
-    IgnoreBins(Keyword<'a>),
+pub enum BinsExpression {
+    VariableIdentifier(VariableIdentifier),
+    CoverPoint(BinsExpressionCoverPoint),
 }
 
 #[derive(Debug, Node)]
-pub struct TransList<'a> {
-    pub nodes: (List<Symbol<'a>, Paren<'a, TransSet<'a>>>,),
+pub struct BinsExpressionCoverPoint {
+    pub nodes: (CoverPointIdentifier, Option<(Symbol, BinIdentifier)>),
 }
 
 #[derive(Debug, Node)]
-pub struct TransSet<'a> {
-    pub nodes: (List<Symbol<'a>, TransRangeList<'a>>,),
+pub struct CovergroupRangeList {
+    pub nodes: (List<Symbol, CovergroupValueRange>,),
 }
 
 #[derive(Debug, Node)]
-pub enum TransRangeList<'a> {
-    TransItem(TransItem<'a>),
-    Asterisk(TransRangeListAsterisk<'a>),
-    Arrow(TransRangeListArrow<'a>),
-    Equal(TransRangeListEqual<'a>),
+pub enum CovergroupValueRange {
+    CovergroupExpression(CovergroupExpression),
+    Binary(CovergroupValueRangeBinary),
 }
 
 #[derive(Debug, Node)]
-pub struct TransRangeListAsterisk<'a> {
-    pub nodes: (TransItem<'a>, Bracket<'a, (Symbol<'a>, RepeatRange<'a>)>),
+pub struct CovergroupValueRangeBinary {
+    pub nodes: (Bracket<(CovergroupExpression, Symbol, CovergroupExpression)>,),
 }
 
 #[derive(Debug, Node)]
-pub struct TransRangeListArrow<'a> {
-    pub nodes: (TransItem<'a>, Bracket<'a, (Symbol<'a>, RepeatRange<'a>)>),
+pub struct WithCovergroupExpression {
+    pub nodes: (CovergroupExpression,),
 }
 
 #[derive(Debug, Node)]
-pub struct TransRangeListEqual<'a> {
-    pub nodes: (TransItem<'a>, Bracket<'a, (Symbol<'a>, RepeatRange<'a>)>),
+pub struct SetCovergroupExpression {
+    pub nodes: (CovergroupExpression,),
 }
 
 #[derive(Debug, Node)]
-pub struct TransItem<'a> {
-    pub nodes: (CovergroupRangeList<'a>,),
+pub struct IntegerCovergroupExpression {
+    pub nodes: (CovergroupExpression,),
 }
 
 #[derive(Debug, Node)]
-pub enum RepeatRange<'a> {
-    CovergroupExpression(CovergroupExpression<'a>),
-    Binary(RepeatRangeBinary<'a>),
+pub struct CrossSetExpression {
+    pub nodes: (CovergroupExpression,),
 }
 
 #[derive(Debug, Node)]
-pub struct RepeatRangeBinary<'a> {
-    pub nodes: (
-        CovergroupExpression<'a>,
-        Symbol<'a>,
-        CovergroupExpression<'a>,
-    ),
-}
-
-#[derive(Debug, Node)]
-pub struct CoverCross<'a> {
-    pub nodes: (
-        Option<(CrossIdentifier<'a>, Symbol<'a>)>,
-        Keyword<'a>,
-        ListOfCrossItems<'a>,
-        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
-        CrossBody<'a>,
-    ),
-}
-
-#[derive(Debug, Node)]
-pub struct ListOfCrossItems<'a> {
-    pub nodes: (CrossItem<'a>, List<Symbol<'a>, CrossItem<'a>>),
-}
-
-#[derive(Debug, Node)]
-pub enum CrossItem<'a> {
-    CoverPointIdentifier(CoverPointIdentifier<'a>),
-    VariableIdentifier(VariableIdentifier<'a>),
-}
-
-#[derive(Debug, Node)]
-pub enum CrossBody<'a> {
-    NonEmpty(CrossBodyNonEmpty<'a>),
-    Empty(Symbol<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct CrossBodyNonEmpty<'a> {
-    pub nodes: (Brace<'a, Vec<(CrossBodyItem<'a>, Symbol<'a>)>>,),
-}
-
-#[derive(Debug, Node)]
-pub enum CrossBodyItem<'a> {
-    FunctionDeclaration(FunctionDeclaration<'a>),
-    BinsSelectionOrOption((BinsSelectionOrOption<'a>, Symbol<'a>)),
-}
-
-#[derive(Debug, Node)]
-pub enum BinsSelectionOrOption<'a> {
-    Coverage(BinsSelectionOrOptionCoverage<'a>),
-    Bins(BinsSelectionOrOptionBins<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct BinsSelectionOrOptionCoverage<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, CoverageOption<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct BinsSelectionOrOptionBins<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, BinsSelection<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct BinsSelection<'a> {
-    pub nodes: (
-        BinsKeyword<'a>,
-        BinIdentifier<'a>,
-        Symbol<'a>,
-        SelectExpression<'a>,
-        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
-    ),
-}
-
-#[derive(Debug, Node)]
-pub enum SelectExpression<'a> {
-    SelectCondition(SelectCondition<'a>),
-    Not(SelectExpressionNot<'a>),
-    And(Box<SelectExpressionAnd<'a>>),
-    Or(Box<SelectExpressionOr<'a>>),
-    Paren(Box<SelectExpressionParen<'a>>),
-    With(Box<SelectExpressionWith<'a>>),
-    CrossIdentifier(CrossIdentifier<'a>),
-    CrossSet(SelectExpressionCrossSet<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct SelectExpressionNot<'a> {
-    pub nodes: (Symbol<'a>, SelectCondition<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct SelectExpressionAnd<'a> {
-    pub nodes: (SelectExpression<'a>, Symbol<'a>, SelectExpression<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct SelectExpressionOr<'a> {
-    pub nodes: (SelectExpression<'a>, Symbol<'a>, SelectExpression<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct SelectExpressionParen<'a> {
-    pub nodes: (Paren<'a, SelectExpression<'a>>,),
-}
-
-#[derive(Debug, Node)]
-pub struct SelectExpressionWith<'a> {
-    pub nodes: (
-        SelectExpression<'a>,
-        Keyword<'a>,
-        Paren<'a, WithCovergroupExpression<'a>>,
-        Option<(Keyword<'a>, IntegerCovergroupExpression<'a>)>,
-    ),
-}
-
-#[derive(Debug, Node)]
-pub struct SelectExpressionCrossSet<'a> {
-    pub nodes: (
-        CrossSetExpression<'a>,
-        Option<(Keyword<'a>, IntegerCovergroupExpression<'a>)>,
-    ),
-}
-
-#[derive(Debug, Node)]
-pub struct SelectCondition<'a> {
-    pub nodes: (
-        Keyword<'a>,
-        Paren<'a, BinsExpression<'a>>,
-        Option<(Keyword<'a>, Brace<'a, CovergroupRangeList<'a>>)>,
-    ),
-}
-
-#[derive(Debug, Node)]
-pub enum BinsExpression<'a> {
-    VariableIdentifier(VariableIdentifier<'a>),
-    CoverPoint(BinsExpressionCoverPoint<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct BinsExpressionCoverPoint<'a> {
-    pub nodes: (
-        CoverPointIdentifier<'a>,
-        Option<(Symbol<'a>, BinIdentifier<'a>)>,
-    ),
-}
-
-#[derive(Debug, Node)]
-pub struct CovergroupRangeList<'a> {
-    pub nodes: (List<Symbol<'a>, CovergroupValueRange<'a>>,),
-}
-
-#[derive(Debug, Node)]
-pub enum CovergroupValueRange<'a> {
-    CovergroupExpression(CovergroupExpression<'a>),
-    Binary(CovergroupValueRangeBinary<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct CovergroupValueRangeBinary<'a> {
-    pub nodes: (
-        Bracket<
-            'a,
-            (
-                CovergroupExpression<'a>,
-                Symbol<'a>,
-                CovergroupExpression<'a>,
-            ),
-        >,
-    ),
-}
-
-#[derive(Debug, Node)]
-pub struct WithCovergroupExpression<'a> {
-    pub nodes: (CovergroupExpression<'a>,),
-}
-
-#[derive(Debug, Node)]
-pub struct SetCovergroupExpression<'a> {
-    pub nodes: (CovergroupExpression<'a>,),
-}
-
-#[derive(Debug, Node)]
-pub struct IntegerCovergroupExpression<'a> {
-    pub nodes: (CovergroupExpression<'a>,),
-}
-
-#[derive(Debug, Node)]
-pub struct CrossSetExpression<'a> {
-    pub nodes: (CovergroupExpression<'a>,),
-}
-
-#[derive(Debug, Node)]
-pub struct CovergroupExpression<'a> {
-    pub nodes: (Expression<'a>,),
+pub struct CovergroupExpression {
+    pub nodes: (Expression,),
 }
 
 // -----------------------------------------------------------------------------

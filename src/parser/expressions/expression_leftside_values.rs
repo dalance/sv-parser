@@ -7,66 +7,66 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum NetLvalue<'a> {
-    Identifier(NetLvalueIdentifier<'a>),
-    Lvalue(Box<NetLvalueLvalue<'a>>),
-    Pattern(Box<NetLvaluePattern<'a>>),
+pub enum NetLvalue {
+    Identifier(NetLvalueIdentifier),
+    Lvalue(Box<NetLvalueLvalue>),
+    Pattern(Box<NetLvaluePattern>),
 }
 
 #[derive(Debug, Node)]
-pub struct NetLvalueIdentifier<'a> {
-    pub nodes: (PsOrHierarchicalNetIdentifier<'a>, ConstantSelect<'a>),
+pub struct NetLvalueIdentifier {
+    pub nodes: (PsOrHierarchicalNetIdentifier, ConstantSelect),
 }
 
 #[derive(Debug, Node)]
-pub struct NetLvalueLvalue<'a> {
-    pub nodes: (Brace<'a, List<Symbol<'a>, NetLvalue<'a>>>,),
+pub struct NetLvalueLvalue {
+    pub nodes: (Brace<List<Symbol, NetLvalue>>,),
 }
 
 #[derive(Debug, Node)]
-pub struct NetLvaluePattern<'a> {
+pub struct NetLvaluePattern {
     pub nodes: (
-        Option<AssignmentPatternExpressionType<'a>>,
-        AssignmentPatternNetLvalue<'a>,
+        Option<AssignmentPatternExpressionType>,
+        AssignmentPatternNetLvalue,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum VariableLvalue<'a> {
-    Identifier(VariableLvalueIdentifier<'a>),
-    Lvalue(Box<VariableLvalueLvalue<'a>>),
-    Pattern(Box<VariableLvaluePattern<'a>>),
-    StreamingConcatenation(StreamingConcatenation<'a>),
+pub enum VariableLvalue {
+    Identifier(VariableLvalueIdentifier),
+    Lvalue(Box<VariableLvalueLvalue>),
+    Pattern(Box<VariableLvaluePattern>),
+    StreamingConcatenation(StreamingConcatenation),
 }
 
 #[derive(Debug, Node)]
-pub struct VariableLvalueIdentifier<'a> {
+pub struct VariableLvalueIdentifier {
     pub nodes: (
-        Option<ImplicitClassHandleOrPackageScope<'a>>,
-        HierarchicalVariableIdentifier<'a>,
-        Select<'a>,
+        Option<ImplicitClassHandleOrPackageScope>,
+        HierarchicalVariableIdentifier,
+        Select,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct VariableLvalueLvalue<'a> {
-    pub nodes: (Brace<'a, List<Symbol<'a>, VariableLvalue<'a>>>,),
+pub struct VariableLvalueLvalue {
+    pub nodes: (Brace<List<Symbol, VariableLvalue>>,),
 }
 
 #[derive(Debug, Node)]
-pub struct VariableLvaluePattern<'a> {
+pub struct VariableLvaluePattern {
     pub nodes: (
-        Option<AssignmentPatternExpressionType<'a>>,
-        AssignmentPatternVariableLvalue<'a>,
+        Option<AssignmentPatternExpressionType>,
+        AssignmentPatternVariableLvalue,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct NonrangeVariableLvalue<'a> {
+pub struct NonrangeVariableLvalue {
     pub nodes: (
-        Option<ImplicitClassHandleOrPackageScope<'a>>,
-        HierarchicalVariableIdentifier<'a>,
-        NonrangeSelect<'a>,
+        Option<ImplicitClassHandleOrPackageScope>,
+        HierarchicalVariableIdentifier,
+        NonrangeSelect,
     ),
 }
 

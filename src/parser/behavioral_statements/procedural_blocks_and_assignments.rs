@@ -7,125 +7,125 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct InitialConstruct<'a> {
-    pub nodes: (Keyword<'a>, StatementOrNull<'a>),
+pub struct InitialConstruct {
+    pub nodes: (Keyword, StatementOrNull),
 }
 
 #[derive(Debug, Node)]
-pub struct AlwaysConstruct<'a> {
-    pub nodes: (AlwaysKeyword<'a>, Statement<'a>),
+pub struct AlwaysConstruct {
+    pub nodes: (AlwaysKeyword, Statement),
 }
 
 #[derive(Debug, Node)]
-pub enum AlwaysKeyword<'a> {
-    Always(Keyword<'a>),
-    AlwaysComb(Keyword<'a>),
-    AlwaysLatch(Keyword<'a>),
-    AlwaysFf(Keyword<'a>),
+pub enum AlwaysKeyword {
+    Always(Keyword),
+    AlwaysComb(Keyword),
+    AlwaysLatch(Keyword),
+    AlwaysFf(Keyword),
 }
 
 #[derive(Debug, Node)]
-pub struct FinalConstruct<'a> {
-    pub nodes: (Keyword<'a>, FunctionStatement<'a>),
+pub struct FinalConstruct {
+    pub nodes: (Keyword, FunctionStatement),
 }
 
 #[derive(Debug, Node)]
-pub enum BlockingAssignment<'a> {
-    Variable(BlockingAssignmentVariable<'a>),
-    NonrangeVariable(BlockingAssignmentNonrangeVariable<'a>),
-    HierarchicalVariable(BlockingAssignmentHierarchicalVariable<'a>),
-    OperatorAssignment(OperatorAssignment<'a>),
+pub enum BlockingAssignment {
+    Variable(BlockingAssignmentVariable),
+    NonrangeVariable(BlockingAssignmentNonrangeVariable),
+    HierarchicalVariable(BlockingAssignmentHierarchicalVariable),
+    OperatorAssignment(OperatorAssignment),
 }
 
 #[derive(Debug, Node)]
-pub struct BlockingAssignmentVariable<'a> {
+pub struct BlockingAssignmentVariable {
     pub nodes: (
-        VariableLvalue<'a>,
-        Symbol<'a>,
-        DelayOrEventControl<'a>,
-        Expression<'a>,
+        VariableLvalue,
+        Symbol,
+        DelayOrEventControl,
+        Expression,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct BlockingAssignmentNonrangeVariable<'a> {
-    pub nodes: (NonrangeVariableLvalue<'a>, Symbol<'a>, DynamicArrayNew<'a>),
+pub struct BlockingAssignmentNonrangeVariable {
+    pub nodes: (NonrangeVariableLvalue, Symbol, DynamicArrayNew),
 }
 
 #[derive(Debug, Node)]
-pub struct BlockingAssignmentHierarchicalVariable<'a> {
+pub struct BlockingAssignmentHierarchicalVariable {
     pub nodes: (
-        Option<ImplicitClassHandleOrClassScopeOrPackageScope<'a>>,
-        HierarchicalVariableIdentifier<'a>,
-        Select<'a>,
-        Symbol<'a>,
-        ClassNew<'a>,
+        Option<ImplicitClassHandleOrClassScopeOrPackageScope>,
+        HierarchicalVariableIdentifier,
+        Select,
+        Symbol,
+        ClassNew,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct OperatorAssignment<'a> {
-    pub nodes: (VariableLvalue<'a>, AssignmentOperator<'a>, Expression<'a>),
+pub struct OperatorAssignment {
+    pub nodes: (VariableLvalue, AssignmentOperator, Expression),
 }
 
 #[derive(Debug, Node)]
-pub struct AssignmentOperator<'a> {
-    pub nodes: (Symbol<'a>,),
+pub struct AssignmentOperator {
+    pub nodes: (Symbol,),
 }
 
 #[derive(Debug, Node)]
-pub struct NonblockingAssignment<'a> {
+pub struct NonblockingAssignment {
     pub nodes: (
-        VariableLvalue<'a>,
-        Symbol<'a>,
-        Option<DelayOrEventControl<'a>>,
-        Expression<'a>,
+        VariableLvalue,
+        Symbol,
+        Option<DelayOrEventControl>,
+        Expression,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum ProceduralContinuousAssignment<'a> {
-    Assign(ProceduralContinuousAssignmentAssign<'a>),
-    Deassign(ProceduralContinuousAssignmentDeassign<'a>),
-    ForceVariable(ProceduralContinuousAssignmentForceVariable<'a>),
-    ForceNet(ProceduralContinuousAssignmentForceNet<'a>),
-    ReleaseVariable(ProceduralContinuousAssignmentReleaseVariable<'a>),
-    ReleaseNet(ProceduralContinuousAssignmentReleaseNet<'a>),
+pub enum ProceduralContinuousAssignment {
+    Assign(ProceduralContinuousAssignmentAssign),
+    Deassign(ProceduralContinuousAssignmentDeassign),
+    ForceVariable(ProceduralContinuousAssignmentForceVariable),
+    ForceNet(ProceduralContinuousAssignmentForceNet),
+    ReleaseVariable(ProceduralContinuousAssignmentReleaseVariable),
+    ReleaseNet(ProceduralContinuousAssignmentReleaseNet),
 }
 
 #[derive(Debug, Node)]
-pub struct ProceduralContinuousAssignmentAssign<'a> {
-    pub nodes: (Keyword<'a>, VariableAssignment<'a>),
+pub struct ProceduralContinuousAssignmentAssign {
+    pub nodes: (Keyword, VariableAssignment),
 }
 
 #[derive(Debug, Node)]
-pub struct ProceduralContinuousAssignmentDeassign<'a> {
-    pub nodes: (Keyword<'a>, VariableLvalue<'a>),
+pub struct ProceduralContinuousAssignmentDeassign {
+    pub nodes: (Keyword, VariableLvalue),
 }
 
 #[derive(Debug, Node)]
-pub struct ProceduralContinuousAssignmentForceVariable<'a> {
-    pub nodes: (Keyword<'a>, VariableAssignment<'a>),
+pub struct ProceduralContinuousAssignmentForceVariable {
+    pub nodes: (Keyword, VariableAssignment),
 }
 
 #[derive(Debug, Node)]
-pub struct ProceduralContinuousAssignmentForceNet<'a> {
-    pub nodes: (Keyword<'a>, NetAssignment<'a>),
+pub struct ProceduralContinuousAssignmentForceNet {
+    pub nodes: (Keyword, NetAssignment),
 }
 
 #[derive(Debug, Node)]
-pub struct ProceduralContinuousAssignmentReleaseVariable<'a> {
-    pub nodes: (Keyword<'a>, VariableLvalue<'a>),
+pub struct ProceduralContinuousAssignmentReleaseVariable {
+    pub nodes: (Keyword, VariableLvalue),
 }
 
 #[derive(Debug, Node)]
-pub struct ProceduralContinuousAssignmentReleaseNet<'a> {
-    pub nodes: (Keyword<'a>, NetLvalue<'a>),
+pub struct ProceduralContinuousAssignmentReleaseNet {
+    pub nodes: (Keyword, NetLvalue),
 }
 
 #[derive(Debug, Node)]
-pub struct VariableAssignment<'a> {
-    pub nodes: (VariableLvalue<'a>, Symbol<'a>, Expression<'a>),
+pub struct VariableAssignment {
+    pub nodes: (VariableLvalue, Symbol, Expression),
 }
 
 // -----------------------------------------------------------------------------

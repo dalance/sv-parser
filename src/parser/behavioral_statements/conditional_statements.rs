@@ -9,43 +9,38 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct ConditionalStatement<'a> {
+pub struct ConditionalStatement {
     pub nodes: (
-        Option<UniquePriority<'a>>,
-        Keyword<'a>,
-        Paren<'a, CondPredicate<'a>>,
-        StatementOrNull<'a>,
-        Vec<(
-            Keyword<'a>,
-            Keyword<'a>,
-            Paren<'a, CondPredicate<'a>>,
-            StatementOrNull<'a>,
-        )>,
-        Option<(Keyword<'a>, StatementOrNull<'a>)>,
+        Option<UniquePriority>,
+        Keyword,
+        Paren<CondPredicate>,
+        StatementOrNull,
+        Vec<(Keyword, Keyword, Paren<CondPredicate>, StatementOrNull)>,
+        Option<(Keyword, StatementOrNull)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum UniquePriority<'a> {
-    Unique(Keyword<'a>),
-    Unique0(Keyword<'a>),
-    Priority(Keyword<'a>),
+pub enum UniquePriority {
+    Unique(Keyword),
+    Unique0(Keyword),
+    Priority(Keyword),
 }
 
 #[derive(Debug, Node)]
-pub struct CondPredicate<'a> {
-    pub nodes: (List<Symbol<'a>, ExpressionOrCondPattern<'a>>,),
+pub struct CondPredicate {
+    pub nodes: (List<Symbol, ExpressionOrCondPattern>,),
 }
 
 #[derive(Debug, Node)]
-pub enum ExpressionOrCondPattern<'a> {
-    Expression(Expression<'a>),
-    CondPattern(CondPattern<'a>),
+pub enum ExpressionOrCondPattern {
+    Expression(Expression),
+    CondPattern(CondPattern),
 }
 
 #[derive(Debug, Node)]
-pub struct CondPattern<'a> {
-    pub nodes: (Expression<'a>, Keyword<'a>, Pattern<'a>),
+pub struct CondPattern {
+    pub nodes: (Expression, Keyword, Pattern),
 }
 
 // -----------------------------------------------------------------------------

@@ -6,28 +6,28 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct UnaryOperator<'a> {
-    pub nodes: (Symbol<'a>,),
+pub struct UnaryOperator {
+    pub nodes: (Symbol,),
 }
 
 #[derive(Debug, Node)]
-pub struct BinaryOperator<'a> {
-    pub nodes: (Symbol<'a>,),
+pub struct BinaryOperator {
+    pub nodes: (Symbol,),
 }
 
 #[derive(Debug, Node)]
-pub struct IncOrDecOperator<'a> {
-    pub nodes: (Symbol<'a>,),
+pub struct IncOrDecOperator {
+    pub nodes: (Symbol,),
 }
 
 #[derive(Debug, Node)]
-pub struct UnaryModulePathOperator<'a> {
-    pub nodes: (Symbol<'a>,),
+pub struct UnaryModulePathOperator {
+    pub nodes: (Symbol,),
 }
 
 #[derive(Debug, Node)]
-pub struct BinaryModulePathOperator<'a> {
-    pub nodes: (Symbol<'a>,),
+pub struct BinaryModulePathOperator {
+    pub nodes: (Symbol,),
 }
 
 // -----------------------------------------------------------------------------

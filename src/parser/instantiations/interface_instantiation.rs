@@ -6,12 +6,12 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct InterfaceInstantiation<'a> {
+pub struct InterfaceInstantiation {
     pub nodes: (
-        InterfaceIdentifier<'a>,
-        Option<ParameterValueAssignment<'a>>,
-        List<Symbol<'a>, HierarchicalInstance<'a>>,
-        Symbol<'a>,
+        InterfaceIdentifier,
+        Option<ParameterValueAssignment>,
+        List<Symbol, HierarchicalInstance>,
+        Symbol,
     ),
 }
 

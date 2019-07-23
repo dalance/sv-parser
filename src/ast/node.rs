@@ -5,7 +5,7 @@ pub trait Node<'a> {
     fn next(&'a self) -> AnyNodes<'a>;
 }
 
-impl<'a> Node<'a> for Span<'a> {
+impl<'a> Node<'a> for Locate {
     fn next(&'a self) -> AnyNodes<'a> {
         vec![].into()
     }

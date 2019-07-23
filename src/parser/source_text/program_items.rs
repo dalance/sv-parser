@@ -9,56 +9,56 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum ProgramItem<'a> {
-    PortDeclaration((PortDeclaration<'a>, Symbol<'a>)),
-    NonPortProgramItem(NonPortProgramItem<'a>),
+pub enum ProgramItem {
+    PortDeclaration((PortDeclaration, Symbol)),
+    NonPortProgramItem(NonPortProgramItem),
 }
 
 #[derive(Debug, Node)]
-pub enum NonPortProgramItem<'a> {
-    Assign(NonPortProgramItemAssign<'a>),
-    Module(NonPortProgramItemModule<'a>),
-    Initial(NonPortProgramItemInitial<'a>),
-    Final(NonPortProgramItemFinal<'a>),
-    Assertion(NonPortProgramItemAssertion<'a>),
-    TimeunitsDeclaration(TimeunitsDeclaration<'a>),
-    ProgramGenerateItem(ProgramGenerateItem<'a>),
+pub enum NonPortProgramItem {
+    Assign(NonPortProgramItemAssign),
+    Module(NonPortProgramItemModule),
+    Initial(NonPortProgramItemInitial),
+    Final(NonPortProgramItemFinal),
+    Assertion(NonPortProgramItemAssertion),
+    TimeunitsDeclaration(TimeunitsDeclaration),
+    ProgramGenerateItem(ProgramGenerateItem),
 }
 
 #[derive(Debug, Node)]
-pub struct NonPortProgramItemAssign<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, ContinuousAssign<'a>),
+pub struct NonPortProgramItemAssign {
+    pub nodes: (Vec<AttributeInstance>, ContinuousAssign),
 }
 
 #[derive(Debug, Node)]
-pub struct NonPortProgramItemModule<'a> {
+pub struct NonPortProgramItemModule {
     pub nodes: (
-        Vec<AttributeInstance<'a>>,
-        ModuleOrGenerateItemDeclaration<'a>,
+        Vec<AttributeInstance>,
+        ModuleOrGenerateItemDeclaration,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct NonPortProgramItemInitial<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, InitialConstruct<'a>),
+pub struct NonPortProgramItemInitial {
+    pub nodes: (Vec<AttributeInstance>, InitialConstruct),
 }
 
 #[derive(Debug, Node)]
-pub struct NonPortProgramItemFinal<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, FinalConstruct<'a>),
+pub struct NonPortProgramItemFinal {
+    pub nodes: (Vec<AttributeInstance>, FinalConstruct),
 }
 
 #[derive(Debug, Node)]
-pub struct NonPortProgramItemAssertion<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, ConcurrentAssertionItem<'a>),
+pub struct NonPortProgramItemAssertion {
+    pub nodes: (Vec<AttributeInstance>, ConcurrentAssertionItem),
 }
 
 #[derive(Debug, Node)]
-pub enum ProgramGenerateItem<'a> {
-    LoopGenerateConstruct(LoopGenerateConstruct<'a>),
-    ConditionalGenerateConstruct(ConditionalGenerateConstruct<'a>),
-    GenerateRegion(GenerateRegion<'a>),
-    ElaborationSystemTask(ElaborationSystemTask<'a>),
+pub enum ProgramGenerateItem {
+    LoopGenerateConstruct(LoopGenerateConstruct),
+    ConditionalGenerateConstruct(ConditionalGenerateConstruct),
+    GenerateRegion(GenerateRegion),
+    ElaborationSystemTask(ElaborationSystemTask),
 }
 
 // -----------------------------------------------------------------------------

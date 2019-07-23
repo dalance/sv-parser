@@ -32,6 +32,23 @@ pub struct Extra {
 
 pub type Span<'a> = nom_locate::LocatedSpanEx<&'a str, Extra>;
 
+#[derive(Copy, Clone, Default, Debug, PartialEq)]
+pub struct Locate {
+    offset: usize,
+    line: u32,
+    len: usize,
+}
+
+impl<'a> From<Span<'a>> for Locate {
+    fn from(x: Span<'a>) -> Self {
+        Locate {
+            offset: x.offset,
+            line: x.line,
+            len: x.fragment.len(),
+        }
+    }
+}
+
 mod thread_context {
 
     use crate::parser::RECURSIVE_FLAG_WORDS;
@@ -75,4 +92,10 @@ mod thread_context {
             RefCell::new(HashMap::new())
         }
     );
+
+    //thread_local!(
+    //    pub static MEMO: RefCell<HashMap<(&'static str, usize), AnyNode>> = {
+    //        RefCell::new(HashMap::new())
+    //    }
+    //);
 }

@@ -9,137 +9,137 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct ConfigDeclaration<'a> {
+pub struct ConfigDeclaration {
     pub nodes: (
-        Keyword<'a>,
-        ConfigIdentifier<'a>,
-        Symbol<'a>,
-        Vec<(LocalParameterDeclaration<'a>, Symbol<'a>)>,
-        DesignStatement<'a>,
-        Vec<ConfigRuleStatement<'a>>,
-        Keyword<'a>,
-        Option<(Symbol<'a>, ConfigIdentifier<'a>)>,
+        Keyword,
+        ConfigIdentifier,
+        Symbol,
+        Vec<(LocalParameterDeclaration, Symbol)>,
+        DesignStatement,
+        Vec<ConfigRuleStatement>,
+        Keyword,
+        Option<(Symbol, ConfigIdentifier)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct DesignStatement<'a> {
+pub struct DesignStatement {
     pub nodes: (
-        Keyword<'a>,
+        Keyword,
         Vec<(
-            Option<(LibraryIdentifier<'a>, Symbol<'a>)>,
-            CellIdentifier<'a>,
+            Option<(LibraryIdentifier, Symbol)>,
+            CellIdentifier,
         )>,
-        Symbol<'a>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum ConfigRuleStatement<'a> {
-    Default(ConfigRuleStatementDefault<'a>),
-    InstLib(ConfigRuleStatementInstLib<'a>),
-    InstUse(ConfigRuleStatementInstUse<'a>),
-    CellLib(ConfigRuleStatementCellLib<'a>),
-    CellUse(ConfigRuleStatementCellUse<'a>),
+pub enum ConfigRuleStatement {
+    Default(ConfigRuleStatementDefault),
+    InstLib(ConfigRuleStatementInstLib),
+    InstUse(ConfigRuleStatementInstUse),
+    CellLib(ConfigRuleStatementCellLib),
+    CellUse(ConfigRuleStatementCellUse),
 }
 
 #[derive(Debug, Node)]
-pub struct ConfigRuleStatementDefault<'a> {
-    pub nodes: (DefaultClause<'a>, LiblistClause<'a>, Symbol<'a>),
+pub struct ConfigRuleStatementDefault {
+    pub nodes: (DefaultClause, LiblistClause, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct ConfigRuleStatementInstLib<'a> {
-    pub nodes: (InstClause<'a>, LiblistClause<'a>, Symbol<'a>),
+pub struct ConfigRuleStatementInstLib {
+    pub nodes: (InstClause, LiblistClause, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct ConfigRuleStatementInstUse<'a> {
-    pub nodes: (InstClause<'a>, UseClause<'a>, Symbol<'a>),
+pub struct ConfigRuleStatementInstUse {
+    pub nodes: (InstClause, UseClause, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct ConfigRuleStatementCellLib<'a> {
-    pub nodes: (CellClause<'a>, LiblistClause<'a>, Symbol<'a>),
+pub struct ConfigRuleStatementCellLib {
+    pub nodes: (CellClause, LiblistClause, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct ConfigRuleStatementCellUse<'a> {
-    pub nodes: (CellClause<'a>, UseClause<'a>, Symbol<'a>),
+pub struct ConfigRuleStatementCellUse {
+    pub nodes: (CellClause, UseClause, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct DefaultClause<'a> {
-    pub nodes: (Keyword<'a>,),
+pub struct DefaultClause {
+    pub nodes: (Keyword,),
 }
 
 #[derive(Debug, Node)]
-pub struct InstClause<'a> {
-    pub nodes: (Keyword<'a>, InstName<'a>),
+pub struct InstClause {
+    pub nodes: (Keyword, InstName),
 }
 
 #[derive(Debug, Node)]
-pub struct InstName<'a> {
+pub struct InstName {
     pub nodes: (
-        TopmoduleIdentifier<'a>,
-        Vec<(Symbol<'a>, InstanceIdentifier<'a>)>,
+        TopmoduleIdentifier,
+        Vec<(Symbol, InstanceIdentifier)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct CellClause<'a> {
+pub struct CellClause {
     pub nodes: (
-        Keyword<'a>,
-        Option<(LibraryIdentifier<'a>, Symbol<'a>)>,
-        CellIdentifier<'a>,
+        Keyword,
+        Option<(LibraryIdentifier, Symbol)>,
+        CellIdentifier,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct LiblistClause<'a> {
-    pub nodes: (Keyword<'a>, Vec<LibraryIdentifier<'a>>),
+pub struct LiblistClause {
+    pub nodes: (Keyword, Vec<LibraryIdentifier>),
 }
 
 #[derive(Debug, Node)]
-pub enum UseClause<'a> {
-    Cell(UseClauseCell<'a>),
-    Named(UseClauseNamed<'a>),
-    CellNamed(UseClauseCellNamed<'a>),
+pub enum UseClause {
+    Cell(UseClauseCell),
+    Named(UseClauseNamed),
+    CellNamed(UseClauseCellNamed),
 }
 
 #[derive(Debug, Node)]
-pub struct UseClauseCell<'a> {
+pub struct UseClauseCell {
     pub nodes: (
-        Keyword<'a>,
-        Option<(LibraryIdentifier<'a>, Symbol<'a>)>,
-        CellIdentifier<'a>,
-        Option<(Symbol<'a>, Config<'a>)>,
+        Keyword,
+        Option<(LibraryIdentifier, Symbol)>,
+        CellIdentifier,
+        Option<(Symbol, Config)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct UseClauseNamed<'a> {
+pub struct UseClauseNamed {
     pub nodes: (
-        Keyword<'a>,
-        List<Symbol<'a>, NamedParameterAssignment<'a>>,
-        Option<(Symbol<'a>, Config<'a>)>,
+        Keyword,
+        List<Symbol, NamedParameterAssignment>,
+        Option<(Symbol, Config)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct UseClauseCellNamed<'a> {
+pub struct UseClauseCellNamed {
     pub nodes: (
-        Keyword<'a>,
-        Option<(LibraryIdentifier<'a>, Symbol<'a>)>,
-        CellIdentifier<'a>,
-        List<Symbol<'a>, NamedParameterAssignment<'a>>,
-        Option<(Symbol<'a>, Config<'a>)>,
+        Keyword,
+        Option<(LibraryIdentifier, Symbol)>,
+        CellIdentifier,
+        List<Symbol, NamedParameterAssignment>,
+        Option<(Symbol, Config)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct Config<'a> {
-    pub nodes: (Keyword<'a>,),
+pub struct Config {
+    pub nodes: (Keyword,),
 }
 
 // -----------------------------------------------------------------------------

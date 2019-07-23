@@ -9,184 +9,184 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct ConstraintDeclaration<'a> {
+pub struct ConstraintDeclaration {
     pub nodes: (
-        Option<Static<'a>>,
-        Keyword<'a>,
-        ConstraintIdentifier<'a>,
-        ConstraintBlock<'a>,
+        Option<Static>,
+        Keyword,
+        ConstraintIdentifier,
+        ConstraintBlock,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct Static<'a> {
-    pub nodes: (Keyword<'a>,),
+pub struct Static {
+    pub nodes: (Keyword,),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstraintBlock<'a> {
-    pub nodes: (Brace<'a, Vec<ConstraintBlockItem<'a>>>,),
+pub struct ConstraintBlock {
+    pub nodes: (Brace< Vec<ConstraintBlockItem>>,),
 }
 
 #[derive(Debug, Node)]
-pub enum ConstraintBlockItem<'a> {
-    Solve(ConstraintBlockItemSolve<'a>),
-    ConstraintExpression(ConstraintExpression<'a>),
+pub enum ConstraintBlockItem {
+    Solve(ConstraintBlockItemSolve),
+    ConstraintExpression(ConstraintExpression),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstraintBlockItemSolve<'a> {
+pub struct ConstraintBlockItemSolve {
     pub nodes: (
-        Keyword<'a>,
-        SolveBeforeList<'a>,
-        Keyword<'a>,
-        SolveBeforeList<'a>,
-        Symbol<'a>,
+        Keyword,
+        SolveBeforeList,
+        Keyword,
+        SolveBeforeList,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct SolveBeforeList<'a> {
-    pub nodes: (List<Symbol<'a>, ConstraintPrimary<'a>>,),
+pub struct SolveBeforeList {
+    pub nodes: (List<Symbol, ConstraintPrimary>,),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstraintPrimary<'a> {
+pub struct ConstraintPrimary {
     pub nodes: (
-        Option<ImplicitClassHandleOrClassScope<'a>>,
-        HierarchicalIdentifier<'a>,
-        Select<'a>,
+        Option<ImplicitClassHandleOrClassScope>,
+        HierarchicalIdentifier,
+        Select,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum ConstraintExpression<'a> {
-    Expression(ConstraintExpressionExpression<'a>),
-    UniquenessConstraint((UniquenessConstraint<'a>, Symbol<'a>)),
-    Arrow(ConstraintExpressionArrow<'a>),
-    If(ConstraintExpressionIf<'a>),
-    Foreach(ConstraintExpressionForeach<'a>),
-    Disable(ConstraintExpressionDisable<'a>),
+pub enum ConstraintExpression {
+    Expression(ConstraintExpressionExpression),
+    UniquenessConstraint((UniquenessConstraint, Symbol)),
+    Arrow(ConstraintExpressionArrow),
+    If(ConstraintExpressionIf),
+    Foreach(ConstraintExpressionForeach),
+    Disable(ConstraintExpressionDisable),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstraintExpressionExpression<'a> {
-    pub nodes: (Option<Soft<'a>>, ExpressionOrDist<'a>, Symbol<'a>),
+pub struct ConstraintExpressionExpression {
+    pub nodes: (Option<Soft>, ExpressionOrDist, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct Soft<'a> {
-    pub nodes: (Keyword<'a>,),
+pub struct Soft {
+    pub nodes: (Keyword,),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstraintExpressionArrow<'a> {
-    pub nodes: (Expression<'a>, Symbol<'a>, ConstraintSet<'a>),
+pub struct ConstraintExpressionArrow {
+    pub nodes: (Expression, Symbol, ConstraintSet),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstraintExpressionIf<'a> {
+pub struct ConstraintExpressionIf {
     pub nodes: (
-        Keyword<'a>,
-        Paren<'a, Expression<'a>>,
-        ConstraintSet<'a>,
-        Option<(Keyword<'a>, ConstraintSet<'a>)>,
+        Keyword,
+        Paren< Expression>,
+        ConstraintSet,
+        Option<(Keyword, ConstraintSet)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstraintExpressionForeach<'a> {
+pub struct ConstraintExpressionForeach {
     pub nodes: (
-        Keyword<'a>,
+        Keyword,
         Paren<
-            'a,
+            
             (
-                PsOrHierarchicalArrayIdentifier<'a>,
-                Bracket<'a, LoopVariables<'a>>,
+                PsOrHierarchicalArrayIdentifier,
+                Bracket< LoopVariables>,
             ),
         >,
-        ConstraintSet<'a>,
+        ConstraintSet,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstraintExpressionDisable<'a> {
-    pub nodes: (Keyword<'a>, Keyword<'a>, ConstraintPrimary<'a>, Symbol<'a>),
+pub struct ConstraintExpressionDisable {
+    pub nodes: (Keyword, Keyword, ConstraintPrimary, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct UniquenessConstraint<'a> {
-    pub nodes: (Keyword<'a>, Brace<'a, OpenRangeList<'a>>),
+pub struct UniquenessConstraint {
+    pub nodes: (Keyword, Brace< OpenRangeList>),
 }
 
 #[derive(Debug, Node)]
-pub enum ConstraintSet<'a> {
-    ConstraintExpression(Box<ConstraintExpression<'a>>),
-    Brace(ConstraintSetBrace<'a>),
+pub enum ConstraintSet {
+    ConstraintExpression(Box<ConstraintExpression>),
+    Brace(ConstraintSetBrace),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstraintSetBrace<'a> {
-    pub nodes: (Brace<'a, Vec<ConstraintExpression<'a>>>,),
+pub struct ConstraintSetBrace {
+    pub nodes: (Brace< Vec<ConstraintExpression>>,),
 }
 
 #[derive(Debug, Node)]
-pub struct DistList<'a> {
-    pub nodes: (List<Symbol<'a>, DistItem<'a>>,),
+pub struct DistList {
+    pub nodes: (List<Symbol, DistItem>,),
 }
 
 #[derive(Debug, Node)]
-pub struct DistItem<'a> {
-    pub nodes: (ValueRange<'a>, Option<DistWeight<'a>>),
+pub struct DistItem {
+    pub nodes: (ValueRange, Option<DistWeight>),
 }
 
 #[derive(Debug, Node)]
-pub enum DistWeight<'a> {
-    Equal(DistWeightEqual<'a>),
-    Divide(DistWeightDivide<'a>),
+pub enum DistWeight {
+    Equal(DistWeightEqual),
+    Divide(DistWeightDivide),
 }
 
 #[derive(Debug, Node)]
-pub struct DistWeightEqual<'a> {
-    pub nodes: (Symbol<'a>, Expression<'a>),
+pub struct DistWeightEqual {
+    pub nodes: (Symbol, Expression),
 }
 
 #[derive(Debug, Node)]
-pub struct DistWeightDivide<'a> {
-    pub nodes: (Symbol<'a>, Expression<'a>),
+pub struct DistWeightDivide {
+    pub nodes: (Symbol, Expression),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstraintPrototype<'a> {
+pub struct ConstraintPrototype {
     pub nodes: (
-        Option<ConstraintPrototypeQualifier<'a>>,
-        Option<Static<'a>>,
-        Keyword<'a>,
-        ConstraintIdentifier<'a>,
-        Symbol<'a>,
+        Option<ConstraintPrototypeQualifier>,
+        Option<Static>,
+        Keyword,
+        ConstraintIdentifier,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum ConstraintPrototypeQualifier<'a> {
-    Extern(Keyword<'a>),
-    Pure(Keyword<'a>),
+pub enum ConstraintPrototypeQualifier {
+    Extern(Keyword),
+    Pure(Keyword),
 }
 
 #[derive(Debug, Node)]
-pub struct ExternConstraintDeclaration<'a> {
+pub struct ExternConstraintDeclaration {
     pub nodes: (
-        Option<Static<'a>>,
-        Keyword<'a>,
-        ClassScope<'a>,
-        ConstraintIdentifier<'a>,
-        ConstraintBlock<'a>,
+        Option<Static>,
+        Keyword,
+        ClassScope,
+        ConstraintIdentifier,
+        ConstraintBlock,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct IdentifierList<'a> {
-    pub nodes: (List<Symbol<'a>, Identifier<'a>>,),
+pub struct IdentifierList {
+    pub nodes: (List<Symbol, Identifier>,),
 }
 
 // -----------------------------------------------------------------------------

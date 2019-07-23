@@ -8,27 +8,27 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct SpecifyBlock<'a> {
-    pub nodes: (Keyword<'a>, Vec<SpecifyItem<'a>>, Keyword<'a>),
+pub struct SpecifyBlock {
+    pub nodes: (Keyword, Vec<SpecifyItem>, Keyword),
 }
 
 #[derive(Debug, Node)]
-pub enum SpecifyItem<'a> {
-    SpecparamDeclaration(SpecparamDeclaration<'a>),
-    PulsestyleDeclaration(PulsestyleDeclaration<'a>),
-    ShowcancelledDeclaration(ShowcancelledDeclaration<'a>),
-    PathDeclaration(PathDeclaration<'a>),
-    SystemTimingCheck(SystemTimingCheck<'a>),
+pub enum SpecifyItem {
+    SpecparamDeclaration(SpecparamDeclaration),
+    PulsestyleDeclaration(PulsestyleDeclaration),
+    ShowcancelledDeclaration(ShowcancelledDeclaration),
+    PathDeclaration(PathDeclaration),
+    SystemTimingCheck(SystemTimingCheck),
 }
 
 #[derive(Debug, Node)]
-pub struct PulsestyleDeclaration<'a> {
-    pub nodes: (Keyword<'a>, ListOfPathOutputs<'a>, Symbol<'a>),
+pub struct PulsestyleDeclaration {
+    pub nodes: (Keyword, ListOfPathOutputs, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct ShowcancelledDeclaration<'a> {
-    pub nodes: (Keyword<'a>, ListOfPathOutputs<'a>, Symbol<'a>),
+pub struct ShowcancelledDeclaration {
+    pub nodes: (Keyword, ListOfPathOutputs, Symbol),
 }
 
 // -----------------------------------------------------------------------------

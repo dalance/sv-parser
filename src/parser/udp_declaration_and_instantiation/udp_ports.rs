@@ -9,67 +9,67 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct UdpPortList<'a> {
+pub struct UdpPortList {
     pub nodes: (
-        OutputPortIdentifier<'a>,
-        Symbol<'a>,
-        List<Symbol<'a>, InputPortIdentifier<'a>>,
+        OutputPortIdentifier,
+        Symbol,
+        List<Symbol, InputPortIdentifier>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct UdpDeclarationPortList<'a> {
+pub struct UdpDeclarationPortList {
     pub nodes: (
-        UdpOutputDeclaration<'a>,
-        Symbol<'a>,
-        List<Symbol<'a>, UdpInputDeclaration<'a>>,
+        UdpOutputDeclaration,
+        Symbol,
+        List<Symbol, UdpInputDeclaration>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum UdpPortDeclaration<'a> {
-    UdpOutputDeclaration((UdpOutputDeclaration<'a>, Symbol<'a>)),
-    UdpInputDeclaration((UdpInputDeclaration<'a>, Symbol<'a>)),
-    UdpRegDeclaration((UdpRegDeclaration<'a>, Symbol<'a>)),
+pub enum UdpPortDeclaration {
+    UdpOutputDeclaration((UdpOutputDeclaration, Symbol)),
+    UdpInputDeclaration((UdpInputDeclaration, Symbol)),
+    UdpRegDeclaration((UdpRegDeclaration, Symbol)),
 }
 
 #[derive(Debug, Node)]
-pub enum UdpOutputDeclaration<'a> {
-    Nonreg(UdpOutputDeclarationNonreg<'a>),
-    Reg(UdpOutputDeclarationReg<'a>),
+pub enum UdpOutputDeclaration {
+    Nonreg(UdpOutputDeclarationNonreg),
+    Reg(UdpOutputDeclarationReg),
 }
 
 #[derive(Debug, Node)]
-pub struct UdpOutputDeclarationNonreg<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, Keyword<'a>, PortIdentifier<'a>),
+pub struct UdpOutputDeclarationNonreg {
+    pub nodes: (Vec<AttributeInstance>, Keyword, PortIdentifier),
 }
 
 #[derive(Debug, Node)]
-pub struct UdpOutputDeclarationReg<'a> {
+pub struct UdpOutputDeclarationReg {
     pub nodes: (
-        Vec<AttributeInstance<'a>>,
-        Keyword<'a>,
-        Keyword<'a>,
-        PortIdentifier<'a>,
-        Option<(Symbol<'a>, ConstantExpression<'a>)>,
+        Vec<AttributeInstance>,
+        Keyword,
+        Keyword,
+        PortIdentifier,
+        Option<(Symbol, ConstantExpression)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct UdpInputDeclaration<'a> {
+pub struct UdpInputDeclaration {
     pub nodes: (
-        Vec<AttributeInstance<'a>>,
-        Keyword<'a>,
-        ListOfUdpPortIdentifiers<'a>,
+        Vec<AttributeInstance>,
+        Keyword,
+        ListOfUdpPortIdentifiers,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct UdpRegDeclaration<'a> {
+pub struct UdpRegDeclaration {
     pub nodes: (
-        Vec<AttributeInstance<'a>>,
-        Keyword<'a>,
-        VariableIdentifier<'a>,
+        Vec<AttributeInstance>,
+        Keyword,
+        VariableIdentifier,
     ),
 }
 

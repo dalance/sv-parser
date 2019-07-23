@@ -9,138 +9,138 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct GenerateRegion<'a> {
-    pub nodes: (Keyword<'a>, Vec<GenerateItem<'a>>, Keyword<'a>),
+pub struct GenerateRegion {
+    pub nodes: (Keyword, Vec<GenerateItem>, Keyword),
 }
 
 #[derive(Debug, Node)]
-pub struct LoopGenerateConstruct<'a> {
+pub struct LoopGenerateConstruct {
     pub nodes: (
-        Keyword<'a>,
+        Keyword,
         Paren<
-            'a,
+            
             (
-                GenvarInitialization<'a>,
-                Symbol<'a>,
-                GenvarExpression<'a>,
-                Symbol<'a>,
-                GenvarIteration<'a>,
+                GenvarInitialization,
+                Symbol,
+                GenvarExpression,
+                Symbol,
+                GenvarIteration,
             ),
         >,
-        GenerateBlock<'a>,
+        GenerateBlock,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct GenvarInitialization<'a> {
+pub struct GenvarInitialization {
     pub nodes: (
-        Option<Genvar<'a>>,
-        GenvarIdentifier<'a>,
-        Symbol<'a>,
-        ConstantExpression<'a>,
+        Option<Genvar>,
+        GenvarIdentifier,
+        Symbol,
+        ConstantExpression,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct Genvar<'a> {
-    pub nodes: (Keyword<'a>,),
+pub struct Genvar {
+    pub nodes: (Keyword,),
 }
 
 #[derive(Debug, Node)]
-pub enum GenvarIteration<'a> {
-    Assignment(GenvarIterationAssignment<'a>),
-    Prefix(GenvarIterationPrefix<'a>),
-    Suffix(GenvarIterationSuffix<'a>),
+pub enum GenvarIteration {
+    Assignment(GenvarIterationAssignment),
+    Prefix(GenvarIterationPrefix),
+    Suffix(GenvarIterationSuffix),
 }
 
 #[derive(Debug, Node)]
-pub struct GenvarIterationAssignment<'a> {
+pub struct GenvarIterationAssignment {
     pub nodes: (
-        GenvarIdentifier<'a>,
-        AssignmentOperator<'a>,
-        GenvarExpression<'a>,
+        GenvarIdentifier,
+        AssignmentOperator,
+        GenvarExpression,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct GenvarIterationPrefix<'a> {
-    pub nodes: (IncOrDecOperator<'a>, GenvarIdentifier<'a>),
+pub struct GenvarIterationPrefix {
+    pub nodes: (IncOrDecOperator, GenvarIdentifier),
 }
 
 #[derive(Debug, Node)]
-pub struct GenvarIterationSuffix<'a> {
-    pub nodes: (GenvarIdentifier<'a>, IncOrDecOperator<'a>),
+pub struct GenvarIterationSuffix {
+    pub nodes: (GenvarIdentifier, IncOrDecOperator),
 }
 
 #[derive(Debug, Node)]
-pub enum ConditionalGenerateConstruct<'a> {
-    If(IfGenerateConstruct<'a>),
-    Case(CaseGenerateConstruct<'a>),
+pub enum ConditionalGenerateConstruct {
+    If(IfGenerateConstruct),
+    Case(CaseGenerateConstruct),
 }
 
 #[derive(Debug, Node)]
-pub struct IfGenerateConstruct<'a> {
+pub struct IfGenerateConstruct {
     pub nodes: (
-        Keyword<'a>,
-        Paren<'a, ConstantExpression<'a>>,
-        GenerateBlock<'a>,
-        Option<(Keyword<'a>, GenerateBlock<'a>)>,
+        Keyword,
+        Paren< ConstantExpression>,
+        GenerateBlock,
+        Option<(Keyword, GenerateBlock)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct CaseGenerateConstruct<'a> {
+pub struct CaseGenerateConstruct {
     pub nodes: (
-        Keyword<'a>,
-        Paren<'a, ConstantExpression<'a>>,
-        Vec<CaseGenerateItem<'a>>,
-        Keyword<'a>,
+        Keyword,
+        Paren< ConstantExpression>,
+        Vec<CaseGenerateItem>,
+        Keyword,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum CaseGenerateItem<'a> {
-    Nondefault(CaseGenerateItemNondefault<'a>),
-    Default(CaseGenerateItemDefault<'a>),
+pub enum CaseGenerateItem {
+    Nondefault(CaseGenerateItemNondefault),
+    Default(CaseGenerateItemDefault),
 }
 
 #[derive(Debug, Node)]
-pub struct CaseGenerateItemNondefault<'a> {
+pub struct CaseGenerateItemNondefault {
     pub nodes: (
-        List<Symbol<'a>, ConstantExpression<'a>>,
-        Symbol<'a>,
-        GenerateBlock<'a>,
+        List<Symbol, ConstantExpression>,
+        Symbol,
+        GenerateBlock,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct CaseGenerateItemDefault<'a> {
-    pub nodes: (Keyword<'a>, Option<Symbol<'a>>, GenerateBlock<'a>),
+pub struct CaseGenerateItemDefault {
+    pub nodes: (Keyword, Option<Symbol>, GenerateBlock),
 }
 
 #[derive(Debug, Node)]
-pub enum GenerateBlock<'a> {
-    GenerateItem(GenerateItem<'a>),
-    Multiple(GenerateBlockMultiple<'a>),
+pub enum GenerateBlock {
+    GenerateItem(GenerateItem),
+    Multiple(GenerateBlockMultiple),
 }
 
 #[derive(Debug, Node)]
-pub struct GenerateBlockMultiple<'a> {
+pub struct GenerateBlockMultiple {
     pub nodes: (
-        Option<(GenerateBlockIdentifier<'a>, Symbol<'a>)>,
-        Keyword<'a>,
-        Option<(Symbol<'a>, GenerateBlockIdentifier<'a>)>,
-        Vec<GenerateItem<'a>>,
-        Keyword<'a>,
-        Option<(Symbol<'a>, GenerateBlockIdentifier<'a>)>,
+        Option<(GenerateBlockIdentifier, Symbol)>,
+        Keyword,
+        Option<(Symbol, GenerateBlockIdentifier)>,
+        Vec<GenerateItem>,
+        Keyword,
+        Option<(Symbol, GenerateBlockIdentifier)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum GenerateItem<'a> {
-    ModuleOrGenerateItem(ModuleOrGenerateItem<'a>),
-    InterfaceOrGenerateItem(InterfaceOrGenerateItem<'a>),
-    CheckerOrGenerateItem(CheckerOrGenerateItem<'a>),
+pub enum GenerateItem {
+    ModuleOrGenerateItem(ModuleOrGenerateItem),
+    InterfaceOrGenerateItem(InterfaceOrGenerateItem),
+    CheckerOrGenerateItem(CheckerOrGenerateItem),
 }
 
 // -----------------------------------------------------------------------------

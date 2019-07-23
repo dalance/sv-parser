@@ -11,153 +11,153 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum Number<'a> {
-    IntegralNumber(IntegralNumber<'a>),
-    RealNumber(RealNumber<'a>),
+pub enum Number {
+    IntegralNumber(IntegralNumber),
+    RealNumber(RealNumber),
 }
 
 #[derive(Debug, Node)]
-pub enum IntegralNumber<'a> {
-    DecimalNumber(DecimalNumber<'a>),
-    OctalNumber(OctalNumber<'a>),
-    BinaryNumber(BinaryNumber<'a>),
-    HexNumber(HexNumber<'a>),
+pub enum IntegralNumber {
+    DecimalNumber(DecimalNumber),
+    OctalNumber(OctalNumber),
+    BinaryNumber(BinaryNumber),
+    HexNumber(HexNumber),
 }
 
 #[derive(Debug, Node)]
-pub enum DecimalNumber<'a> {
-    UnsignedNumber(UnsignedNumber<'a>),
-    BaseUnsigned(DecimalNumberBaseUnsigned<'a>),
-    BaseXNumber(DecimalNumberBaseXNumber<'a>),
-    BaseZNumber(DecimalNumberBaseZNumber<'a>),
+pub enum DecimalNumber {
+    UnsignedNumber(UnsignedNumber),
+    BaseUnsigned(DecimalNumberBaseUnsigned),
+    BaseXNumber(DecimalNumberBaseXNumber),
+    BaseZNumber(DecimalNumberBaseZNumber),
 }
 
 #[derive(Debug, Node)]
-pub struct DecimalNumberBaseUnsigned<'a> {
-    pub nodes: (Option<Size<'a>>, DecimalBase<'a>, UnsignedNumber<'a>),
+pub struct DecimalNumberBaseUnsigned {
+    pub nodes: (Option<Size>, DecimalBase, UnsignedNumber),
 }
 
 #[derive(Debug, Node)]
-pub struct DecimalNumberBaseXNumber<'a> {
-    pub nodes: (Option<Size<'a>>, DecimalBase<'a>, XNumber<'a>),
+pub struct DecimalNumberBaseXNumber {
+    pub nodes: (Option<Size>, DecimalBase, XNumber),
 }
 
 #[derive(Debug, Node)]
-pub struct DecimalNumberBaseZNumber<'a> {
-    pub nodes: (Option<Size<'a>>, DecimalBase<'a>, ZNumber<'a>),
+pub struct DecimalNumberBaseZNumber {
+    pub nodes: (Option<Size>, DecimalBase, ZNumber),
 }
 
 #[derive(Debug, Node)]
-pub struct BinaryNumber<'a> {
-    pub nodes: (Option<Size<'a>>, BinaryBase<'a>, BinaryValue<'a>),
+pub struct BinaryNumber {
+    pub nodes: (Option<Size>, BinaryBase, BinaryValue),
 }
 
 #[derive(Debug, Node)]
-pub struct OctalNumber<'a> {
-    pub nodes: (Option<Size<'a>>, OctalBase<'a>, OctalValue<'a>),
+pub struct OctalNumber {
+    pub nodes: (Option<Size>, OctalBase, OctalValue),
 }
 
 #[derive(Debug, Node)]
-pub struct HexNumber<'a> {
-    pub nodes: (Option<Size<'a>>, HexBase<'a>, HexValue<'a>),
+pub struct HexNumber {
+    pub nodes: (Option<Size>, HexBase, HexValue),
 }
 
 #[derive(Debug, Node)]
-pub enum Sign<'a> {
-    Plus(Symbol<'a>),
-    Minus(Symbol<'a>),
+pub enum Sign {
+    Plus(Symbol),
+    Minus(Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct Size<'a> {
-    pub nodes: (NonZeroUnsignedNumber<'a>,),
+pub struct Size {
+    pub nodes: (NonZeroUnsignedNumber,),
 }
 
 #[derive(Debug, Node)]
-pub struct NonZeroUnsignedNumber<'a> {
-    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
+pub struct NonZeroUnsignedNumber {
+    pub nodes: (Locate, Vec<WhiteSpace>),
 }
 
 #[derive(Debug, Node)]
-pub enum RealNumber<'a> {
-    FixedPointNumber(FixedPointNumber<'a>),
-    Floating(RealNumberFloating<'a>),
+pub enum RealNumber {
+    FixedPointNumber(FixedPointNumber),
+    Floating(RealNumberFloating),
 }
 
 #[derive(Debug, Node)]
-pub struct RealNumberFloating<'a> {
+pub struct RealNumberFloating {
     pub nodes: (
-        UnsignedNumber<'a>,
-        Option<(Symbol<'a>, UnsignedNumber<'a>)>,
-        Exp<'a>,
-        Option<Sign<'a>>,
-        UnsignedNumber<'a>,
+        UnsignedNumber,
+        Option<(Symbol, UnsignedNumber)>,
+        Exp,
+        Option<Sign>,
+        UnsignedNumber,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct FixedPointNumber<'a> {
-    pub nodes: (UnsignedNumber<'a>, Symbol<'a>, UnsignedNumber<'a>),
+pub struct FixedPointNumber {
+    pub nodes: (UnsignedNumber, Symbol, UnsignedNumber),
 }
 
 #[derive(Debug, Node)]
-pub struct Exp<'a> {
-    pub nodes: (Symbol<'a>,),
+pub struct Exp {
+    pub nodes: (Symbol,),
 }
 
 #[derive(Debug, Node)]
-pub struct UnsignedNumber<'a> {
-    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
+pub struct UnsignedNumber {
+    pub nodes: (Locate, Vec<WhiteSpace>),
 }
 
 #[derive(Debug, Node)]
-pub struct BinaryValue<'a> {
-    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
+pub struct BinaryValue {
+    pub nodes: (Locate, Vec<WhiteSpace>),
 }
 
 #[derive(Debug, Node)]
-pub struct OctalValue<'a> {
-    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
+pub struct OctalValue {
+    pub nodes: (Locate, Vec<WhiteSpace>),
 }
 
 #[derive(Debug, Node)]
-pub struct HexValue<'a> {
-    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
+pub struct HexValue {
+    pub nodes: (Locate, Vec<WhiteSpace>),
 }
 
 #[derive(Debug, Node)]
-pub struct DecimalBase<'a> {
-    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
+pub struct DecimalBase {
+    pub nodes: (Locate, Vec<WhiteSpace>),
 }
 
 #[derive(Debug, Node)]
-pub struct BinaryBase<'a> {
-    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
+pub struct BinaryBase {
+    pub nodes: (Locate, Vec<WhiteSpace>),
 }
 
 #[derive(Debug, Node)]
-pub struct OctalBase<'a> {
-    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
+pub struct OctalBase {
+    pub nodes: (Locate, Vec<WhiteSpace>),
 }
 
 #[derive(Debug, Node)]
-pub struct HexBase<'a> {
-    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
+pub struct HexBase {
+    pub nodes: (Locate, Vec<WhiteSpace>),
 }
 
 #[derive(Debug, Node)]
-pub struct XNumber<'a> {
-    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
+pub struct XNumber {
+    pub nodes: (Locate, Vec<WhiteSpace>),
 }
 
 #[derive(Debug, Node)]
-pub struct ZNumber<'a> {
-    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
+pub struct ZNumber {
+    pub nodes: (Locate, Vec<WhiteSpace>),
 }
 
 #[derive(Debug, Node)]
-pub struct UnbasedUnsizedLiteral<'a> {
-    pub nodes: (Symbol<'a>,),
+pub struct UnbasedUnsizedLiteral {
+    pub nodes: (Symbol,),
 }
 
 // -----------------------------------------------------------------------------
@@ -268,11 +268,12 @@ pub fn non_zero_unsigned_number(s: Span) -> IResult<Span, NonZeroUnsignedNumber>
 }
 
 #[parser]
-pub fn non_zero_unsigned_number_impl(s: Span) -> IResult<Span, Span> {
+pub fn non_zero_unsigned_number_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = is_a("123456789")(s)?;
-    fold_many0(alt((tag("_"), digit1)), a, |acc, item| {
+    let (s, a) = fold_many0(alt((tag("_"), digit1)), a, |acc, item| {
         concat(acc, item).unwrap()
-    })(s)
+    })(s)?;
+    Ok((s, a.into()))
 }
 
 #[parser]
@@ -301,7 +302,9 @@ pub fn real_number_floating(s: Span) -> IResult<Span, RealNumber> {
 #[parser]
 pub fn fixed_point_number(s: Span) -> IResult<Span, FixedPointNumber> {
     let (s, a) = unsigned_number(s)?;
-    let (s, b) = map(tag("."), |x| Symbol { nodes: (x, vec![]) })(s)?;;
+    let (s, b) = map(tag("."), |x: Span| Symbol {
+        nodes: (x.into(), vec![]),
+    })(s)?;
     let (s, c) = unsigned_number(s)?;
     Ok((s, FixedPointNumber { nodes: (a, b, c) }))
 }
@@ -319,11 +322,12 @@ pub fn unsigned_number(s: Span) -> IResult<Span, UnsignedNumber> {
 }
 
 #[parser]
-pub fn unsigned_number_impl(s: Span) -> IResult<Span, Span> {
+pub fn unsigned_number_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = digit1(s)?;
-    fold_many0(alt((tag("_"), digit1)), a, |acc, item| {
+    let (s, a) = fold_many0(alt((tag("_"), digit1)), a, |acc, item| {
         concat(acc, item).unwrap()
-    })(s)
+    })(s)?;
+    Ok((s, a.into()))
 }
 
 #[parser]
@@ -333,11 +337,12 @@ pub fn binary_value(s: Span) -> IResult<Span, BinaryValue> {
 }
 
 #[parser]
-pub fn binary_value_impl(s: Span) -> IResult<Span, Span> {
+pub fn binary_value_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = is_a("01xXzZ?")(s)?;
-    fold_many0(alt((tag("_"), is_a("01xXzZ?"))), a, |acc, item| {
+    let (s, a) = fold_many0(alt((tag("_"), is_a("01xXzZ?"))), a, |acc, item| {
         concat(acc, item).unwrap()
-    })(s)
+    })(s)?;
+    Ok((s, a.into()))
 }
 
 #[parser]
@@ -347,11 +352,12 @@ pub fn octal_value(s: Span) -> IResult<Span, OctalValue> {
 }
 
 #[parser]
-pub fn octal_value_impl(s: Span) -> IResult<Span, Span> {
+pub fn octal_value_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = is_a("01234567xXzZ?")(s)?;
-    fold_many0(alt((tag("_"), is_a("01234567xXzZ?"))), a, |acc, item| {
+    let (s, a) = fold_many0(alt((tag("_"), is_a("01234567xXzZ?"))), a, |acc, item| {
         concat(acc, item).unwrap()
-    })(s)
+    })(s)?;
+    Ok((s, a.into()))
 }
 
 #[parser]
@@ -361,13 +367,14 @@ pub fn hex_value(s: Span) -> IResult<Span, HexValue> {
 }
 
 #[parser]
-pub fn hex_value_impl(s: Span) -> IResult<Span, Span> {
+pub fn hex_value_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = is_a("0123456789abcdefABCDEFxXzZ?")(s)?;
-    fold_many0(
+    let (s, a) = fold_many0(
         alt((tag("_"), is_a("0123456789abcdefABCDEFxXzZ?"))),
         a,
         |acc, item| concat(acc, item).unwrap(),
-    )(s)
+    )(s)?;
+    Ok((s, a.into()))
 }
 
 #[parser]
@@ -377,8 +384,9 @@ pub fn decimal_base(s: Span) -> IResult<Span, DecimalBase> {
 }
 
 #[parser]
-pub fn decimal_base_impl(s: Span) -> IResult<Span, Span> {
-    alt((tag_no_case("'d"), tag_no_case("'sd")))(s)
+pub fn decimal_base_impl(s: Span) -> IResult<Span, Locate> {
+    let (s, a) = alt((tag_no_case("'d"), tag_no_case("'sd")))(s)?;
+    Ok((s, a.into()))
 }
 
 #[parser]
@@ -388,8 +396,9 @@ pub fn binary_base(s: Span) -> IResult<Span, BinaryBase> {
 }
 
 #[parser]
-pub fn binary_base_impl(s: Span) -> IResult<Span, Span> {
-    alt((tag_no_case("'b"), tag_no_case("'sb")))(s)
+pub fn binary_base_impl(s: Span) -> IResult<Span, Locate> {
+    let (s, a) = alt((tag_no_case("'b"), tag_no_case("'sb")))(s)?;
+    Ok((s, a.into()))
 }
 
 #[parser]
@@ -399,8 +408,9 @@ pub fn octal_base(s: Span) -> IResult<Span, OctalBase> {
 }
 
 #[parser]
-pub fn octal_base_impl(s: Span) -> IResult<Span, Span> {
-    alt((tag_no_case("'o"), tag_no_case("'so")))(s)
+pub fn octal_base_impl(s: Span) -> IResult<Span, Locate> {
+    let (s, a) = alt((tag_no_case("'o"), tag_no_case("'so")))(s)?;
+    Ok((s, a.into()))
 }
 
 #[parser]
@@ -410,8 +420,9 @@ pub fn hex_base(s: Span) -> IResult<Span, HexBase> {
 }
 
 #[parser]
-pub fn hex_base_impl(s: Span) -> IResult<Span, Span> {
-    alt((tag_no_case("'h"), tag_no_case("'sh")))(s)
+pub fn hex_base_impl(s: Span) -> IResult<Span, Locate> {
+    let (s, a) = alt((tag_no_case("'h"), tag_no_case("'sh")))(s)?;
+    Ok((s, a.into()))
 }
 
 #[parser]
@@ -421,11 +432,12 @@ pub fn x_number(s: Span) -> IResult<Span, XNumber> {
 }
 
 #[parser]
-pub fn x_number_impl(s: Span) -> IResult<Span, Span> {
+pub fn x_number_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = tag_no_case("x")(s)?;
-    fold_many0(alt((tag("_"), is_a("_"))), a, |acc, item| {
+    let (s, a) = fold_many0(alt((tag("_"), is_a("_"))), a, |acc, item| {
         concat(acc, item).unwrap()
-    })(s)
+    })(s)?;
+    Ok((s, a.into()))
 }
 
 #[parser]
@@ -435,11 +447,12 @@ pub fn z_number(s: Span) -> IResult<Span, ZNumber> {
 }
 
 #[parser]
-pub fn z_number_impl(s: Span) -> IResult<Span, Span> {
+pub fn z_number_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = alt((tag_no_case("z"), tag("?")))(s)?;
-    fold_many0(alt((tag("_"), is_a("_"))), a, |acc, item| {
+    let (s, a) = fold_many0(alt((tag("_"), is_a("_"))), a, |acc, item| {
         concat(acc, item).unwrap()
-    })(s)
+    })(s)?;
+    Ok((s, a.into()))
 }
 
 #[parser]

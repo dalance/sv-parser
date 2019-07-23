@@ -9,143 +9,135 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct RandsequenceStatement<'a> {
+pub struct RandsequenceStatement {
     pub nodes: (
-        Keyword<'a>,
-        Paren<'a, Option<ProductionIdentifier<'a>>>,
-        Production<'a>,
-        Vec<Production<'a>>,
-        Keyword<'a>,
+        Keyword,
+        Paren<Option<ProductionIdentifier>>,
+        Production,
+        Vec<Production>,
+        Keyword,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct Production<'a> {
+pub struct Production {
     pub nodes: (
-        Option<DataTypeOrVoid<'a>>,
-        ProductionIdentifier<'a>,
-        Option<Paren<'a, TfPortList<'a>>>,
-        Symbol<'a>,
-        List<Symbol<'a>, RsRule<'a>>,
-        Symbol<'a>,
+        Option<DataTypeOrVoid>,
+        ProductionIdentifier,
+        Option<Paren<TfPortList>>,
+        Symbol,
+        List<Symbol, RsRule>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct RsRule<'a> {
+pub struct RsRule {
     pub nodes: (
-        RsProductionList<'a>,
-        Option<(Symbol<'a>, WeightSpecification<'a>, Option<RsCodeBlock<'a>>)>,
+        RsProductionList,
+        Option<(Symbol, WeightSpecification, Option<RsCodeBlock>)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum RsProductionList<'a> {
-    Prod(RsProductionListProd<'a>),
-    Join(RsProductionListJoin<'a>),
+pub enum RsProductionList {
+    Prod(RsProductionListProd),
+    Join(RsProductionListJoin),
 }
 
 #[derive(Debug, Node)]
-pub struct RsProductionListProd<'a> {
-    pub nodes: (RsProd<'a>, Vec<RsProd<'a>>),
+pub struct RsProductionListProd {
+    pub nodes: (RsProd, Vec<RsProd>),
 }
 
 #[derive(Debug, Node)]
-pub struct RsProductionListJoin<'a> {
+pub struct RsProductionListJoin {
     pub nodes: (
-        Keyword<'a>,
-        Keyword<'a>,
-        Option<Paren<'a, Expression<'a>>>,
-        ProductionItem<'a>,
-        ProductionItem<'a>,
-        Vec<ProductionItem<'a>>,
+        Keyword,
+        Keyword,
+        Option<Paren<Expression>>,
+        ProductionItem,
+        ProductionItem,
+        Vec<ProductionItem>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum WeightSpecification<'a> {
-    IntegralNumber(IntegralNumber<'a>),
-    PsIdentifier(PsIdentifier<'a>),
-    Expression(WeightSpecificationExpression<'a>),
+pub enum WeightSpecification {
+    IntegralNumber(IntegralNumber),
+    PsIdentifier(PsIdentifier),
+    Expression(WeightSpecificationExpression),
 }
 
 #[derive(Debug, Node)]
-pub struct WeightSpecificationExpression<'a> {
-    pub nodes: (Paren<'a, Expression<'a>>,),
+pub struct WeightSpecificationExpression {
+    pub nodes: (Paren<Expression>,),
 }
 
 #[derive(Debug, Node)]
-pub struct RsCodeBlock<'a> {
-    pub nodes: (Brace<'a, (Vec<DataDeclaration<'a>>, Vec<StatementOrNull<'a>>)>,),
+pub struct RsCodeBlock {
+    pub nodes: (Brace<(Vec<DataDeclaration>, Vec<StatementOrNull>)>,),
 }
 
 #[derive(Debug, Node)]
-pub enum RsProd<'a> {
-    ProductionItem(ProductionItem<'a>),
-    RsCodeBlock(RsCodeBlock<'a>),
-    RsIfElse(RsIfElse<'a>),
-    RsRepeat(RsRepeat<'a>),
-    RsCase(RsCase<'a>),
+pub enum RsProd {
+    ProductionItem(ProductionItem),
+    RsCodeBlock(RsCodeBlock),
+    RsIfElse(RsIfElse),
+    RsRepeat(RsRepeat),
+    RsCase(RsCase),
 }
 
 #[derive(Debug, Node)]
-pub struct ProductionItem<'a> {
+pub struct ProductionItem {
+    pub nodes: (ProductionIdentifier, Option<Paren<ListOfArguments>>),
+}
+
+#[derive(Debug, Node)]
+pub struct RsIfElse {
     pub nodes: (
-        ProductionIdentifier<'a>,
-        Option<Paren<'a, ListOfArguments<'a>>>,
+        Keyword,
+        Paren<Expression>,
+        ProductionItem,
+        Option<(Keyword, ProductionItem)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct RsIfElse<'a> {
+pub struct RsRepeat {
+    pub nodes: (Keyword, Paren<Expression>, ProductionItem),
+}
+
+#[derive(Debug, Node)]
+pub struct RsCase {
     pub nodes: (
-        Keyword<'a>,
-        Paren<'a, Expression<'a>>,
-        ProductionItem<'a>,
-        Option<(Keyword<'a>, ProductionItem<'a>)>,
+        Keyword,
+        Paren<CaseExpression>,
+        RsCaseItem,
+        Vec<RsCaseItem>,
+        Keyword,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct RsRepeat<'a> {
-    pub nodes: (Keyword<'a>, Paren<'a, Expression<'a>>, ProductionItem<'a>),
+pub enum RsCaseItem {
+    NonDefault(RsCaseItemNondefault),
+    Default(RsCaseItemDefault),
 }
 
 #[derive(Debug, Node)]
-pub struct RsCase<'a> {
+pub struct RsCaseItemNondefault {
     pub nodes: (
-        Keyword<'a>,
-        Paren<'a, CaseExpression<'a>>,
-        RsCaseItem<'a>,
-        Vec<RsCaseItem<'a>>,
-        Keyword<'a>,
+        List<Symbol, CaseItemExpression>,
+        Symbol,
+        ProductionItem,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum RsCaseItem<'a> {
-    NonDefault(RsCaseItemNondefault<'a>),
-    Default(RsCaseItemDefault<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct RsCaseItemNondefault<'a> {
-    pub nodes: (
-        List<Symbol<'a>, CaseItemExpression<'a>>,
-        Symbol<'a>,
-        ProductionItem<'a>,
-        Symbol<'a>,
-    ),
-}
-
-#[derive(Debug, Node)]
-pub struct RsCaseItemDefault<'a> {
-    pub nodes: (
-        Keyword<'a>,
-        Option<Symbol<'a>>,
-        ProductionItem<'a>,
-        Symbol<'a>,
-    ),
+pub struct RsCaseItemDefault {
+    pub nodes: (Keyword, Option<Symbol>, ProductionItem, Symbol),
 }
 
 // -----------------------------------------------------------------------------

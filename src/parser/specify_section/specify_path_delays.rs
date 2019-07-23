@@ -8,147 +8,123 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum PathDelayValue<'a> {
-    ListOfPathDelayExpressions(ListOfPathDelayExpressions<'a>),
-    Paren(PathDelayValueParen<'a>),
+pub enum PathDelayValue {
+    ListOfPathDelayExpressions(ListOfPathDelayExpressions),
+    Paren(PathDelayValueParen),
 }
 
 #[derive(Debug, Node)]
-pub struct PathDelayValueParen<'a> {
-    pub nodes: (Paren<'a, ListOfPathDelayExpressions<'a>>,),
+pub struct PathDelayValueParen {
+    pub nodes: (Paren<ListOfPathDelayExpressions>,),
 }
 
 #[derive(Debug, Node)]
-pub struct ListOfPathDelayExpressions<'a> {
-    pub nodes: (List<Symbol<'a>, TPathDelayExpression<'a>>,),
+pub struct ListOfPathDelayExpressions {
+    pub nodes: (List<Symbol, TPathDelayExpression>,),
 }
 
 #[derive(Debug, Node)]
-pub struct TPathDelayExpression<'a> {
-    pub nodes: (PathDelayExpression<'a>,),
+pub struct TPathDelayExpression {
+    pub nodes: (PathDelayExpression,),
 }
 #[derive(Debug, Node)]
-pub struct PathDelayExpression<'a> {
-    pub nodes: (ConstantMintypmaxExpression<'a>,),
-}
-
-#[derive(Debug, Node)]
-pub enum EdgeSensitivePathDeclaration<'a> {
-    Parallel(EdgeSensitivePathDeclarationParallel<'a>),
-    Full(EdgeSensitivePathDeclarationFull<'a>),
+pub struct PathDelayExpression {
+    pub nodes: (ConstantMintypmaxExpression,),
 }
 
 #[derive(Debug, Node)]
-pub struct EdgeSensitivePathDeclarationParallel<'a> {
+pub enum EdgeSensitivePathDeclaration {
+    Parallel(EdgeSensitivePathDeclarationParallel),
+    Full(EdgeSensitivePathDeclarationFull),
+}
+
+#[derive(Debug, Node)]
+pub struct EdgeSensitivePathDeclarationParallel {
+    pub nodes: (ParallelEdgeSensitivePathDescription, Symbol, PathDelayValue),
+}
+
+#[derive(Debug, Node)]
+pub struct EdgeSensitivePathDeclarationFull {
+    pub nodes: (FullEdgeSensitivePathDescription, Symbol, PathDelayValue),
+}
+
+#[derive(Debug, Node)]
+pub struct ParallelEdgeSensitivePathDescription {
     pub nodes: (
-        ParallelEdgeSensitivePathDescription<'a>,
-        Symbol<'a>,
-        PathDelayValue<'a>,
+        Paren<(
+            Option<EdgeIdentifier>,
+            SpecifyInputTerminalDescriptor,
+            Option<PolarityOperator>,
+            Symbol,
+            Paren<(
+                SpecifyOutputTerminalDescriptor,
+                Option<PolarityOperator>,
+                Symbol,
+                DataSourceExpression,
+            )>,
+        )>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct EdgeSensitivePathDeclarationFull<'a> {
+pub struct FullEdgeSensitivePathDescription {
     pub nodes: (
-        FullEdgeSensitivePathDescription<'a>,
-        Symbol<'a>,
-        PathDelayValue<'a>,
+        Paren<(
+            Option<EdgeIdentifier>,
+            ListOfPathInputs,
+            Option<PolarityOperator>,
+            Symbol,
+            Paren<(
+                ListOfPathOutputs,
+                Option<PolarityOperator>,
+                Symbol,
+                DataSourceExpression,
+            )>,
+        )>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ParallelEdgeSensitivePathDescription<'a> {
+pub struct DataSourceExpression {
+    pub nodes: (Expression,),
+}
+
+#[derive(Debug, Node)]
+pub enum EdgeIdentifier {
+    Posedge(Keyword),
+    Negedge(Keyword),
+    Edge(Keyword),
+}
+
+#[derive(Debug, Node)]
+pub enum StateDependentPathDeclaration {
+    IfSimple(StateDependentPathDeclarationIfSimple),
+    IfEdgeSensitive(StateDependentPathDeclarationIfEdgeSensitive),
+    IfNone(StateDependentPathDeclarationIfNone),
+}
+
+#[derive(Debug, Node)]
+pub struct StateDependentPathDeclarationIfSimple {
+    pub nodes: (Keyword, Paren<ModulePathExpression>, SimplePathDeclaration),
+}
+
+#[derive(Debug, Node)]
+pub struct StateDependentPathDeclarationIfEdgeSensitive {
     pub nodes: (
-        Paren<
-            'a,
-            (
-                Option<EdgeIdentifier<'a>>,
-                SpecifyInputTerminalDescriptor<'a>,
-                Option<PolarityOperator<'a>>,
-                Symbol<'a>,
-                Paren<
-                    'a,
-                    (
-                        SpecifyOutputTerminalDescriptor<'a>,
-                        Option<PolarityOperator<'a>>,
-                        Symbol<'a>,
-                        DataSourceExpression<'a>,
-                    ),
-                >,
-            ),
-        >,
+        Keyword,
+        Paren<ModulePathExpression>,
+        EdgeSensitivePathDeclaration,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct FullEdgeSensitivePathDescription<'a> {
-    pub nodes: (
-        Paren<
-            'a,
-            (
-                Option<EdgeIdentifier<'a>>,
-                ListOfPathInputs<'a>,
-                Option<PolarityOperator<'a>>,
-                Symbol<'a>,
-                Paren<
-                    'a,
-                    (
-                        ListOfPathOutputs<'a>,
-                        Option<PolarityOperator<'a>>,
-                        Symbol<'a>,
-                        DataSourceExpression<'a>,
-                    ),
-                >,
-            ),
-        >,
-    ),
+pub struct StateDependentPathDeclarationIfNone {
+    pub nodes: (Keyword, SimplePathDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub struct DataSourceExpression<'a> {
-    pub nodes: (Expression<'a>,),
-}
-
-#[derive(Debug, Node)]
-pub enum EdgeIdentifier<'a> {
-    Posedge(Keyword<'a>),
-    Negedge(Keyword<'a>),
-    Edge(Keyword<'a>),
-}
-
-#[derive(Debug, Node)]
-pub enum StateDependentPathDeclaration<'a> {
-    IfSimple(StateDependentPathDeclarationIfSimple<'a>),
-    IfEdgeSensitive(StateDependentPathDeclarationIfEdgeSensitive<'a>),
-    IfNone(StateDependentPathDeclarationIfNone<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct StateDependentPathDeclarationIfSimple<'a> {
-    pub nodes: (
-        Keyword<'a>,
-        Paren<'a, ModulePathExpression<'a>>,
-        SimplePathDeclaration<'a>,
-    ),
-}
-
-#[derive(Debug, Node)]
-pub struct StateDependentPathDeclarationIfEdgeSensitive<'a> {
-    pub nodes: (
-        Keyword<'a>,
-        Paren<'a, ModulePathExpression<'a>>,
-        EdgeSensitivePathDeclaration<'a>,
-    ),
-}
-
-#[derive(Debug, Node)]
-pub struct StateDependentPathDeclarationIfNone<'a> {
-    pub nodes: (Keyword<'a>, SimplePathDeclaration<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct PolarityOperator<'a> {
-    pub nodes: (Symbol<'a>,),
+pub struct PolarityOperator {
+    pub nodes: (Symbol,),
 }
 
 // -----------------------------------------------------------------------------

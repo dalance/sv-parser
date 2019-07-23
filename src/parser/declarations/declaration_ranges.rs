@@ -8,64 +8,64 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum UnpackedDimension<'a> {
-    Range(UnpackedDimensionRange<'a>),
-    Expression(UnpackedDimensionExpression<'a>),
+pub enum UnpackedDimension {
+    Range(UnpackedDimensionRange),
+    Expression(UnpackedDimensionExpression),
 }
 
 #[derive(Debug, Node)]
-pub struct UnpackedDimensionRange<'a> {
-    pub nodes: (Bracket<'a, ConstantRange<'a>>,),
+pub struct UnpackedDimensionRange {
+    pub nodes: (Bracket<ConstantRange>,),
 }
 
 #[derive(Debug, Node)]
-pub struct UnpackedDimensionExpression<'a> {
-    pub nodes: (Bracket<'a, ConstantExpression<'a>>,),
+pub struct UnpackedDimensionExpression {
+    pub nodes: (Bracket<ConstantExpression>,),
 }
 
 #[derive(Debug, Node)]
-pub enum PackedDimension<'a> {
-    Range(PackedDimensionRange<'a>),
-    UnsizedDimension(UnsizedDimension<'a>),
+pub enum PackedDimension {
+    Range(PackedDimensionRange),
+    UnsizedDimension(UnsizedDimension),
 }
 
 #[derive(Debug, Node)]
-pub struct PackedDimensionRange<'a> {
-    pub nodes: (Bracket<'a, ConstantRange<'a>>,),
+pub struct PackedDimensionRange {
+    pub nodes: (Bracket<ConstantRange>,),
 }
 
 #[derive(Debug, Node)]
-pub enum AssociativeDimension<'a> {
-    DataType(AssociativeDimensionDataType<'a>),
-    Asterisk(AssociativeDimensionAsterisk<'a>),
+pub enum AssociativeDimension {
+    DataType(AssociativeDimensionDataType),
+    Asterisk(AssociativeDimensionAsterisk),
 }
 
 #[derive(Debug, Node)]
-pub struct AssociativeDimensionDataType<'a> {
-    pub nodes: (Bracket<'a, DataType<'a>>,),
+pub struct AssociativeDimensionDataType {
+    pub nodes: (Bracket<DataType>,),
 }
 
 #[derive(Debug, Node)]
-pub struct AssociativeDimensionAsterisk<'a> {
-    pub nodes: (Bracket<'a, Symbol<'a>>,),
+pub struct AssociativeDimensionAsterisk {
+    pub nodes: (Bracket<Symbol>,),
 }
 
 #[derive(Debug, Node)]
-pub enum VariableDimension<'a> {
-    UnsizedDimension(UnsizedDimension<'a>),
-    UnpackedDimension(UnpackedDimension<'a>),
-    AssociativeDimension(AssociativeDimension<'a>),
-    QueueDimension(QueueDimension<'a>),
+pub enum VariableDimension {
+    UnsizedDimension(UnsizedDimension),
+    UnpackedDimension(UnpackedDimension),
+    AssociativeDimension(AssociativeDimension),
+    QueueDimension(QueueDimension),
 }
 
 #[derive(Debug, Node)]
-pub struct QueueDimension<'a> {
-    pub nodes: (Bracket<'a, (Symbol<'a>, Option<(Symbol<'a>, ConstantExpression<'a>)>)>,),
+pub struct QueueDimension {
+    pub nodes: (Bracket<(Symbol, Option<(Symbol, ConstantExpression)>)>,),
 }
 
 #[derive(Debug, Node)]
-pub struct UnsizedDimension<'a> {
-    pub nodes: (Symbol<'a>, Symbol<'a>),
+pub struct UnsizedDimension {
+    pub nodes: (Symbol, Symbol),
 }
 
 // -----------------------------------------------------------------------------

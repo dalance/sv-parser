@@ -8,114 +8,99 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum LoopStatement<'a> {
-    Forever(LoopStatementForever<'a>),
-    Repeat(LoopStatementRepeat<'a>),
-    While(LoopStatementWhile<'a>),
-    For(LoopStatementFor<'a>),
-    DoWhile(LoopStatementDoWhile<'a>),
-    Foreach(LoopStatementForeach<'a>),
+pub enum LoopStatement {
+    Forever(LoopStatementForever),
+    Repeat(LoopStatementRepeat),
+    While(LoopStatementWhile),
+    For(LoopStatementFor),
+    DoWhile(LoopStatementDoWhile),
+    Foreach(LoopStatementForeach),
 }
 
 #[derive(Debug, Node)]
-pub struct LoopStatementForever<'a> {
-    pub nodes: (Keyword<'a>, StatementOrNull<'a>),
+pub struct LoopStatementForever {
+    pub nodes: (Keyword, StatementOrNull),
 }
 
 #[derive(Debug, Node)]
-pub struct LoopStatementRepeat<'a> {
-    pub nodes: (Keyword<'a>, Paren<'a, Expression<'a>>, StatementOrNull<'a>),
+pub struct LoopStatementRepeat {
+    pub nodes: (Keyword, Paren<Expression>, StatementOrNull),
 }
 
 #[derive(Debug, Node)]
-pub struct LoopStatementWhile<'a> {
-    pub nodes: (Keyword<'a>, Paren<'a, Expression<'a>>, StatementOrNull<'a>),
+pub struct LoopStatementWhile {
+    pub nodes: (Keyword, Paren<Expression>, StatementOrNull),
 }
 
 #[derive(Debug, Node)]
-pub struct LoopStatementFor<'a> {
+pub struct LoopStatementFor {
     pub nodes: (
-        Keyword<'a>,
-        Paren<
-            'a,
-            (
-                Option<ForInitialization<'a>>,
-                Symbol<'a>,
-                Option<Expression<'a>>,
-                Symbol<'a>,
-                Option<ForStep<'a>>,
-            ),
-        >,
-        StatementOrNull<'a>,
+        Keyword,
+        Paren<(
+            Option<ForInitialization>,
+            Symbol,
+            Option<Expression>,
+            Symbol,
+            Option<ForStep>,
+        )>,
+        StatementOrNull,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct LoopStatementDoWhile<'a> {
+pub struct LoopStatementDoWhile {
+    pub nodes: (Keyword, StatementOrNull, Keyword, Paren<Expression>, Symbol),
+}
+
+#[derive(Debug, Node)]
+pub struct LoopStatementForeach {
     pub nodes: (
-        Keyword<'a>,
-        StatementOrNull<'a>,
-        Keyword<'a>,
-        Paren<'a, Expression<'a>>,
-        Symbol<'a>,
+        Keyword,
+        Paren<(PsOrHierarchicalArrayIdentifier, Bracket<LoopVariables>)>,
+        Statement,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct LoopStatementForeach<'a> {
+pub enum ForInitialization {
+    ListOfVariableAssignments(ListOfVariableAssignments),
+    Declaration(ForInitializationDeclaration),
+}
+
+#[derive(Debug, Node)]
+pub struct ForInitializationDeclaration {
+    pub nodes: (List<Symbol, ForVariableDeclaration>,),
+}
+
+#[derive(Debug, Node)]
+pub struct ForVariableDeclaration {
     pub nodes: (
-        Keyword<'a>,
-        Paren<
-            'a,
-            (
-                PsOrHierarchicalArrayIdentifier<'a>,
-                Bracket<'a, LoopVariables<'a>>,
-            ),
-        >,
-        Statement<'a>,
+        Option<Var>,
+        DataType,
+        List<Symbol, (VariableIdentifier, Symbol, Expression)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum ForInitialization<'a> {
-    ListOfVariableAssignments(ListOfVariableAssignments<'a>),
-    Declaration(ForInitializationDeclaration<'a>),
+pub struct Var {
+    pub nodes: (Keyword,),
 }
 
 #[derive(Debug, Node)]
-pub struct ForInitializationDeclaration<'a> {
-    pub nodes: (List<Symbol<'a>, ForVariableDeclaration<'a>>,),
+pub struct ForStep {
+    pub nodes: (List<Symbol, ForStepAssignment>,),
 }
 
 #[derive(Debug, Node)]
-pub struct ForVariableDeclaration<'a> {
-    pub nodes: (
-        Option<Var<'a>>,
-        DataType<'a>,
-        List<Symbol<'a>, (VariableIdentifier<'a>, Symbol<'a>, Expression<'a>)>,
-    ),
+pub enum ForStepAssignment {
+    OperatorAssignment(OperatorAssignment),
+    IncOrDecExpression(IncOrDecExpression),
+    FunctionSubroutineCall(FunctionSubroutineCall),
 }
 
 #[derive(Debug, Node)]
-pub struct Var<'a> {
-    pub nodes: (Keyword<'a>,),
-}
-
-#[derive(Debug, Node)]
-pub struct ForStep<'a> {
-    pub nodes: (List<Symbol<'a>, ForStepAssignment<'a>>,),
-}
-
-#[derive(Debug, Node)]
-pub enum ForStepAssignment<'a> {
-    OperatorAssignment(OperatorAssignment<'a>),
-    IncOrDecExpression(IncOrDecExpression<'a>),
-    FunctionSubroutineCall(FunctionSubroutineCall<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct LoopVariables<'a> {
-    pub nodes: (List<Symbol<'a>, Option<IndexVariableIdentifier<'a>>>,),
+pub struct LoopVariables {
+    pub nodes: (List<Symbol, Option<IndexVariableIdentifier>>,),
 }
 
 // -----------------------------------------------------------------------------

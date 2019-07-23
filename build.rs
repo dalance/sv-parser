@@ -12,7 +12,7 @@ fn main() {
 
     let _ = write!(out, "#[derive(Debug, Clone, AnyNode)]\n");
     let _ = write!(out, "pub enum AnyNode<'a> {{\n");
-    let _ = write!(out, "    Span(&'a Span<'a>),\n");
+    let _ = write!(out, "    Locate(&'a Locate),\n");
 
     let re_node = Regex::new(r"#\[derive.*Node.*\]").unwrap();
 
@@ -26,7 +26,7 @@ fn main() {
                 let line = line.unwrap();
                 if hit_node {
                     let name = line.split_whitespace().nth(2).unwrap().replace("<'a>", "");
-                    let _ = write!(out, "    {}(&'a {}<'a>),\n", name, name);
+                    let _ = write!(out, "    {}(&'a {}),\n", name, name);
                     hit_node = false;
                 }
                 if re_node.is_match(&line) {

@@ -9,49 +9,49 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum PackageItem<'a> {
-    PackageOrGenerateItemDeclaration(PackageOrGenerateItemDeclaration<'a>),
-    AnonymousProgram(AnonymousProgram<'a>),
-    PackageExportDeclaration(PackageExportDeclaration<'a>),
-    TimeunitsDeclaration(TimeunitsDeclaration<'a>),
+pub enum PackageItem {
+    PackageOrGenerateItemDeclaration(PackageOrGenerateItemDeclaration),
+    AnonymousProgram(AnonymousProgram),
+    PackageExportDeclaration(PackageExportDeclaration),
+    TimeunitsDeclaration(TimeunitsDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub enum PackageOrGenerateItemDeclaration<'a> {
-    NetDeclaration(NetDeclaration<'a>),
-    DataDeclaration(DataDeclaration<'a>),
-    TaskDeclaration(TaskDeclaration<'a>),
-    FunctionDeclaration(FunctionDeclaration<'a>),
-    CheckerDeclaration(CheckerDeclaration<'a>),
-    DpiImportExport(DpiImportExport<'a>),
-    ExternConstraintDeclaration(ExternConstraintDeclaration<'a>),
-    ClassDeclaration(ClassDeclaration<'a>),
-    ClassConstructorDeclaration(ClassConstructorDeclaration<'a>),
-    LocalParameterDeclaration((LocalParameterDeclaration<'a>, Symbol<'a>)),
-    ParameterDeclaration((ParameterDeclaration<'a>, Symbol<'a>)),
-    CovergroupDeclaration(CovergroupDeclaration<'a>),
-    AssertionItemDeclaration(AssertionItemDeclaration<'a>),
-    Empty(Symbol<'a>),
+pub enum PackageOrGenerateItemDeclaration {
+    NetDeclaration(NetDeclaration),
+    DataDeclaration(DataDeclaration),
+    TaskDeclaration(TaskDeclaration),
+    FunctionDeclaration(FunctionDeclaration),
+    CheckerDeclaration(CheckerDeclaration),
+    DpiImportExport(DpiImportExport),
+    ExternConstraintDeclaration(ExternConstraintDeclaration),
+    ClassDeclaration(ClassDeclaration),
+    ClassConstructorDeclaration(ClassConstructorDeclaration),
+    LocalParameterDeclaration((LocalParameterDeclaration, Symbol)),
+    ParameterDeclaration((ParameterDeclaration, Symbol)),
+    CovergroupDeclaration(CovergroupDeclaration),
+    AssertionItemDeclaration(AssertionItemDeclaration),
+    Empty(Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct AnonymousProgram<'a> {
+pub struct AnonymousProgram {
     pub nodes: (
-        Keyword<'a>,
-        Symbol<'a>,
-        Vec<AnonymousProgramItem<'a>>,
-        Keyword<'a>,
+        Keyword,
+        Symbol,
+        Vec<AnonymousProgramItem>,
+        Keyword,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum AnonymousProgramItem<'a> {
-    TaskDeclaration(TaskDeclaration<'a>),
-    FunctionDeclaration(FunctionDeclaration<'a>),
-    ClassDeclaration(ClassDeclaration<'a>),
-    CovergroupDeclaration(CovergroupDeclaration<'a>),
-    ClassConstructorDeclaration(ClassConstructorDeclaration<'a>),
-    Empty(Symbol<'a>),
+pub enum AnonymousProgramItem {
+    TaskDeclaration(TaskDeclaration),
+    FunctionDeclaration(FunctionDeclaration),
+    ClassDeclaration(ClassDeclaration),
+    CovergroupDeclaration(CovergroupDeclaration),
+    ClassConstructorDeclaration(ClassConstructorDeclaration),
+    Empty(Symbol),
 }
 
 // -----------------------------------------------------------------------------

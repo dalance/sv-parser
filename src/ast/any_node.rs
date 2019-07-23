@@ -35,9 +35,9 @@ impl<'a> From<Vec<AnyNode<'a>>> for AnyNodes<'a> {
     }
 }
 
-impl<'a> From<&'a Span<'a>> for AnyNodes<'a> {
-    fn from(x: &'a Span<'a>) -> Self {
-        vec![AnyNode::Span(x)].into()
+impl<'a> From<&'a Locate> for AnyNodes<'a> {
+    fn from(x: &'a Locate) -> Self {
+        vec![AnyNode::Locate(x)].into()
     }
 }
 
@@ -327,11 +327,11 @@ where
     }
 }
 
-impl<'a, T> From<&'a Paren<'a, T>> for AnyNodes<'a>
+impl<'a, T> From<&'a Paren<T>> for AnyNodes<'a>
 where
     &'a T: Into<AnyNodes<'a>>,
 {
-    fn from(x: &'a Paren<'a, T>) -> Self {
+    fn from(x: &'a Paren<T>) -> Self {
         let mut ret = Vec::new();
         let (a, b, c) = &x.nodes;
         let mut a: AnyNodes<'a> = a.into();
@@ -343,11 +343,11 @@ where
     }
 }
 
-impl<'a, T> From<&'a Brace<'a, T>> for AnyNodes<'a>
+impl<'a, T> From<&'a Brace<T>> for AnyNodes<'a>
 where
     &'a T: Into<AnyNodes<'a>>,
 {
-    fn from(x: &'a Brace<'a, T>) -> Self {
+    fn from(x: &'a Brace<T>) -> Self {
         let mut ret = Vec::new();
         let (a, b, c) = &x.nodes;
         let mut a: AnyNodes<'a> = a.into();
@@ -359,11 +359,11 @@ where
     }
 }
 
-impl<'a, T> From<&'a Bracket<'a, T>> for AnyNodes<'a>
+impl<'a, T> From<&'a Bracket<T>> for AnyNodes<'a>
 where
     &'a T: Into<AnyNodes<'a>>,
 {
-    fn from(x: &'a Bracket<'a, T>) -> Self {
+    fn from(x: &'a Bracket<T>) -> Self {
         let mut ret = Vec::new();
         let (a, b, c) = &x.nodes;
         let mut a: AnyNodes<'a> = a.into();
@@ -375,11 +375,11 @@ where
     }
 }
 
-impl<'a, T> From<&'a ApostropheBrace<'a, T>> for AnyNodes<'a>
+impl<'a, T> From<&'a ApostropheBrace<T>> for AnyNodes<'a>
 where
     &'a T: Into<AnyNodes<'a>>,
 {
-    fn from(x: &'a ApostropheBrace<'a, T>) -> Self {
+    fn from(x: &'a ApostropheBrace<T>) -> Self {
         let mut ret = Vec::new();
         let (a, b, c) = &x.nodes;
         let mut a: AnyNodes<'a> = a.into();

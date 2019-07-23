@@ -6,12 +6,12 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct ProgramInstantiation<'a> {
+pub struct ProgramInstantiation {
     pub nodes: (
-        ProgramIdentifier<'a>,
-        Option<ParameterValueAssignment<'a>>,
-        List<Symbol<'a>, HierarchicalInstance<'a>>,
-        Symbol<'a>,
+        ProgramIdentifier,
+        Option<ParameterValueAssignment>,
+        List<Symbol, HierarchicalInstance>,
+        Symbol,
     ),
 }
 

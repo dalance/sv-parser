@@ -262,39 +262,39 @@ const KEYWORDS: &[&str] = &[
 ];
 
 #[derive(Debug, Node)]
-pub struct Symbol<'a> {
-    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
+pub struct Symbol {
+    pub nodes: (Locate, Vec<WhiteSpace>),
 }
 
 #[derive(Debug, Node)]
-pub struct Keyword<'a> {
-    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
+pub struct Keyword {
+    pub nodes: (Locate, Vec<WhiteSpace>),
 }
 
 #[derive(Debug, Node)]
-pub enum WhiteSpace<'a> {
-    Space(Span<'a>),
-    Comment(Comment<'a>),
+pub enum WhiteSpace {
+    Space(Locate),
+    Comment(Comment),
 }
 
 #[derive(Debug)]
-pub struct Paren<'a, T: 'a> {
-    pub nodes: (Symbol<'a>, T, Symbol<'a>),
+pub struct Paren<T> {
+    pub nodes: (Symbol, T, Symbol),
 }
 
 #[derive(Debug)]
-pub struct Brace<'a, T: 'a> {
-    pub nodes: (Symbol<'a>, T, Symbol<'a>),
+pub struct Brace<T> {
+    pub nodes: (Symbol, T, Symbol),
 }
 
 #[derive(Debug)]
-pub struct Bracket<'a, T: 'a> {
-    pub nodes: (Symbol<'a>, T, Symbol<'a>),
+pub struct Bracket<T> {
+    pub nodes: (Symbol, T, Symbol),
 }
 
 #[derive(Debug)]
-pub struct ApostropheBrace<'a, T: 'a> {
-    pub nodes: (Symbol<'a>, T, Symbol<'a>),
+pub struct ApostropheBrace<T> {
+    pub nodes: (Symbol, T, Symbol),
 }
 
 #[derive(Debug)]
@@ -304,7 +304,7 @@ pub struct List<T, U> {
 
 // -----------------------------------------------------------------------------
 
-pub fn ws<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, (O, Vec<WhiteSpace<'a>>)>
+pub fn ws<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, (O, Vec<WhiteSpace>)>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
@@ -315,22 +315,28 @@ where
     }
 }
 
-pub fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol<'a>> {
+pub fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol> {
     move |s: Span<'a>| {
         #[cfg(feature = "trace")]
         let s = trace(s, &format!("symbol(\"{}\")", t));
-        let (s, x) = map(ws(tag(t.clone())), |x| Symbol { nodes: x })(s)?;
+        let (s, x) = map(ws(map(tag(t.clone()), |x: Span| x.into())), |x| Symbol {
+            nodes: x,
+        })(s)?;
         Ok((clear_recursive_flags(s), x))
     }
 }
 
-pub fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Keyword<'a>> {
+pub fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Keyword> {
     move |s: Span<'a>| {
         #[cfg(feature = "trace")]
         let s = trace(s, &format!("keyword(\"{}\")", t));
-        let (s, x) = map(ws(terminated(tag(t.clone()), peek(none_of(AZ09_)))), |x| {
-            Keyword { nodes: x }
-        })(s)?;
+        let (s, x) = map(
+            ws(terminated(
+                map(tag(t.clone()), |x: Span| x.into()),
+                peek(none_of(AZ09_)),
+            )),
+            |x| Keyword { nodes: x },
+        )(s)?;
         Ok((clear_recursive_flags(s), x))
     }
 }
@@ -467,7 +473,7 @@ where
 #[parser]
 pub fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
     alt((
-        map(multispace1, |x| WhiteSpace::Space(x)),
+        map(multispace1, |x: Span| WhiteSpace::Space(x.into())),
         map(comment, |x| WhiteSpace::Comment(x)),
     ))(s)
 }

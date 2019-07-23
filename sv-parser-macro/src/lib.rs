@@ -52,24 +52,24 @@ fn impl_node(ast: &DeriveInput) -> TokenStream {
     };
 
     let gen = quote! {
-        impl<'a> Node<'a> for #name<'a> {
+        impl<'a> Node<'a> for #name {
             fn next(&'a self) -> AnyNodes<'a> {
                 #next
             }
         }
 
-        impl<'a> From<&'a #name<'a>> for AnyNodes<'a>  {
-            fn from(x: &'a #name<'a>) -> Self {
+        impl<'a> From<&'a #name> for AnyNodes<'a>  {
+            fn from(x: &'a #name) -> Self {
                 vec![AnyNode::#name(x)].into()
             }
         }
 
-        impl<'a> IntoIterator for &'a #name<'a> {
+        impl<'a> IntoIterator for &'a #name {
             type Item = AnyNode<'a>;
             type IntoIter = Iter<'a>;
 
             fn into_iter(self) -> Self::IntoIter {
-                let nodes: AnyNodes<'a> = self.into();
+                let nodes: AnyNodes = self.into();
                 Iter { next: nodes }
             }
         }

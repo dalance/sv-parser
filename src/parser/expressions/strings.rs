@@ -9,8 +9,8 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct StringLiteral<'a> {
-    pub nodes: (Span<'a>, Vec<WhiteSpace<'a>>),
+pub struct StringLiteral {
+    pub nodes: (Locate, Vec<WhiteSpace>),
 }
 
 // -----------------------------------------------------------------------------
@@ -22,7 +22,7 @@ pub fn string_literal(s: Span) -> IResult<Span, StringLiteral> {
 }
 
 #[parser]
-pub fn string_literal_impl(s: Span) -> IResult<Span, Span> {
+pub fn string_literal_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = tag("\"")(s)?;
     let (s, b) = many1(pair(is_not("\\\""), opt(pair(tag("\\"), take(1usize)))))(s)?;
     let (s, c) = tag("\"")(s)?;
@@ -52,7 +52,7 @@ pub fn string_literal_impl(s: Span) -> IResult<Span, Span> {
     let a = concat(a, b).unwrap();
     let a = concat(a, c).unwrap();
 
-    Ok((s, a))
+    Ok((s, a.into()))
 }
 
 // -----------------------------------------------------------------------------

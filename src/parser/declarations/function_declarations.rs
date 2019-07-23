@@ -9,152 +9,148 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum FunctionDataTypeOrImplicit<'a> {
-    DataTypeOrVoid(DataTypeOrVoid<'a>),
-    ImplicitDataType(ImplicitDataType<'a>),
+pub enum FunctionDataTypeOrImplicit {
+    DataTypeOrVoid(DataTypeOrVoid),
+    ImplicitDataType(ImplicitDataType),
 }
 
 #[derive(Debug, Node)]
-pub struct FunctionDeclaration<'a> {
+pub struct FunctionDeclaration {
+    pub nodes: (Keyword, Option<Lifetime>, FunctionBodyDeclaration),
+}
+
+#[derive(Debug, Node)]
+pub enum FunctionBodyDeclaration {
+    WithoutPort(FunctionBodyDeclarationWithoutPort),
+    WithPort(FunctionBodyDeclarationWithPort),
+}
+
+#[derive(Debug, Node)]
+pub struct FunctionBodyDeclarationWithoutPort {
     pub nodes: (
-        Keyword<'a>,
-        Option<Lifetime<'a>>,
-        FunctionBodyDeclaration<'a>,
+        Option<FunctionDataTypeOrImplicit>,
+        Option<InterfaceIdentifierOrClassScope>,
+        FunctionIdentifier,
+        Symbol,
+        Vec<TfItemDeclaration>,
+        Vec<FunctionStatementOrNull>,
+        Keyword,
+        Option<(Symbol, FunctionIdentifier)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum FunctionBodyDeclaration<'a> {
-    WithoutPort(FunctionBodyDeclarationWithoutPort<'a>),
-    WithPort(FunctionBodyDeclarationWithPort<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct FunctionBodyDeclarationWithoutPort<'a> {
+pub struct FunctionBodyDeclarationWithPort {
     pub nodes: (
-        Option<FunctionDataTypeOrImplicit<'a>>,
-        Option<InterfaceIdentifierOrClassScope<'a>>,
-        FunctionIdentifier<'a>,
-        Symbol<'a>,
-        Vec<TfItemDeclaration<'a>>,
-        Vec<FunctionStatementOrNull<'a>>,
-        Keyword<'a>,
-        Option<(Symbol<'a>, FunctionIdentifier<'a>)>,
+        Option<FunctionDataTypeOrImplicit>,
+        Option<InterfaceIdentifierOrClassScope>,
+        FunctionIdentifier,
+        Paren<Option<TfPortList>>,
+        Symbol,
+        Vec<BlockItemDeclaration>,
+        Vec<FunctionStatementOrNull>,
+        Keyword,
+        Option<(Symbol, FunctionIdentifier)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct FunctionBodyDeclarationWithPort<'a> {
+pub enum InterfaceIdentifierOrClassScope {
+    InterfaceIdentifier((InterfaceIdentifier, Symbol)),
+    ClassScope(ClassScope),
+}
+
+#[derive(Debug, Node)]
+pub struct FunctionPrototype {
     pub nodes: (
-        Option<FunctionDataTypeOrImplicit<'a>>,
-        Option<InterfaceIdentifierOrClassScope<'a>>,
-        FunctionIdentifier<'a>,
-        Paren<'a, Option<TfPortList<'a>>>,
-        Symbol<'a>,
-        Vec<BlockItemDeclaration<'a>>,
-        Vec<FunctionStatementOrNull<'a>>,
-        Keyword<'a>,
-        Option<(Symbol<'a>, FunctionIdentifier<'a>)>,
+        Keyword,
+        DataTypeOrVoid,
+        FunctionIdentifier,
+        Option<Paren<Option<TfPortList>>>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum InterfaceIdentifierOrClassScope<'a> {
-    InterfaceIdentifier((InterfaceIdentifier<'a>, Symbol<'a>)),
-    ClassScope(ClassScope<'a>),
+pub enum DpiImportExport {
+    ImportFunction(DpiImportExportImportFunction),
+    ImportTask(DpiImportExportImportTask),
+    ExportFunction(DpiImportExportExportFunction),
+    ExportTask(DpiImportExportExportTask),
 }
 
 #[derive(Debug, Node)]
-pub struct FunctionPrototype<'a> {
+pub struct DpiImportExportImportFunction {
     pub nodes: (
-        Keyword<'a>,
-        DataTypeOrVoid<'a>,
-        FunctionIdentifier<'a>,
-        Option<Paren<'a, Option<TfPortList<'a>>>>,
+        Keyword,
+        DpiSpecString,
+        Option<DpiFunctionImportProperty>,
+        Option<(CIdentifier, Symbol)>,
+        DpiFunctionProto,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum DpiImportExport<'a> {
-    ImportFunction(DpiImportExportImportFunction<'a>),
-    ImportTask(DpiImportExportImportTask<'a>),
-    ExportFunction(DpiImportExportExportFunction<'a>),
-    ExportTask(DpiImportExportExportTask<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct DpiImportExportImportFunction<'a> {
+pub struct DpiImportExportImportTask {
     pub nodes: (
-        Keyword<'a>,
-        DpiSpecString<'a>,
-        Option<DpiFunctionImportProperty<'a>>,
-        Option<(CIdentifier<'a>, Symbol<'a>)>,
-        DpiFunctionProto<'a>,
-        Symbol<'a>,
+        Keyword,
+        DpiSpecString,
+        Option<DpiTaskImportProperty>,
+        Option<(CIdentifier, Symbol)>,
+        DpiTaskProto,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct DpiImportExportImportTask<'a> {
+pub struct DpiImportExportExportFunction {
     pub nodes: (
-        Keyword<'a>,
-        DpiSpecString<'a>,
-        Option<DpiTaskImportProperty<'a>>,
-        Option<(CIdentifier<'a>, Symbol<'a>)>,
-        DpiTaskProto<'a>,
-        Symbol<'a>,
+        Keyword,
+        DpiSpecString,
+        Option<(CIdentifier, Symbol)>,
+        Keyword,
+        FunctionIdentifier,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct DpiImportExportExportFunction<'a> {
+pub struct DpiImportExportExportTask {
     pub nodes: (
-        Keyword<'a>,
-        DpiSpecString<'a>,
-        Option<(CIdentifier<'a>, Symbol<'a>)>,
-        Keyword<'a>,
-        FunctionIdentifier<'a>,
-        Symbol<'a>,
+        Keyword,
+        DpiSpecString,
+        Option<(CIdentifier, Symbol)>,
+        Keyword,
+        TaskIdentifier,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct DpiImportExportExportTask<'a> {
-    pub nodes: (
-        Keyword<'a>,
-        DpiSpecString<'a>,
-        Option<(CIdentifier<'a>, Symbol<'a>)>,
-        Keyword<'a>,
-        TaskIdentifier<'a>,
-        Symbol<'a>,
-    ),
+pub enum DpiSpecString {
+    DpiC(Keyword),
+    Dpi(Keyword),
 }
 
 #[derive(Debug, Node)]
-pub enum DpiSpecString<'a> {
-    DpiC(Keyword<'a>),
-    Dpi(Keyword<'a>),
+pub enum DpiFunctionImportProperty {
+    Context(Keyword),
+    Pure(Keyword),
 }
 
 #[derive(Debug, Node)]
-pub enum DpiFunctionImportProperty<'a> {
-    Context(Keyword<'a>),
-    Pure(Keyword<'a>),
+pub enum DpiTaskImportProperty {
+    Context(Keyword),
 }
 
 #[derive(Debug, Node)]
-pub enum DpiTaskImportProperty<'a> {
-    Context(Keyword<'a>),
+pub struct DpiFunctionProto {
+    pub nodes: (FunctionPrototype,),
 }
 
 #[derive(Debug, Node)]
-pub struct DpiFunctionProto<'a> {
-    pub nodes: (FunctionPrototype<'a>,),
-}
-
-#[derive(Debug, Node)]
-pub struct DpiTaskProto<'a> {
-    pub nodes: (TaskPrototype<'a>,),
+pub struct DpiTaskProto {
+    pub nodes: (TaskPrototype,),
 }
 
 // -----------------------------------------------------------------------------

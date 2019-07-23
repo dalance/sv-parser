@@ -9,120 +9,110 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum UdpBody<'a> {
-    CombinationalBody(CombinationalBody<'a>),
-    SequentialBody(SequentialBody<'a>),
+pub enum UdpBody {
+    CombinationalBody(CombinationalBody),
+    SequentialBody(SequentialBody),
 }
 
 #[derive(Debug, Node)]
-pub struct CombinationalBody<'a> {
+pub struct CombinationalBody {
     pub nodes: (
-        Keyword<'a>,
-        CombinationalEntry<'a>,
-        Vec<CombinationalEntry<'a>>,
-        Keyword<'a>,
+        Keyword,
+        CombinationalEntry,
+        Vec<CombinationalEntry>,
+        Keyword,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct CombinationalEntry<'a> {
-    pub nodes: (LevelInputList<'a>, Symbol<'a>, OutputSymbol<'a>, Symbol<'a>),
+pub struct CombinationalEntry {
+    pub nodes: (LevelInputList, Symbol, OutputSymbol, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct SequentialBody<'a> {
+pub struct SequentialBody {
     pub nodes: (
-        Option<UdpInitialStatement<'a>>,
-        Keyword<'a>,
-        SequentialEntry<'a>,
-        Vec<SequentialEntry<'a>>,
-        Keyword<'a>,
+        Option<UdpInitialStatement>,
+        Keyword,
+        SequentialEntry,
+        Vec<SequentialEntry>,
+        Keyword,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct UdpInitialStatement<'a> {
+pub struct UdpInitialStatement {
+    pub nodes: (Keyword, OutputPortIdentifier, Symbol, InitVal, Symbol),
+}
+
+#[derive(Debug, Node)]
+pub struct InitVal {
+    pub nodes: (Keyword,),
+}
+
+#[derive(Debug, Node)]
+pub struct SequentialEntry {
     pub nodes: (
-        Keyword<'a>,
-        OutputPortIdentifier<'a>,
-        Symbol<'a>,
-        InitVal<'a>,
-        Symbol<'a>,
+        SeqInputList,
+        Symbol,
+        CurrentState,
+        Symbol,
+        NextState,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct InitVal<'a> {
-    pub nodes: (Keyword<'a>,),
+pub enum SeqInputList {
+    LevelInputList(LevelInputList),
+    EdgeInputList(EdgeInputList),
 }
 
 #[derive(Debug, Node)]
-pub struct SequentialEntry<'a> {
-    pub nodes: (
-        SeqInputList<'a>,
-        Symbol<'a>,
-        CurrentState<'a>,
-        Symbol<'a>,
-        NextState<'a>,
-        Symbol<'a>,
-    ),
+pub struct LevelInputList {
+    pub nodes: (LevelSymbol, Vec<LevelSymbol>),
 }
 
 #[derive(Debug, Node)]
-pub enum SeqInputList<'a> {
-    LevelInputList(LevelInputList<'a>),
-    EdgeInputList(EdgeInputList<'a>),
+pub struct EdgeInputList {
+    pub nodes: (Vec<LevelSymbol>, EdgeIndicator, Vec<LevelSymbol>),
 }
 
 #[derive(Debug, Node)]
-pub struct LevelInputList<'a> {
-    pub nodes: (LevelSymbol<'a>, Vec<LevelSymbol<'a>>),
+pub enum EdgeIndicator {
+    Paren(EdgeIndicatorParen),
+    EdgeSymbol(EdgeSymbol),
 }
 
 #[derive(Debug, Node)]
-pub struct EdgeInputList<'a> {
-    pub nodes: (
-        Vec<LevelSymbol<'a>>,
-        EdgeIndicator<'a>,
-        Vec<LevelSymbol<'a>>,
-    ),
+pub struct EdgeIndicatorParen {
+    pub nodes: (Paren<(LevelSymbol, LevelSymbol)>,),
 }
 
 #[derive(Debug, Node)]
-pub enum EdgeIndicator<'a> {
-    Paren(EdgeIndicatorParen<'a>),
-    EdgeSymbol(EdgeSymbol<'a>),
+pub struct CurrentState {
+    pub nodes: (LevelSymbol,),
 }
 
 #[derive(Debug, Node)]
-pub struct EdgeIndicatorParen<'a> {
-    pub nodes: (Paren<'a, (LevelSymbol<'a>, LevelSymbol<'a>)>,),
+pub enum NextState {
+    OutputSymbol(OutputSymbol),
+    Minus(Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct CurrentState<'a> {
-    pub nodes: (LevelSymbol<'a>,),
+pub struct OutputSymbol {
+    pub nodes: (Keyword,),
 }
 
 #[derive(Debug, Node)]
-pub enum NextState<'a> {
-    OutputSymbol(OutputSymbol<'a>),
-    Minus(Symbol<'a>),
+pub struct LevelSymbol {
+    pub nodes: (Keyword,),
 }
 
 #[derive(Debug, Node)]
-pub struct OutputSymbol<'a> {
-    pub nodes: (Keyword<'a>,),
-}
-
-#[derive(Debug, Node)]
-pub struct LevelSymbol<'a> {
-    pub nodes: (Keyword<'a>,),
-}
-
-#[derive(Debug, Node)]
-pub struct EdgeSymbol<'a> {
-    pub nodes: (Keyword<'a>,),
+pub struct EdgeSymbol {
+    pub nodes: (Keyword,),
 }
 
 // -----------------------------------------------------------------------------

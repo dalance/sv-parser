@@ -9,68 +9,68 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum StatementOrNull<'a> {
-    Statement(Statement<'a>),
-    Attribute(StatementOrNullAttribute<'a>),
+pub enum StatementOrNull {
+    Statement(Statement),
+    Attribute(StatementOrNullAttribute),
 }
 
 #[derive(Debug, Node)]
-pub struct StatementOrNullAttribute<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, Symbol<'a>),
+pub struct StatementOrNullAttribute {
+    pub nodes: (Vec<AttributeInstance>, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct Statement<'a> {
+pub struct Statement {
     pub nodes: (
-        Option<(BlockIdentifier<'a>, Symbol<'a>)>,
-        Vec<AttributeInstance<'a>>,
-        StatementItem<'a>,
+        Option<(BlockIdentifier, Symbol)>,
+        Vec<AttributeInstance>,
+        StatementItem,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum StatementItem<'a> {
-    BlockingAssignment(Box<(BlockingAssignment<'a>, Symbol<'a>)>),
-    NonblockingAssignment(Box<(NonblockingAssignment<'a>, Symbol<'a>)>),
-    ProceduralContinuousAssignment(Box<(ProceduralContinuousAssignment<'a>, Symbol<'a>)>),
-    CaseStatement(Box<CaseStatement<'a>>),
-    ConditionalStatement(Box<ConditionalStatement<'a>>),
-    IncOrDecExpression(Box<(IncOrDecExpression<'a>, Symbol<'a>)>),
-    SubroutineCallStatement(Box<SubroutineCallStatement<'a>>),
-    DisableStatement(Box<DisableStatement<'a>>),
-    EventTrigger(Box<EventTrigger<'a>>),
-    LoopStatement(Box<LoopStatement<'a>>),
-    JumpStatement(Box<JumpStatement<'a>>),
-    ParBlock(Box<ParBlock<'a>>),
-    ProceduralTimingControlStatement(Box<ProceduralTimingControlStatement<'a>>),
-    SeqBlock(Box<SeqBlock<'a>>),
-    WaitStatement(Box<WaitStatement<'a>>),
-    ProceduralAssertionStatement(Box<ProceduralAssertionStatement<'a>>),
-    ClockingDrive(Box<(ClockingDrive<'a>, Symbol<'a>)>),
-    RandsequenceStatement(Box<RandsequenceStatement<'a>>),
-    RandcaseStatement(Box<RandcaseStatement<'a>>),
-    ExpectPropertyStatement(Box<ExpectPropertyStatement<'a>>),
+pub enum StatementItem {
+    BlockingAssignment(Box<(BlockingAssignment, Symbol)>),
+    NonblockingAssignment(Box<(NonblockingAssignment, Symbol)>),
+    ProceduralContinuousAssignment(Box<(ProceduralContinuousAssignment, Symbol)>),
+    CaseStatement(Box<CaseStatement>),
+    ConditionalStatement(Box<ConditionalStatement>),
+    IncOrDecExpression(Box<(IncOrDecExpression, Symbol)>),
+    SubroutineCallStatement(Box<SubroutineCallStatement>),
+    DisableStatement(Box<DisableStatement>),
+    EventTrigger(Box<EventTrigger>),
+    LoopStatement(Box<LoopStatement>),
+    JumpStatement(Box<JumpStatement>),
+    ParBlock(Box<ParBlock>),
+    ProceduralTimingControlStatement(Box<ProceduralTimingControlStatement>),
+    SeqBlock(Box<SeqBlock>),
+    WaitStatement(Box<WaitStatement>),
+    ProceduralAssertionStatement(Box<ProceduralAssertionStatement>),
+    ClockingDrive(Box<(ClockingDrive, Symbol)>),
+    RandsequenceStatement(Box<RandsequenceStatement>),
+    RandcaseStatement(Box<RandcaseStatement>),
+    ExpectPropertyStatement(Box<ExpectPropertyStatement>),
 }
 
 #[derive(Debug, Node)]
-pub struct FunctionStatement<'a> {
-    pub nodes: (Statement<'a>,),
+pub struct FunctionStatement {
+    pub nodes: (Statement,),
 }
 
 #[derive(Debug, Node)]
-pub enum FunctionStatementOrNull<'a> {
-    Statement(FunctionStatement<'a>),
-    Attribute(FunctionStatementOrNullAttribute<'a>),
+pub enum FunctionStatementOrNull {
+    Statement(FunctionStatement),
+    Attribute(FunctionStatementOrNullAttribute),
 }
 
 #[derive(Debug, Node)]
-pub struct FunctionStatementOrNullAttribute<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, Symbol<'a>),
+pub struct FunctionStatementOrNullAttribute {
+    pub nodes: (Vec<AttributeInstance>, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct VariableIdentifierList<'a> {
-    pub nodes: (List<Symbol<'a>, VariableIdentifier<'a>>,),
+pub struct VariableIdentifierList {
+    pub nodes: (List<Symbol, VariableIdentifier>,),
 }
 
 // -----------------------------------------------------------------------------

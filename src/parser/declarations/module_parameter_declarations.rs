@@ -7,52 +7,52 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum LocalParameterDeclaration<'a> {
-    Param(LocalParameterDeclarationParam<'a>),
-    Type(LocalParameterDeclarationType<'a>),
+pub enum LocalParameterDeclaration {
+    Param(LocalParameterDeclarationParam),
+    Type(LocalParameterDeclarationType),
 }
 
 #[derive(Debug, Node)]
-pub struct LocalParameterDeclarationParam<'a> {
+pub struct LocalParameterDeclarationParam {
     pub nodes: (
-        Keyword<'a>,
-        Option<DataTypeOrImplicit<'a>>,
-        ListOfParamAssignments<'a>,
+        Keyword,
+        Option<DataTypeOrImplicit>,
+        ListOfParamAssignments,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct LocalParameterDeclarationType<'a> {
-    pub nodes: (Keyword<'a>, Keyword<'a>, ListOfTypeAssignments<'a>),
+pub struct LocalParameterDeclarationType {
+    pub nodes: (Keyword, Keyword, ListOfTypeAssignments),
 }
 
 #[derive(Debug, Node)]
-pub enum ParameterDeclaration<'a> {
-    Param(ParameterDeclarationParam<'a>),
-    Type(ParameterDeclarationType<'a>),
+pub enum ParameterDeclaration {
+    Param(ParameterDeclarationParam),
+    Type(ParameterDeclarationType),
 }
 
 #[derive(Debug, Node)]
-pub struct ParameterDeclarationParam<'a> {
+pub struct ParameterDeclarationParam {
     pub nodes: (
-        Keyword<'a>,
-        Option<DataTypeOrImplicit<'a>>,
-        ListOfParamAssignments<'a>,
+        Keyword,
+        Option<DataTypeOrImplicit>,
+        ListOfParamAssignments,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ParameterDeclarationType<'a> {
-    pub nodes: (Keyword<'a>, Keyword<'a>, ListOfTypeAssignments<'a>),
+pub struct ParameterDeclarationType {
+    pub nodes: (Keyword, Keyword, ListOfTypeAssignments),
 }
 
 #[derive(Debug, Node)]
-pub struct SpecparamDeclaration<'a> {
+pub struct SpecparamDeclaration {
     pub nodes: (
-        Keyword<'a>,
-        Option<PackedDimension<'a>>,
-        ListOfSpecparamAssignments<'a>,
-        Symbol<'a>,
+        Keyword,
+        Option<PackedDimension>,
+        ListOfSpecparamAssignments,
+        Symbol,
     ),
 }
 

@@ -8,66 +8,60 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum PathDeclaration<'a> {
-    SimplePathDeclaration((SimplePathDeclaration<'a>, Symbol<'a>)),
-    EdgeSensitivePathDeclaration((EdgeSensitivePathDeclaration<'a>, Symbol<'a>)),
-    StateDependentPathDeclaration((StateDependentPathDeclaration<'a>, Symbol<'a>)),
+pub enum PathDeclaration {
+    SimplePathDeclaration((SimplePathDeclaration, Symbol)),
+    EdgeSensitivePathDeclaration((EdgeSensitivePathDeclaration, Symbol)),
+    StateDependentPathDeclaration((StateDependentPathDeclaration, Symbol)),
 }
 
 #[derive(Debug, Node)]
-pub enum SimplePathDeclaration<'a> {
-    Parallel(SimplePathDeclarationParallel<'a>),
-    Full(SimplePathDeclarationFull<'a>),
+pub enum SimplePathDeclaration {
+    Parallel(SimplePathDeclarationParallel),
+    Full(SimplePathDeclarationFull),
 }
 
 #[derive(Debug, Node)]
-pub struct SimplePathDeclarationParallel<'a> {
-    pub nodes: (ParallelPathDescription<'a>, Symbol<'a>, PathDelayValue<'a>),
+pub struct SimplePathDeclarationParallel {
+    pub nodes: (ParallelPathDescription, Symbol, PathDelayValue),
 }
 
 #[derive(Debug, Node)]
-pub struct SimplePathDeclarationFull<'a> {
-    pub nodes: (FullPathDescription<'a>, Symbol<'a>, PathDelayValue<'a>),
+pub struct SimplePathDeclarationFull {
+    pub nodes: (FullPathDescription, Symbol, PathDelayValue),
 }
 
 #[derive(Debug, Node)]
-pub struct ParallelPathDescription<'a> {
+pub struct ParallelPathDescription {
     pub nodes: (
-        Paren<
-            'a,
-            (
-                SpecifyInputTerminalDescriptor<'a>,
-                Option<PolarityOperator<'a>>,
-                Symbol<'a>,
-                SpecifyOutputTerminalDescriptor<'a>,
-            ),
-        >,
+        Paren<(
+            SpecifyInputTerminalDescriptor,
+            Option<PolarityOperator>,
+            Symbol,
+            SpecifyOutputTerminalDescriptor,
+        )>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct FullPathDescription<'a> {
+pub struct FullPathDescription {
     pub nodes: (
-        Paren<
-            'a,
-            (
-                ListOfPathInputs<'a>,
-                Option<PolarityOperator<'a>>,
-                Symbol<'a>,
-                ListOfPathOutputs<'a>,
-            ),
-        >,
+        Paren<(
+            ListOfPathInputs,
+            Option<PolarityOperator>,
+            Symbol,
+            ListOfPathOutputs,
+        )>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ListOfPathInputs<'a> {
-    pub nodes: (List<Symbol<'a>, SpecifyInputTerminalDescriptor<'a>>,),
+pub struct ListOfPathInputs {
+    pub nodes: (List<Symbol, SpecifyInputTerminalDescriptor>,),
 }
 
 #[derive(Debug, Node)]
-pub struct ListOfPathOutputs<'a> {
-    pub nodes: (List<Symbol<'a>, SpecifyOutputTerminalDescriptor<'a>>,),
+pub struct ListOfPathOutputs {
+    pub nodes: (List<Symbol, SpecifyOutputTerminalDescriptor>,),
 }
 
 // -----------------------------------------------------------------------------

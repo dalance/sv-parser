@@ -8,29 +8,26 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct UdpInstantiation<'a> {
+pub struct UdpInstantiation {
     pub nodes: (
-        UdpIdentifier<'a>,
-        Option<DriveStrength<'a>>,
-        Option<Delay2<'a>>,
-        List<Symbol<'a>, UdpInstance<'a>>,
-        Symbol<'a>,
+        UdpIdentifier,
+        Option<DriveStrength>,
+        Option<Delay2>,
+        List<Symbol, UdpInstance>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct UdpInstance<'a> {
+pub struct UdpInstance {
     pub nodes: (
-        Option<NameOfInstance<'a>>,
-        Paren<
-            'a,
-            (
-                OutputTerminal<'a>,
-                Symbol<'a>,
-                InputTerminal<'a>,
-                Vec<(Symbol<'a>, InputTerminal<'a>)>,
-            ),
-        >,
+        Option<NameOfInstance>,
+        Paren<(
+            OutputTerminal,
+            Symbol,
+            InputTerminal,
+            Vec<(Symbol, InputTerminal)>,
+        )>,
     ),
 }
 

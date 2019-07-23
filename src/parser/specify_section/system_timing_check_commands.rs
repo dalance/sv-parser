@@ -8,300 +8,264 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum SystemTimingCheck<'a> {
-    SetupTimingCheck(SetupTimingCheck<'a>),
-    HoldTimingCheck(HoldTimingCheck<'a>),
-    SetupholdTimingCheck(SetupholdTimingCheck<'a>),
-    RecoveryTimingCheck(RecoveryTimingCheck<'a>),
-    RemovalTimingCheck(RemovalTimingCheck<'a>),
-    RecremTimingCheck(RecremTimingCheck<'a>),
-    SkewTimingCheck(SkewTimingCheck<'a>),
-    TimeskewTimingCheck(TimeskewTimingCheck<'a>),
-    FullskewTimingCheck(FullskewTimingCheck<'a>),
-    PeriodTimingCheck(PeriodTimingCheck<'a>),
-    WidthTimingCheck(WidthTimingCheck<'a>),
-    NochargeTimingCheck(NochargeTimingCheck<'a>),
+pub enum SystemTimingCheck {
+    SetupTimingCheck(SetupTimingCheck),
+    HoldTimingCheck(HoldTimingCheck),
+    SetupholdTimingCheck(SetupholdTimingCheck),
+    RecoveryTimingCheck(RecoveryTimingCheck),
+    RemovalTimingCheck(RemovalTimingCheck),
+    RecremTimingCheck(RecremTimingCheck),
+    SkewTimingCheck(SkewTimingCheck),
+    TimeskewTimingCheck(TimeskewTimingCheck),
+    FullskewTimingCheck(FullskewTimingCheck),
+    PeriodTimingCheck(PeriodTimingCheck),
+    WidthTimingCheck(WidthTimingCheck),
+    NochargeTimingCheck(NochargeTimingCheck),
 }
 
 #[derive(Debug, Node)]
-pub struct SetupTimingCheck<'a> {
+pub struct SetupTimingCheck {
     pub nodes: (
-        Keyword<'a>,
-        Paren<
-            'a,
-            (
-                DataEvent<'a>,
-                Symbol<'a>,
-                ReferenceEvent<'a>,
-                Symbol<'a>,
-                TimingCheckLimit<'a>,
-                Option<(Symbol<'a>, Option<Notifier<'a>>)>,
-            ),
-        >,
-        Symbol<'a>,
+        Keyword,
+        Paren<(
+            DataEvent,
+            Symbol,
+            ReferenceEvent,
+            Symbol,
+            TimingCheckLimit,
+            Option<(Symbol, Option<Notifier>)>,
+        )>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct HoldTimingCheck<'a> {
+pub struct HoldTimingCheck {
     pub nodes: (
-        Keyword<'a>,
-        Paren<
-            'a,
-            (
-                ReferenceEvent<'a>,
-                Symbol<'a>,
-                DataEvent<'a>,
-                Symbol<'a>,
-                TimingCheckLimit<'a>,
-                Option<(Symbol<'a>, Option<Notifier<'a>>)>,
-            ),
-        >,
-        Symbol<'a>,
+        Keyword,
+        Paren<(
+            ReferenceEvent,
+            Symbol,
+            DataEvent,
+            Symbol,
+            TimingCheckLimit,
+            Option<(Symbol, Option<Notifier>)>,
+        )>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct SetupholdTimingCheck<'a> {
+pub struct SetupholdTimingCheck {
     pub nodes: (
-        Keyword<'a>,
-        Paren<
-            'a,
-            (
-                ReferenceEvent<'a>,
-                Symbol<'a>,
-                DataEvent<'a>,
-                Symbol<'a>,
-                TimingCheckLimit<'a>,
-                Symbol<'a>,
-                TimingCheckLimit<'a>,
+        Keyword,
+        Paren<(
+            ReferenceEvent,
+            Symbol,
+            DataEvent,
+            Symbol,
+            TimingCheckLimit,
+            Symbol,
+            TimingCheckLimit,
+            Option<(
+                Symbol,
+                Option<Notifier>,
                 Option<(
-                    Symbol<'a>,
-                    Option<Notifier<'a>>,
+                    Symbol,
+                    Option<TimestampCondition>,
                     Option<(
-                        Symbol<'a>,
-                        Option<TimestampCondition<'a>>,
+                        Symbol,
+                        Option<TimecheckCondition>,
                         Option<(
-                            Symbol<'a>,
-                            Option<TimecheckCondition<'a>>,
-                            Option<(
-                                Symbol<'a>,
-                                Option<DelayedReference<'a>>,
-                                Option<(Symbol<'a>, Option<DelayedData<'a>>)>,
-                            )>,
+                            Symbol,
+                            Option<DelayedReference>,
+                            Option<(Symbol, Option<DelayedData>)>,
                         )>,
                     )>,
                 )>,
-            ),
-        >,
-        Symbol<'a>,
+            )>,
+        )>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct RecoveryTimingCheck<'a> {
+pub struct RecoveryTimingCheck {
     pub nodes: (
-        Keyword<'a>,
-        Paren<
-            'a,
-            (
-                ReferenceEvent<'a>,
-                Symbol<'a>,
-                DataEvent<'a>,
-                Symbol<'a>,
-                TimingCheckLimit<'a>,
-                Option<(Symbol<'a>, Option<Notifier<'a>>)>,
-            ),
-        >,
-        Symbol<'a>,
+        Keyword,
+        Paren<(
+            ReferenceEvent,
+            Symbol,
+            DataEvent,
+            Symbol,
+            TimingCheckLimit,
+            Option<(Symbol, Option<Notifier>)>,
+        )>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct RemovalTimingCheck<'a> {
+pub struct RemovalTimingCheck {
     pub nodes: (
-        Keyword<'a>,
-        Paren<
-            'a,
-            (
-                ReferenceEvent<'a>,
-                Symbol<'a>,
-                DataEvent<'a>,
-                Symbol<'a>,
-                TimingCheckLimit<'a>,
-                Option<(Symbol<'a>, Option<Notifier<'a>>)>,
-            ),
-        >,
-        Symbol<'a>,
+        Keyword,
+        Paren<(
+            ReferenceEvent,
+            Symbol,
+            DataEvent,
+            Symbol,
+            TimingCheckLimit,
+            Option<(Symbol, Option<Notifier>)>,
+        )>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct RecremTimingCheck<'a> {
+pub struct RecremTimingCheck {
     pub nodes: (
-        Keyword<'a>,
-        Paren<
-            'a,
-            (
-                ReferenceEvent<'a>,
-                Symbol<'a>,
-                DataEvent<'a>,
-                Symbol<'a>,
-                TimingCheckLimit<'a>,
-                Symbol<'a>,
-                TimingCheckLimit<'a>,
+        Keyword,
+        Paren<(
+            ReferenceEvent,
+            Symbol,
+            DataEvent,
+            Symbol,
+            TimingCheckLimit,
+            Symbol,
+            TimingCheckLimit,
+            Option<(
+                Symbol,
+                Option<Notifier>,
                 Option<(
-                    Symbol<'a>,
-                    Option<Notifier<'a>>,
+                    Symbol,
+                    Option<TimestampCondition>,
                     Option<(
-                        Symbol<'a>,
-                        Option<TimestampCondition<'a>>,
+                        Symbol,
+                        Option<TimecheckCondition>,
                         Option<(
-                            Symbol<'a>,
-                            Option<TimecheckCondition<'a>>,
-                            Option<(
-                                Symbol<'a>,
-                                Option<DelayedReference<'a>>,
-                                Option<(Symbol<'a>, Option<DelayedData<'a>>)>,
-                            )>,
+                            Symbol,
+                            Option<DelayedReference>,
+                            Option<(Symbol, Option<DelayedData>)>,
                         )>,
                     )>,
                 )>,
-            ),
-        >,
-        Symbol<'a>,
+            )>,
+        )>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct SkewTimingCheck<'a> {
+pub struct SkewTimingCheck {
     pub nodes: (
-        Keyword<'a>,
-        Paren<
-            'a,
-            (
-                ReferenceEvent<'a>,
-                Symbol<'a>,
-                DataEvent<'a>,
-                Symbol<'a>,
-                TimingCheckLimit<'a>,
-                Option<(Symbol<'a>, Option<Notifier<'a>>)>,
-            ),
-        >,
-        Symbol<'a>,
+        Keyword,
+        Paren<(
+            ReferenceEvent,
+            Symbol,
+            DataEvent,
+            Symbol,
+            TimingCheckLimit,
+            Option<(Symbol, Option<Notifier>)>,
+        )>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct TimeskewTimingCheck<'a> {
+pub struct TimeskewTimingCheck {
     pub nodes: (
-        Keyword<'a>,
-        Paren<
-            'a,
-            (
-                ReferenceEvent<'a>,
-                Symbol<'a>,
-                DataEvent<'a>,
-                Symbol<'a>,
-                TimingCheckLimit<'a>,
+        Keyword,
+        Paren<(
+            ReferenceEvent,
+            Symbol,
+            DataEvent,
+            Symbol,
+            TimingCheckLimit,
+            Option<(
+                Symbol,
+                Option<Notifier>,
                 Option<(
-                    Symbol<'a>,
-                    Option<Notifier<'a>>,
-                    Option<(
-                        Symbol<'a>,
-                        Option<EventBasedFlag<'a>>,
-                        Option<(Symbol<'a>, Option<RemainActiveFlag<'a>>)>,
-                    )>,
+                    Symbol,
+                    Option<EventBasedFlag>,
+                    Option<(Symbol, Option<RemainActiveFlag>)>,
                 )>,
-            ),
-        >,
-        Symbol<'a>,
+            )>,
+        )>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct FullskewTimingCheck<'a> {
+pub struct FullskewTimingCheck {
     pub nodes: (
-        Keyword<'a>,
-        Paren<
-            'a,
-            (
-                ReferenceEvent<'a>,
-                Symbol<'a>,
-                DataEvent<'a>,
-                Symbol<'a>,
-                TimingCheckLimit<'a>,
-                Symbol<'a>,
-                TimingCheckLimit<'a>,
+        Keyword,
+        Paren<(
+            ReferenceEvent,
+            Symbol,
+            DataEvent,
+            Symbol,
+            TimingCheckLimit,
+            Symbol,
+            TimingCheckLimit,
+            Option<(
+                Symbol,
+                Option<Notifier>,
                 Option<(
-                    Symbol<'a>,
-                    Option<Notifier<'a>>,
-                    Option<(
-                        Symbol<'a>,
-                        Option<EventBasedFlag<'a>>,
-                        Option<(Symbol<'a>, Option<RemainActiveFlag<'a>>)>,
-                    )>,
+                    Symbol,
+                    Option<EventBasedFlag>,
+                    Option<(Symbol, Option<RemainActiveFlag>)>,
                 )>,
-            ),
-        >,
-        Symbol<'a>,
+            )>,
+        )>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct PeriodTimingCheck<'a> {
+pub struct PeriodTimingCheck {
     pub nodes: (
-        Keyword<'a>,
-        Paren<
-            'a,
-            (
-                ControlledReferenceEvent<'a>,
-                Symbol<'a>,
-                TimingCheckLimit<'a>,
-                Option<(Symbol<'a>, Option<Notifier<'a>>)>,
-            ),
-        >,
-        Symbol<'a>,
+        Keyword,
+        Paren<(
+            ControlledReferenceEvent,
+            Symbol,
+            TimingCheckLimit,
+            Option<(Symbol, Option<Notifier>)>,
+        )>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct WidthTimingCheck<'a> {
+pub struct WidthTimingCheck {
     pub nodes: (
-        Keyword<'a>,
-        Paren<
-            'a,
-            (
-                ControlledReferenceEvent<'a>,
-                Symbol<'a>,
-                TimingCheckLimit<'a>,
-                Symbol<'a>,
-                Threshold<'a>,
-                Option<(Symbol<'a>, Option<Notifier<'a>>)>,
-            ),
-        >,
-        Symbol<'a>,
+        Keyword,
+        Paren<(
+            ControlledReferenceEvent,
+            Symbol,
+            TimingCheckLimit,
+            Symbol,
+            Threshold,
+            Option<(Symbol, Option<Notifier>)>,
+        )>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct NochargeTimingCheck<'a> {
+pub struct NochargeTimingCheck {
     pub nodes: (
-        Keyword<'a>,
-        Paren<
-            'a,
-            (
-                ReferenceEvent<'a>,
-                Symbol<'a>,
-                DataEvent<'a>,
-                Symbol<'a>,
-                StartEdgeOffset<'a>,
-                Symbol<'a>,
-                EndEdgeOffset<'a>,
-                Option<(Symbol<'a>, Option<Notifier<'a>>)>,
-            ),
-        >,
-        Symbol<'a>,
+        Keyword,
+        Paren<(
+            ReferenceEvent,
+            Symbol,
+            DataEvent,
+            Symbol,
+            StartEdgeOffset,
+            Symbol,
+            EndEdgeOffset,
+            Option<(Symbol, Option<Notifier>)>,
+        )>,
+        Symbol,
     ),
 }
 

@@ -9,209 +9,209 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum ElaborationSystemTask<'a> {
-    Fatal(ElaborationSystemTaskFatal<'a>),
-    Error(ElaborationSystemTaskError<'a>),
-    Warning(ElaborationSystemTaskWarning<'a>),
-    Info(ElaborationSystemTaskInfo<'a>),
+pub enum ElaborationSystemTask {
+    Fatal(ElaborationSystemTaskFatal),
+    Error(ElaborationSystemTaskError),
+    Warning(ElaborationSystemTaskWarning),
+    Info(ElaborationSystemTaskInfo),
 }
 
 #[derive(Debug, Node)]
-pub struct ElaborationSystemTaskFatal<'a> {
+pub struct ElaborationSystemTaskFatal {
     pub nodes: (
-        Keyword<'a>,
-        Option<Paren<'a, (FinishNumber<'a>, Option<(Symbol<'a>, ListOfArguments<'a>)>)>>,
-        Symbol<'a>,
+        Keyword,
+        Option<Paren< (FinishNumber, Option<(Symbol, ListOfArguments)>)>>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ElaborationSystemTaskError<'a> {
+pub struct ElaborationSystemTaskError {
     pub nodes: (
-        Keyword<'a>,
-        Option<Paren<'a, Option<ListOfArguments<'a>>>>,
-        Symbol<'a>,
+        Keyword,
+        Option<Paren< Option<ListOfArguments>>>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ElaborationSystemTaskWarning<'a> {
+pub struct ElaborationSystemTaskWarning {
     pub nodes: (
-        Keyword<'a>,
-        Option<Paren<'a, Option<ListOfArguments<'a>>>>,
-        Symbol<'a>,
+        Keyword,
+        Option<Paren< Option<ListOfArguments>>>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ElaborationSystemTaskInfo<'a> {
+pub struct ElaborationSystemTaskInfo {
     pub nodes: (
-        Keyword<'a>,
-        Option<Paren<'a, Option<ListOfArguments<'a>>>>,
-        Symbol<'a>,
+        Keyword,
+        Option<Paren< Option<ListOfArguments>>>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum FinishNumber<'a> {
-    Zero(Symbol<'a>),
-    One(Symbol<'a>),
-    Two(Symbol<'a>),
+pub enum FinishNumber {
+    Zero(Symbol),
+    One(Symbol),
+    Two(Symbol),
 }
 
 #[derive(Debug, Node)]
-pub enum ModuleCommonItem<'a> {
-    ModuleOrGenerateItemDeclaration(ModuleOrGenerateItemDeclaration<'a>),
-    InterfaceInstantiation(InterfaceInstantiation<'a>),
-    ProgramInstantiation(ProgramInstantiation<'a>),
-    AssertionItem(AssertionItem<'a>),
-    BindDirective(BindDirective<'a>),
-    ContinuousAssign(ContinuousAssign<'a>),
-    NetAlias(NetAlias<'a>),
-    InitialConstruct(InitialConstruct<'a>),
-    FinalConstruct(FinalConstruct<'a>),
-    AlwaysConstruct(AlwaysConstruct<'a>),
-    LoopGenerateConstruct(Box<LoopGenerateConstruct<'a>>),
-    ConditionalGenerateConstruct(Box<ConditionalGenerateConstruct<'a>>),
-    ElaborationSystemTask(ElaborationSystemTask<'a>),
+pub enum ModuleCommonItem {
+    ModuleOrGenerateItemDeclaration(ModuleOrGenerateItemDeclaration),
+    InterfaceInstantiation(InterfaceInstantiation),
+    ProgramInstantiation(ProgramInstantiation),
+    AssertionItem(AssertionItem),
+    BindDirective(BindDirective),
+    ContinuousAssign(ContinuousAssign),
+    NetAlias(NetAlias),
+    InitialConstruct(InitialConstruct),
+    FinalConstruct(FinalConstruct),
+    AlwaysConstruct(AlwaysConstruct),
+    LoopGenerateConstruct(Box<LoopGenerateConstruct>),
+    ConditionalGenerateConstruct(Box<ConditionalGenerateConstruct>),
+    ElaborationSystemTask(ElaborationSystemTask),
 }
 
 #[derive(Debug, Node)]
-pub enum ModuleItem<'a> {
-    PortDeclaration((PortDeclaration<'a>, Symbol<'a>)),
-    NonPortModuleItem(NonPortModuleItem<'a>),
+pub enum ModuleItem {
+    PortDeclaration((PortDeclaration, Symbol)),
+    NonPortModuleItem(NonPortModuleItem),
 }
 
 #[derive(Debug, Node)]
-pub enum ModuleOrGenerateItem<'a> {
-    Parameter(ModuleOrGenerateItemParameter<'a>),
-    Gate(ModuleOrGenerateItemGate<'a>),
-    Udp(ModuleOrGenerateItemUdp<'a>),
-    Module(ModuleOrGenerateItemModule<'a>),
-    ModuleItem(Box<ModuleOrGenerateItemModuleItem<'a>>),
+pub enum ModuleOrGenerateItem {
+    Parameter(ModuleOrGenerateItemParameter),
+    Gate(ModuleOrGenerateItemGate),
+    Udp(ModuleOrGenerateItemUdp),
+    Module(ModuleOrGenerateItemModule),
+    ModuleItem(Box<ModuleOrGenerateItemModuleItem>),
 }
 
 #[derive(Debug, Node)]
-pub struct ModuleOrGenerateItemParameter<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, ParameterOverride<'a>),
+pub struct ModuleOrGenerateItemParameter {
+    pub nodes: (Vec<AttributeInstance>, ParameterOverride),
 }
 
 #[derive(Debug, Node)]
-pub struct ModuleOrGenerateItemGate<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, GateInstantiation<'a>),
+pub struct ModuleOrGenerateItemGate {
+    pub nodes: (Vec<AttributeInstance>, GateInstantiation),
 }
 
 #[derive(Debug, Node)]
-pub struct ModuleOrGenerateItemUdp<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, UdpInstantiation<'a>),
+pub struct ModuleOrGenerateItemUdp {
+    pub nodes: (Vec<AttributeInstance>, UdpInstantiation),
 }
 
 #[derive(Debug, Node)]
-pub struct ModuleOrGenerateItemModule<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, ModuleInstantiation<'a>),
+pub struct ModuleOrGenerateItemModule {
+    pub nodes: (Vec<AttributeInstance>, ModuleInstantiation),
 }
 
 #[derive(Debug, Node)]
-pub struct ModuleOrGenerateItemModuleItem<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, ModuleCommonItem<'a>),
+pub struct ModuleOrGenerateItemModuleItem {
+    pub nodes: (Vec<AttributeInstance>, ModuleCommonItem),
 }
 
 #[derive(Debug, Node)]
-pub enum ModuleOrGenerateItemDeclaration<'a> {
-    PackageOrGenerateItemDeclaration(PackageOrGenerateItemDeclaration<'a>),
-    GenvarDeclaration(GenvarDeclaration<'a>),
-    ClockingDeclaration(ClockingDeclaration<'a>),
-    Clocking(ModuleOrGenerateItemDeclarationClocking<'a>),
-    Disable(ModuleOrGenerateItemDeclarationDisable<'a>),
+pub enum ModuleOrGenerateItemDeclaration {
+    PackageOrGenerateItemDeclaration(PackageOrGenerateItemDeclaration),
+    GenvarDeclaration(GenvarDeclaration),
+    ClockingDeclaration(ClockingDeclaration),
+    Clocking(ModuleOrGenerateItemDeclarationClocking),
+    Disable(ModuleOrGenerateItemDeclarationDisable),
 }
 
 #[derive(Debug, Node)]
-pub struct ModuleOrGenerateItemDeclarationClocking<'a> {
-    pub nodes: (Keyword<'a>, Keyword<'a>, ClockingIdentifier<'a>, Symbol<'a>),
+pub struct ModuleOrGenerateItemDeclarationClocking {
+    pub nodes: (Keyword, Keyword, ClockingIdentifier, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct ModuleOrGenerateItemDeclarationDisable<'a> {
+pub struct ModuleOrGenerateItemDeclarationDisable {
     pub nodes: (
-        Keyword<'a>,
-        Keyword<'a>,
-        Keyword<'a>,
-        ExpressionOrDist<'a>,
-        Symbol<'a>,
+        Keyword,
+        Keyword,
+        Keyword,
+        ExpressionOrDist,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum NonPortModuleItem<'a> {
-    GenerateRegion(GenerateRegion<'a>),
-    ModuleOrGenerateItem(ModuleOrGenerateItem<'a>),
-    SpecifyBlock(SpecifyBlock<'a>),
-    Specparam(NonPortModuleItemSpecparam<'a>),
-    ProgramDeclaration(ProgramDeclaration<'a>),
-    ModuleDeclaration(ModuleDeclaration<'a>),
-    InterfaceDeclaration(InterfaceDeclaration<'a>),
-    TimeunitsDeclaration(TimeunitsDeclaration<'a>),
+pub enum NonPortModuleItem {
+    GenerateRegion(GenerateRegion),
+    ModuleOrGenerateItem(ModuleOrGenerateItem),
+    SpecifyBlock(SpecifyBlock),
+    Specparam(NonPortModuleItemSpecparam),
+    ProgramDeclaration(ProgramDeclaration),
+    ModuleDeclaration(ModuleDeclaration),
+    InterfaceDeclaration(InterfaceDeclaration),
+    TimeunitsDeclaration(TimeunitsDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub struct NonPortModuleItemSpecparam<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, SpecparamDeclaration<'a>),
+pub struct NonPortModuleItemSpecparam {
+    pub nodes: (Vec<AttributeInstance>, SpecparamDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub struct ParameterOverride<'a> {
-    pub nodes: (Keyword<'a>, ListOfDefparamAssignments<'a>, Symbol<'a>),
+pub struct ParameterOverride {
+    pub nodes: (Keyword, ListOfDefparamAssignments, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub enum BindDirective<'a> {
-    Scope(BindDirectiveScope<'a>),
-    Instance(BindDirectiveInstance<'a>),
+pub enum BindDirective {
+    Scope(BindDirectiveScope),
+    Instance(BindDirectiveInstance),
 }
 
 #[derive(Debug, Node)]
-pub struct BindDirectiveScope<'a> {
+pub struct BindDirectiveScope {
     pub nodes: (
-        Keyword<'a>,
-        BindTargetScope<'a>,
-        Option<(Symbol<'a>, BindTargetInstanceList<'a>)>,
-        BindInstantiation<'a>,
-        Symbol<'a>,
+        Keyword,
+        BindTargetScope,
+        Option<(Symbol, BindTargetInstanceList)>,
+        BindInstantiation,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct BindDirectiveInstance<'a> {
+pub struct BindDirectiveInstance {
     pub nodes: (
-        Keyword<'a>,
-        BindTargetInstance<'a>,
-        BindInstantiation<'a>,
-        Symbol<'a>,
+        Keyword,
+        BindTargetInstance,
+        BindInstantiation,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum BindTargetScope<'a> {
-    ModuleIdentifier(ModuleIdentifier<'a>),
-    InterfaceIdentifier(InterfaceIdentifier<'a>),
+pub enum BindTargetScope {
+    ModuleIdentifier(ModuleIdentifier),
+    InterfaceIdentifier(InterfaceIdentifier),
 }
 
 #[derive(Debug, Node)]
-pub struct BindTargetInstance<'a> {
-    pub nodes: (HierarchicalIdentifier<'a>, ConstantBitSelect<'a>),
+pub struct BindTargetInstance {
+    pub nodes: (HierarchicalIdentifier, ConstantBitSelect),
 }
 
 #[derive(Debug, Node)]
-pub struct BindTargetInstanceList<'a> {
-    pub nodes: (List<Symbol<'a>, BindTargetInstance<'a>>,),
+pub struct BindTargetInstanceList {
+    pub nodes: (List<Symbol, BindTargetInstance>,),
 }
 
 #[derive(Debug, Node)]
-pub enum BindInstantiation<'a> {
-    ProgramInstantiation(ProgramInstantiation<'a>),
-    ModuleInstantiation(ModuleInstantiation<'a>),
-    InterfaceInstantiation(InterfaceInstantiation<'a>),
-    CheckerInstantiation(CheckerInstantiation<'a>),
+pub enum BindInstantiation {
+    ProgramInstantiation(ProgramInstantiation),
+    ModuleInstantiation(ModuleInstantiation),
+    InterfaceInstantiation(InterfaceInstantiation),
+    CheckerInstantiation(CheckerInstantiation),
 }
 
 // -----------------------------------------------------------------------------

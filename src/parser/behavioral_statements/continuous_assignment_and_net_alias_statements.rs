@@ -7,56 +7,56 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum ContinuousAssign<'a> {
-    Net(ContinuousAssignNet<'a>),
-    Variable(ContinuousAssignVariable<'a>),
+pub enum ContinuousAssign {
+    Net(ContinuousAssignNet),
+    Variable(ContinuousAssignVariable),
 }
 
 #[derive(Debug, Node)]
-pub struct ContinuousAssignNet<'a> {
+pub struct ContinuousAssignNet {
     pub nodes: (
-        Keyword<'a>,
-        Option<DriveStrength<'a>>,
-        Option<Delay3<'a>>,
-        ListOfNetAssignments<'a>,
-        Symbol<'a>,
+        Keyword,
+        Option<DriveStrength>,
+        Option<Delay3>,
+        ListOfNetAssignments,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ContinuousAssignVariable<'a> {
+pub struct ContinuousAssignVariable {
     pub nodes: (
-        Keyword<'a>,
-        Option<DelayControl<'a>>,
-        ListOfVariableAssignments<'a>,
-        Symbol<'a>,
+        Keyword,
+        Option<DelayControl>,
+        ListOfVariableAssignments,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ListOfNetAssignments<'a> {
-    pub nodes: (List<Symbol<'a>, NetAssignment<'a>>,),
+pub struct ListOfNetAssignments {
+    pub nodes: (List<Symbol, NetAssignment>,),
 }
 
 #[derive(Debug, Node)]
-pub struct ListOfVariableAssignments<'a> {
-    pub nodes: (List<Symbol<'a>, VariableAssignment<'a>>,),
+pub struct ListOfVariableAssignments {
+    pub nodes: (List<Symbol, VariableAssignment>,),
 }
 
 #[derive(Debug, Node)]
-pub struct NetAlias<'a> {
+pub struct NetAlias {
     pub nodes: (
-        Keyword<'a>,
-        NetLvalue<'a>,
-        Symbol<'a>,
-        List<Symbol<'a>, NetLvalue<'a>>,
-        Symbol<'a>,
+        Keyword,
+        NetLvalue,
+        Symbol,
+        List<Symbol, NetLvalue>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct NetAssignment<'a> {
-    pub nodes: (NetLvalue<'a>, Symbol<'a>, Expression<'a>),
+pub struct NetAssignment {
+    pub nodes: (NetLvalue, Symbol, Expression),
 }
 
 // -----------------------------------------------------------------------------

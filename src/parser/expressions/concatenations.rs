@@ -8,99 +8,99 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct Concatenation<'a> {
-    pub nodes: (Brace<'a, List<Symbol<'a>, Expression<'a>>>,),
+pub struct Concatenation {
+    pub nodes: (Brace< List<Symbol, Expression>>,),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstantConcatenation<'a> {
-    pub nodes: (Brace<'a, List<Symbol<'a>, ConstantExpression<'a>>>,),
+pub struct ConstantConcatenation {
+    pub nodes: (Brace< List<Symbol, ConstantExpression>>,),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstantMultipleConcatenation<'a> {
-    pub nodes: (Brace<'a, (ConstantExpression<'a>, ConstantConcatenation<'a>)>,),
+pub struct ConstantMultipleConcatenation {
+    pub nodes: (Brace< (ConstantExpression, ConstantConcatenation)>,),
 }
 
 #[derive(Debug, Node)]
-pub struct ModulePathConcatenation<'a> {
-    pub nodes: (Brace<'a, List<Symbol<'a>, ModulePathExpression<'a>>>,),
+pub struct ModulePathConcatenation {
+    pub nodes: (Brace< List<Symbol, ModulePathExpression>>,),
 }
 
 #[derive(Debug, Node)]
-pub struct ModulePathMultipleConcatenation<'a> {
-    pub nodes: (Brace<'a, (ConstantExpression<'a>, ModulePathConcatenation<'a>)>,),
+pub struct ModulePathMultipleConcatenation {
+    pub nodes: (Brace< (ConstantExpression, ModulePathConcatenation)>,),
 }
 
 #[derive(Debug, Node)]
-pub struct MultipleConcatenation<'a> {
-    pub nodes: (Brace<'a, (Expression<'a>, Concatenation<'a>)>,),
+pub struct MultipleConcatenation {
+    pub nodes: (Brace< (Expression, Concatenation)>,),
 }
 
 #[derive(Debug, Node)]
-pub struct StreamingConcatenation<'a> {
+pub struct StreamingConcatenation {
     pub nodes: (
         Brace<
-            'a,
+            
             (
-                StreamOperator<'a>,
-                Option<SliceSize<'a>>,
-                StreamConcatenation<'a>,
+                StreamOperator,
+                Option<SliceSize>,
+                StreamConcatenation,
             ),
         >,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct StreamOperator<'a> {
-    pub nodes: (Symbol<'a>,),
+pub struct StreamOperator {
+    pub nodes: (Symbol,),
 }
 
 #[derive(Debug, Node)]
-pub enum SliceSize<'a> {
-    SimpleType(SimpleType<'a>),
-    ConstantExpression(ConstantExpression<'a>),
+pub enum SliceSize {
+    SimpleType(SimpleType),
+    ConstantExpression(ConstantExpression),
 }
 
 #[derive(Debug, Node)]
-pub struct StreamConcatenation<'a> {
-    pub nodes: (Brace<'a, List<Symbol<'a>, StreamExpression<'a>>>,),
+pub struct StreamConcatenation {
+    pub nodes: (Brace< List<Symbol, StreamExpression>>,),
 }
 
 #[derive(Debug, Node)]
-pub struct StreamExpression<'a> {
+pub struct StreamExpression {
     pub nodes: (
-        Expression<'a>,
-        Option<(Keyword<'a>, Bracket<'a, ArrayRangeExpression<'a>>)>,
+        Expression,
+        Option<(Keyword, Bracket< ArrayRangeExpression>)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum ArrayRangeExpression<'a> {
-    Expression(Expression<'a>),
-    Colon(ArrayRangeExpressionColon<'a>),
-    PlusColon(ArrayRangeExpressionPlusColon<'a>),
-    MinusColon(ArrayRangeExpressionMinusColon<'a>),
+pub enum ArrayRangeExpression {
+    Expression(Expression),
+    Colon(ArrayRangeExpressionColon),
+    PlusColon(ArrayRangeExpressionPlusColon),
+    MinusColon(ArrayRangeExpressionMinusColon),
 }
 
 #[derive(Debug, Node)]
-pub struct ArrayRangeExpressionColon<'a> {
-    pub nodes: (Expression<'a>, Symbol<'a>, Expression<'a>),
+pub struct ArrayRangeExpressionColon {
+    pub nodes: (Expression, Symbol, Expression),
 }
 
 #[derive(Debug, Node)]
-pub struct ArrayRangeExpressionPlusColon<'a> {
-    pub nodes: (Expression<'a>, Symbol<'a>, Expression<'a>),
+pub struct ArrayRangeExpressionPlusColon {
+    pub nodes: (Expression, Symbol, Expression),
 }
 
 #[derive(Debug, Node)]
-pub struct ArrayRangeExpressionMinusColon<'a> {
-    pub nodes: (Expression<'a>, Symbol<'a>, Expression<'a>),
+pub struct ArrayRangeExpressionMinusColon {
+    pub nodes: (Expression, Symbol, Expression),
 }
 
 #[derive(Debug, Node)]
-pub struct EmptyUnpackedArrayConcatenation<'a> {
-    pub nodes: (Symbol<'a>, Symbol<'a>),
+pub struct EmptyUnpackedArrayConcatenation {
+    pub nodes: (Symbol, Symbol),
 }
 
 // -----------------------------------------------------------------------------

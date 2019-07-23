@@ -9,51 +9,51 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum InterfaceOrGenerateItem<'a> {
-    Module(InterfaceOrGenerateItemModule<'a>),
-    Extern(InterfaceOrGenerateItemExtern<'a>),
+pub enum InterfaceOrGenerateItem {
+    Module(InterfaceOrGenerateItemModule),
+    Extern(InterfaceOrGenerateItemExtern),
 }
 
 #[derive(Debug, Node)]
-pub struct InterfaceOrGenerateItemModule<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, ModuleCommonItem<'a>),
+pub struct InterfaceOrGenerateItemModule {
+    pub nodes: (Vec<AttributeInstance>, ModuleCommonItem),
 }
 
 #[derive(Debug, Node)]
-pub struct InterfaceOrGenerateItemExtern<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, ExternTfDeclaration<'a>),
+pub struct InterfaceOrGenerateItemExtern {
+    pub nodes: (Vec<AttributeInstance>, ExternTfDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub enum ExternTfDeclaration<'a> {
-    Method(ExternTfDeclarationMethod<'a>),
-    Task(ExternTfDeclarationTask<'a>),
+pub enum ExternTfDeclaration {
+    Method(ExternTfDeclarationMethod),
+    Task(ExternTfDeclarationTask),
 }
 
 #[derive(Debug, Node)]
-pub struct ExternTfDeclarationMethod<'a> {
-    pub nodes: (Keyword<'a>, MethodPrototype<'a>, Symbol<'a>),
+pub struct ExternTfDeclarationMethod {
+    pub nodes: (Keyword, MethodPrototype, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct ExternTfDeclarationTask<'a> {
-    pub nodes: (Keyword<'a>, Keyword<'a>, TaskPrototype<'a>, Symbol<'a>),
+pub struct ExternTfDeclarationTask {
+    pub nodes: (Keyword, Keyword, TaskPrototype, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub enum InterfaceItem<'a> {
-    PortDeclaration((PortDeclaration<'a>, Symbol<'a>)),
-    NonPortInterfaceItem(NonPortInterfaceItem<'a>),
+pub enum InterfaceItem {
+    PortDeclaration((PortDeclaration, Symbol)),
+    NonPortInterfaceItem(NonPortInterfaceItem),
 }
 
 #[derive(Debug, Node)]
-pub enum NonPortInterfaceItem<'a> {
-    GenerateRegion(GenerateRegion<'a>),
-    InterfaceOrGenerateItem(InterfaceOrGenerateItem<'a>),
-    ProgramDeclaration(ProgramDeclaration<'a>),
-    ModportDeclaration(ModportDeclaration<'a>),
-    InterfaceDeclaration(InterfaceDeclaration<'a>),
-    TimeunitsDeclaration(TimeunitsDeclaration<'a>),
+pub enum NonPortInterfaceItem {
+    GenerateRegion(GenerateRegion),
+    InterfaceOrGenerateItem(InterfaceOrGenerateItem),
+    ProgramDeclaration(ProgramDeclaration),
+    ModportDeclaration(ModportDeclaration),
+    InterfaceDeclaration(InterfaceDeclaration),
+    TimeunitsDeclaration(TimeunitsDeclaration),
 }
 
 // -----------------------------------------------------------------------------

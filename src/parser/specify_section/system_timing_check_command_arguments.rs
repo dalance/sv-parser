@@ -7,91 +7,85 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct TimecheckCondition<'a> {
-    pub nodes: (MintypmaxExpression<'a>,),
+pub struct TimecheckCondition {
+    pub nodes: (MintypmaxExpression,),
 }
 
 #[derive(Debug, Node)]
-pub struct ControlledReferenceEvent<'a> {
-    pub nodes: (ControlledTimingCheckEvent<'a>,),
+pub struct ControlledReferenceEvent {
+    pub nodes: (ControlledTimingCheckEvent,),
 }
 
 #[derive(Debug, Node)]
-pub struct DataEvent<'a> {
-    pub nodes: (TimingCheckEvent<'a>,),
+pub struct DataEvent {
+    pub nodes: (TimingCheckEvent,),
 }
 
 #[derive(Debug, Node)]
-pub enum DelayedData<'a> {
-    TerminalIdentifier(TerminalIdentifier<'a>),
-    WithMintypmax(DelayedDataWithMintypmax<'a>),
+pub enum DelayedData {
+    TerminalIdentifier(TerminalIdentifier),
+    WithMintypmax(DelayedDataWithMintypmax),
 }
 
 #[derive(Debug, Node)]
-pub struct DelayedDataWithMintypmax<'a> {
-    pub nodes: (
-        TerminalIdentifier<'a>,
-        Bracket<'a, ConstantMintypmaxExpression<'a>>,
-    ),
+pub struct DelayedDataWithMintypmax {
+    pub nodes: (TerminalIdentifier, Bracket<ConstantMintypmaxExpression>),
 }
 
 #[derive(Debug, Node)]
-pub enum DelayedReference<'a> {
-    TerminalIdentifier(TerminalIdentifier<'a>),
-    WithMintypmax(DelayedReferenceWithMintypmax<'a>),
+pub enum DelayedReference {
+    TerminalIdentifier(TerminalIdentifier),
+    WithMintypmax(DelayedReferenceWithMintypmax),
 }
 
 #[derive(Debug, Node)]
-pub struct DelayedReferenceWithMintypmax<'a> {
-    pub nodes: (
-        TerminalIdentifier<'a>,
-        Bracket<'a, ConstantMintypmaxExpression<'a>>,
-    ),
+pub struct DelayedReferenceWithMintypmax {
+    pub nodes: (TerminalIdentifier, Bracket<ConstantMintypmaxExpression>),
 }
 
 #[derive(Debug, Node)]
-pub struct EndEdgeOffset<'a> {
-    pub nodes: (MintypmaxExpression<'a>,),
+pub struct EndEdgeOffset {
+    pub nodes: (MintypmaxExpression,),
 }
 
 #[derive(Debug, Node)]
-pub struct EventBasedFlag<'a> {
-    pub nodes: (ConstantExpression<'a>,),
+pub struct EventBasedFlag {
+    pub nodes: (ConstantExpression,),
 }
 
 #[derive(Debug, Node)]
-pub struct Notifier<'a> {
-    pub nodes: (VariableIdentifier<'a>,),
+pub struct Notifier {
+    pub nodes: (VariableIdentifier,),
 }
 
 #[derive(Debug, Node)]
-pub struct ReferenceEvent<'a> {
-    pub nodes: (TimingCheckEvent<'a>,),
+pub struct ReferenceEvent {
+    pub nodes: (TimingCheckEvent,),
 }
 
 #[derive(Debug, Node)]
-pub struct RemainActiveFlag<'a> {
-    pub nodes: (ConstantMintypmaxExpression<'a>,),
+pub struct RemainActiveFlag {
+    pub nodes: (ConstantMintypmaxExpression,),
 }
 
 #[derive(Debug, Node)]
-pub struct TimestampCondition<'a> {
-    pub nodes: (MintypmaxExpression<'a>,),
+pub struct TimestampCondition {
+    pub nodes: (MintypmaxExpression,),
 }
 
 #[derive(Debug, Node)]
-pub struct StartEdgeOffset<'a> {
-    pub nodes: (MintypmaxExpression<'a>,),
+pub struct StartEdgeOffset {
+    pub nodes: (MintypmaxExpression,),
 }
 
 #[derive(Debug, Node)]
-pub struct Threshold<'a> {
-    pub nodes: (ConstantExpression<'a>,),
+pub struct Threshold {
+    pub nodes: (ConstantExpression,),
 }
 
 #[derive(Debug, Node)]
-pub struct TimingCheckLimit<'a> {
-    pub nodes: (Expression<'a>,),
+pub struct TimingCheckLimit {
+    pub nodes: (Expression,),
 }
 
 // -----------------------------------------------------------------------------

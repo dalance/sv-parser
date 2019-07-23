@@ -7,8 +7,8 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct Comment<'a> {
-    nodes: (Span<'a>,),
+pub struct Comment {
+    nodes: (Locate,),
 }
 
 // -----------------------------------------------------------------------------
@@ -23,7 +23,7 @@ pub fn one_line_comment(s: Span) -> IResult<Span, Comment> {
     let (s, a) = tag("//")(s)?;
     let (s, b) = is_not("\n")(s)?;
     let a = concat(a, b).unwrap();
-    Ok((s, Comment { nodes: (a,) }))
+    Ok((s, Comment { nodes: (a.into(),) }))
 }
 
 #[parser]
@@ -33,7 +33,7 @@ pub fn block_comment(s: Span) -> IResult<Span, Comment> {
     let (s, c) = tag("*/")(s)?;
     let a = concat(a, b).unwrap();
     let a = concat(a, c).unwrap();
-    Ok((s, Comment { nodes: (a,) }))
+    Ok((s, Comment { nodes: (a.into(),) }))
 }
 
 // -----------------------------------------------------------------------------

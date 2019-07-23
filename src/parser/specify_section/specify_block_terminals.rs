@@ -7,43 +7,37 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct SpecifyInputTerminalDescriptor<'a> {
-    pub nodes: (
-        InputIdentifier<'a>,
-        Option<Bracket<'a, ConstantRangeExpression<'a>>>,
-    ),
+pub struct SpecifyInputTerminalDescriptor {
+    pub nodes: (InputIdentifier, Option<Bracket<ConstantRangeExpression>>),
 }
 
 #[derive(Debug, Node)]
-pub struct SpecifyOutputTerminalDescriptor<'a> {
-    pub nodes: (
-        OutputIdentifier<'a>,
-        Option<Bracket<'a, ConstantRangeExpression<'a>>>,
-    ),
+pub struct SpecifyOutputTerminalDescriptor {
+    pub nodes: (OutputIdentifier, Option<Bracket<ConstantRangeExpression>>),
 }
 
 #[derive(Debug, Node)]
-pub enum InputIdentifier<'a> {
-    InputPortIdentifier(InputPortIdentifier<'a>),
-    InoutPortIdentifier(InoutPortIdentifier<'a>),
-    Interface(InputIdentifierInterface<'a>),
+pub enum InputIdentifier {
+    InputPortIdentifier(InputPortIdentifier),
+    InoutPortIdentifier(InoutPortIdentifier),
+    Interface(InputIdentifierInterface),
 }
 
 #[derive(Debug, Node)]
-pub struct InputIdentifierInterface<'a> {
-    pub nodes: (InterfaceIdentifier<'a>, Symbol<'a>, PortIdentifier<'a>),
+pub struct InputIdentifierInterface {
+    pub nodes: (InterfaceIdentifier, Symbol, PortIdentifier),
 }
 
 #[derive(Debug, Node)]
-pub enum OutputIdentifier<'a> {
-    OutputPortIdentifier(OutputPortIdentifier<'a>),
-    InoutPortIdentifier(InoutPortIdentifier<'a>),
-    Interface(OutputIdentifierInterface<'a>),
+pub enum OutputIdentifier {
+    OutputPortIdentifier(OutputPortIdentifier),
+    InoutPortIdentifier(InoutPortIdentifier),
+    Interface(OutputIdentifierInterface),
 }
 
 #[derive(Debug, Node)]
-pub struct OutputIdentifierInterface<'a> {
-    pub nodes: (InterfaceIdentifier<'a>, Symbol<'a>, PortIdentifier<'a>),
+pub struct OutputIdentifierInterface {
+    pub nodes: (InterfaceIdentifier, Symbol, PortIdentifier),
 }
 
 // -----------------------------------------------------------------------------

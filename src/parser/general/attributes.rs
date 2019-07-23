@@ -7,13 +7,13 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct AttributeInstance<'a> {
-    pub nodes: (Symbol<'a>, List<Symbol<'a>, AttrSpec<'a>>, Symbol<'a>),
+pub struct AttributeInstance {
+    pub nodes: (Symbol, List<Symbol, AttrSpec>, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct AttrSpec<'a> {
-    pub nodes: (Identifier<'a>, Option<(Symbol<'a>, ConstantExpression<'a>)>),
+pub struct AttrSpec {
+    pub nodes: (Identifier, Option<(Symbol, ConstantExpression)>),
 }
 
 // -----------------------------------------------------------------------------

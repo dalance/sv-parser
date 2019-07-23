@@ -9,290 +9,278 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum CastingType<'a> {
-    SimpleType(Box<SimpleType<'a>>),
-    ConstantPrimary(Box<ConstantPrimary<'a>>),
-    Signing(Box<Signing<'a>>),
-    String(Keyword<'a>),
-    Const(Keyword<'a>),
+pub enum CastingType {
+    SimpleType(Box<SimpleType>),
+    ConstantPrimary(Box<ConstantPrimary>),
+    Signing(Box<Signing>),
+    String(Keyword),
+    Const(Keyword),
 }
 
 #[derive(Debug, Node)]
-pub enum DataType<'a> {
-    Vector(DataTypeVector<'a>),
-    Atom(DataTypeAtom<'a>),
-    NonIntegerType(NonIntegerType<'a>),
-    StructUnion(Box<DataTypeStructUnion<'a>>),
-    Enum(DataTypeEnum<'a>),
-    String(Keyword<'a>),
-    Chandle(Keyword<'a>),
-    Virtual(DataTypeVirtual<'a>),
-    Type(DataTypeType<'a>),
-    ClassType(ClassType<'a>),
-    Event(Keyword<'a>),
-    PsCovergroupIdentifier(PsCovergroupIdentifier<'a>),
-    TypeReference(Box<TypeReference<'a>>),
+pub enum DataType {
+    Vector(DataTypeVector),
+    Atom(DataTypeAtom),
+    NonIntegerType(NonIntegerType),
+    StructUnion(Box<DataTypeStructUnion>),
+    Enum(DataTypeEnum),
+    String(Keyword),
+    Chandle(Keyword),
+    Virtual(DataTypeVirtual),
+    Type(DataTypeType),
+    ClassType(ClassType),
+    Event(Keyword),
+    PsCovergroupIdentifier(PsCovergroupIdentifier),
+    TypeReference(Box<TypeReference>),
 }
 
 #[derive(Debug, Node)]
-pub struct DataTypeVector<'a> {
+pub struct DataTypeVector {
+    pub nodes: (IntegerVectorType, Option<Signing>, Vec<PackedDimension>),
+}
+
+#[derive(Debug, Node)]
+pub struct DataTypeAtom {
+    pub nodes: (IntegerAtomType, Option<Signing>),
+}
+
+#[derive(Debug, Node)]
+pub struct DataTypeStructUnion {
     pub nodes: (
-        IntegerVectorType<'a>,
-        Option<Signing<'a>>,
-        Vec<PackedDimension<'a>>,
+        StructUnion,
+        Option<(Packed, Option<Signing>)>,
+        Brace<(StructUnionMember, Vec<StructUnionMember>)>,
+        Vec<PackedDimension>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct DataTypeAtom<'a> {
-    pub nodes: (IntegerAtomType<'a>, Option<Signing<'a>>),
+pub struct Packed {
+    pub nodes: (Keyword,),
 }
 
 #[derive(Debug, Node)]
-pub struct DataTypeStructUnion<'a> {
+pub struct DataTypeEnum {
     pub nodes: (
-        StructUnion<'a>,
-        Option<(Packed<'a>, Option<Signing<'a>>)>,
-        Brace<'a, (StructUnionMember<'a>, Vec<StructUnionMember<'a>>)>,
-        Vec<PackedDimension<'a>>,
+        Keyword,
+        Option<EnumBaseType>,
+        Brace<List<Symbol, EnumNameDeclaration>>,
+        Vec<PackedDimension>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct Packed<'a> {
-    pub nodes: (Keyword<'a>,),
-}
-
-#[derive(Debug, Node)]
-pub struct DataTypeEnum<'a> {
+pub struct DataTypeVirtual {
     pub nodes: (
-        Keyword<'a>,
-        Option<EnumBaseType<'a>>,
-        Brace<'a, List<Symbol<'a>, EnumNameDeclaration<'a>>>,
-        Vec<PackedDimension<'a>>,
+        Keyword,
+        Option<Interface>,
+        InterfaceIdentifier,
+        Option<ParameterValueAssignment>,
+        Option<(Symbol, ModportIdentifier)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct DataTypeVirtual<'a> {
+pub struct Interface {
+    pub nodes: (Keyword,),
+}
+
+#[derive(Debug, Node)]
+pub struct DataTypeType {
     pub nodes: (
-        Keyword<'a>,
-        Option<Interface<'a>>,
-        InterfaceIdentifier<'a>,
-        Option<ParameterValueAssignment<'a>>,
-        Option<(Symbol<'a>, ModportIdentifier<'a>)>,
+        Option<PackageScopeOrClassScope>,
+        TypeIdentifier,
+        Vec<PackedDimension>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct Interface<'a> {
-    pub nodes: (Keyword<'a>,),
+pub enum DataTypeOrImplicit {
+    DataType(DataType),
+    ImplicitDataType(ImplicitDataType),
 }
 
 #[derive(Debug, Node)]
-pub struct DataTypeType<'a> {
+pub struct ImplicitDataType {
+    pub nodes: (Option<Signing>, Vec<PackedDimension>),
+}
+
+#[derive(Debug, Node)]
+pub enum EnumBaseType {
+    Atom(EnumBaseTypeAtom),
+    Vector(EnumBaseTypeVector),
+    Type(EnumBaseTypeType),
+}
+
+#[derive(Debug, Node)]
+pub struct EnumBaseTypeAtom {
+    pub nodes: (IntegerAtomType, Option<Signing>),
+}
+
+#[derive(Debug, Node)]
+pub struct EnumBaseTypeVector {
+    pub nodes: (IntegerVectorType, Option<Signing>, Option<PackedDimension>),
+}
+
+#[derive(Debug, Node)]
+pub struct EnumBaseTypeType {
+    pub nodes: (TypeIdentifier, Option<PackedDimension>),
+}
+
+#[derive(Debug, Node)]
+pub struct EnumNameDeclaration {
     pub nodes: (
-        Option<PackageScopeOrClassScope<'a>>,
-        TypeIdentifier<'a>,
-        Vec<PackedDimension<'a>>,
+        EnumIdentifier,
+        Option<Bracket<(IntegralNumber, Option<(Symbol, IntegralNumber)>)>>,
+        Option<(Symbol, ConstantExpression)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum DataTypeOrImplicit<'a> {
-    DataType(DataType<'a>),
-    ImplicitDataType(ImplicitDataType<'a>),
+pub struct ClassScope {
+    pub nodes: (ClassType, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct ImplicitDataType<'a> {
-    pub nodes: (Option<Signing<'a>>, Vec<PackedDimension<'a>>),
-}
-
-#[derive(Debug, Node)]
-pub enum EnumBaseType<'a> {
-    Atom(EnumBaseTypeAtom<'a>),
-    Vector(EnumBaseTypeVector<'a>),
-    Type(EnumBaseTypeType<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct EnumBaseTypeAtom<'a> {
-    pub nodes: (IntegerAtomType<'a>, Option<Signing<'a>>),
-}
-
-#[derive(Debug, Node)]
-pub struct EnumBaseTypeVector<'a> {
+pub struct ClassType {
     pub nodes: (
-        IntegerVectorType<'a>,
-        Option<Signing<'a>>,
-        Option<PackedDimension<'a>>,
+        PsClassIdentifier,
+        Option<ParameterValueAssignment>,
+        Vec<(Symbol, ClassIdentifier, Option<ParameterValueAssignment>)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct EnumBaseTypeType<'a> {
-    pub nodes: (TypeIdentifier<'a>, Option<PackedDimension<'a>>),
+pub enum IntegerType {
+    IntegerVectorType(IntegerVectorType),
+    IntegerAtomType(IntegerAtomType),
 }
 
 #[derive(Debug, Node)]
-pub struct EnumNameDeclaration<'a> {
+pub enum IntegerAtomType {
+    Byte(Keyword),
+    Shortint(Keyword),
+    Int(Keyword),
+    Longint(Keyword),
+    Integer(Keyword),
+    Time(Keyword),
+}
+
+#[derive(Debug, Node)]
+pub enum IntegerVectorType {
+    Bit(Keyword),
+    Logic(Keyword),
+    Reg(Keyword),
+}
+
+#[derive(Debug, Node)]
+pub enum NonIntegerType {
+    Shortreal(Keyword),
+    Real(Keyword),
+    Realtime(Keyword),
+}
+
+#[derive(Debug, Node)]
+pub enum NetType {
+    Supply0(Keyword),
+    Supply1(Keyword),
+    Tri(Keyword),
+    Triand(Keyword),
+    Trior(Keyword),
+    Trireg(Keyword),
+    Tri0(Keyword),
+    Tri1(Keyword),
+    Uwire(Keyword),
+    Wire(Keyword),
+    Wand(Keyword),
+    Wor(Keyword),
+}
+
+#[derive(Debug, Node)]
+pub enum NetPortType {
+    DataType(NetPortTypeDataType),
+    NetTypeIdentifier(NetTypeIdentifier),
+    Interconnect(NetPortTypeInterconnect),
+}
+
+#[derive(Debug, Node)]
+pub struct NetPortTypeDataType {
+    pub nodes: (Option<NetType>, DataTypeOrImplicit),
+}
+
+#[derive(Debug, Node)]
+pub struct NetPortTypeInterconnect {
+    pub nodes: (Keyword, ImplicitDataType),
+}
+
+#[derive(Debug, Node)]
+pub struct VariablePortType {
+    pub nodes: (VarDataType,),
+}
+
+#[derive(Debug, Node)]
+pub enum VarDataType {
+    DataType(DataType),
+    Var(VarDataTypeVar),
+}
+
+#[derive(Debug, Node)]
+pub struct VarDataTypeVar {
+    pub nodes: (Keyword, DataTypeOrImplicit),
+}
+
+#[derive(Debug, Node)]
+pub enum Signing {
+    Signed(Keyword),
+    Unsigned(Keyword),
+}
+
+#[derive(Debug, Node)]
+pub enum SimpleType {
+    IntegerType(IntegerType),
+    NonIntegerType(NonIntegerType),
+    PsTypeIdentifier(PsTypeIdentifier),
+    PsParameterIdentifier(PsParameterIdentifier),
+}
+
+#[derive(Debug, Node)]
+pub struct StructUnionMember {
     pub nodes: (
-        EnumIdentifier<'a>,
-        Option<Bracket<'a, (IntegralNumber<'a>, Option<(Symbol<'a>, IntegralNumber<'a>)>)>>,
-        Option<(Symbol<'a>, ConstantExpression<'a>)>,
+        Vec<AttributeInstance>,
+        Option<RandomQualifier>,
+        DataTypeOrVoid,
+        ListOfVariableDeclAssignments,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ClassScope<'a> {
-    pub nodes: (ClassType<'a>, Symbol<'a>),
+pub enum DataTypeOrVoid {
+    DataType(DataType),
+    Void(Keyword),
 }
 
 #[derive(Debug, Node)]
-pub struct ClassType<'a> {
-    pub nodes: (
-        PsClassIdentifier<'a>,
-        Option<ParameterValueAssignment<'a>>,
-        Vec<(
-            Symbol<'a>,
-            ClassIdentifier<'a>,
-            Option<ParameterValueAssignment<'a>>,
-        )>,
-    ),
+pub enum StructUnion {
+    Struct(Keyword),
+    Union(Keyword),
+    UnionTagged((Keyword, Keyword)),
 }
 
 #[derive(Debug, Node)]
-pub enum IntegerType<'a> {
-    IntegerVectorType(IntegerVectorType<'a>),
-    IntegerAtomType(IntegerAtomType<'a>),
+pub enum TypeReference {
+    Expression(TypeReferenceExpression),
+    DataType(TypeReferenceDataType),
 }
 
 #[derive(Debug, Node)]
-pub enum IntegerAtomType<'a> {
-    Byte(Keyword<'a>),
-    Shortint(Keyword<'a>),
-    Int(Keyword<'a>),
-    Longint(Keyword<'a>),
-    Integer(Keyword<'a>),
-    Time(Keyword<'a>),
+pub struct TypeReferenceExpression {
+    pub nodes: (Keyword, Paren<Expression>),
 }
 
 #[derive(Debug, Node)]
-pub enum IntegerVectorType<'a> {
-    Bit(Keyword<'a>),
-    Logic(Keyword<'a>),
-    Reg(Keyword<'a>),
-}
-
-#[derive(Debug, Node)]
-pub enum NonIntegerType<'a> {
-    Shortreal(Keyword<'a>),
-    Real(Keyword<'a>),
-    Realtime(Keyword<'a>),
-}
-
-#[derive(Debug, Node)]
-pub enum NetType<'a> {
-    Supply0(Keyword<'a>),
-    Supply1(Keyword<'a>),
-    Tri(Keyword<'a>),
-    Triand(Keyword<'a>),
-    Trior(Keyword<'a>),
-    Trireg(Keyword<'a>),
-    Tri0(Keyword<'a>),
-    Tri1(Keyword<'a>),
-    Uwire(Keyword<'a>),
-    Wire(Keyword<'a>),
-    Wand(Keyword<'a>),
-    Wor(Keyword<'a>),
-}
-
-#[derive(Debug, Node)]
-pub enum NetPortType<'a> {
-    DataType(NetPortTypeDataType<'a>),
-    NetTypeIdentifier(NetTypeIdentifier<'a>),
-    Interconnect(NetPortTypeInterconnect<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct NetPortTypeDataType<'a> {
-    pub nodes: (Option<NetType<'a>>, DataTypeOrImplicit<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct NetPortTypeInterconnect<'a> {
-    pub nodes: (Keyword<'a>, ImplicitDataType<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct VariablePortType<'a> {
-    pub nodes: (VarDataType<'a>,),
-}
-
-#[derive(Debug, Node)]
-pub enum VarDataType<'a> {
-    DataType(DataType<'a>),
-    Var(VarDataTypeVar<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct VarDataTypeVar<'a> {
-    pub nodes: (Keyword<'a>, DataTypeOrImplicit<'a>),
-}
-
-#[derive(Debug, Node)]
-pub enum Signing<'a> {
-    Signed(Keyword<'a>),
-    Unsigned(Keyword<'a>),
-}
-
-#[derive(Debug, Node)]
-pub enum SimpleType<'a> {
-    IntegerType(IntegerType<'a>),
-    NonIntegerType(NonIntegerType<'a>),
-    PsTypeIdentifier(PsTypeIdentifier<'a>),
-    PsParameterIdentifier(PsParameterIdentifier<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct StructUnionMember<'a> {
-    pub nodes: (
-        Vec<AttributeInstance<'a>>,
-        Option<RandomQualifier<'a>>,
-        DataTypeOrVoid<'a>,
-        ListOfVariableDeclAssignments<'a>,
-        Symbol<'a>,
-    ),
-}
-
-#[derive(Debug, Node)]
-pub enum DataTypeOrVoid<'a> {
-    DataType(DataType<'a>),
-    Void(Keyword<'a>),
-}
-
-#[derive(Debug, Node)]
-pub enum StructUnion<'a> {
-    Struct(Keyword<'a>),
-    Union(Keyword<'a>),
-    UnionTagged((Keyword<'a>, Keyword<'a>)),
-}
-
-#[derive(Debug, Node)]
-pub enum TypeReference<'a> {
-    Expression(TypeReferenceExpression<'a>),
-    DataType(TypeReferenceDataType<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct TypeReferenceExpression<'a> {
-    pub nodes: (Keyword<'a>, Paren<'a, Expression<'a>>),
-}
-
-#[derive(Debug, Node)]
-pub struct TypeReferenceDataType<'a> {
-    pub nodes: (Keyword<'a>, Paren<'a, DataType<'a>>),
+pub struct TypeReferenceDataType {
+    pub nodes: (Keyword, Paren<DataType>),
 }
 
 // -----------------------------------------------------------------------------

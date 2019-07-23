@@ -8,221 +8,221 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum GateInstantiation<'a> {
-    Cmos(GateInstantiationCmos<'a>),
-    Enable(GateInstantiationEnable<'a>),
-    Mos(GateInstantiationMos<'a>),
-    NInput(GateInstantiationNInput<'a>),
-    NOutput(GateInstantiationNOutput<'a>),
-    PassEn(GateInstantiationPassEn<'a>),
-    Pass(GateInstantiationPass<'a>),
-    Pulldown(GateInstantiationPulldown<'a>),
-    Pullup(GateInstantiationPullup<'a>),
+pub enum GateInstantiation {
+    Cmos(GateInstantiationCmos),
+    Enable(GateInstantiationEnable),
+    Mos(GateInstantiationMos),
+    NInput(GateInstantiationNInput),
+    NOutput(GateInstantiationNOutput),
+    PassEn(GateInstantiationPassEn),
+    Pass(GateInstantiationPass),
+    Pulldown(GateInstantiationPulldown),
+    Pullup(GateInstantiationPullup),
 }
 
 #[derive(Debug, Node)]
-pub struct GateInstantiationCmos<'a> {
+pub struct GateInstantiationCmos {
     pub nodes: (
-        CmosSwitchtype<'a>,
-        Option<Delay3<'a>>,
-        List<Symbol<'a>, CmosSwitchInstance<'a>>,
-        Symbol<'a>,
+        CmosSwitchtype,
+        Option<Delay3>,
+        List<Symbol, CmosSwitchInstance>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct GateInstantiationEnable<'a> {
+pub struct GateInstantiationEnable {
     pub nodes: (
-        EnableGatetype<'a>,
-        Option<DriveStrength<'a>>,
-        Option<Delay3<'a>>,
-        List<Symbol<'a>, EnableGateInstance<'a>>,
-        Symbol<'a>,
+        EnableGatetype,
+        Option<DriveStrength>,
+        Option<Delay3>,
+        List<Symbol, EnableGateInstance>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct GateInstantiationMos<'a> {
+pub struct GateInstantiationMos {
     pub nodes: (
-        MosSwitchtype<'a>,
-        Option<Delay3<'a>>,
-        List<Symbol<'a>, MosSwitchInstance<'a>>,
-        Symbol<'a>,
+        MosSwitchtype,
+        Option<Delay3>,
+        List<Symbol, MosSwitchInstance>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct GateInstantiationNInput<'a> {
+pub struct GateInstantiationNInput {
     pub nodes: (
-        NInputGatetype<'a>,
-        Option<DriveStrength<'a>>,
-        Option<Delay2<'a>>,
-        List<Symbol<'a>, NInputGateInstance<'a>>,
-        Symbol<'a>,
+        NInputGatetype,
+        Option<DriveStrength>,
+        Option<Delay2>,
+        List<Symbol, NInputGateInstance>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct GateInstantiationNOutput<'a> {
+pub struct GateInstantiationNOutput {
     pub nodes: (
-        NOutputGatetype<'a>,
-        Option<DriveStrength<'a>>,
-        Option<Delay2<'a>>,
-        List<Symbol<'a>, NOutputGateInstance<'a>>,
-        Symbol<'a>,
+        NOutputGatetype,
+        Option<DriveStrength>,
+        Option<Delay2>,
+        List<Symbol, NOutputGateInstance>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct GateInstantiationPassEn<'a> {
+pub struct GateInstantiationPassEn {
     pub nodes: (
-        PassEnSwitchtype<'a>,
-        Option<Delay2<'a>>,
-        List<Symbol<'a>, PassEnableSwitchInstance<'a>>,
-        Symbol<'a>,
+        PassEnSwitchtype,
+        Option<Delay2>,
+        List<Symbol, PassEnableSwitchInstance>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct GateInstantiationPass<'a> {
+pub struct GateInstantiationPass {
     pub nodes: (
-        PassSwitchtype<'a>,
-        List<Symbol<'a>, PassSwitchInstance<'a>>,
-        Symbol<'a>,
+        PassSwitchtype,
+        List<Symbol, PassSwitchInstance>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct GateInstantiationPulldown<'a> {
+pub struct GateInstantiationPulldown {
     pub nodes: (
-        Keyword<'a>,
-        Option<PulldownStrength<'a>>,
-        List<Symbol<'a>, PullGateInstance<'a>>,
-        Symbol<'a>,
+        Keyword,
+        Option<PulldownStrength>,
+        List<Symbol, PullGateInstance>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct GateInstantiationPullup<'a> {
+pub struct GateInstantiationPullup {
     pub nodes: (
-        Keyword<'a>,
-        Option<PullupStrength<'a>>,
-        List<Symbol<'a>, PullGateInstance<'a>>,
-        Symbol<'a>,
+        Keyword,
+        Option<PullupStrength>,
+        List<Symbol, PullGateInstance>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct CmosSwitchInstance<'a> {
+pub struct CmosSwitchInstance {
     pub nodes: (
-        Option<NameOfInstance<'a>>,
+        Option<NameOfInstance>,
         Paren<
-            'a,
+            
             (
-                OutputTerminal<'a>,
-                Symbol<'a>,
-                InputTerminal<'a>,
-                Symbol<'a>,
-                NcontrolTerminal<'a>,
-                Symbol<'a>,
-                PcontrolTerminal<'a>,
+                OutputTerminal,
+                Symbol,
+                InputTerminal,
+                Symbol,
+                NcontrolTerminal,
+                Symbol,
+                PcontrolTerminal,
             ),
         >,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct EnableGateInstance<'a> {
+pub struct EnableGateInstance {
     pub nodes: (
-        Option<NameOfInstance<'a>>,
+        Option<NameOfInstance>,
         Paren<
-            'a,
+            
             (
-                OutputTerminal<'a>,
-                Symbol<'a>,
-                InputTerminal<'a>,
-                Symbol<'a>,
-                EnableTerminal<'a>,
+                OutputTerminal,
+                Symbol,
+                InputTerminal,
+                Symbol,
+                EnableTerminal,
             ),
         >,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct MosSwitchInstance<'a> {
+pub struct MosSwitchInstance {
     pub nodes: (
-        Option<NameOfInstance<'a>>,
+        Option<NameOfInstance>,
         Paren<
-            'a,
+            
             (
-                OutputTerminal<'a>,
-                Symbol<'a>,
-                InputTerminal<'a>,
-                Symbol<'a>,
-                EnableTerminal<'a>,
+                OutputTerminal,
+                Symbol,
+                InputTerminal,
+                Symbol,
+                EnableTerminal,
             ),
         >,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct NInputGateInstance<'a> {
+pub struct NInputGateInstance {
     pub nodes: (
-        Option<NameOfInstance<'a>>,
+        Option<NameOfInstance>,
         Paren<
-            'a,
+            
             (
-                OutputTerminal<'a>,
-                Symbol<'a>,
-                List<Symbol<'a>, InputTerminal<'a>>,
+                OutputTerminal,
+                Symbol,
+                List<Symbol, InputTerminal>,
             ),
         >,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct NOutputGateInstance<'a> {
+pub struct NOutputGateInstance {
     pub nodes: (
-        Option<NameOfInstance<'a>>,
+        Option<NameOfInstance>,
         Paren<
-            'a,
+            
             (
-                List<Symbol<'a>, OutputTerminal<'a>>,
-                Symbol<'a>,
-                InputTerminal<'a>,
+                List<Symbol, OutputTerminal>,
+                Symbol,
+                InputTerminal,
             ),
         >,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct PassSwitchInstance<'a> {
+pub struct PassSwitchInstance {
     pub nodes: (
-        Option<NameOfInstance<'a>>,
-        Paren<'a, (InoutTerminal<'a>, Symbol<'a>, InoutTerminal<'a>)>,
+        Option<NameOfInstance>,
+        Paren< (InoutTerminal, Symbol, InoutTerminal)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct PassEnableSwitchInstance<'a> {
+pub struct PassEnableSwitchInstance {
     pub nodes: (
-        Option<NameOfInstance<'a>>,
+        Option<NameOfInstance>,
         Paren<
-            'a,
+            
             (
-                InoutTerminal<'a>,
-                Symbol<'a>,
-                InoutTerminal<'a>,
-                Symbol<'a>,
-                EnableTerminal<'a>,
+                InoutTerminal,
+                Symbol,
+                InoutTerminal,
+                Symbol,
+                EnableTerminal,
             ),
         >,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct PullGateInstance<'a> {
-    pub nodes: (Option<NameOfInstance<'a>>, Paren<'a, OutputTerminal<'a>>),
+pub struct PullGateInstance {
+    pub nodes: (Option<NameOfInstance>, Paren< OutputTerminal>),
 }
 
 // -----------------------------------------------------------------------------

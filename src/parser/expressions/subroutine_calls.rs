@@ -9,177 +9,177 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct ConstantFunctionCall<'a> {
-    pub nodes: (FunctionSubroutineCall<'a>,),
+pub struct ConstantFunctionCall {
+    pub nodes: (FunctionSubroutineCall,),
 }
 
 #[derive(Debug, Node)]
-pub struct TfCall<'a> {
+pub struct TfCall {
     pub nodes: (
-        PsOrHierarchicalTfIdentifier<'a>,
-        Vec<AttributeInstance<'a>>,
-        Option<Paren<'a, ListOfArguments<'a>>>,
+        PsOrHierarchicalTfIdentifier,
+        Vec<AttributeInstance>,
+        Option<Paren< ListOfArguments>>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum SystemTfCall<'a> {
-    ArgOptionl(SystemTfCallArgOptional<'a>),
-    ArgDataType(SystemTfCallArgDataType<'a>),
-    ArgExpression(SystemTfCallArgExpression<'a>),
+pub enum SystemTfCall {
+    ArgOptionl(SystemTfCallArgOptional),
+    ArgDataType(SystemTfCallArgDataType),
+    ArgExpression(SystemTfCallArgExpression),
 }
 
 #[derive(Debug, Node)]
-pub struct SystemTfCallArgOptional<'a> {
+pub struct SystemTfCallArgOptional {
     pub nodes: (
-        SystemTfIdentifier<'a>,
-        Option<Paren<'a, ListOfArguments<'a>>>,
+        SystemTfIdentifier,
+        Option<Paren< ListOfArguments>>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct SystemTfCallArgDataType<'a> {
+pub struct SystemTfCallArgDataType {
     pub nodes: (
-        SystemTfIdentifier<'a>,
-        Paren<'a, (DataType<'a>, Option<(Symbol<'a>, Expression<'a>)>)>,
+        SystemTfIdentifier,
+        Paren< (DataType, Option<(Symbol, Expression)>)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct SystemTfCallArgExpression<'a> {
+pub struct SystemTfCallArgExpression {
     pub nodes: (
-        SystemTfIdentifier<'a>,
+        SystemTfIdentifier,
         Paren<
-            'a,
+            
             (
-                List<Symbol<'a>, Option<Expression<'a>>>,
-                Option<(Symbol<'a>, Option<ClockingEvent<'a>>)>,
+                List<Symbol, Option<Expression>>,
+                Option<(Symbol, Option<ClockingEvent>)>,
             ),
         >,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum SubroutineCall<'a> {
-    TfCall(Box<TfCall<'a>>),
-    SystemTfCall(Box<SystemTfCall<'a>>),
-    MethodCall(Box<MethodCall<'a>>),
-    Randomize(Box<SubroutineCallRandomize<'a>>),
+pub enum SubroutineCall {
+    TfCall(Box<TfCall>),
+    SystemTfCall(Box<SystemTfCall>),
+    MethodCall(Box<MethodCall>),
+    Randomize(Box<SubroutineCallRandomize>),
 }
 
 #[derive(Debug, Node)]
-pub struct SubroutineCallRandomize<'a> {
-    pub nodes: (Option<(Keyword<'a>, Symbol<'a>)>, RandomizeCall<'a>),
+pub struct SubroutineCallRandomize {
+    pub nodes: (Option<(Keyword, Symbol)>, RandomizeCall),
 }
 
 #[derive(Debug, Node)]
-pub struct FunctionSubroutineCall<'a> {
-    pub nodes: (SubroutineCall<'a>,),
+pub struct FunctionSubroutineCall {
+    pub nodes: (SubroutineCall,),
 }
 
 #[derive(Debug, Node)]
-pub enum ListOfArguments<'a> {
-    Ordered(ListOfArgumentsOrdered<'a>),
-    Named(ListOfArgumentsNamed<'a>),
+pub enum ListOfArguments {
+    Ordered(ListOfArgumentsOrdered),
+    Named(ListOfArgumentsNamed),
 }
 
 #[derive(Debug, Node)]
-pub struct ListOfArgumentsOrdered<'a> {
+pub struct ListOfArgumentsOrdered {
     pub nodes: (
-        List<Symbol<'a>, Option<Expression<'a>>>,
+        List<Symbol, Option<Expression>>,
         Vec<(
-            Symbol<'a>,
-            Symbol<'a>,
-            Identifier<'a>,
-            Paren<'a, Option<Expression<'a>>>,
+            Symbol,
+            Symbol,
+            Identifier,
+            Paren< Option<Expression>>,
         )>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ListOfArgumentsNamed<'a> {
+pub struct ListOfArgumentsNamed {
     pub nodes: (
-        Symbol<'a>,
-        Identifier<'a>,
-        Paren<'a, Option<Expression<'a>>>,
+        Symbol,
+        Identifier,
+        Paren< Option<Expression>>,
         Vec<(
-            Symbol<'a>,
-            Symbol<'a>,
-            Identifier<'a>,
-            Paren<'a, Option<Expression<'a>>>,
+            Symbol,
+            Symbol,
+            Identifier,
+            Paren< Option<Expression>>,
         )>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct MethodCall<'a> {
-    pub nodes: (MethodCallRoot<'a>, Symbol<'a>, MethodCallBody<'a>),
+pub struct MethodCall {
+    pub nodes: (MethodCallRoot, Symbol, MethodCallBody),
 }
 
 #[derive(Debug, Node)]
-pub enum MethodCallBody<'a> {
-    User(MethodCallBodyUser<'a>),
-    BuiltInMethodCall(BuiltInMethodCall<'a>),
+pub enum MethodCallBody {
+    User(MethodCallBodyUser),
+    BuiltInMethodCall(BuiltInMethodCall),
 }
 
 #[derive(Debug, Node)]
-pub struct MethodCallBodyUser<'a> {
+pub struct MethodCallBodyUser {
     pub nodes: (
-        MethodIdentifier<'a>,
-        Vec<AttributeInstance<'a>>,
-        Option<Paren<'a, ListOfArguments<'a>>>,
+        MethodIdentifier,
+        Vec<AttributeInstance>,
+        Option<Paren< ListOfArguments>>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum BuiltInMethodCall<'a> {
-    ArrayManipulationCall(ArrayManipulationCall<'a>),
-    RandomizeCall(RandomizeCall<'a>),
+pub enum BuiltInMethodCall {
+    ArrayManipulationCall(ArrayManipulationCall),
+    RandomizeCall(RandomizeCall),
 }
 
 #[derive(Debug, Node)]
-pub struct ArrayManipulationCall<'a> {
+pub struct ArrayManipulationCall {
     pub nodes: (
-        ArrayMethodName<'a>,
-        Vec<AttributeInstance<'a>>,
-        Option<Paren<'a, ListOfArguments<'a>>>,
-        Option<(Keyword<'a>, Paren<'a, Expression<'a>>)>,
+        ArrayMethodName,
+        Vec<AttributeInstance>,
+        Option<Paren< ListOfArguments>>,
+        Option<(Keyword, Paren< Expression>)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct RandomizeCall<'a> {
+pub struct RandomizeCall {
     pub nodes: (
-        Keyword<'a>,
-        Vec<AttributeInstance<'a>>,
-        Option<Paren<'a, Option<VariableIdentifierListOrNull<'a>>>>,
+        Keyword,
+        Vec<AttributeInstance>,
+        Option<Paren< Option<VariableIdentifierListOrNull>>>,
         Option<(
-            Keyword<'a>,
-            Option<Paren<'a, Option<IdentifierList<'a>>>>,
-            ConstraintBlock<'a>,
+            Keyword,
+            Option<Paren< Option<IdentifierList>>>,
+            ConstraintBlock,
         )>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum VariableIdentifierListOrNull<'a> {
-    VariableIdentifierList(VariableIdentifierList<'a>),
-    Null(Keyword<'a>),
+pub enum VariableIdentifierListOrNull {
+    VariableIdentifierList(VariableIdentifierList),
+    Null(Keyword),
 }
 
 #[derive(Debug, Node)]
-pub enum MethodCallRoot<'a> {
-    Primary(Primary<'a>),
-    ImplicitClassHandle(ImplicitClassHandle<'a>),
+pub enum MethodCallRoot {
+    Primary(Primary),
+    ImplicitClassHandle(ImplicitClassHandle),
 }
 
 #[derive(Debug, Node)]
-pub enum ArrayMethodName<'a> {
-    MethodIdentifier(MethodIdentifier<'a>),
-    Unique(Keyword<'a>),
-    And(Keyword<'a>),
-    Or(Keyword<'a>),
-    Xor(Keyword<'a>),
+pub enum ArrayMethodName {
+    MethodIdentifier(MethodIdentifier),
+    Unique(Keyword),
+    And(Keyword),
+    Or(Keyword),
+    Xor(Keyword),
 }
 
 // -----------------------------------------------------------------------------

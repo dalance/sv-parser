@@ -6,38 +6,38 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct CmosSwitchtype<'a> {
-    pub nodes: (Keyword<'a>,),
+pub struct CmosSwitchtype {
+    pub nodes: (Keyword,),
 }
 
 #[derive(Debug, Node)]
-pub struct EnableGatetype<'a> {
-    pub nodes: (Keyword<'a>,),
+pub struct EnableGatetype {
+    pub nodes: (Keyword,),
 }
 
 #[derive(Debug, Node)]
-pub struct MosSwitchtype<'a> {
-    pub nodes: (Keyword<'a>,),
+pub struct MosSwitchtype {
+    pub nodes: (Keyword,),
 }
 
 #[derive(Debug, Node)]
-pub struct NInputGatetype<'a> {
-    pub nodes: (Keyword<'a>,),
+pub struct NInputGatetype {
+    pub nodes: (Keyword,),
 }
 
 #[derive(Debug, Node)]
-pub struct NOutputGatetype<'a> {
-    pub nodes: (Keyword<'a>,),
+pub struct NOutputGatetype {
+    pub nodes: (Keyword,),
 }
 
 #[derive(Debug, Node)]
-pub struct PassEnSwitchtype<'a> {
-    pub nodes: (Keyword<'a>,),
+pub struct PassEnSwitchtype {
+    pub nodes: (Keyword,),
 }
 
 #[derive(Debug, Node)]
-pub struct PassSwitchtype<'a> {
-    pub nodes: (Keyword<'a>,),
+pub struct PassSwitchtype {
+    pub nodes: (Keyword,),
 }
 
 // -----------------------------------------------------------------------------

@@ -9,37 +9,37 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct LibraryText<'a> {
-    pub nodes: (Vec<LibraryDescription<'a>>,),
+pub struct LibraryText {
+    pub nodes: (Vec<LibraryDescription>,),
 }
 
 #[derive(Debug, Node)]
-pub enum LibraryDescription<'a> {
-    LibraryDeclaration(LibraryDeclaration<'a>),
-    IncludeStatement(IncludeStatement<'a>),
-    ConfigDeclaration(ConfigDeclaration<'a>),
-    Null(Symbol<'a>),
+pub enum LibraryDescription {
+    LibraryDeclaration(LibraryDeclaration),
+    IncludeStatement(IncludeStatement),
+    ConfigDeclaration(ConfigDeclaration),
+    Null(Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct LibraryDeclaration<'a> {
+pub struct LibraryDeclaration {
     pub nodes: (
-        Keyword<'a>,
-        LibraryIdentifier<'a>,
-        List<Symbol<'a>, FilePathSpec<'a>>,
-        Option<(Keyword<'a>, List<Symbol<'a>, FilePathSpec<'a>>)>,
-        Symbol<'a>,
+        Keyword,
+        LibraryIdentifier,
+        List<Symbol, FilePathSpec>,
+        Option<(Keyword, List<Symbol, FilePathSpec>)>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct IncludeStatement<'a> {
-    pub nodes: (Keyword<'a>, FilePathSpec<'a>, Symbol<'a>),
+pub struct IncludeStatement {
+    pub nodes: (Keyword, FilePathSpec, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct FilePathSpec<'a> {
-    pub nodes: (StringLiteral<'a>,),
+pub struct FilePathSpec {
+    pub nodes: (StringLiteral,),
 }
 
 // -----------------------------------------------------------------------------

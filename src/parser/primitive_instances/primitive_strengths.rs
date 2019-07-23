@@ -6,47 +6,47 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum PulldownStrength<'a> {
-    Strength01(PulldownStrength01<'a>),
-    Strength10(PulldownStrength10<'a>),
-    Strength0(PulldownStrength0<'a>),
+pub enum PulldownStrength {
+    Strength01(PulldownStrength01),
+    Strength10(PulldownStrength10),
+    Strength0(PulldownStrength0),
 }
 
 #[derive(Debug, Node)]
-pub struct PulldownStrength01<'a> {
-    pub nodes: (Paren<'a, (Strength0<'a>, Symbol<'a>, Strength1<'a>)>,),
+pub struct PulldownStrength01 {
+    pub nodes: (Paren< (Strength0, Symbol, Strength1)>,),
 }
 
 #[derive(Debug, Node)]
-pub struct PulldownStrength10<'a> {
-    pub nodes: (Paren<'a, (Strength1<'a>, Symbol<'a>, Strength0<'a>)>,),
+pub struct PulldownStrength10 {
+    pub nodes: (Paren< (Strength1, Symbol, Strength0)>,),
 }
 
 #[derive(Debug, Node)]
-pub struct PulldownStrength0<'a> {
-    pub nodes: (Paren<'a, Strength0<'a>>,),
+pub struct PulldownStrength0 {
+    pub nodes: (Paren< Strength0>,),
 }
 
 #[derive(Debug, Node)]
-pub enum PullupStrength<'a> {
-    Strength01(PullupStrength01<'a>),
-    Strength10(PullupStrength10<'a>),
-    Strength1(PullupStrength1<'a>),
+pub enum PullupStrength {
+    Strength01(PullupStrength01),
+    Strength10(PullupStrength10),
+    Strength1(PullupStrength1),
 }
 
 #[derive(Debug, Node)]
-pub struct PullupStrength01<'a> {
-    pub nodes: (Paren<'a, (Strength0<'a>, Symbol<'a>, Strength1<'a>)>,),
+pub struct PullupStrength01 {
+    pub nodes: (Paren< (Strength0, Symbol, Strength1)>,),
 }
 
 #[derive(Debug, Node)]
-pub struct PullupStrength10<'a> {
-    pub nodes: (Paren<'a, (Strength1<'a>, Symbol<'a>, Strength0<'a>)>,),
+pub struct PullupStrength10 {
+    pub nodes: (Paren< (Strength1, Symbol, Strength0)>,),
 }
 
 #[derive(Debug, Node)]
-pub struct PullupStrength1<'a> {
-    pub nodes: (Paren<'a, Strength1<'a>>,),
+pub struct PullupStrength1 {
+    pub nodes: (Paren< Strength1>,),
 }
 
 // -----------------------------------------------------------------------------

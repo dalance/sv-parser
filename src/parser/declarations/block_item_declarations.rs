@@ -7,39 +7,39 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum BlockItemDeclaration<'a> {
-    Data(BlockItemDeclarationData<'a>),
-    LocalParameter(BlockItemDeclarationLocalParameter<'a>),
-    Parameter(BlockItemDeclarationParameter<'a>),
-    Let(BlockItemDeclarationLet<'a>),
+pub enum BlockItemDeclaration {
+    Data(BlockItemDeclarationData),
+    LocalParameter(BlockItemDeclarationLocalParameter),
+    Parameter(BlockItemDeclarationParameter),
+    Let(BlockItemDeclarationLet),
 }
 
 #[derive(Debug, Node)]
-pub struct BlockItemDeclarationData<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, DataDeclaration<'a>),
+pub struct BlockItemDeclarationData {
+    pub nodes: (Vec<AttributeInstance>, DataDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub struct BlockItemDeclarationLocalParameter<'a> {
+pub struct BlockItemDeclarationLocalParameter {
     pub nodes: (
-        Vec<AttributeInstance<'a>>,
-        LocalParameterDeclaration<'a>,
-        Symbol<'a>,
+        Vec<AttributeInstance>,
+        LocalParameterDeclaration,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct BlockItemDeclarationParameter<'a> {
+pub struct BlockItemDeclarationParameter {
     pub nodes: (
-        Vec<AttributeInstance<'a>>,
-        ParameterDeclaration<'a>,
-        Symbol<'a>,
+        Vec<AttributeInstance>,
+        ParameterDeclaration,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct BlockItemDeclarationLet<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, LetDeclaration<'a>),
+pub struct BlockItemDeclarationLet {
+    pub nodes: (Vec<AttributeInstance>, LetDeclaration),
 }
 
 // -----------------------------------------------------------------------------

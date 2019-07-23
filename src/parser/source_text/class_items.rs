@@ -9,193 +9,193 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum ClassItem<'a> {
-    Property(ClassItemProperty<'a>),
-    Method(ClassItemMethod<'a>),
-    Constraint(ClassItemConstraint<'a>),
-    Declaration(ClassItemDeclaration<'a>),
-    Covergroup(ClassItemCovergroup<'a>),
-    LocalParameterDeclaration((LocalParameterDeclaration<'a>, Symbol<'a>)),
-    ParameterDeclaration((ParameterDeclaration<'a>, Symbol<'a>)),
-    Empty(Symbol<'a>),
+pub enum ClassItem {
+    Property(ClassItemProperty),
+    Method(ClassItemMethod),
+    Constraint(ClassItemConstraint),
+    Declaration(ClassItemDeclaration),
+    Covergroup(ClassItemCovergroup),
+    LocalParameterDeclaration((LocalParameterDeclaration, Symbol)),
+    ParameterDeclaration((ParameterDeclaration, Symbol)),
+    Empty(Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct ClassItemProperty<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, ClassProperty<'a>),
+pub struct ClassItemProperty {
+    pub nodes: (Vec<AttributeInstance>, ClassProperty),
 }
 
 #[derive(Debug, Node)]
-pub struct ClassItemMethod<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, ClassMethod<'a>),
+pub struct ClassItemMethod {
+    pub nodes: (Vec<AttributeInstance>, ClassMethod),
 }
 
 #[derive(Debug, Node)]
-pub struct ClassItemConstraint<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, ClassConstraint<'a>),
+pub struct ClassItemConstraint {
+    pub nodes: (Vec<AttributeInstance>, ClassConstraint),
 }
 
 #[derive(Debug, Node)]
-pub struct ClassItemDeclaration<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, ClassDeclaration<'a>),
+pub struct ClassItemDeclaration {
+    pub nodes: (Vec<AttributeInstance>, ClassDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub struct ClassItemCovergroup<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, CovergroupDeclaration<'a>),
+pub struct ClassItemCovergroup {
+    pub nodes: (Vec<AttributeInstance>, CovergroupDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub enum ClassProperty<'a> {
-    NonConst(ClassPropertyNonConst<'a>),
-    Const(ClassPropertyConst<'a>),
+pub enum ClassProperty {
+    NonConst(ClassPropertyNonConst),
+    Const(ClassPropertyConst),
 }
 
 #[derive(Debug, Node)]
-pub struct ClassPropertyNonConst<'a> {
-    pub nodes: (Vec<PropertyQualifier<'a>>, DataDeclaration<'a>),
+pub struct ClassPropertyNonConst {
+    pub nodes: (Vec<PropertyQualifier>, DataDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub struct ClassPropertyConst<'a> {
+pub struct ClassPropertyConst {
     pub nodes: (
-        Keyword<'a>,
-        Vec<ClassItemQualifier<'a>>,
-        DataType<'a>,
-        ConstIdentifier<'a>,
-        Option<(Symbol<'a>, ConstantExpression<'a>)>,
-        Symbol<'a>,
+        Keyword,
+        Vec<ClassItemQualifier>,
+        DataType,
+        ConstIdentifier,
+        Option<(Symbol, ConstantExpression)>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum ClassMethod<'a> {
-    Task(ClassMethodTask<'a>),
-    Function(ClassMethodFunction<'a>),
-    PureVirtual(ClassMethodPureVirtual<'a>),
-    ExternMethod(ClassMethodExternMethod<'a>),
-    Constructor(ClassMethodConstructor<'a>),
-    ExternConstructor(ClassMethodExternConstructor<'a>),
+pub enum ClassMethod {
+    Task(ClassMethodTask),
+    Function(ClassMethodFunction),
+    PureVirtual(ClassMethodPureVirtual),
+    ExternMethod(ClassMethodExternMethod),
+    Constructor(ClassMethodConstructor),
+    ExternConstructor(ClassMethodExternConstructor),
 }
 
 #[derive(Debug, Node)]
-pub struct ClassMethodTask<'a> {
-    pub nodes: (Vec<MethodQualifier<'a>>, TaskDeclaration<'a>),
+pub struct ClassMethodTask {
+    pub nodes: (Vec<MethodQualifier>, TaskDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub struct ClassMethodFunction<'a> {
-    pub nodes: (Vec<MethodQualifier<'a>>, FunctionDeclaration<'a>),
+pub struct ClassMethodFunction {
+    pub nodes: (Vec<MethodQualifier>, FunctionDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub struct ClassMethodPureVirtual<'a> {
+pub struct ClassMethodPureVirtual {
     pub nodes: (
-        Keyword<'a>,
-        Keyword<'a>,
-        Vec<ClassItemQualifier<'a>>,
-        MethodPrototype<'a>,
-        Symbol<'a>,
+        Keyword,
+        Keyword,
+        Vec<ClassItemQualifier>,
+        MethodPrototype,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ClassMethodExternMethod<'a> {
+pub struct ClassMethodExternMethod {
     pub nodes: (
-        Keyword<'a>,
-        Vec<MethodQualifier<'a>>,
-        MethodPrototype<'a>,
-        Symbol<'a>,
+        Keyword,
+        Vec<MethodQualifier>,
+        MethodPrototype,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ClassMethodConstructor<'a> {
-    pub nodes: (Vec<MethodQualifier<'a>>, ClassConstructorDeclaration<'a>),
+pub struct ClassMethodConstructor {
+    pub nodes: (Vec<MethodQualifier>, ClassConstructorDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub struct ClassMethodExternConstructor<'a> {
+pub struct ClassMethodExternConstructor {
     pub nodes: (
-        Keyword<'a>,
-        Vec<MethodQualifier<'a>>,
-        ClassConstructorPrototype<'a>,
+        Keyword,
+        Vec<MethodQualifier>,
+        ClassConstructorPrototype,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ClassConstructorPrototype<'a> {
+pub struct ClassConstructorPrototype {
     pub nodes: (
-        Keyword<'a>,
-        Keyword<'a>,
-        Option<Paren<'a, Option<TfPortList<'a>>>>,
-        Symbol<'a>,
+        Keyword,
+        Keyword,
+        Option<Paren< Option<TfPortList>>>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum ClassConstraint<'a> {
-    ConstraintPrototype(ConstraintPrototype<'a>),
-    ConstraintDeclaration(ConstraintDeclaration<'a>),
+pub enum ClassConstraint {
+    ConstraintPrototype(ConstraintPrototype),
+    ConstraintDeclaration(ConstraintDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub enum ClassItemQualifier<'a> {
-    Static(Keyword<'a>),
-    Protected(Keyword<'a>),
-    Local(Keyword<'a>),
+pub enum ClassItemQualifier {
+    Static(Keyword),
+    Protected(Keyword),
+    Local(Keyword),
 }
 
 #[derive(Debug, Node)]
-pub enum PropertyQualifier<'a> {
-    RandomQualifier(RandomQualifier<'a>),
-    ClassItemQualifier(ClassItemQualifier<'a>),
+pub enum PropertyQualifier {
+    RandomQualifier(RandomQualifier),
+    ClassItemQualifier(ClassItemQualifier),
 }
 
 #[derive(Debug, Node)]
-pub enum RandomQualifier<'a> {
-    Rand(Keyword<'a>),
-    Randc(Keyword<'a>),
+pub enum RandomQualifier {
+    Rand(Keyword),
+    Randc(Keyword),
 }
 
 #[derive(Debug, Node)]
-pub enum MethodQualifier<'a> {
-    Virtual(Keyword<'a>),
-    PureVirtual((Keyword<'a>, Keyword<'a>)),
-    ClassItemQualifier(ClassItemQualifier<'a>),
+pub enum MethodQualifier {
+    Virtual(Keyword),
+    PureVirtual((Keyword, Keyword)),
+    ClassItemQualifier(ClassItemQualifier),
 }
 
 #[derive(Debug, Node)]
-pub enum MethodPrototype<'a> {
-    TaskPrototype(TaskPrototype<'a>),
-    FunctionPrototype(FunctionPrototype<'a>),
+pub enum MethodPrototype {
+    TaskPrototype(TaskPrototype),
+    FunctionPrototype(FunctionPrototype),
 }
 
 #[derive(Debug, Node)]
-pub struct ClassConstructorDeclaration<'a> {
+pub struct ClassConstructorDeclaration {
     pub nodes: (
-        Keyword<'a>,
-        Option<ClassScope<'a>>,
-        Keyword<'a>,
-        Option<Paren<'a, Option<TfPortList<'a>>>>,
-        Symbol<'a>,
-        Vec<BlockItemDeclaration<'a>>,
+        Keyword,
+        Option<ClassScope>,
+        Keyword,
+        Option<Paren< Option<TfPortList>>>,
+        Symbol,
+        Vec<BlockItemDeclaration>,
         Option<(
-            Keyword<'a>,
-            Symbol<'a>,
-            Keyword<'a>,
-            Option<Paren<'a, ListOfArguments<'a>>>,
-            Symbol<'a>,
+            Keyword,
+            Symbol,
+            Keyword,
+            Option<Paren< ListOfArguments>>,
+            Symbol,
         )>,
-        Vec<FunctionStatementOrNull<'a>>,
-        Keyword<'a>,
-        Option<(Symbol<'a>, New<'a>)>,
+        Vec<FunctionStatementOrNull>,
+        Keyword,
+        Option<(Symbol, New)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct New<'a> {
-    pub nodes: (Keyword<'a>,),
+pub struct New {
+    pub nodes: (Keyword,),
 }
 
 // -----------------------------------------------------------------------------

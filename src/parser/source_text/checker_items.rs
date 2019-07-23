@@ -9,85 +9,85 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct CheckerPortList<'a> {
-    pub nodes: (List<Symbol<'a>, CheckerPortItem<'a>>,),
+pub struct CheckerPortList {
+    pub nodes: (List<Symbol, CheckerPortItem>,),
 }
 
 #[derive(Debug, Node)]
-pub struct CheckerPortItem<'a> {
+pub struct CheckerPortItem {
     pub nodes: (
-        Vec<AttributeInstance<'a>>,
-        Option<CheckerPortDirection<'a>>,
-        PropertyFormalType<'a>,
-        FormalPortIdentifier<'a>,
-        Vec<VariableDimension<'a>>,
-        Option<(Symbol<'a>, PropertyActualArg<'a>)>,
+        Vec<AttributeInstance>,
+        Option<CheckerPortDirection>,
+        PropertyFormalType,
+        FormalPortIdentifier,
+        Vec<VariableDimension>,
+        Option<(Symbol, PropertyActualArg)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum CheckerPortDirection<'a> {
-    Input(Keyword<'a>),
-    Output(Keyword<'a>),
+pub enum CheckerPortDirection {
+    Input(Keyword),
+    Output(Keyword),
 }
 
 #[derive(Debug, Node)]
-pub enum CheckerOrGenerateItem<'a> {
-    CheckerOrGenerateItemDeclaration(CheckerOrGenerateItemDeclaration<'a>),
-    InitialConstruct(InitialConstruct<'a>),
-    AlwaysConstruct(AlwaysConstruct<'a>),
-    FinalConstruct(FinalConstruct<'a>),
-    AssertionItem(AssertionItem<'a>),
-    ContinuousAssign(ContinuousAssign<'a>),
-    CheckerGenerateItem(CheckerGenerateItem<'a>),
+pub enum CheckerOrGenerateItem {
+    CheckerOrGenerateItemDeclaration(CheckerOrGenerateItemDeclaration),
+    InitialConstruct(InitialConstruct),
+    AlwaysConstruct(AlwaysConstruct),
+    FinalConstruct(FinalConstruct),
+    AssertionItem(AssertionItem),
+    ContinuousAssign(ContinuousAssign),
+    CheckerGenerateItem(CheckerGenerateItem),
 }
 
 #[derive(Debug, Node)]
-pub enum CheckerOrGenerateItemDeclaration<'a> {
-    Data(CheckerOrGenerateItemDeclarationData<'a>),
-    FunctionDeclaration(FunctionDeclaration<'a>),
-    CheckerDeclaration(CheckerDeclaration<'a>),
-    AssertionItemDeclaration(AssertionItemDeclaration<'a>),
-    CovergroupDeclaration(CovergroupDeclaration<'a>),
-    GenvarDeclaration(GenvarDeclaration<'a>),
-    ClockingDeclaration(ClockingDeclaration<'a>),
-    Clocking(CheckerOrGenerateItemDeclarationClocking<'a>),
-    Disable(CheckerOrGenerateItemDeclarationDisable<'a>),
-    Empty(Symbol<'a>),
+pub enum CheckerOrGenerateItemDeclaration {
+    Data(CheckerOrGenerateItemDeclarationData),
+    FunctionDeclaration(FunctionDeclaration),
+    CheckerDeclaration(CheckerDeclaration),
+    AssertionItemDeclaration(AssertionItemDeclaration),
+    CovergroupDeclaration(CovergroupDeclaration),
+    GenvarDeclaration(GenvarDeclaration),
+    ClockingDeclaration(ClockingDeclaration),
+    Clocking(CheckerOrGenerateItemDeclarationClocking),
+    Disable(CheckerOrGenerateItemDeclarationDisable),
+    Empty(Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct CheckerOrGenerateItemDeclarationData<'a> {
-    pub nodes: (Option<Rand<'a>>, DataDeclaration<'a>),
+pub struct CheckerOrGenerateItemDeclarationData {
+    pub nodes: (Option<Rand>, DataDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub struct Rand<'a> {
-    pub nodes: (Keyword<'a>,),
+pub struct Rand {
+    pub nodes: (Keyword,),
 }
 
 #[derive(Debug, Node)]
-pub struct CheckerOrGenerateItemDeclarationClocking<'a> {
-    pub nodes: (Keyword<'a>, Keyword<'a>, ClockingIdentifier<'a>, Symbol<'a>),
+pub struct CheckerOrGenerateItemDeclarationClocking {
+    pub nodes: (Keyword, Keyword, ClockingIdentifier, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct CheckerOrGenerateItemDeclarationDisable<'a> {
+pub struct CheckerOrGenerateItemDeclarationDisable {
     pub nodes: (
-        Keyword<'a>,
-        Keyword<'a>,
-        Keyword<'a>,
-        ExpressionOrDist<'a>,
-        Symbol<'a>,
+        Keyword,
+        Keyword,
+        Keyword,
+        ExpressionOrDist,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum CheckerGenerateItem<'a> {
-    LoopGenerateConstruct(Box<LoopGenerateConstruct<'a>>),
-    ConditionalGenerateConstruct(Box<ConditionalGenerateConstruct<'a>>),
-    GenerateRegion(GenerateRegion<'a>),
-    ElaborationSystemTask(ElaborationSystemTask<'a>),
+pub enum CheckerGenerateItem {
+    LoopGenerateConstruct(Box<LoopGenerateConstruct>),
+    ConditionalGenerateConstruct(Box<ConditionalGenerateConstruct>),
+    GenerateRegion(GenerateRegion),
+    ElaborationSystemTask(ElaborationSystemTask),
 }
 
 // -----------------------------------------------------------------------------

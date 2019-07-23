@@ -9,137 +9,128 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum CaseStatement<'a> {
-    Normal(CaseStatementNormal<'a>),
-    Matches(CaseStatementMatches<'a>),
-    Inside(CaseStatementInside<'a>),
+pub enum CaseStatement {
+    Normal(CaseStatementNormal),
+    Matches(CaseStatementMatches),
+    Inside(CaseStatementInside),
 }
 
 #[derive(Debug, Node)]
-pub struct CaseStatementNormal<'a> {
+pub struct CaseStatementNormal {
     pub nodes: (
-        Option<UniquePriority<'a>>,
-        CaseKeyword<'a>,
-        Paren<'a, CaseExpression<'a>>,
-        CaseItem<'a>,
-        Vec<CaseItem<'a>>,
-        Keyword<'a>,
+        Option<UniquePriority>,
+        CaseKeyword,
+        Paren<CaseExpression>,
+        CaseItem,
+        Vec<CaseItem>,
+        Keyword,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct CaseStatementMatches<'a> {
+pub struct CaseStatementMatches {
     pub nodes: (
-        Option<UniquePriority<'a>>,
-        CaseKeyword<'a>,
-        Paren<'a, CaseExpression<'a>>,
-        Keyword<'a>,
-        CasePatternItem<'a>,
-        Vec<CasePatternItem<'a>>,
-        Keyword<'a>,
+        Option<UniquePriority>,
+        CaseKeyword,
+        Paren<CaseExpression>,
+        Keyword,
+        CasePatternItem,
+        Vec<CasePatternItem>,
+        Keyword,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct CaseStatementInside<'a> {
+pub struct CaseStatementInside {
     pub nodes: (
-        Option<UniquePriority<'a>>,
-        Keyword<'a>,
-        Paren<'a, CaseExpression<'a>>,
-        Keyword<'a>,
-        CaseInsideItem<'a>,
-        Vec<CaseInsideItem<'a>>,
-        Keyword<'a>,
+        Option<UniquePriority>,
+        Keyword,
+        Paren<CaseExpression>,
+        Keyword,
+        CaseInsideItem,
+        Vec<CaseInsideItem>,
+        Keyword,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum CaseKeyword<'a> {
-    Case(Keyword<'a>),
-    Casez(Keyword<'a>),
-    Casex(Keyword<'a>),
+pub enum CaseKeyword {
+    Case(Keyword),
+    Casez(Keyword),
+    Casex(Keyword),
 }
 
 #[derive(Debug, Node)]
-pub struct CaseExpression<'a> {
-    pub nodes: (Expression<'a>,),
+pub struct CaseExpression {
+    pub nodes: (Expression,),
 }
 
 #[derive(Debug, Node)]
-pub enum CaseItem<'a> {
-    NonDefault(CaseItemNondefault<'a>),
-    Default(CaseItemDefault<'a>),
+pub enum CaseItem {
+    NonDefault(CaseItemNondefault),
+    Default(CaseItemDefault),
 }
 
 #[derive(Debug, Node)]
-pub struct CaseItemNondefault<'a> {
+pub struct CaseItemNondefault {
+    pub nodes: (List<Symbol, CaseItemExpression>, Symbol, StatementOrNull),
+}
+
+#[derive(Debug, Node)]
+pub struct CaseItemDefault {
+    pub nodes: (Keyword, Option<Symbol>, StatementOrNull),
+}
+
+#[derive(Debug, Node)]
+pub enum CasePatternItem {
+    NonDefault(CasePatternItemNondefault),
+    Default(CaseItemDefault),
+}
+
+#[derive(Debug, Node)]
+pub struct CasePatternItemNondefault {
     pub nodes: (
-        List<Symbol<'a>, CaseItemExpression<'a>>,
-        Symbol<'a>,
-        StatementOrNull<'a>,
+        Pattern,
+        Option<(Symbol, Expression)>,
+        Symbol,
+        StatementOrNull,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct CaseItemDefault<'a> {
-    pub nodes: (Keyword<'a>, Option<Symbol<'a>>, StatementOrNull<'a>),
+pub enum CaseInsideItem {
+    NonDefault(CaseInsideItemNondefault),
+    Default(CaseItemDefault),
 }
 
 #[derive(Debug, Node)]
-pub enum CasePatternItem<'a> {
-    NonDefault(CasePatternItemNondefault<'a>),
-    Default(CaseItemDefault<'a>),
+pub struct CaseInsideItemNondefault {
+    pub nodes: (OpenRangeList, Symbol, StatementOrNull),
 }
 
 #[derive(Debug, Node)]
-pub struct CasePatternItemNondefault<'a> {
-    pub nodes: (
-        Pattern<'a>,
-        Option<(Symbol<'a>, Expression<'a>)>,
-        Symbol<'a>,
-        StatementOrNull<'a>,
-    ),
+pub struct CaseItemExpression {
+    pub nodes: (Expression,),
 }
 
 #[derive(Debug, Node)]
-pub enum CaseInsideItem<'a> {
-    NonDefault(CaseInsideItemNondefault<'a>),
-    Default(CaseItemDefault<'a>),
+pub struct RandcaseStatement {
+    pub nodes: (Keyword, RandcaseItem, Vec<RandcaseItem>, Keyword),
 }
 
 #[derive(Debug, Node)]
-pub struct CaseInsideItemNondefault<'a> {
-    pub nodes: (OpenRangeList<'a>, Symbol<'a>, StatementOrNull<'a>),
+pub struct RandcaseItem {
+    pub nodes: (Expression, Symbol, StatementOrNull),
 }
 
 #[derive(Debug, Node)]
-pub struct CaseItemExpression<'a> {
-    pub nodes: (Expression<'a>,),
+pub struct OpenRangeList {
+    pub nodes: (List<Symbol, OpenValueRange>,),
 }
 
 #[derive(Debug, Node)]
-pub struct RandcaseStatement<'a> {
-    pub nodes: (
-        Keyword<'a>,
-        RandcaseItem<'a>,
-        Vec<RandcaseItem<'a>>,
-        Keyword<'a>,
-    ),
-}
-
-#[derive(Debug, Node)]
-pub struct RandcaseItem<'a> {
-    pub nodes: (Expression<'a>, Symbol<'a>, StatementOrNull<'a>),
-}
-
-#[derive(Debug, Node)]
-pub struct OpenRangeList<'a> {
-    pub nodes: (List<Symbol<'a>, OpenValueRange<'a>>,),
-}
-
-#[derive(Debug, Node)]
-pub struct OpenValueRange<'a> {
-    pub nodes: (ValueRange<'a>,),
+pub struct OpenValueRange {
+    pub nodes: (ValueRange,),
 }
 
 // -----------------------------------------------------------------------------

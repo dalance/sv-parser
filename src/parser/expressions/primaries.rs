@@ -8,255 +8,255 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub enum ConstantPrimary<'a> {
-    PrimaryLiteral(PrimaryLiteral<'a>),
-    PsParameter(ConstantPrimaryPsParameter<'a>),
-    Specparam(ConstantPrimarySpecparam<'a>),
-    GenvarIdentifier(GenvarIdentifier<'a>),
-    FormalPort(ConstantPrimaryFormalPort<'a>),
-    Enum(ConstantPrimaryEnum<'a>),
-    Concatenation(ConstantPrimaryConcatenation<'a>),
-    MultipleConcatenation(ConstantPrimaryMultipleConcatenation<'a>),
-    ConstantFunctionCall(ConstantFunctionCall<'a>),
-    ConstantLetExpression(ConstantLetExpression<'a>),
-    MintypmaxExpression(ConstantPrimaryMintypmaxExpression<'a>),
-    ConstantCast(ConstantCast<'a>),
-    ConstantAssignmentPatternExpression(ConstantAssignmentPatternExpression<'a>),
-    TypeReference(TypeReference<'a>),
-    Null(Keyword<'a>),
+pub enum ConstantPrimary {
+    PrimaryLiteral(PrimaryLiteral),
+    PsParameter(ConstantPrimaryPsParameter),
+    Specparam(ConstantPrimarySpecparam),
+    GenvarIdentifier(GenvarIdentifier),
+    FormalPort(ConstantPrimaryFormalPort),
+    Enum(ConstantPrimaryEnum),
+    Concatenation(ConstantPrimaryConcatenation),
+    MultipleConcatenation(ConstantPrimaryMultipleConcatenation),
+    ConstantFunctionCall(ConstantFunctionCall),
+    ConstantLetExpression(ConstantLetExpression),
+    MintypmaxExpression(ConstantPrimaryMintypmaxExpression),
+    ConstantCast(ConstantCast),
+    ConstantAssignmentPatternExpression(ConstantAssignmentPatternExpression),
+    TypeReference(TypeReference),
+    Null(Keyword),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstantPrimaryPsParameter<'a> {
-    pub nodes: (PsParameterIdentifier<'a>, ConstantSelect<'a>),
+pub struct ConstantPrimaryPsParameter {
+    pub nodes: (PsParameterIdentifier, ConstantSelect),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstantPrimarySpecparam<'a> {
+pub struct ConstantPrimarySpecparam {
     pub nodes: (
-        SpecparamIdentifier<'a>,
-        Option<Bracket<'a, ConstantRangeExpression<'a>>>,
+        SpecparamIdentifier,
+        Option<Bracket< ConstantRangeExpression>>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstantPrimaryFormalPort<'a> {
-    pub nodes: (FormalPortIdentifier<'a>, ConstantSelect<'a>),
+pub struct ConstantPrimaryFormalPort {
+    pub nodes: (FormalPortIdentifier, ConstantSelect),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstantPrimaryEnum<'a> {
-    pub nodes: (PackageScopeOrClassScope<'a>, EnumIdentifier<'a>),
+pub struct ConstantPrimaryEnum {
+    pub nodes: (PackageScopeOrClassScope, EnumIdentifier),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstantPrimaryConcatenation<'a> {
+pub struct ConstantPrimaryConcatenation {
     pub nodes: (
-        ConstantConcatenation<'a>,
-        Option<Bracket<'a, ConstantRangeExpression<'a>>>,
+        ConstantConcatenation,
+        Option<Bracket< ConstantRangeExpression>>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstantPrimaryMultipleConcatenation<'a> {
+pub struct ConstantPrimaryMultipleConcatenation {
     pub nodes: (
-        ConstantMultipleConcatenation<'a>,
-        Option<Bracket<'a, ConstantRangeExpression<'a>>>,
+        ConstantMultipleConcatenation,
+        Option<Bracket< ConstantRangeExpression>>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstantPrimaryMintypmaxExpression<'a> {
-    pub nodes: (Paren<'a, ConstantMintypmaxExpression<'a>>,),
+pub struct ConstantPrimaryMintypmaxExpression {
+    pub nodes: (Paren< ConstantMintypmaxExpression>,),
 }
 
 #[derive(Debug, Node)]
-pub enum ModulePathPrimary<'a> {
-    Number(Number<'a>),
-    Identifier(Identifier<'a>),
-    ModulePathConcatenation(ModulePathConcatenation<'a>),
-    ModulePathMultipleConcatenation(ModulePathMultipleConcatenation<'a>),
-    FunctionSubroutineCall(FunctionSubroutineCall<'a>),
-    Mintypmax(ModulePathPrimaryMintypmax<'a>),
+pub enum ModulePathPrimary {
+    Number(Number),
+    Identifier(Identifier),
+    ModulePathConcatenation(ModulePathConcatenation),
+    ModulePathMultipleConcatenation(ModulePathMultipleConcatenation),
+    FunctionSubroutineCall(FunctionSubroutineCall),
+    Mintypmax(ModulePathPrimaryMintypmax),
 }
 
 #[derive(Debug, Node)]
-pub struct ModulePathPrimaryMintypmax<'a> {
-    pub nodes: (Paren<'a, ModulePathMintypmaxExpression<'a>>,),
+pub struct ModulePathPrimaryMintypmax {
+    pub nodes: (Paren< ModulePathMintypmaxExpression>,),
 }
 
 #[derive(Debug, Node)]
-pub enum Primary<'a> {
-    PrimaryLiteral(PrimaryLiteral<'a>),
-    Hierarchical(PrimaryHierarchical<'a>),
-    EmptyUnpackedArrayConcatenation(EmptyUnpackedArrayConcatenation<'a>),
-    Concatenation(PrimaryConcatenation<'a>),
-    MultipleConcatenation(PrimaryMultipleConcatenation<'a>),
-    FunctionSubroutineCall(FunctionSubroutineCall<'a>),
-    LetExpression(LetExpression<'a>),
-    MintypmaxExpression(PrimaryMintypmaxExpression<'a>),
-    Cast(Cast<'a>),
-    AssignmentPatternExpression(AssignmentPatternExpression<'a>),
-    StreamingConcatenation(StreamingConcatenation<'a>),
-    SequenceMethodCall(SequenceMethodCall<'a>),
-    This(Keyword<'a>),
-    Dollar(Symbol<'a>),
-    Null(Keyword<'a>),
+pub enum Primary {
+    PrimaryLiteral(PrimaryLiteral),
+    Hierarchical(PrimaryHierarchical),
+    EmptyUnpackedArrayConcatenation(EmptyUnpackedArrayConcatenation),
+    Concatenation(PrimaryConcatenation),
+    MultipleConcatenation(PrimaryMultipleConcatenation),
+    FunctionSubroutineCall(FunctionSubroutineCall),
+    LetExpression(LetExpression),
+    MintypmaxExpression(PrimaryMintypmaxExpression),
+    Cast(Cast),
+    AssignmentPatternExpression(AssignmentPatternExpression),
+    StreamingConcatenation(StreamingConcatenation),
+    SequenceMethodCall(SequenceMethodCall),
+    This(Keyword),
+    Dollar(Symbol),
+    Null(Keyword),
 }
 
 #[derive(Debug, Node)]
-pub struct PrimaryHierarchical<'a> {
+pub struct PrimaryHierarchical {
     pub nodes: (
-        Option<ClassQualifierOrPackageScope<'a>>,
-        HierarchicalIdentifier<'a>,
-        Select<'a>,
+        Option<ClassQualifierOrPackageScope>,
+        HierarchicalIdentifier,
+        Select,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct PrimaryConcatenation<'a> {
-    pub nodes: (Concatenation<'a>, Option<Bracket<'a, RangeExpression<'a>>>),
+pub struct PrimaryConcatenation {
+    pub nodes: (Concatenation, Option<Bracket< RangeExpression>>),
 }
 
 #[derive(Debug, Node)]
-pub struct PrimaryMultipleConcatenation<'a> {
+pub struct PrimaryMultipleConcatenation {
     pub nodes: (
-        MultipleConcatenation<'a>,
-        Option<Bracket<'a, RangeExpression<'a>>>,
+        MultipleConcatenation,
+        Option<Bracket< RangeExpression>>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct PrimaryMintypmaxExpression<'a> {
-    pub nodes: (Paren<'a, MintypmaxExpression<'a>>,),
+pub struct PrimaryMintypmaxExpression {
+    pub nodes: (Paren< MintypmaxExpression>,),
 }
 
 #[derive(Debug, Node)]
-pub enum ClassQualifierOrPackageScope<'a> {
-    ClassQualifier(ClassQualifier<'a>),
-    PackageScope(PackageScope<'a>),
+pub enum ClassQualifierOrPackageScope {
+    ClassQualifier(ClassQualifier),
+    PackageScope(PackageScope),
 }
 
 #[derive(Debug, Node)]
-pub struct ClassQualifier<'a> {
+pub struct ClassQualifier {
     pub nodes: (
-        Option<Local<'a>>,
-        Option<ImplicitClassHandleOrClassScope<'a>>,
+        Option<Local>,
+        Option<ImplicitClassHandleOrClassScope>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum RangeExpression<'a> {
-    Expression(Expression<'a>),
-    PartSelectRange(PartSelectRange<'a>),
+pub enum RangeExpression {
+    Expression(Expression),
+    PartSelectRange(PartSelectRange),
 }
 
 #[derive(Debug, Node)]
-pub enum PrimaryLiteral<'a> {
-    Number(Number<'a>),
-    TimeLiteral(TimeLiteral<'a>),
-    UnbasedUnsizedLiteral(UnbasedUnsizedLiteral<'a>),
-    StringLiteral(StringLiteral<'a>),
+pub enum PrimaryLiteral {
+    Number(Number),
+    TimeLiteral(TimeLiteral),
+    UnbasedUnsizedLiteral(UnbasedUnsizedLiteral),
+    StringLiteral(StringLiteral),
 }
 
 #[derive(Debug, Node)]
-pub enum TimeLiteral<'a> {
-    Unsigned(TimeLiteralUnsigned<'a>),
-    FixedPoint(TimeLiteralFixedPoint<'a>),
+pub enum TimeLiteral {
+    Unsigned(TimeLiteralUnsigned),
+    FixedPoint(TimeLiteralFixedPoint),
 }
 
 #[derive(Debug, Node)]
-pub struct TimeLiteralUnsigned<'a> {
-    pub nodes: (UnsignedNumber<'a>, TimeUnit<'a>),
+pub struct TimeLiteralUnsigned {
+    pub nodes: (UnsignedNumber, TimeUnit),
 }
 
 #[derive(Debug, Node)]
-pub struct TimeLiteralFixedPoint<'a> {
-    pub nodes: (FixedPointNumber<'a>, TimeUnit<'a>),
+pub struct TimeLiteralFixedPoint {
+    pub nodes: (FixedPointNumber, TimeUnit),
 }
 
 #[derive(Debug, Node)]
-pub enum TimeUnit<'a> {
-    S(Keyword<'a>),
-    MS(Keyword<'a>),
-    US(Keyword<'a>),
-    NS(Keyword<'a>),
-    PS(Keyword<'a>),
-    FS(Keyword<'a>),
+pub enum TimeUnit {
+    S(Keyword),
+    MS(Keyword),
+    US(Keyword),
+    NS(Keyword),
+    PS(Keyword),
+    FS(Keyword),
 }
 
 #[derive(Debug, Node)]
-pub enum ImplicitClassHandle<'a> {
-    This(Keyword<'a>),
-    Super(Keyword<'a>),
-    ThisSuper((Keyword<'a>, Symbol<'a>, Keyword<'a>)),
+pub enum ImplicitClassHandle {
+    This(Keyword),
+    Super(Keyword),
+    ThisSuper((Keyword, Symbol, Keyword)),
 }
 
 #[derive(Debug, Node)]
-pub struct BitSelect<'a> {
-    nodes: (Vec<Bracket<'a, Expression<'a>>>,),
+pub struct BitSelect {
+    nodes: (Vec<Bracket< Expression>>,),
 }
 
 #[derive(Debug, Node)]
-pub struct Select<'a> {
-    pub nodes: (
-        Option<(
-            Vec<(Symbol<'a>, MemberIdentifier<'a>, BitSelect<'a>)>,
-            Symbol<'a>,
-            MemberIdentifier<'a>,
-        )>,
-        BitSelect<'a>,
-        Option<Bracket<'a, PartSelectRange<'a>>>,
-    ),
-}
-
-#[derive(Debug, Node)]
-pub struct NonrangeSelect<'a> {
+pub struct Select {
     pub nodes: (
         Option<(
-            Vec<(Symbol<'a>, MemberIdentifier<'a>, BitSelect<'a>)>,
-            Symbol<'a>,
-            MemberIdentifier<'a>,
+            Vec<(Symbol, MemberIdentifier, BitSelect)>,
+            Symbol,
+            MemberIdentifier,
         )>,
-        BitSelect<'a>,
+        BitSelect,
+        Option<Bracket< PartSelectRange>>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstantBitSelect<'a> {
-    nodes: (Vec<Bracket<'a, ConstantExpression<'a>>>,),
-}
-
-#[derive(Debug, Node)]
-pub struct ConstantSelect<'a> {
+pub struct NonrangeSelect {
     pub nodes: (
         Option<(
-            Vec<(Symbol<'a>, MemberIdentifier<'a>, ConstantBitSelect<'a>)>,
-            Symbol<'a>,
-            MemberIdentifier<'a>,
+            Vec<(Symbol, MemberIdentifier, BitSelect)>,
+            Symbol,
+            MemberIdentifier,
         )>,
-        ConstantBitSelect<'a>,
-        Option<Bracket<'a, ConstantPartSelectRange<'a>>>,
+        BitSelect,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstantCast<'a> {
+pub struct ConstantBitSelect {
+    nodes: (Vec<Bracket< ConstantExpression>>,),
+}
+
+#[derive(Debug, Node)]
+pub struct ConstantSelect {
     pub nodes: (
-        CastingType<'a>,
-        Symbol<'a>,
-        Paren<'a, ConstantExpression<'a>>,
+        Option<(
+            Vec<(Symbol, MemberIdentifier, ConstantBitSelect)>,
+            Symbol,
+            MemberIdentifier,
+        )>,
+        ConstantBitSelect,
+        Option<Bracket< ConstantPartSelectRange>>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ConstantLetExpression<'a> {
-    pub nodes: (LetExpression<'a>,),
+pub struct ConstantCast {
+    pub nodes: (
+        CastingType,
+        Symbol,
+        Paren< ConstantExpression>,
+    ),
 }
 
 #[derive(Debug, Node)]
-pub struct Cast<'a> {
-    pub nodes: (CastingType<'a>, Symbol<'a>, Paren<'a, Expression<'a>>),
+pub struct ConstantLetExpression {
+    pub nodes: (LetExpression,),
+}
+
+#[derive(Debug, Node)]
+pub struct Cast {
+    pub nodes: (CastingType, Symbol, Paren< Expression>),
 }
 
 // -----------------------------------------------------------------------------

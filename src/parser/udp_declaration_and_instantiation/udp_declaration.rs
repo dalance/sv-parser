@@ -9,80 +9,80 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct UdpNonansiDeclaration<'a> {
+pub struct UdpNonansiDeclaration {
     pub nodes: (
-        Vec<AttributeInstance<'a>>,
-        Keyword<'a>,
-        UdpIdentifier<'a>,
-        Paren<'a, UdpPortList<'a>>,
-        Symbol<'a>,
+        Vec<AttributeInstance>,
+        Keyword,
+        UdpIdentifier,
+        Paren<UdpPortList>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct UdpAnsiDeclaration<'a> {
+pub struct UdpAnsiDeclaration {
     pub nodes: (
-        Vec<AttributeInstance<'a>>,
-        Keyword<'a>,
-        UdpIdentifier<'a>,
-        Paren<'a, UdpDeclarationPortList<'a>>,
-        Symbol<'a>,
+        Vec<AttributeInstance>,
+        Keyword,
+        UdpIdentifier,
+        Paren<UdpDeclarationPortList>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum UdpDeclaration<'a> {
-    Nonansi(UdpDeclarationNonansi<'a>),
-    Ansi(UdpDeclarationAnsi<'a>),
-    ExternNonansi(UdpDeclarationExternNonansi<'a>),
-    ExternAnsi(UdpDeclarationExternAnsi<'a>),
-    Wildcard(UdpDeclarationWildcard<'a>),
+pub enum UdpDeclaration {
+    Nonansi(UdpDeclarationNonansi),
+    Ansi(UdpDeclarationAnsi),
+    ExternNonansi(UdpDeclarationExternNonansi),
+    ExternAnsi(UdpDeclarationExternAnsi),
+    Wildcard(UdpDeclarationWildcard),
 }
 
 #[derive(Debug, Node)]
-pub struct UdpDeclarationNonansi<'a> {
+pub struct UdpDeclarationNonansi {
     pub nodes: (
-        UdpNonansiDeclaration<'a>,
-        UdpPortDeclaration<'a>,
-        Vec<UdpPortDeclaration<'a>>,
-        UdpBody<'a>,
-        Keyword<'a>,
-        Option<(Symbol<'a>, UdpIdentifier<'a>)>,
+        UdpNonansiDeclaration,
+        UdpPortDeclaration,
+        Vec<UdpPortDeclaration>,
+        UdpBody,
+        Keyword,
+        Option<(Symbol, UdpIdentifier)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct UdpDeclarationAnsi<'a> {
+pub struct UdpDeclarationAnsi {
     pub nodes: (
-        UdpAnsiDeclaration<'a>,
-        UdpBody<'a>,
-        Keyword<'a>,
-        Option<(Symbol<'a>, UdpIdentifier<'a>)>,
+        UdpAnsiDeclaration,
+        UdpBody,
+        Keyword,
+        Option<(Symbol, UdpIdentifier)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct UdpDeclarationExternNonansi<'a> {
-    pub nodes: (Keyword<'a>, UdpNonansiDeclaration<'a>),
+pub struct UdpDeclarationExternNonansi {
+    pub nodes: (Keyword, UdpNonansiDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub struct UdpDeclarationExternAnsi<'a> {
-    pub nodes: (Keyword<'a>, UdpAnsiDeclaration<'a>),
+pub struct UdpDeclarationExternAnsi {
+    pub nodes: (Keyword, UdpAnsiDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub struct UdpDeclarationWildcard<'a> {
+pub struct UdpDeclarationWildcard {
     pub nodes: (
-        Vec<AttributeInstance<'a>>,
-        Keyword<'a>,
-        UdpIdentifier<'a>,
-        Paren<'a, Symbol<'a>>,
-        Symbol<'a>,
-        Vec<UdpPortDeclaration<'a>>,
-        UdpBody<'a>,
-        Keyword<'a>,
-        Option<(Symbol<'a>, UdpIdentifier<'a>)>,
+        Vec<AttributeInstance>,
+        Keyword,
+        UdpIdentifier,
+        Paren<Symbol>,
+        Symbol,
+        Vec<UdpPortDeclaration>,
+        UdpBody,
+        Keyword,
+        Option<(Symbol, UdpIdentifier)>,
     ),
 }
 

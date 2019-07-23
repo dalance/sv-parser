@@ -9,89 +9,75 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct LetDeclaration<'a> {
+pub struct LetDeclaration {
     pub nodes: (
-        Keyword<'a>,
-        LetIdentifier<'a>,
-        Option<Paren<'a, Option<LetPortList<'a>>>>,
-        Symbol<'a>,
-        Expression<'a>,
-        Symbol<'a>,
+        Keyword,
+        LetIdentifier,
+        Option<Paren<Option<LetPortList>>>,
+        Symbol,
+        Expression,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct LetIdentifier<'a> {
-    pub nodes: (Identifier<'a>,),
+pub struct LetIdentifier {
+    pub nodes: (Identifier,),
 }
 
 #[derive(Debug, Node)]
-pub struct LetPortList<'a> {
-    pub nodes: (List<Symbol<'a>, LetPortItem<'a>>,),
+pub struct LetPortList {
+    pub nodes: (List<Symbol, LetPortItem>,),
 }
 
 #[derive(Debug, Node)]
-pub struct LetPortItem<'a> {
+pub struct LetPortItem {
     pub nodes: (
-        Vec<AttributeInstance<'a>>,
-        Option<LetFormalType<'a>>,
-        FormalPortIdentifier<'a>,
-        Vec<VariableDimension<'a>>,
-        Option<(Symbol<'a>, Expression<'a>)>,
+        Vec<AttributeInstance>,
+        Option<LetFormalType>,
+        FormalPortIdentifier,
+        Vec<VariableDimension>,
+        Option<(Symbol, Expression)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum LetFormalType<'a> {
-    DataTypeOrImplicit(DataTypeOrImplicit<'a>),
-    Untyped(Keyword<'a>),
+pub enum LetFormalType {
+    DataTypeOrImplicit(DataTypeOrImplicit),
+    Untyped(Keyword),
 }
 
 #[derive(Debug, Node)]
-pub struct LetExpression<'a> {
+pub struct LetExpression {
     pub nodes: (
-        Option<PackageScope<'a>>,
-        LetIdentifier<'a>,
-        Option<Paren<'a, Option<LetListOfArguments<'a>>>>,
+        Option<PackageScope>,
+        LetIdentifier,
+        Option<Paren<Option<LetListOfArguments>>>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum LetListOfArguments<'a> {
-    Ordered(LetListOfArgumentsOrdered<'a>),
-    Named(LetListOfArgumentsNamed<'a>),
+pub enum LetListOfArguments {
+    Ordered(LetListOfArgumentsOrdered),
+    Named(LetListOfArgumentsNamed),
 }
 
 #[derive(Debug, Node)]
-pub struct LetListOfArgumentsOrdered<'a> {
+pub struct LetListOfArgumentsOrdered {
     pub nodes: (
-        List<Symbol<'a>, Option<LetActualArg<'a>>>,
-        Vec<(
-            Symbol<'a>,
-            Symbol<'a>,
-            Identifier<'a>,
-            Paren<'a, Option<LetActualArg<'a>>>,
-        )>,
+        List<Symbol, Option<LetActualArg>>,
+        Vec<(Symbol, Symbol, Identifier, Paren<Option<LetActualArg>>)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct LetListOfArgumentsNamed<'a> {
-    pub nodes: (
-        List<
-            Symbol<'a>,
-            (
-                Symbol<'a>,
-                Identifier<'a>,
-                Paren<'a, Option<LetActualArg<'a>>>,
-            ),
-        >,
-    ),
+pub struct LetListOfArgumentsNamed {
+    pub nodes: (List<Symbol, (Symbol, Identifier, Paren<Option<LetActualArg>>)>,),
 }
 
 #[derive(Debug, Node)]
-pub struct LetActualArg<'a> {
-    pub nodes: (Expression<'a>,),
+pub struct LetActualArg {
+    pub nodes: (Expression,),
 }
 
 // -----------------------------------------------------------------------------

@@ -8,88 +8,81 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct ModportDeclaration<'a> {
-    pub nodes: (Keyword<'a>, List<Symbol<'a>, ModportItem<'a>>, Symbol<'a>),
+pub struct ModportDeclaration {
+    pub nodes: (Keyword, List<Symbol, ModportItem>, Symbol),
 }
 
 #[derive(Debug, Node)]
-pub struct ModportItem<'a> {
+pub struct ModportItem {
     pub nodes: (
-        ModportIdentifier<'a>,
-        Paren<'a, List<Symbol<'a>, ModportPortsDeclaraton<'a>>>,
+        ModportIdentifier,
+        Paren<List<Symbol, ModportPortsDeclaraton>>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum ModportPortsDeclaraton<'a> {
-    Simple(ModportPortsDeclaratonSimple<'a>),
-    Tf(ModportPortsDeclaratonTf<'a>),
-    Clocking(ModportPortsDeclaratonClocking<'a>),
+pub enum ModportPortsDeclaraton {
+    Simple(ModportPortsDeclaratonSimple),
+    Tf(ModportPortsDeclaratonTf),
+    Clocking(ModportPortsDeclaratonClocking),
 }
 
 #[derive(Debug, Node)]
-pub struct ModportPortsDeclaratonSimple<'a> {
-    pub nodes: (
-        Vec<AttributeInstance<'a>>,
-        ModportSimplePortsDeclaration<'a>,
-    ),
+pub struct ModportPortsDeclaratonSimple {
+    pub nodes: (Vec<AttributeInstance>, ModportSimplePortsDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub struct ModportPortsDeclaratonTf<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, ModportTfPortsDeclaration<'a>),
+pub struct ModportPortsDeclaratonTf {
+    pub nodes: (Vec<AttributeInstance>, ModportTfPortsDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub struct ModportPortsDeclaratonClocking<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, ModportClockingDeclaration<'a>),
+pub struct ModportPortsDeclaratonClocking {
+    pub nodes: (Vec<AttributeInstance>, ModportClockingDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub struct ModportClockingDeclaration<'a> {
-    pub nodes: (Keyword<'a>, ClockingIdentifier<'a>),
+pub struct ModportClockingDeclaration {
+    pub nodes: (Keyword, ClockingIdentifier),
 }
 
 #[derive(Debug, Node)]
-pub struct ModportSimplePortsDeclaration<'a> {
-    pub nodes: (PortDirection<'a>, List<Symbol<'a>, ModportSimplePort<'a>>),
+pub struct ModportSimplePortsDeclaration {
+    pub nodes: (PortDirection, List<Symbol, ModportSimplePort>),
 }
 
 #[derive(Debug, Node)]
-pub enum ModportSimplePort<'a> {
-    Ordered(ModportSimplePortOrdered<'a>),
-    Named(ModportSimplePortNamed<'a>),
+pub enum ModportSimplePort {
+    Ordered(ModportSimplePortOrdered),
+    Named(ModportSimplePortNamed),
 }
 
 #[derive(Debug, Node)]
-pub struct ModportSimplePortOrdered<'a> {
-    pub nodes: (PortIdentifier<'a>,),
+pub struct ModportSimplePortOrdered {
+    pub nodes: (PortIdentifier,),
 }
 
 #[derive(Debug, Node)]
-pub struct ModportSimplePortNamed<'a> {
-    pub nodes: (
-        Symbol<'a>,
-        PortIdentifier<'a>,
-        Paren<'a, Option<Expression<'a>>>,
-    ),
+pub struct ModportSimplePortNamed {
+    pub nodes: (Symbol, PortIdentifier, Paren<Option<Expression>>),
 }
 
 #[derive(Debug, Node)]
-pub struct ModportTfPortsDeclaration<'a> {
-    pub nodes: (ImportExport<'a>, List<Symbol<'a>, ModportTfPort<'a>>),
+pub struct ModportTfPortsDeclaration {
+    pub nodes: (ImportExport, List<Symbol, ModportTfPort>),
 }
 
 #[derive(Debug, Node)]
-pub enum ModportTfPort<'a> {
-    MethodPrototype(MethodPrototype<'a>),
-    TfIdentifier(TfIdentifier<'a>),
+pub enum ModportTfPort {
+    MethodPrototype(MethodPrototype),
+    TfIdentifier(TfIdentifier),
 }
 
 #[derive(Debug, Node)]
-pub enum ImportExport<'a> {
-    Import(Keyword<'a>),
-    Export(Keyword<'a>),
+pub enum ImportExport {
+    Import(Keyword),
+    Export(Keyword),
 }
 
 // -----------------------------------------------------------------------------

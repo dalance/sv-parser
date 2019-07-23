@@ -9,94 +9,90 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct TaskDeclaration<'a> {
-    pub nodes: (Keyword<'a>, Option<Lifetime<'a>>, TaskBodyDeclaration<'a>),
+pub struct TaskDeclaration {
+    pub nodes: (Keyword, Option<Lifetime>, TaskBodyDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub enum TaskBodyDeclaration<'a> {
-    WithoutPort(TaskBodyDeclarationWithoutPort<'a>),
-    WithPort(TaskBodyDeclarationWithPort<'a>),
+pub enum TaskBodyDeclaration {
+    WithoutPort(TaskBodyDeclarationWithoutPort),
+    WithPort(TaskBodyDeclarationWithPort),
 }
 
 #[derive(Debug, Node)]
-pub struct TaskBodyDeclarationWithoutPort<'a> {
+pub struct TaskBodyDeclarationWithoutPort {
     pub nodes: (
-        Option<InterfaceIdentifierOrClassScope<'a>>,
-        TaskIdentifier<'a>,
-        Symbol<'a>,
-        Vec<TfItemDeclaration<'a>>,
-        Vec<StatementOrNull<'a>>,
-        Keyword<'a>,
-        Option<(Symbol<'a>, TaskIdentifier<'a>)>,
+        Option<InterfaceIdentifierOrClassScope>,
+        TaskIdentifier,
+        Symbol,
+        Vec<TfItemDeclaration>,
+        Vec<StatementOrNull>,
+        Keyword,
+        Option<(Symbol, TaskIdentifier)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct TaskBodyDeclarationWithPort<'a> {
+pub struct TaskBodyDeclarationWithPort {
     pub nodes: (
-        Option<InterfaceIdentifierOrClassScope<'a>>,
-        TaskIdentifier<'a>,
-        Paren<'a, Option<TfPortList<'a>>>,
-        Symbol<'a>,
-        Vec<BlockItemDeclaration<'a>>,
-        Vec<StatementOrNull<'a>>,
-        Keyword<'a>,
-        Option<(Symbol<'a>, TaskIdentifier<'a>)>,
+        Option<InterfaceIdentifierOrClassScope>,
+        TaskIdentifier,
+        Paren<Option<TfPortList>>,
+        Symbol,
+        Vec<BlockItemDeclaration>,
+        Vec<StatementOrNull>,
+        Keyword,
+        Option<(Symbol, TaskIdentifier)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum TfItemDeclaration<'a> {
-    BlockItemDeclaration(BlockItemDeclaration<'a>),
-    TfPortDeclaration(TfPortDeclaration<'a>),
+pub enum TfItemDeclaration {
+    BlockItemDeclaration(BlockItemDeclaration),
+    TfPortDeclaration(TfPortDeclaration),
 }
 
 #[derive(Debug, Node)]
-pub struct TfPortList<'a> {
-    pub nodes: (List<Symbol<'a>, TfPortItem<'a>>,),
+pub struct TfPortList {
+    pub nodes: (List<Symbol, TfPortItem>,),
 }
 
 #[derive(Debug, Node)]
-pub struct TfPortItem<'a> {
+pub struct TfPortItem {
     pub nodes: (
-        Vec<AttributeInstance<'a>>,
-        Option<TfPortDirection<'a>>,
-        Option<Var<'a>>,
-        Option<DataTypeOrImplicit<'a>>,
+        Vec<AttributeInstance>,
+        Option<TfPortDirection>,
+        Option<Var>,
+        Option<DataTypeOrImplicit>,
         Option<(
-            PortIdentifier<'a>,
-            Vec<VariableDimension<'a>>,
-            Option<(Symbol<'a>, Expression<'a>)>,
+            PortIdentifier,
+            Vec<VariableDimension>,
+            Option<(Symbol, Expression)>,
         )>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum TfPortDirection<'a> {
-    PortDirection(PortDirection<'a>),
-    ConstRef((Keyword<'a>, Keyword<'a>)),
+pub enum TfPortDirection {
+    PortDirection(PortDirection),
+    ConstRef((Keyword, Keyword)),
 }
 
 #[derive(Debug, Node)]
-pub struct TfPortDeclaration<'a> {
+pub struct TfPortDeclaration {
     pub nodes: (
-        Vec<AttributeInstance<'a>>,
-        TfPortDirection<'a>,
-        Option<Var<'a>>,
-        Option<DataTypeOrImplicit<'a>>,
-        ListOfTfVariableIdentifiers<'a>,
-        Symbol<'a>,
+        Vec<AttributeInstance>,
+        TfPortDirection,
+        Option<Var>,
+        Option<DataTypeOrImplicit>,
+        ListOfTfVariableIdentifiers,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct TaskPrototype<'a> {
-    pub nodes: (
-        Keyword<'a>,
-        TaskIdentifier<'a>,
-        Option<Paren<'a, Option<TfPortList<'a>>>>,
-    ),
+pub struct TaskPrototype {
+    pub nodes: (Keyword, TaskIdentifier, Option<Paren<Option<TfPortList>>>),
 }
 
 // -----------------------------------------------------------------------------

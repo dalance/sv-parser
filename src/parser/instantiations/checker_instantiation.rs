@@ -8,55 +8,55 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct CheckerInstantiation<'a> {
+pub struct CheckerInstantiation {
     pub nodes: (
-        PsCheckerIdentifier<'a>,
-        NameOfInstance<'a>,
-        Paren<'a, Option<ListOfCheckerPortConnections<'a>>>,
-        Symbol<'a>,
+        PsCheckerIdentifier,
+        NameOfInstance,
+        Paren< Option<ListOfCheckerPortConnections>>,
+        Symbol,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum ListOfCheckerPortConnections<'a> {
-    Ordered(ListOfCheckerPortConnectionsOrdered<'a>),
-    Named(ListOfCheckerPortConnectionsNamed<'a>),
+pub enum ListOfCheckerPortConnections {
+    Ordered(ListOfCheckerPortConnectionsOrdered),
+    Named(ListOfCheckerPortConnectionsNamed),
 }
 
 #[derive(Debug, Node)]
-pub struct ListOfCheckerPortConnectionsOrdered<'a> {
-    pub nodes: (List<Symbol<'a>, OrderedCheckerPortConnection<'a>>,),
+pub struct ListOfCheckerPortConnectionsOrdered {
+    pub nodes: (List<Symbol, OrderedCheckerPortConnection>,),
 }
 
 #[derive(Debug, Node)]
-pub struct ListOfCheckerPortConnectionsNamed<'a> {
-    pub nodes: (List<Symbol<'a>, NamedCheckerPortConnection<'a>>,),
+pub struct ListOfCheckerPortConnectionsNamed {
+    pub nodes: (List<Symbol, NamedCheckerPortConnection>,),
 }
 
 #[derive(Debug, Node)]
-pub struct OrderedCheckerPortConnection<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, Option<PropertyActualArg<'a>>),
+pub struct OrderedCheckerPortConnection {
+    pub nodes: (Vec<AttributeInstance>, Option<PropertyActualArg>),
 }
 
 #[derive(Debug, Node)]
-pub enum NamedCheckerPortConnection<'a> {
-    Identifier(NamedCheckerPortConnectionIdentifier<'a>),
-    Asterisk(NamedCheckerPortConnectionAsterisk<'a>),
+pub enum NamedCheckerPortConnection {
+    Identifier(NamedCheckerPortConnectionIdentifier),
+    Asterisk(NamedCheckerPortConnectionAsterisk),
 }
 
 #[derive(Debug, Node)]
-pub struct NamedCheckerPortConnectionIdentifier<'a> {
+pub struct NamedCheckerPortConnectionIdentifier {
     pub nodes: (
-        Vec<AttributeInstance<'a>>,
-        Symbol<'a>,
-        FormalPortIdentifier<'a>,
-        Option<Paren<'a, Option<PropertyActualArg<'a>>>>,
+        Vec<AttributeInstance>,
+        Symbol,
+        FormalPortIdentifier,
+        Option<Paren< Option<PropertyActualArg>>>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct NamedCheckerPortConnectionAsterisk<'a> {
-    pub nodes: (Vec<AttributeInstance<'a>>, Symbol<'a>),
+pub struct NamedCheckerPortConnectionAsterisk {
+    pub nodes: (Vec<AttributeInstance>, Symbol),
 }
 
 // -----------------------------------------------------------------------------

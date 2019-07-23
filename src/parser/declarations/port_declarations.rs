@@ -8,77 +8,77 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct InoutDeclaration<'a> {
+pub struct InoutDeclaration {
     pub nodes: (
-        Keyword<'a>,
-        Option<NetPortType<'a>>,
-        ListOfPortIdentifiers<'a>,
+        Keyword,
+        Option<NetPortType>,
+        ListOfPortIdentifiers,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum InputDeclaration<'a> {
-    Net(InputDeclarationNet<'a>),
-    Variable(InputDeclarationVariable<'a>),
+pub enum InputDeclaration {
+    Net(InputDeclarationNet),
+    Variable(InputDeclarationVariable),
 }
 
 #[derive(Debug, Node)]
-pub struct InputDeclarationNet<'a> {
+pub struct InputDeclarationNet {
     pub nodes: (
-        Keyword<'a>,
-        Option<NetPortType<'a>>,
-        ListOfPortIdentifiers<'a>,
+        Keyword,
+        Option<NetPortType>,
+        ListOfPortIdentifiers,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct InputDeclarationVariable<'a> {
+pub struct InputDeclarationVariable {
     pub nodes: (
-        Keyword<'a>,
-        VariablePortType<'a>,
-        ListOfVariableIdentifiers<'a>,
+        Keyword,
+        VariablePortType,
+        ListOfVariableIdentifiers,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum OutputDeclaration<'a> {
-    Net(OutputDeclarationNet<'a>),
-    Variable(OutputDeclarationVariable<'a>),
+pub enum OutputDeclaration {
+    Net(OutputDeclarationNet),
+    Variable(OutputDeclarationVariable),
 }
 
 #[derive(Debug, Node)]
-pub struct OutputDeclarationNet<'a> {
+pub struct OutputDeclarationNet {
     pub nodes: (
-        Keyword<'a>,
-        Option<NetPortType<'a>>,
-        ListOfPortIdentifiers<'a>,
+        Keyword,
+        Option<NetPortType>,
+        ListOfPortIdentifiers,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct OutputDeclarationVariable<'a> {
+pub struct OutputDeclarationVariable {
     pub nodes: (
-        Keyword<'a>,
-        VariablePortType<'a>,
-        ListOfVariableIdentifiers<'a>,
+        Keyword,
+        VariablePortType,
+        ListOfVariableIdentifiers,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct InterfacePortDeclaration<'a> {
+pub struct InterfacePortDeclaration {
     pub nodes: (
-        InterfaceIdentifier<'a>,
-        Option<(Symbol<'a>, ModportIdentifier<'a>)>,
-        ListOfInterfaceIdentifiers<'a>,
+        InterfaceIdentifier,
+        Option<(Symbol, ModportIdentifier)>,
+        ListOfInterfaceIdentifiers,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct RefDeclaration<'a> {
+pub struct RefDeclaration {
     pub nodes: (
-        Keyword<'a>,
-        VariablePortType<'a>,
-        ListOfVariableIdentifiers<'a>,
+        Keyword,
+        VariablePortType,
+        ListOfVariableIdentifiers,
     ),
 }
 

@@ -8,81 +8,78 @@ use nom::IResult;
 // -----------------------------------------------------------------------------
 
 #[derive(Debug, Node)]
-pub struct TimingCheckEvent<'a> {
+pub struct TimingCheckEvent {
     pub nodes: (
-        Option<TimingCheckEventControl<'a>>,
-        SpecifyTerminalDescriptor<'a>,
-        Option<(Symbol<'a>, TimingCheckCondition<'a>)>,
+        Option<TimingCheckEventControl>,
+        SpecifyTerminalDescriptor,
+        Option<(Symbol, TimingCheckCondition)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub struct ControlledTimingCheckEvent<'a> {
+pub struct ControlledTimingCheckEvent {
     pub nodes: (
-        TimingCheckEventControl<'a>,
-        SpecifyTerminalDescriptor<'a>,
-        Option<(Symbol<'a>, TimingCheckCondition<'a>)>,
+        TimingCheckEventControl,
+        SpecifyTerminalDescriptor,
+        Option<(Symbol, TimingCheckCondition)>,
     ),
 }
 
 #[derive(Debug, Node)]
-pub enum TimingCheckEventControl<'a> {
-    Posedge(Keyword<'a>),
-    Negedge(Keyword<'a>),
-    Edge(Keyword<'a>),
-    EdgeControlSpecifier(EdgeControlSpecifier<'a>),
+pub enum TimingCheckEventControl {
+    Posedge(Keyword),
+    Negedge(Keyword),
+    Edge(Keyword),
+    EdgeControlSpecifier(EdgeControlSpecifier),
 }
 
 #[derive(Debug, Node)]
-pub enum SpecifyTerminalDescriptor<'a> {
-    SpecifyInputTerminalDescriptor(SpecifyInputTerminalDescriptor<'a>),
-    SpecifyOutputTerminalDescriptor(SpecifyOutputTerminalDescriptor<'a>),
+pub enum SpecifyTerminalDescriptor {
+    SpecifyInputTerminalDescriptor(SpecifyInputTerminalDescriptor),
+    SpecifyOutputTerminalDescriptor(SpecifyOutputTerminalDescriptor),
 }
 
 #[derive(Debug, Node)]
-pub struct EdgeControlSpecifier<'a> {
-    pub nodes: (
-        Keyword<'a>,
-        Bracket<'a, List<Symbol<'a>, EdgeDescriptor<'a>>>,
-    ),
+pub struct EdgeControlSpecifier {
+    pub nodes: (Keyword, Bracket<List<Symbol, EdgeDescriptor>>),
 }
 
 #[derive(Debug, Node)]
-pub struct EdgeDescriptor<'a> {
-    pub nodes: (Keyword<'a>,),
+pub struct EdgeDescriptor {
+    pub nodes: (Keyword,),
 }
 
 #[derive(Debug, Node)]
-pub enum TimingCheckCondition<'a> {
-    ScalarTimingCheckCondition(ScalarTimingCheckCondition<'a>),
-    Paren(TimingCheckConditionParen<'a>),
+pub enum TimingCheckCondition {
+    ScalarTimingCheckCondition(ScalarTimingCheckCondition),
+    Paren(TimingCheckConditionParen),
 }
 
 #[derive(Debug, Node)]
-pub struct TimingCheckConditionParen<'a> {
-    pub nodes: (Paren<'a, ScalarTimingCheckCondition<'a>>,),
+pub struct TimingCheckConditionParen {
+    pub nodes: (Paren<ScalarTimingCheckCondition>,),
 }
 
 #[derive(Debug, Node)]
-pub enum ScalarTimingCheckCondition<'a> {
-    Expression(Expression<'a>),
-    Unary(ScalarTimingCheckConditionUnary<'a>),
-    Binary(ScalarTimingCheckConditionBinary<'a>),
+pub enum ScalarTimingCheckCondition {
+    Expression(Expression),
+    Unary(ScalarTimingCheckConditionUnary),
+    Binary(ScalarTimingCheckConditionBinary),
 }
 
 #[derive(Debug, Node)]
-pub struct ScalarTimingCheckConditionUnary<'a> {
-    pub nodes: (Symbol<'a>, Expression<'a>),
+pub struct ScalarTimingCheckConditionUnary {
+    pub nodes: (Symbol, Expression),
 }
 
 #[derive(Debug, Node)]
-pub struct ScalarTimingCheckConditionBinary<'a> {
-    pub nodes: (Expression<'a>, Symbol<'a>, ScalarConstant<'a>),
+pub struct ScalarTimingCheckConditionBinary {
+    pub nodes: (Expression, Symbol, ScalarConstant),
 }
 
 #[derive(Debug, Node)]
-pub struct ScalarConstant<'a> {
-    pub nodes: (Keyword<'a>,),
+pub struct ScalarConstant {
+    pub nodes: (Keyword,),
 }
 
 // -----------------------------------------------------------------------------

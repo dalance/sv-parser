@@ -115,7 +115,7 @@ pub struct AssignmentPatternVariableLvalue {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn pattern(s: Span) -> IResult<Span, Pattern> {
+pub(crate) fn pattern(s: Span) -> IResult<Span, Pattern> {
     alt((
         pattern_variable,
         map(symbol(".*"), |x| Pattern::Asterisk(Box::new(x))),
@@ -129,7 +129,7 @@ pub fn pattern(s: Span) -> IResult<Span, Pattern> {
 }
 
 #[parser]
-pub fn pattern_variable(s: Span) -> IResult<Span, Pattern> {
+pub(crate) fn pattern_variable(s: Span) -> IResult<Span, Pattern> {
     let (s, a) = symbol(".")(s)?;
     let (s, b) = variable_identifier(s)?;
     Ok((
@@ -139,7 +139,7 @@ pub fn pattern_variable(s: Span) -> IResult<Span, Pattern> {
 }
 
 #[parser]
-pub fn pattern_tagged(s: Span) -> IResult<Span, Pattern> {
+pub(crate) fn pattern_tagged(s: Span) -> IResult<Span, Pattern> {
     let (s, a) = keyword("tagged")(s)?;
     let (s, b) = member_identifier(s)?;
     let (s, c) = opt(pattern)(s)?;
@@ -150,13 +150,13 @@ pub fn pattern_tagged(s: Span) -> IResult<Span, Pattern> {
 }
 
 #[parser]
-pub fn pattern_list(s: Span) -> IResult<Span, Pattern> {
+pub(crate) fn pattern_list(s: Span) -> IResult<Span, Pattern> {
     let (s, a) = apostrophe_brace(list(symbol(","), pattern))(s)?;
     Ok((s, Pattern::List(Box::new(PatternList { nodes: (a,) }))))
 }
 
 #[parser]
-pub fn pattern_identifier_list(s: Span) -> IResult<Span, Pattern> {
+pub(crate) fn pattern_identifier_list(s: Span) -> IResult<Span, Pattern> {
     let (s, a) = apostrophe_brace(list(
         symbol(","),
         triple(member_identifier, symbol(":"), pattern),
@@ -168,7 +168,7 @@ pub fn pattern_identifier_list(s: Span) -> IResult<Span, Pattern> {
 }
 
 #[parser]
-pub fn assignment_pattern(s: Span) -> IResult<Span, AssignmentPattern> {
+pub(crate) fn assignment_pattern(s: Span) -> IResult<Span, AssignmentPattern> {
     alt((
         assignment_pattern_list,
         assignment_pattern_structure,
@@ -178,7 +178,7 @@ pub fn assignment_pattern(s: Span) -> IResult<Span, AssignmentPattern> {
 }
 
 #[parser]
-pub fn assignment_pattern_list(s: Span) -> IResult<Span, AssignmentPattern> {
+pub(crate) fn assignment_pattern_list(s: Span) -> IResult<Span, AssignmentPattern> {
     let (s, a) = apostrophe_brace(list(symbol(","), expression))(s)?;
     Ok((
         s,
@@ -187,7 +187,7 @@ pub fn assignment_pattern_list(s: Span) -> IResult<Span, AssignmentPattern> {
 }
 
 #[parser]
-pub fn assignment_pattern_structure(s: Span) -> IResult<Span, AssignmentPattern> {
+pub(crate) fn assignment_pattern_structure(s: Span) -> IResult<Span, AssignmentPattern> {
     let (s, a) = apostrophe_brace(list(
         symbol(","),
         triple(structure_pattern_key, symbol(":"), expression),
@@ -199,7 +199,7 @@ pub fn assignment_pattern_structure(s: Span) -> IResult<Span, AssignmentPattern>
 }
 
 #[parser]
-pub fn assignment_pattern_array(s: Span) -> IResult<Span, AssignmentPattern> {
+pub(crate) fn assignment_pattern_array(s: Span) -> IResult<Span, AssignmentPattern> {
     let (s, a) = apostrophe_brace(list(
         symbol(","),
         triple(array_pattern_key, symbol(":"), expression),
@@ -211,7 +211,7 @@ pub fn assignment_pattern_array(s: Span) -> IResult<Span, AssignmentPattern> {
 }
 
 #[parser]
-pub fn assignment_pattern_repeat(s: Span) -> IResult<Span, AssignmentPattern> {
+pub(crate) fn assignment_pattern_repeat(s: Span) -> IResult<Span, AssignmentPattern> {
     let (s, a) = apostrophe_brace(pair(
         constant_expression,
         brace(list(symbol(","), expression)),
@@ -223,7 +223,7 @@ pub fn assignment_pattern_repeat(s: Span) -> IResult<Span, AssignmentPattern> {
 }
 
 #[parser]
-pub fn structure_pattern_key(s: Span) -> IResult<Span, StructurePatternKey> {
+pub(crate) fn structure_pattern_key(s: Span) -> IResult<Span, StructurePatternKey> {
     alt((
         map(member_identifier, |x| {
             StructurePatternKey::MemberIdentifier(Box::new(x))
@@ -235,7 +235,7 @@ pub fn structure_pattern_key(s: Span) -> IResult<Span, StructurePatternKey> {
 }
 
 #[parser]
-pub fn array_pattern_key(s: Span) -> IResult<Span, ArrayPatternKey> {
+pub(crate) fn array_pattern_key(s: Span) -> IResult<Span, ArrayPatternKey> {
     alt((
         map(constant_expression, |x| {
             ArrayPatternKey::ConstantExpression(Box::new(x))
@@ -247,7 +247,7 @@ pub fn array_pattern_key(s: Span) -> IResult<Span, ArrayPatternKey> {
 }
 
 #[parser]
-pub fn assignment_pattern_key(s: Span) -> IResult<Span, AssignmentPatternKey> {
+pub(crate) fn assignment_pattern_key(s: Span) -> IResult<Span, AssignmentPatternKey> {
     alt((
         map(simple_type, |x| {
             AssignmentPatternKey::SimpleType(Box::new(x))
@@ -260,14 +260,14 @@ pub fn assignment_pattern_key(s: Span) -> IResult<Span, AssignmentPatternKey> {
 
 #[packrat_parser]
 #[parser]
-pub fn assignment_pattern_expression(s: Span) -> IResult<Span, AssignmentPatternExpression> {
+pub(crate) fn assignment_pattern_expression(s: Span) -> IResult<Span, AssignmentPatternExpression> {
     let (s, a) = opt(assignment_pattern_expression_type)(s)?;
     let (s, b) = assignment_pattern(s)?;
     Ok((s, AssignmentPatternExpression { nodes: (a, b) }))
 }
 
 #[parser]
-pub fn assignment_pattern_expression_type(
+pub(crate) fn assignment_pattern_expression_type(
     s: Span,
 ) -> IResult<Span, AssignmentPatternExpressionType> {
     alt((
@@ -287,7 +287,7 @@ pub fn assignment_pattern_expression_type(
 }
 
 #[parser]
-pub fn constant_assignment_pattern_expression(
+pub(crate) fn constant_assignment_pattern_expression(
     s: Span,
 ) -> IResult<Span, ConstantAssignmentPatternExpression> {
     let (s, a) = assignment_pattern_expression(s)?;
@@ -295,13 +295,13 @@ pub fn constant_assignment_pattern_expression(
 }
 
 #[parser]
-pub fn assignment_pattern_net_lvalue(s: Span) -> IResult<Span, AssignmentPatternNetLvalue> {
+pub(crate) fn assignment_pattern_net_lvalue(s: Span) -> IResult<Span, AssignmentPatternNetLvalue> {
     let (s, a) = apostrophe_brace(list(symbol(","), net_lvalue))(s)?;
     Ok((s, AssignmentPatternNetLvalue { nodes: (a,) }))
 }
 
 #[parser]
-pub fn assignment_pattern_variable_lvalue(
+pub(crate) fn assignment_pattern_variable_lvalue(
     s: Span,
 ) -> IResult<Span, AssignmentPatternVariableLvalue> {
     let (s, a) = apostrophe_brace(list(symbol(","), variable_lvalue))(s)?;

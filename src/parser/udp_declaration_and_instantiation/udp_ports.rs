@@ -68,7 +68,7 @@ pub struct UdpRegDeclaration {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn udp_port_list(s: Span) -> IResult<Span, UdpPortList> {
+pub(crate) fn udp_port_list(s: Span) -> IResult<Span, UdpPortList> {
     let (s, a) = output_port_identifier(s)?;
     let (s, b) = symbol(",")(s)?;
     let (s, c) = list(symbol(","), input_port_identifier)(s)?;
@@ -76,7 +76,7 @@ pub fn udp_port_list(s: Span) -> IResult<Span, UdpPortList> {
 }
 
 #[parser]
-pub fn udp_declaration_port_list(s: Span) -> IResult<Span, UdpDeclarationPortList> {
+pub(crate) fn udp_declaration_port_list(s: Span) -> IResult<Span, UdpDeclarationPortList> {
     let (s, a) = udp_output_declaration(s)?;
     let (s, b) = symbol(",")(s)?;
     let (s, c) = list(symbol(","), udp_input_declaration)(s)?;
@@ -84,7 +84,7 @@ pub fn udp_declaration_port_list(s: Span) -> IResult<Span, UdpDeclarationPortLis
 }
 
 #[parser]
-pub fn udp_port_declaration(s: Span) -> IResult<Span, UdpPortDeclaration> {
+pub(crate) fn udp_port_declaration(s: Span) -> IResult<Span, UdpPortDeclaration> {
     alt((
         map(pair(udp_output_declaration, symbol(";")), |x| {
             UdpPortDeclaration::UdpOutputDeclaration(Box::new(x))
@@ -99,12 +99,12 @@ pub fn udp_port_declaration(s: Span) -> IResult<Span, UdpPortDeclaration> {
 }
 
 #[parser]
-pub fn udp_output_declaration(s: Span) -> IResult<Span, UdpOutputDeclaration> {
+pub(crate) fn udp_output_declaration(s: Span) -> IResult<Span, UdpOutputDeclaration> {
     alt((udp_output_declaration_nonreg, udp_output_declaration_reg))(s)
 }
 
 #[parser]
-pub fn udp_output_declaration_nonreg(s: Span) -> IResult<Span, UdpOutputDeclaration> {
+pub(crate) fn udp_output_declaration_nonreg(s: Span) -> IResult<Span, UdpOutputDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("output")(s)?;
     let (s, c) = port_identifier(s)?;
@@ -115,7 +115,7 @@ pub fn udp_output_declaration_nonreg(s: Span) -> IResult<Span, UdpOutputDeclarat
 }
 
 #[parser]
-pub fn udp_output_declaration_reg(s: Span) -> IResult<Span, UdpOutputDeclaration> {
+pub(crate) fn udp_output_declaration_reg(s: Span) -> IResult<Span, UdpOutputDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("output")(s)?;
     let (s, c) = keyword("reg")(s)?;
@@ -130,7 +130,7 @@ pub fn udp_output_declaration_reg(s: Span) -> IResult<Span, UdpOutputDeclaration
 }
 
 #[parser]
-pub fn udp_input_declaration(s: Span) -> IResult<Span, UdpInputDeclaration> {
+pub(crate) fn udp_input_declaration(s: Span) -> IResult<Span, UdpInputDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("input")(s)?;
     let (s, c) = list_of_udp_port_identifiers(s)?;
@@ -138,7 +138,7 @@ pub fn udp_input_declaration(s: Span) -> IResult<Span, UdpInputDeclaration> {
 }
 
 #[parser]
-pub fn udp_reg_declaration(s: Span) -> IResult<Span, UdpRegDeclaration> {
+pub(crate) fn udp_reg_declaration(s: Span) -> IResult<Span, UdpRegDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("reg")(s)?;
     let (s, c) = variable_identifier(s)?;

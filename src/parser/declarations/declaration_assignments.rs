@@ -148,7 +148,7 @@ pub struct DynamicArrayNew {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn defparam_assignment(s: Span) -> IResult<Span, DefparamAssignment> {
+pub(crate) fn defparam_assignment(s: Span) -> IResult<Span, DefparamAssignment> {
     let (s, a) = hierarchical_parameter_identifier(s)?;
     let (s, b) = symbol("=")(s)?;
     let (s, c) = constant_mintypmax_expression(s)?;
@@ -156,7 +156,7 @@ pub fn defparam_assignment(s: Span) -> IResult<Span, DefparamAssignment> {
 }
 
 #[parser]
-pub fn net_decl_assignment(s: Span) -> IResult<Span, NetDeclAssignment> {
+pub(crate) fn net_decl_assignment(s: Span) -> IResult<Span, NetDeclAssignment> {
     let (s, a) = net_identifier(s)?;
     let (s, b) = many0(unpacked_dimension)(s)?;
     let (s, c) = opt(pair(symbol("="), expression))(s)?;
@@ -164,7 +164,7 @@ pub fn net_decl_assignment(s: Span) -> IResult<Span, NetDeclAssignment> {
 }
 
 #[parser]
-pub fn param_assignment(s: Span) -> IResult<Span, ParamAssignment> {
+pub(crate) fn param_assignment(s: Span) -> IResult<Span, ParamAssignment> {
     let (s, a) = parameter_identifier(s)?;
     let (s, b) = many0(unpacked_dimension)(s)?;
     let (s, c) = opt(pair(symbol("="), constant_param_expression))(s)?;
@@ -172,7 +172,7 @@ pub fn param_assignment(s: Span) -> IResult<Span, ParamAssignment> {
 }
 
 #[parser]
-pub fn specparam_assignment(s: Span) -> IResult<Span, SpecparamAssignment> {
+pub(crate) fn specparam_assignment(s: Span) -> IResult<Span, SpecparamAssignment> {
     alt((
         specparam_assignment_mintypmax,
         map(pulse_control_specparam, |x| {
@@ -182,7 +182,7 @@ pub fn specparam_assignment(s: Span) -> IResult<Span, SpecparamAssignment> {
 }
 
 #[parser]
-pub fn specparam_assignment_mintypmax(s: Span) -> IResult<Span, SpecparamAssignment> {
+pub(crate) fn specparam_assignment_mintypmax(s: Span) -> IResult<Span, SpecparamAssignment> {
     let (s, a) = specparam_identifier(s)?;
     let (s, b) = symbol("=")(s)?;
     let (s, c) = constant_mintypmax_expression(s)?;
@@ -193,14 +193,14 @@ pub fn specparam_assignment_mintypmax(s: Span) -> IResult<Span, SpecparamAssignm
 }
 
 #[parser]
-pub fn type_assignment(s: Span) -> IResult<Span, TypeAssignment> {
+pub(crate) fn type_assignment(s: Span) -> IResult<Span, TypeAssignment> {
     let (s, a) = type_identifier(s)?;
     let (s, b) = opt(pair(symbol("="), data_type))(s)?;
     Ok((s, TypeAssignment { nodes: (a, b) }))
 }
 
 #[parser]
-pub fn pulse_control_specparam(s: Span) -> IResult<Span, PulseControlSpecparam> {
+pub(crate) fn pulse_control_specparam(s: Span) -> IResult<Span, PulseControlSpecparam> {
     alt((
         pulse_control_specparam_without_descriptor,
         pulse_control_specparam_with_descriptor,
@@ -208,7 +208,7 @@ pub fn pulse_control_specparam(s: Span) -> IResult<Span, PulseControlSpecparam> 
 }
 
 #[parser]
-pub fn pulse_control_specparam_without_descriptor(s: Span) -> IResult<Span, PulseControlSpecparam> {
+pub(crate) fn pulse_control_specparam_without_descriptor(s: Span) -> IResult<Span, PulseControlSpecparam> {
     let (s, a) = symbol("PATHPULSE$")(s)?;
     let (s, b) = symbol("=")(s)?;
     let (s, c) = paren(pair(
@@ -224,7 +224,7 @@ pub fn pulse_control_specparam_without_descriptor(s: Span) -> IResult<Span, Puls
 }
 
 #[parser]
-pub fn pulse_control_specparam_with_descriptor(s: Span) -> IResult<Span, PulseControlSpecparam> {
+pub(crate) fn pulse_control_specparam_with_descriptor(s: Span) -> IResult<Span, PulseControlSpecparam> {
     let (s, a) = symbol("PATHPULSE$")(s)?;
     let (s, b) = specify_input_terminal_descriptor(s)?;
     let (s, c) = symbol("$")(s)?;
@@ -243,25 +243,25 @@ pub fn pulse_control_specparam_with_descriptor(s: Span) -> IResult<Span, PulseCo
 }
 
 #[parser]
-pub fn error_limit_value(s: Span) -> IResult<Span, ErrorLimitValue> {
+pub(crate) fn error_limit_value(s: Span) -> IResult<Span, ErrorLimitValue> {
     let (s, a) = limit_value(s)?;
     Ok((s, ErrorLimitValue { nodes: (a,) }))
 }
 
 #[parser]
-pub fn reject_limit_value(s: Span) -> IResult<Span, RejectLimitValue> {
+pub(crate) fn reject_limit_value(s: Span) -> IResult<Span, RejectLimitValue> {
     let (s, a) = limit_value(s)?;
     Ok((s, RejectLimitValue { nodes: (a,) }))
 }
 
 #[parser]
-pub fn limit_value(s: Span) -> IResult<Span, LimitValue> {
+pub(crate) fn limit_value(s: Span) -> IResult<Span, LimitValue> {
     let (s, a) = constant_mintypmax_expression(s)?;
     Ok((s, LimitValue { nodes: (a,) }))
 }
 
 #[parser]
-pub fn variable_decl_assignment(s: Span) -> IResult<Span, VariableDeclAssignment> {
+pub(crate) fn variable_decl_assignment(s: Span) -> IResult<Span, VariableDeclAssignment> {
     alt((
         variable_decl_assignment_variable,
         variable_decl_assignment_dynamic_array,
@@ -270,7 +270,7 @@ pub fn variable_decl_assignment(s: Span) -> IResult<Span, VariableDeclAssignment
 }
 
 #[parser]
-pub fn variable_decl_assignment_variable(s: Span) -> IResult<Span, VariableDeclAssignment> {
+pub(crate) fn variable_decl_assignment_variable(s: Span) -> IResult<Span, VariableDeclAssignment> {
     let (s, a) = variable_identifier(s)?;
     let (s, b) = many0(variable_dimension)(s)?;
     let (s, c) = opt(pair(symbol("="), expression))(s)?;
@@ -283,7 +283,7 @@ pub fn variable_decl_assignment_variable(s: Span) -> IResult<Span, VariableDeclA
 }
 
 #[parser]
-pub fn variable_decl_assignment_dynamic_array(s: Span) -> IResult<Span, VariableDeclAssignment> {
+pub(crate) fn variable_decl_assignment_dynamic_array(s: Span) -> IResult<Span, VariableDeclAssignment> {
     let (s, a) = dynamic_array_variable_identifier(s)?;
     let (s, b) = unsized_dimension(s)?;
     let (s, c) = many0(variable_dimension)(s)?;
@@ -297,7 +297,7 @@ pub fn variable_decl_assignment_dynamic_array(s: Span) -> IResult<Span, Variable
 }
 
 #[parser]
-pub fn variable_decl_assignment_class(s: Span) -> IResult<Span, VariableDeclAssignment> {
+pub(crate) fn variable_decl_assignment_class(s: Span) -> IResult<Span, VariableDeclAssignment> {
     let (s, a) = class_variable_identifier(s)?;
     let (s, b) = opt(pair(symbol("="), class_new))(s)?;
     Ok((
@@ -307,12 +307,12 @@ pub fn variable_decl_assignment_class(s: Span) -> IResult<Span, VariableDeclAssi
 }
 
 #[parser]
-pub fn class_new(s: Span) -> IResult<Span, ClassNew> {
+pub(crate) fn class_new(s: Span) -> IResult<Span, ClassNew> {
     alt((class_new_argument, class_new_expression))(s)
 }
 
 #[parser]
-pub fn class_new_argument(s: Span) -> IResult<Span, ClassNew> {
+pub(crate) fn class_new_argument(s: Span) -> IResult<Span, ClassNew> {
     let (s, a) = opt(class_scope)(s)?;
     let (s, b) = keyword("new")(s)?;
     let (s, c) = opt(paren(list_of_arguments))(s)?;
@@ -323,7 +323,7 @@ pub fn class_new_argument(s: Span) -> IResult<Span, ClassNew> {
 }
 
 #[parser]
-pub fn class_new_expression(s: Span) -> IResult<Span, ClassNew> {
+pub(crate) fn class_new_expression(s: Span) -> IResult<Span, ClassNew> {
     let (s, a) = keyword("new")(s)?;
     let (s, b) = expression(s)?;
     Ok((
@@ -333,7 +333,7 @@ pub fn class_new_expression(s: Span) -> IResult<Span, ClassNew> {
 }
 
 #[parser]
-pub fn dynamic_array_new(s: Span) -> IResult<Span, DynamicArrayNew> {
+pub(crate) fn dynamic_array_new(s: Span) -> IResult<Span, DynamicArrayNew> {
     let (s, a) = keyword("new")(s)?;
     let (s, b) = bracket(expression)(s)?;
     let (s, c) = opt(paren(expression))(s)?;

@@ -52,7 +52,7 @@ pub enum AnonymousProgramItem {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn package_item(s: Span) -> IResult<Span, PackageItem> {
+pub(crate) fn package_item(s: Span) -> IResult<Span, PackageItem> {
     alt((
         map(package_or_generate_item_declaration, |x| {
             PackageItem::PackageOrGenerateItemDeclaration(Box::new(x))
@@ -70,7 +70,7 @@ pub fn package_item(s: Span) -> IResult<Span, PackageItem> {
 }
 
 #[parser]
-pub fn package_or_generate_item_declaration(
+pub(crate) fn package_or_generate_item_declaration(
     s: Span,
 ) -> IResult<Span, PackageOrGenerateItemDeclaration> {
     alt((
@@ -120,7 +120,7 @@ pub fn package_or_generate_item_declaration(
 }
 
 #[parser]
-pub fn anonymous_program(s: Span) -> IResult<Span, AnonymousProgram> {
+pub(crate) fn anonymous_program(s: Span) -> IResult<Span, AnonymousProgram> {
     let (s, a) = keyword("program")(s)?;
     let (s, b) = symbol(";")(s)?;
     let (s, c) = many0(anonymous_program_item)(s)?;
@@ -134,7 +134,7 @@ pub fn anonymous_program(s: Span) -> IResult<Span, AnonymousProgram> {
 }
 
 #[parser]
-pub fn anonymous_program_item(s: Span) -> IResult<Span, AnonymousProgramItem> {
+pub(crate) fn anonymous_program_item(s: Span) -> IResult<Span, AnonymousProgramItem> {
     alt((
         map(task_declaration, |x| {
             AnonymousProgramItem::TaskDeclaration(Box::new(x))

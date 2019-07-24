@@ -41,7 +41,7 @@ pub struct OutputDeclarationNet {
 
 #[derive(Clone, Debug, Node)]
 pub struct OutputDeclarationVariable {
-    pub nodes: (Keyword, VariablePortType, ListOfVariableIdentifiers),
+    pub nodes: (Keyword, VariablePortType, ListOfVariablePortIdentifiers),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -61,7 +61,7 @@ pub struct RefDeclaration {
 // -----------------------------------------------------------------------------
 
 #[parser(Ambiguous)]
-pub fn inout_declaration(s: Span) -> IResult<Span, InoutDeclaration> {
+pub(crate) fn inout_declaration(s: Span) -> IResult<Span, InoutDeclaration> {
     let (s, a) = keyword("inout")(s)?;
     let (s, b) = ambiguous_opt(net_port_type)(s)?;
     let (s, c) = list_of_port_identifiers(s)?;
@@ -69,12 +69,12 @@ pub fn inout_declaration(s: Span) -> IResult<Span, InoutDeclaration> {
 }
 
 #[parser]
-pub fn input_declaration(s: Span) -> IResult<Span, InputDeclaration> {
+pub(crate) fn input_declaration(s: Span) -> IResult<Span, InputDeclaration> {
     alt((input_declaration_net, input_declaration_variable))(s)
 }
 
 #[parser(Ambiguous)]
-pub fn input_declaration_net(s: Span) -> IResult<Span, InputDeclaration> {
+pub(crate) fn input_declaration_net(s: Span) -> IResult<Span, InputDeclaration> {
     let (s, a) = keyword("input")(s)?;
     let (s, b) = ambiguous_opt(net_port_type)(s)?;
     let (s, c) = list_of_port_identifiers(s)?;
@@ -85,7 +85,7 @@ pub fn input_declaration_net(s: Span) -> IResult<Span, InputDeclaration> {
 }
 
 #[parser(Ambiguous)]
-pub fn input_declaration_variable(s: Span) -> IResult<Span, InputDeclaration> {
+pub(crate) fn input_declaration_variable(s: Span) -> IResult<Span, InputDeclaration> {
     let (s, a) = keyword("input")(s)?;
     let (s, b) = ambiguous_alt(variable_port_type, implicit_var)(s)?;
     let (s, c) = list_of_variable_identifiers(s)?;
@@ -96,12 +96,12 @@ pub fn input_declaration_variable(s: Span) -> IResult<Span, InputDeclaration> {
 }
 
 #[parser]
-pub fn output_declaration(s: Span) -> IResult<Span, OutputDeclaration> {
+pub(crate) fn output_declaration(s: Span) -> IResult<Span, OutputDeclaration> {
     alt((output_declaration_net, output_declaration_variable))(s)
 }
 
 #[parser(Ambiguous)]
-pub fn output_declaration_net(s: Span) -> IResult<Span, OutputDeclaration> {
+pub(crate) fn output_declaration_net(s: Span) -> IResult<Span, OutputDeclaration> {
     let (s, a) = keyword("output")(s)?;
     let (s, b) = ambiguous_opt(net_port_type)(s)?;
     let (s, c) = list_of_port_identifiers(s)?;
@@ -112,10 +112,10 @@ pub fn output_declaration_net(s: Span) -> IResult<Span, OutputDeclaration> {
 }
 
 #[parser(Ambiguous)]
-pub fn output_declaration_variable(s: Span) -> IResult<Span, OutputDeclaration> {
+pub(crate) fn output_declaration_variable(s: Span) -> IResult<Span, OutputDeclaration> {
     let (s, a) = keyword("output")(s)?;
     let (s, b) = ambiguous_alt(variable_port_type, implicit_var)(s)?;
-    let (s, c) = list_of_variable_identifiers(s)?;
+    let (s, c) = list_of_variable_port_identifiers(s)?;
     Ok((
         s,
         OutputDeclaration::Variable(Box::new(OutputDeclarationVariable { nodes: (a, b, c) })),
@@ -123,7 +123,7 @@ pub fn output_declaration_variable(s: Span) -> IResult<Span, OutputDeclaration> 
 }
 
 #[parser]
-pub fn interface_port_declaration(s: Span) -> IResult<Span, InterfacePortDeclaration> {
+pub(crate) fn interface_port_declaration(s: Span) -> IResult<Span, InterfacePortDeclaration> {
     let (s, a) = interface_identifier(s)?;
     let (s, b) = opt(pair(symbol("."), modport_identifier))(s)?;
     let (s, c) = list_of_interface_identifiers(s)?;
@@ -131,7 +131,7 @@ pub fn interface_port_declaration(s: Span) -> IResult<Span, InterfacePortDeclara
 }
 
 #[parser(Ambiguous)]
-pub fn ref_declaration(s: Span) -> IResult<Span, RefDeclaration> {
+pub(crate) fn ref_declaration(s: Span) -> IResult<Span, RefDeclaration> {
     let (s, a) = keyword("ref")(s)?;
     let (s, b) = ambiguous_alt(variable_port_type, implicit_var)(s)?;
     let (s, c) = list_of_variable_identifiers(s)?;
@@ -139,7 +139,7 @@ pub fn ref_declaration(s: Span) -> IResult<Span, RefDeclaration> {
 }
 
 #[parser]
-pub fn implicit_var(s: Span) -> IResult<Span, VariablePortType> {
+pub(crate) fn implicit_var(s: Span) -> IResult<Span, VariablePortType> {
     let (s, a) = keyword("var")(s)?;
     Ok((
         s,

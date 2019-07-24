@@ -21,16 +21,16 @@ pub use source_text::*;
 pub use specify_section::*;
 pub use udp_declaration_and_instantiation::*;
 
-pub const RECURSIVE_FLAG_WORDS: usize = 1;
+pub(crate) const RECURSIVE_FLAG_WORDS: usize = 1;
 
 #[derive(Copy, Clone, Default, Debug, PartialEq)]
-pub struct Extra {
+pub(crate) struct Extra {
     #[cfg(feature = "trace")]
     pub depth: usize,
     pub recursive_flag: [u128; RECURSIVE_FLAG_WORDS],
 }
 
-pub type Span<'a> = nom_locate::LocatedSpanEx<&'a str, Extra>;
+pub(crate) type Span<'a> = nom_locate::LocatedSpanEx<&'a str, Extra>;
 
 #[derive(Copy, Clone, Default, Debug, PartialEq)]
 pub struct Locate {
@@ -86,16 +86,4 @@ mod thread_context {
             RefCell::new(ParserIndex{index: HashMap::new(), allocated: [0;RECURSIVE_FLAG_WORDS]})
         }
     );
-
-    thread_local!(
-        pub static FAILED_MEMO: RefCell<HashMap<(&'static str, usize), bool>> = {
-            RefCell::new(HashMap::new())
-        }
-    );
-
-    //thread_local!(
-    //    pub static MEMO: RefCell<HashMap<(&'static str, usize), AnyNode>> = {
-    //        RefCell::new(HashMap::new())
-    //    }
-    //);
 }

@@ -187,7 +187,7 @@ pub struct New {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn class_item(s: Span) -> IResult<Span, ClassItem> {
+pub(crate) fn class_item(s: Span) -> IResult<Span, ClassItem> {
     alt((
         class_item_property,
         class_item_method,
@@ -205,7 +205,7 @@ pub fn class_item(s: Span) -> IResult<Span, ClassItem> {
 }
 
 #[parser]
-pub fn class_item_property(s: Span) -> IResult<Span, ClassItem> {
+pub(crate) fn class_item_property(s: Span) -> IResult<Span, ClassItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = class_property(s)?;
     Ok((
@@ -215,7 +215,7 @@ pub fn class_item_property(s: Span) -> IResult<Span, ClassItem> {
 }
 
 #[parser]
-pub fn class_item_method(s: Span) -> IResult<Span, ClassItem> {
+pub(crate) fn class_item_method(s: Span) -> IResult<Span, ClassItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = class_method(s)?;
     Ok((
@@ -225,7 +225,7 @@ pub fn class_item_method(s: Span) -> IResult<Span, ClassItem> {
 }
 
 #[parser]
-pub fn class_item_constraint(s: Span) -> IResult<Span, ClassItem> {
+pub(crate) fn class_item_constraint(s: Span) -> IResult<Span, ClassItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = class_constraint(s)?;
     Ok((
@@ -235,7 +235,7 @@ pub fn class_item_constraint(s: Span) -> IResult<Span, ClassItem> {
 }
 
 #[parser]
-pub fn class_item_declaration(s: Span) -> IResult<Span, ClassItem> {
+pub(crate) fn class_item_declaration(s: Span) -> IResult<Span, ClassItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = class_declaration(s)?;
     Ok((
@@ -245,7 +245,7 @@ pub fn class_item_declaration(s: Span) -> IResult<Span, ClassItem> {
 }
 
 #[parser]
-pub fn class_item_covergroup(s: Span) -> IResult<Span, ClassItem> {
+pub(crate) fn class_item_covergroup(s: Span) -> IResult<Span, ClassItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = covergroup_declaration(s)?;
     Ok((
@@ -255,12 +255,12 @@ pub fn class_item_covergroup(s: Span) -> IResult<Span, ClassItem> {
 }
 
 #[parser]
-pub fn class_property(s: Span) -> IResult<Span, ClassProperty> {
+pub(crate) fn class_property(s: Span) -> IResult<Span, ClassProperty> {
     alt((class_property_non_const, class_property_const))(s)
 }
 
 #[parser]
-pub fn class_property_non_const(s: Span) -> IResult<Span, ClassProperty> {
+pub(crate) fn class_property_non_const(s: Span) -> IResult<Span, ClassProperty> {
     let (s, a) = many0(property_qualifier)(s)?;
     let (s, b) = data_declaration(s)?;
     Ok((
@@ -270,7 +270,7 @@ pub fn class_property_non_const(s: Span) -> IResult<Span, ClassProperty> {
 }
 
 #[parser]
-pub fn class_property_const(s: Span) -> IResult<Span, ClassProperty> {
+pub(crate) fn class_property_const(s: Span) -> IResult<Span, ClassProperty> {
     let (s, a) = keyword("const")(s)?;
     let (s, b) = many0(class_item_qualifier)(s)?;
     let (s, c) = data_type(s)?;
@@ -286,7 +286,7 @@ pub fn class_property_const(s: Span) -> IResult<Span, ClassProperty> {
 }
 
 #[parser]
-pub fn class_method(s: Span) -> IResult<Span, ClassMethod> {
+pub(crate) fn class_method(s: Span) -> IResult<Span, ClassMethod> {
     alt((
         class_method_task,
         class_method_function,
@@ -298,7 +298,7 @@ pub fn class_method(s: Span) -> IResult<Span, ClassMethod> {
 }
 
 #[parser]
-pub fn class_method_task(s: Span) -> IResult<Span, ClassMethod> {
+pub(crate) fn class_method_task(s: Span) -> IResult<Span, ClassMethod> {
     let (s, a) = many0(method_qualifier)(s)?;
     let (s, b) = task_declaration(s)?;
     Ok((
@@ -308,7 +308,7 @@ pub fn class_method_task(s: Span) -> IResult<Span, ClassMethod> {
 }
 
 #[parser]
-pub fn class_method_function(s: Span) -> IResult<Span, ClassMethod> {
+pub(crate) fn class_method_function(s: Span) -> IResult<Span, ClassMethod> {
     let (s, a) = many0(method_qualifier)(s)?;
     let (s, b) = function_declaration(s)?;
     Ok((
@@ -318,7 +318,7 @@ pub fn class_method_function(s: Span) -> IResult<Span, ClassMethod> {
 }
 
 #[parser]
-pub fn class_method_pure_virtual(s: Span) -> IResult<Span, ClassMethod> {
+pub(crate) fn class_method_pure_virtual(s: Span) -> IResult<Span, ClassMethod> {
     let (s, a) = keyword("pure")(s)?;
     let (s, b) = keyword("virtual")(s)?;
     let (s, c) = many0(class_item_qualifier)(s)?;
@@ -333,7 +333,7 @@ pub fn class_method_pure_virtual(s: Span) -> IResult<Span, ClassMethod> {
 }
 
 #[parser]
-pub fn class_method_extern_method(s: Span) -> IResult<Span, ClassMethod> {
+pub(crate) fn class_method_extern_method(s: Span) -> IResult<Span, ClassMethod> {
     let (s, a) = keyword("extern")(s)?;
     let (s, b) = many0(method_qualifier)(s)?;
     let (s, c) = method_prototype(s)?;
@@ -347,7 +347,7 @@ pub fn class_method_extern_method(s: Span) -> IResult<Span, ClassMethod> {
 }
 
 #[parser]
-pub fn class_method_constructor(s: Span) -> IResult<Span, ClassMethod> {
+pub(crate) fn class_method_constructor(s: Span) -> IResult<Span, ClassMethod> {
     let (s, a) = many0(method_qualifier)(s)?;
     let (s, b) = class_constructor_declaration(s)?;
     Ok((
@@ -357,7 +357,7 @@ pub fn class_method_constructor(s: Span) -> IResult<Span, ClassMethod> {
 }
 
 #[parser]
-pub fn class_method_extern_constructor(s: Span) -> IResult<Span, ClassMethod> {
+pub(crate) fn class_method_extern_constructor(s: Span) -> IResult<Span, ClassMethod> {
     let (s, a) = keyword("extern")(s)?;
     let (s, b) = many0(method_qualifier)(s)?;
     let (s, c) = class_constructor_prototype(s)?;
@@ -368,7 +368,7 @@ pub fn class_method_extern_constructor(s: Span) -> IResult<Span, ClassMethod> {
 }
 
 #[parser]
-pub fn class_constructor_prototype(s: Span) -> IResult<Span, ClassConstructorPrototype> {
+pub(crate) fn class_constructor_prototype(s: Span) -> IResult<Span, ClassConstructorPrototype> {
     let (s, a) = keyword("function")(s)?;
     let (s, b) = keyword("new")(s)?;
     let (s, c) = opt(paren(opt(tf_port_list)))(s)?;
@@ -382,7 +382,7 @@ pub fn class_constructor_prototype(s: Span) -> IResult<Span, ClassConstructorPro
 }
 
 #[parser]
-pub fn class_constraint(s: Span) -> IResult<Span, ClassConstraint> {
+pub(crate) fn class_constraint(s: Span) -> IResult<Span, ClassConstraint> {
     alt((
         map(constraint_prototype, |x| {
             ClassConstraint::ConstraintPrototype(Box::new(x))
@@ -394,7 +394,7 @@ pub fn class_constraint(s: Span) -> IResult<Span, ClassConstraint> {
 }
 
 #[parser]
-pub fn class_item_qualifier(s: Span) -> IResult<Span, ClassItemQualifier> {
+pub(crate) fn class_item_qualifier(s: Span) -> IResult<Span, ClassItemQualifier> {
     alt((
         map(keyword("static"), |x| {
             ClassItemQualifier::Static(Box::new(x))
@@ -407,7 +407,7 @@ pub fn class_item_qualifier(s: Span) -> IResult<Span, ClassItemQualifier> {
 }
 
 #[parser]
-pub fn property_qualifier(s: Span) -> IResult<Span, PropertyQualifier> {
+pub(crate) fn property_qualifier(s: Span) -> IResult<Span, PropertyQualifier> {
     alt((
         map(random_qualifier, |x| {
             PropertyQualifier::RandomQualifier(Box::new(x))
@@ -419,7 +419,7 @@ pub fn property_qualifier(s: Span) -> IResult<Span, PropertyQualifier> {
 }
 
 #[parser]
-pub fn random_qualifier(s: Span) -> IResult<Span, RandomQualifier> {
+pub(crate) fn random_qualifier(s: Span) -> IResult<Span, RandomQualifier> {
     alt((
         map(keyword("randc"), |x| RandomQualifier::Randc(Box::new(x))),
         map(keyword("rand"), |x| RandomQualifier::Rand(Box::new(x))),
@@ -427,7 +427,7 @@ pub fn random_qualifier(s: Span) -> IResult<Span, RandomQualifier> {
 }
 
 #[parser]
-pub fn method_qualifier(s: Span) -> IResult<Span, MethodQualifier> {
+pub(crate) fn method_qualifier(s: Span) -> IResult<Span, MethodQualifier> {
     alt((
         map(pair(keyword("pure"), keyword("virtual")), |x| {
             MethodQualifier::PureVirtual(Box::new(x))
@@ -442,7 +442,7 @@ pub fn method_qualifier(s: Span) -> IResult<Span, MethodQualifier> {
 }
 
 #[parser]
-pub fn method_prototype(s: Span) -> IResult<Span, MethodPrototype> {
+pub(crate) fn method_prototype(s: Span) -> IResult<Span, MethodPrototype> {
     alt((
         map(task_prototype, |x| {
             MethodPrototype::TaskPrototype(Box::new(x))
@@ -454,7 +454,7 @@ pub fn method_prototype(s: Span) -> IResult<Span, MethodPrototype> {
 }
 
 #[parser]
-pub fn class_constructor_declaration(s: Span) -> IResult<Span, ClassConstructorDeclaration> {
+pub(crate) fn class_constructor_declaration(s: Span) -> IResult<Span, ClassConstructorDeclaration> {
     let (s, a) = keyword("function")(s)?;
     let (s, b) = opt(class_scope)(s)?;
     let (s, c) = keyword("new")(s)?;
@@ -480,7 +480,7 @@ pub fn class_constructor_declaration(s: Span) -> IResult<Span, ClassConstructorD
 }
 
 #[parser]
-pub fn new(s: Span) -> IResult<Span, New> {
+pub(crate) fn new(s: Span) -> IResult<Span, New> {
     let (s, a) = keyword("new")(s)?;
     Ok((s, New { nodes: (a,) }))
 }

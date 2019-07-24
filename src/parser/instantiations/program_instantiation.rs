@@ -18,7 +18,7 @@ pub struct ProgramInstantiation {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn program_instantiation(s: Span) -> IResult<Span, ProgramInstantiation> {
+pub(crate) fn program_instantiation(s: Span) -> IResult<Span, ProgramInstantiation> {
     let (s, a) = program_identifier(s)?;
     let (s, b) = opt(parameter_value_assignment)(s)?;
     let (s, c) = list(symbol(","), hierarchical_instance)(s)?;

@@ -304,7 +304,7 @@ pub struct List<T, U> {
 
 // -----------------------------------------------------------------------------
 
-pub fn ws<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, (O, Vec<WhiteSpace>)>
+pub(crate) fn ws<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, (O, Vec<WhiteSpace>)>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
@@ -315,7 +315,7 @@ where
     }
 }
 
-pub fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol> {
+pub(crate) fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol> {
     move |s: Span<'a>| {
         #[cfg(feature = "trace")]
         let s = trace(s, &format!("symbol(\"{}\")", t));
@@ -326,7 +326,7 @@ pub fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol> 
     }
 }
 
-pub fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Keyword> {
+pub(crate) fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Keyword> {
     move |s: Span<'a>| {
         #[cfg(feature = "trace")]
         let s = trace(s, &format!("keyword(\"{}\")", t));
@@ -341,7 +341,7 @@ pub fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Keyword
     }
 }
 
-pub fn paren<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Paren<O>>
+pub(crate) fn paren<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Paren<O>>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
@@ -355,7 +355,7 @@ where
     }
 }
 
-pub fn bracket<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Bracket<O>>
+pub(crate) fn bracket<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Bracket<O>>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
@@ -369,7 +369,7 @@ where
     }
 }
 
-pub fn brace<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Brace<O>>
+pub(crate) fn brace<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Brace<O>>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
@@ -383,7 +383,7 @@ where
     }
 }
 
-pub fn apostrophe_brace<'a, O, F>(
+pub(crate) fn apostrophe_brace<'a, O, F>(
     f: F,
 ) -> impl Fn(Span<'a>) -> IResult<Span<'a>, ApostropheBrace<O>>
 where
@@ -399,7 +399,10 @@ where
     }
 }
 
-pub fn list<'a, O1, O2, F, G>(f: F, g: G) -> impl Fn(Span<'a>) -> IResult<Span<'a>, List<O1, O2>>
+pub(crate) fn list<'a, O1, O2, F, G>(
+    f: F,
+    g: G,
+) -> impl Fn(Span<'a>) -> IResult<Span<'a>, List<O1, O2>>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O1>,
     G: Fn(Span<'a>) -> IResult<Span<'a>, O2>,
@@ -421,7 +424,7 @@ where
     }
 }
 
-pub fn triple<'a, O1, O2, O3, F, G, H>(
+pub(crate) fn triple<'a, O1, O2, O3, F, G, H>(
     f: F,
     g: G,
     h: H,
@@ -439,14 +442,14 @@ where
     }
 }
 
-pub fn none<'a, O, F>(_f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Option<O>>
+pub(crate) fn none<'a, O, F>(_f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Option<O>>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| Ok((s, None))
 }
 
-pub fn alt_left<'a, O, F, G>(f: F, _g: G) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
+pub(crate) fn alt_left<'a, O, F, G>(f: F, _g: G) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
     G: Fn(Span<'a>) -> IResult<Span<'a>, O>,
@@ -457,7 +460,7 @@ where
     }
 }
 
-pub fn alt_right<'a, O, F, G>(_f: F, g: G) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
+pub(crate) fn alt_right<'a, O, F, G>(_f: F, g: G) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
     G: Fn(Span<'a>) -> IResult<Span<'a>, O>,
@@ -471,7 +474,7 @@ where
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
+pub(crate) fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
     alt((
         map(multispace1, |x: Span| WhiteSpace::Space(Box::new(x.into()))),
         map(comment, |x| WhiteSpace::Comment(Box::new(x))),
@@ -480,7 +483,7 @@ pub fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
 
 // -----------------------------------------------------------------------------
 
-pub fn concat<'a>(a: Span<'a>, b: Span<'a>) -> Option<Span<'a>> {
+pub(crate) fn concat<'a>(a: Span<'a>, b: Span<'a>) -> Option<Span<'a>> {
     let c = str_concat::concat(a.fragment, b.fragment);
     if let Ok(c) = c {
         Some(Span {
@@ -494,14 +497,14 @@ pub fn concat<'a>(a: Span<'a>, b: Span<'a>) -> Option<Span<'a>> {
     }
 }
 
-pub fn check_recursive_flag(s: Span, id: usize) -> bool {
+pub(crate) fn check_recursive_flag(s: Span, id: usize) -> bool {
     let upper = id / 128;
     let lower = id % 128;
 
     ((s.extra.recursive_flag[upper] >> lower) & 1) == 1
 }
 
-pub fn set_recursive_flag(mut s: Span, id: usize, bit: bool) -> Span {
+pub(crate) fn set_recursive_flag(mut s: Span, id: usize, bit: bool) -> Span {
     let upper = id / 128;
     let lower = id % 128;
 
@@ -514,12 +517,12 @@ pub fn set_recursive_flag(mut s: Span, id: usize, bit: bool) -> Span {
     s
 }
 
-pub fn clear_recursive_flags(mut s: Span) -> Span {
+pub(crate) fn clear_recursive_flags(mut s: Span) -> Span {
     s.extra.recursive_flag = [0; RECURSIVE_FLAG_WORDS];
     s
 }
 
-pub fn is_keyword(s: &Span) -> bool {
+pub(crate) fn is_keyword(s: &Span) -> bool {
     for k in KEYWORDS {
         if &s.fragment == k {
             return true;
@@ -529,7 +532,7 @@ pub fn is_keyword(s: &Span) -> bool {
 }
 
 #[cfg(feature = "trace")]
-pub fn trace<'a>(mut s: Span<'a>, name: &str) -> Span<'a> {
+pub(crate) fn trace<'a>(mut s: Span<'a>, name: &str) -> Span<'a> {
     println!(
         "{:<128} : {:<4},{:>032x} : {}",
         format!("{}{}", " ".repeat(s.extra.depth), name),

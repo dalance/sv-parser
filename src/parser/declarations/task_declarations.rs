@@ -98,7 +98,7 @@ pub struct TaskPrototype {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn task_declaration(s: Span) -> IResult<Span, TaskDeclaration> {
+pub(crate) fn task_declaration(s: Span) -> IResult<Span, TaskDeclaration> {
     let (s, a) = keyword("task")(s)?;
     let (s, b) = opt(lifetime)(s)?;
     let (s, c) = task_body_declaration(s)?;
@@ -106,7 +106,7 @@ pub fn task_declaration(s: Span) -> IResult<Span, TaskDeclaration> {
 }
 
 #[parser]
-pub fn task_body_declaration(s: Span) -> IResult<Span, TaskBodyDeclaration> {
+pub(crate) fn task_body_declaration(s: Span) -> IResult<Span, TaskBodyDeclaration> {
     alt((
         task_body_declaration_without_port,
         task_body_declaration_with_port,
@@ -114,7 +114,7 @@ pub fn task_body_declaration(s: Span) -> IResult<Span, TaskBodyDeclaration> {
 }
 
 #[parser]
-pub fn task_body_declaration_without_port(s: Span) -> IResult<Span, TaskBodyDeclaration> {
+pub(crate) fn task_body_declaration_without_port(s: Span) -> IResult<Span, TaskBodyDeclaration> {
     let (s, a) = opt(interface_identifier_or_class_scope)(s)?;
     let (s, b) = task_identifier(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -131,7 +131,7 @@ pub fn task_body_declaration_without_port(s: Span) -> IResult<Span, TaskBodyDecl
 }
 
 #[parser]
-pub fn task_body_declaration_with_port(s: Span) -> IResult<Span, TaskBodyDeclaration> {
+pub(crate) fn task_body_declaration_with_port(s: Span) -> IResult<Span, TaskBodyDeclaration> {
     let (s, a) = opt(interface_identifier_or_class_scope)(s)?;
     let (s, b) = task_identifier(s)?;
     let (s, c) = paren(opt(tf_port_list))(s)?;
@@ -149,7 +149,7 @@ pub fn task_body_declaration_with_port(s: Span) -> IResult<Span, TaskBodyDeclara
 }
 
 #[parser]
-pub fn tf_item_declaration(s: Span) -> IResult<Span, TfItemDeclaration> {
+pub(crate) fn tf_item_declaration(s: Span) -> IResult<Span, TfItemDeclaration> {
     alt((
         map(block_item_declaration, |x| {
             TfItemDeclaration::BlockItemDeclaration(Box::new(x))
@@ -161,13 +161,13 @@ pub fn tf_item_declaration(s: Span) -> IResult<Span, TfItemDeclaration> {
 }
 
 #[parser]
-pub fn tf_port_list(s: Span) -> IResult<Span, TfPortList> {
+pub(crate) fn tf_port_list(s: Span) -> IResult<Span, TfPortList> {
     let (s, a) = list(symbol(","), tf_port_item)(s)?;
     Ok((s, TfPortList { nodes: (a,) }))
 }
 
 #[parser(Ambiguous)]
-pub fn tf_port_item(s: Span) -> IResult<Span, TfPortItem> {
+pub(crate) fn tf_port_item(s: Span) -> IResult<Span, TfPortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = opt(tf_port_direction)(s)?;
     let (s, c) = opt(var)(s)?;
@@ -186,7 +186,7 @@ pub fn tf_port_item(s: Span) -> IResult<Span, TfPortItem> {
 }
 
 #[parser]
-pub fn tf_port_direction(s: Span) -> IResult<Span, TfPortDirection> {
+pub(crate) fn tf_port_direction(s: Span) -> IResult<Span, TfPortDirection> {
     alt((
         map(port_direction, |x| {
             TfPortDirection::PortDirection(Box::new(x))
@@ -198,7 +198,7 @@ pub fn tf_port_direction(s: Span) -> IResult<Span, TfPortDirection> {
 }
 
 #[parser(Ambiguous)]
-pub fn tf_port_declaration(s: Span) -> IResult<Span, TfPortDeclaration> {
+pub(crate) fn tf_port_declaration(s: Span) -> IResult<Span, TfPortDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = tf_port_direction(s)?;
     let (s, c) = opt(var)(s)?;
@@ -214,7 +214,7 @@ pub fn tf_port_declaration(s: Span) -> IResult<Span, TfPortDeclaration> {
 }
 
 #[parser]
-pub fn task_prototype(s: Span) -> IResult<Span, TaskPrototype> {
+pub(crate) fn task_prototype(s: Span) -> IResult<Span, TaskPrototype> {
     let (s, a) = keyword("task")(s)?;
     let (s, b) = task_identifier(s)?;
     let (s, c) = opt(paren(opt(tf_port_list)))(s)?;

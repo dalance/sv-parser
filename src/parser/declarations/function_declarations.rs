@@ -156,7 +156,7 @@ pub struct DpiTaskProto {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn function_data_type_or_implicit(s: Span) -> IResult<Span, FunctionDataTypeOrImplicit> {
+pub(crate) fn function_data_type_or_implicit(s: Span) -> IResult<Span, FunctionDataTypeOrImplicit> {
     alt((
         map(data_type_or_void, |x| {
             FunctionDataTypeOrImplicit::DataTypeOrVoid(Box::new(x))
@@ -168,7 +168,7 @@ pub fn function_data_type_or_implicit(s: Span) -> IResult<Span, FunctionDataType
 }
 
 #[parser]
-pub fn function_declaration(s: Span) -> IResult<Span, FunctionDeclaration> {
+pub(crate) fn function_declaration(s: Span) -> IResult<Span, FunctionDeclaration> {
     let (s, a) = keyword("function")(s)?;
     let (s, b) = opt(lifetime)(s)?;
     let (s, c) = function_body_declaration(s)?;
@@ -176,7 +176,7 @@ pub fn function_declaration(s: Span) -> IResult<Span, FunctionDeclaration> {
 }
 
 #[parser]
-pub fn function_body_declaration(s: Span) -> IResult<Span, FunctionBodyDeclaration> {
+pub(crate) fn function_body_declaration(s: Span) -> IResult<Span, FunctionBodyDeclaration> {
     alt((
         function_body_declaration_without_port,
         function_body_declaration_with_port,
@@ -184,7 +184,7 @@ pub fn function_body_declaration(s: Span) -> IResult<Span, FunctionBodyDeclarati
 }
 
 #[parser(Ambiguous)]
-pub fn function_body_declaration_without_port(s: Span) -> IResult<Span, FunctionBodyDeclaration> {
+pub(crate) fn function_body_declaration_without_port(s: Span) -> IResult<Span, FunctionBodyDeclaration> {
     let (s, a) = ambiguous_opt(function_data_type_or_implicit)(s)?;
     let (s, b) = opt(interface_identifier_or_class_scope)(s)?;
     let (s, c) = function_identifier(s)?;
@@ -202,7 +202,7 @@ pub fn function_body_declaration_without_port(s: Span) -> IResult<Span, Function
 }
 
 #[parser(Ambiguous)]
-pub fn function_body_declaration_with_port(s: Span) -> IResult<Span, FunctionBodyDeclaration> {
+pub(crate) fn function_body_declaration_with_port(s: Span) -> IResult<Span, FunctionBodyDeclaration> {
     let (s, a) = ambiguous_opt(function_data_type_or_implicit)(s)?;
     let (s, b) = opt(interface_identifier_or_class_scope)(s)?;
     let (s, c) = function_identifier(s)?;
@@ -221,7 +221,7 @@ pub fn function_body_declaration_with_port(s: Span) -> IResult<Span, FunctionBod
 }
 
 #[parser]
-pub fn interface_identifier_or_class_scope(
+pub(crate) fn interface_identifier_or_class_scope(
     s: Span,
 ) -> IResult<Span, InterfaceIdentifierOrClassScope> {
     alt((
@@ -235,7 +235,7 @@ pub fn interface_identifier_or_class_scope(
 }
 
 #[parser]
-pub fn function_prototype(s: Span) -> IResult<Span, FunctionPrototype> {
+pub(crate) fn function_prototype(s: Span) -> IResult<Span, FunctionPrototype> {
     let (s, a) = keyword("function")(s)?;
     let (s, b) = data_type_or_void(s)?;
     let (s, c) = function_identifier(s)?;
@@ -249,7 +249,7 @@ pub fn function_prototype(s: Span) -> IResult<Span, FunctionPrototype> {
 }
 
 #[parser]
-pub fn dpi_import_export(s: Span) -> IResult<Span, DpiImportExport> {
+pub(crate) fn dpi_import_export(s: Span) -> IResult<Span, DpiImportExport> {
     alt((
         dpi_import_export_import_function,
         dpi_import_export_import_task,
@@ -259,7 +259,7 @@ pub fn dpi_import_export(s: Span) -> IResult<Span, DpiImportExport> {
 }
 
 #[parser]
-pub fn dpi_import_export_import_function(s: Span) -> IResult<Span, DpiImportExport> {
+pub(crate) fn dpi_import_export_import_function(s: Span) -> IResult<Span, DpiImportExport> {
     let (s, a) = keyword("import")(s)?;
     let (s, b) = dpi_spec_string(s)?;
     let (s, c) = opt(dpi_function_import_property)(s)?;
@@ -275,7 +275,7 @@ pub fn dpi_import_export_import_function(s: Span) -> IResult<Span, DpiImportExpo
 }
 
 #[parser]
-pub fn dpi_import_export_import_task(s: Span) -> IResult<Span, DpiImportExport> {
+pub(crate) fn dpi_import_export_import_task(s: Span) -> IResult<Span, DpiImportExport> {
     let (s, a) = keyword("import")(s)?;
     let (s, b) = dpi_spec_string(s)?;
     let (s, c) = opt(dpi_task_import_property)(s)?;
@@ -291,7 +291,7 @@ pub fn dpi_import_export_import_task(s: Span) -> IResult<Span, DpiImportExport> 
 }
 
 #[parser]
-pub fn dpi_import_export_export_function(s: Span) -> IResult<Span, DpiImportExport> {
+pub(crate) fn dpi_import_export_export_function(s: Span) -> IResult<Span, DpiImportExport> {
     let (s, a) = keyword("export")(s)?;
     let (s, b) = dpi_spec_string(s)?;
     let (s, c) = opt(pair(c_identifier, symbol("=")))(s)?;
@@ -307,7 +307,7 @@ pub fn dpi_import_export_export_function(s: Span) -> IResult<Span, DpiImportExpo
 }
 
 #[parser]
-pub fn dpi_import_export_export_task(s: Span) -> IResult<Span, DpiImportExport> {
+pub(crate) fn dpi_import_export_export_task(s: Span) -> IResult<Span, DpiImportExport> {
     let (s, a) = keyword("export")(s)?;
     let (s, b) = dpi_spec_string(s)?;
     let (s, c) = opt(pair(c_identifier, symbol("=")))(s)?;
@@ -323,7 +323,7 @@ pub fn dpi_import_export_export_task(s: Span) -> IResult<Span, DpiImportExport> 
 }
 
 #[parser]
-pub fn dpi_spec_string(s: Span) -> IResult<Span, DpiSpecString> {
+pub(crate) fn dpi_spec_string(s: Span) -> IResult<Span, DpiSpecString> {
     alt((
         map(keyword("DPI-C"), |x| DpiSpecString::DpiC(Box::new(x))),
         map(keyword("DPI"), |x| DpiSpecString::Dpi(Box::new(x))),
@@ -331,7 +331,7 @@ pub fn dpi_spec_string(s: Span) -> IResult<Span, DpiSpecString> {
 }
 
 #[parser]
-pub fn dpi_function_import_property(s: Span) -> IResult<Span, DpiFunctionImportProperty> {
+pub(crate) fn dpi_function_import_property(s: Span) -> IResult<Span, DpiFunctionImportProperty> {
     alt((
         map(keyword("context"), |x| {
             DpiFunctionImportProperty::Context(Box::new(x))
@@ -343,19 +343,19 @@ pub fn dpi_function_import_property(s: Span) -> IResult<Span, DpiFunctionImportP
 }
 
 #[parser]
-pub fn dpi_task_import_property(s: Span) -> IResult<Span, DpiTaskImportProperty> {
+pub(crate) fn dpi_task_import_property(s: Span) -> IResult<Span, DpiTaskImportProperty> {
     let (s, a) = keyword("context")(s)?;
     Ok((s, DpiTaskImportProperty::Context(Box::new(a))))
 }
 
 #[parser]
-pub fn dpi_function_proto(s: Span) -> IResult<Span, DpiFunctionProto> {
+pub(crate) fn dpi_function_proto(s: Span) -> IResult<Span, DpiFunctionProto> {
     let (s, a) = function_prototype(s)?;
     Ok((s, DpiFunctionProto { nodes: (a,) }))
 }
 
 #[parser]
-pub fn dpi_task_proto(s: Span) -> IResult<Span, DpiTaskProto> {
+pub(crate) fn dpi_task_proto(s: Span) -> IResult<Span, DpiTaskProto> {
     let (s, a) = task_prototype(s)?;
     Ok((s, DpiTaskProto { nodes: (a,) }))
 }

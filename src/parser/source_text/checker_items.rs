@@ -87,13 +87,13 @@ pub enum CheckerGenerateItem {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn checker_port_list(s: Span) -> IResult<Span, CheckerPortList> {
+pub(crate) fn checker_port_list(s: Span) -> IResult<Span, CheckerPortList> {
     let (s, a) = list(symbol(","), checker_port_item)(s)?;
     Ok((s, CheckerPortList { nodes: (a,) }))
 }
 
 #[parser]
-pub fn checker_port_item(s: Span) -> IResult<Span, CheckerPortItem> {
+pub(crate) fn checker_port_item(s: Span) -> IResult<Span, CheckerPortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = opt(checker_port_direction)(s)?;
     let (s, c) = property_formal_type(s)?;
@@ -109,7 +109,7 @@ pub fn checker_port_item(s: Span) -> IResult<Span, CheckerPortItem> {
 }
 
 #[parser]
-pub fn checker_port_direction(s: Span) -> IResult<Span, CheckerPortDirection> {
+pub(crate) fn checker_port_direction(s: Span) -> IResult<Span, CheckerPortDirection> {
     alt((
         map(keyword("input"), |x| {
             CheckerPortDirection::Input(Box::new(x))
@@ -121,7 +121,7 @@ pub fn checker_port_direction(s: Span) -> IResult<Span, CheckerPortDirection> {
 }
 
 #[parser]
-pub fn checker_or_generate_item(s: Span) -> IResult<Span, CheckerOrGenerateItem> {
+pub(crate) fn checker_or_generate_item(s: Span) -> IResult<Span, CheckerOrGenerateItem> {
     alt((
         map(checker_or_generate_item_declaration, |x| {
             CheckerOrGenerateItem::CheckerOrGenerateItemDeclaration(Box::new(x))
@@ -148,7 +148,7 @@ pub fn checker_or_generate_item(s: Span) -> IResult<Span, CheckerOrGenerateItem>
 }
 
 #[parser]
-pub fn checker_or_generate_item_declaration(
+pub(crate) fn checker_or_generate_item_declaration(
     s: Span,
 ) -> IResult<Span, CheckerOrGenerateItemDeclaration> {
     alt((
@@ -180,7 +180,7 @@ pub fn checker_or_generate_item_declaration(
 }
 
 #[parser]
-pub fn checker_or_generate_item_declaration_data(
+pub(crate) fn checker_or_generate_item_declaration_data(
     s: Span,
 ) -> IResult<Span, CheckerOrGenerateItemDeclaration> {
     let (s, a) = opt(rand)(s)?;
@@ -194,13 +194,13 @@ pub fn checker_or_generate_item_declaration_data(
 }
 
 #[parser]
-pub fn rand(s: Span) -> IResult<Span, Rand> {
+pub(crate) fn rand(s: Span) -> IResult<Span, Rand> {
     let (s, a) = keyword("rand")(s)?;
     Ok((s, Rand { nodes: (a,) }))
 }
 
 #[parser]
-pub fn checker_or_generate_item_declaration_clocking(
+pub(crate) fn checker_or_generate_item_declaration_clocking(
     s: Span,
 ) -> IResult<Span, CheckerOrGenerateItemDeclaration> {
     let (s, a) = keyword("default")(s)?;
@@ -218,7 +218,7 @@ pub fn checker_or_generate_item_declaration_clocking(
 }
 
 #[parser]
-pub fn checker_or_generate_item_declaration_disable(
+pub(crate) fn checker_or_generate_item_declaration_disable(
     s: Span,
 ) -> IResult<Span, CheckerOrGenerateItemDeclaration> {
     let (s, a) = keyword("default")(s)?;
@@ -237,7 +237,7 @@ pub fn checker_or_generate_item_declaration_disable(
 }
 
 #[parser]
-pub fn checker_generate_item(s: Span) -> IResult<Span, CheckerGenerateItem> {
+pub(crate) fn checker_generate_item(s: Span) -> IResult<Span, CheckerGenerateItem> {
     alt((
         map(loop_generate_construct, |x| {
             CheckerGenerateItem::LoopGenerateConstruct(Box::new(x))

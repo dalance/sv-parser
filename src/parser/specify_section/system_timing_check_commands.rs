@@ -272,7 +272,7 @@ pub struct NochargeTimingCheck {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn system_timing_check(s: Span) -> IResult<Span, SystemTimingCheck> {
+pub(crate) fn system_timing_check(s: Span) -> IResult<Span, SystemTimingCheck> {
     alt((
         map(setup_timing_check, |x| {
             SystemTimingCheck::SetupTimingCheck(Box::new(x))
@@ -314,7 +314,7 @@ pub fn system_timing_check(s: Span) -> IResult<Span, SystemTimingCheck> {
 }
 
 #[parser]
-pub fn setup_timing_check(s: Span) -> IResult<Span, SetupTimingCheck> {
+pub(crate) fn setup_timing_check(s: Span) -> IResult<Span, SetupTimingCheck> {
     let (s, a) = keyword("$setup")(s)?;
     let (s, b) = paren(tuple((
         data_event,
@@ -329,7 +329,7 @@ pub fn setup_timing_check(s: Span) -> IResult<Span, SetupTimingCheck> {
 }
 
 #[parser]
-pub fn hold_timing_check(s: Span) -> IResult<Span, HoldTimingCheck> {
+pub(crate) fn hold_timing_check(s: Span) -> IResult<Span, HoldTimingCheck> {
     let (s, a) = keyword("$setup")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
@@ -344,7 +344,7 @@ pub fn hold_timing_check(s: Span) -> IResult<Span, HoldTimingCheck> {
 }
 
 #[parser]
-pub fn setuphold_timing_check(s: Span) -> IResult<Span, SetupholdTimingCheck> {
+pub(crate) fn setuphold_timing_check(s: Span) -> IResult<Span, SetupholdTimingCheck> {
     let (s, a) = keyword("$setuphold")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
@@ -377,7 +377,7 @@ pub fn setuphold_timing_check(s: Span) -> IResult<Span, SetupholdTimingCheck> {
 }
 
 #[parser]
-pub fn recovery_timing_check(s: Span) -> IResult<Span, RecoveryTimingCheck> {
+pub(crate) fn recovery_timing_check(s: Span) -> IResult<Span, RecoveryTimingCheck> {
     let (s, a) = keyword("$recovery")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
@@ -392,7 +392,7 @@ pub fn recovery_timing_check(s: Span) -> IResult<Span, RecoveryTimingCheck> {
 }
 
 #[parser]
-pub fn removal_timing_check(s: Span) -> IResult<Span, RemovalTimingCheck> {
+pub(crate) fn removal_timing_check(s: Span) -> IResult<Span, RemovalTimingCheck> {
     let (s, a) = keyword("$removal")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
@@ -407,7 +407,7 @@ pub fn removal_timing_check(s: Span) -> IResult<Span, RemovalTimingCheck> {
 }
 
 #[parser]
-pub fn recrem_timing_check(s: Span) -> IResult<Span, RecremTimingCheck> {
+pub(crate) fn recrem_timing_check(s: Span) -> IResult<Span, RecremTimingCheck> {
     let (s, a) = keyword("$recrem")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
@@ -440,7 +440,7 @@ pub fn recrem_timing_check(s: Span) -> IResult<Span, RecremTimingCheck> {
 }
 
 #[parser]
-pub fn skew_timing_check(s: Span) -> IResult<Span, SkewTimingCheck> {
+pub(crate) fn skew_timing_check(s: Span) -> IResult<Span, SkewTimingCheck> {
     let (s, a) = keyword("$skew")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
@@ -455,7 +455,7 @@ pub fn skew_timing_check(s: Span) -> IResult<Span, SkewTimingCheck> {
 }
 
 #[parser]
-pub fn timeskew_timing_check(s: Span) -> IResult<Span, TimeskewTimingCheck> {
+pub(crate) fn timeskew_timing_check(s: Span) -> IResult<Span, TimeskewTimingCheck> {
     let (s, a) = keyword("$timeskew")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
@@ -478,7 +478,7 @@ pub fn timeskew_timing_check(s: Span) -> IResult<Span, TimeskewTimingCheck> {
 }
 
 #[parser]
-pub fn fullskew_timing_check(s: Span) -> IResult<Span, FullskewTimingCheck> {
+pub(crate) fn fullskew_timing_check(s: Span) -> IResult<Span, FullskewTimingCheck> {
     let (s, a) = keyword("$fullskew")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
@@ -503,7 +503,7 @@ pub fn fullskew_timing_check(s: Span) -> IResult<Span, FullskewTimingCheck> {
 }
 
 #[parser]
-pub fn period_timing_check(s: Span) -> IResult<Span, PeriodTimingCheck> {
+pub(crate) fn period_timing_check(s: Span) -> IResult<Span, PeriodTimingCheck> {
     let (s, a) = keyword("$period")(s)?;
     let (s, b) = paren(tuple((
         controlled_referecne_event,
@@ -516,7 +516,7 @@ pub fn period_timing_check(s: Span) -> IResult<Span, PeriodTimingCheck> {
 }
 
 #[parser]
-pub fn width_timing_check(s: Span) -> IResult<Span, WidthTimingCheck> {
+pub(crate) fn width_timing_check(s: Span) -> IResult<Span, WidthTimingCheck> {
     let (s, a) = keyword("$width")(s)?;
     let (s, b) = paren(tuple((
         controlled_referecne_event,
@@ -531,7 +531,7 @@ pub fn width_timing_check(s: Span) -> IResult<Span, WidthTimingCheck> {
 }
 
 #[parser]
-pub fn nocharge_timing_check(s: Span) -> IResult<Span, NochargeTimingCheck> {
+pub(crate) fn nocharge_timing_check(s: Span) -> IResult<Span, NochargeTimingCheck> {
     let (s, a) = keyword("$nocharge")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,

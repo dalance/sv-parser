@@ -118,7 +118,7 @@ pub struct EdgeSymbol {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn udp_body(s: Span) -> IResult<Span, UdpBody> {
+pub(crate) fn udp_body(s: Span) -> IResult<Span, UdpBody> {
     alt((
         map(combinational_body, |x| {
             UdpBody::CombinationalBody(Box::new(x))
@@ -128,7 +128,7 @@ pub fn udp_body(s: Span) -> IResult<Span, UdpBody> {
 }
 
 #[parser]
-pub fn combinational_body(s: Span) -> IResult<Span, CombinationalBody> {
+pub(crate) fn combinational_body(s: Span) -> IResult<Span, CombinationalBody> {
     let (s, a) = keyword("table")(s)?;
     let (s, b) = combinational_entry(s)?;
     let (s, c) = many0(combinational_entry)(s)?;
@@ -142,7 +142,7 @@ pub fn combinational_body(s: Span) -> IResult<Span, CombinationalBody> {
 }
 
 #[parser]
-pub fn combinational_entry(s: Span) -> IResult<Span, CombinationalEntry> {
+pub(crate) fn combinational_entry(s: Span) -> IResult<Span, CombinationalEntry> {
     let (s, a) = level_input_list(s)?;
     let (s, b) = symbol(":")(s)?;
     let (s, c) = output_symbol(s)?;
@@ -156,7 +156,7 @@ pub fn combinational_entry(s: Span) -> IResult<Span, CombinationalEntry> {
 }
 
 #[parser]
-pub fn sequential_body(s: Span) -> IResult<Span, SequentialBody> {
+pub(crate) fn sequential_body(s: Span) -> IResult<Span, SequentialBody> {
     let (s, a) = opt(udp_initial_statement)(s)?;
     let (s, b) = keyword("table")(s)?;
     let (s, c) = sequential_entry(s)?;
@@ -171,7 +171,7 @@ pub fn sequential_body(s: Span) -> IResult<Span, SequentialBody> {
 }
 
 #[parser]
-pub fn udp_initial_statement(s: Span) -> IResult<Span, UdpInitialStatement> {
+pub(crate) fn udp_initial_statement(s: Span) -> IResult<Span, UdpInitialStatement> {
     let (s, a) = keyword("initial")(s)?;
     let (s, b) = output_port_identifier(s)?;
     let (s, c) = symbol("=")(s)?;
@@ -186,7 +186,7 @@ pub fn udp_initial_statement(s: Span) -> IResult<Span, UdpInitialStatement> {
 }
 
 #[parser]
-pub fn init_val(s: Span) -> IResult<Span, InitVal> {
+pub(crate) fn init_val(s: Span) -> IResult<Span, InitVal> {
     alt((
         map(keyword("1'b0"), |x| InitVal { nodes: (x,) }),
         map(keyword("1'b1"), |x| InitVal { nodes: (x,) }),
@@ -202,7 +202,7 @@ pub fn init_val(s: Span) -> IResult<Span, InitVal> {
 }
 
 #[parser]
-pub fn sequential_entry(s: Span) -> IResult<Span, SequentialEntry> {
+pub(crate) fn sequential_entry(s: Span) -> IResult<Span, SequentialEntry> {
     let (s, a) = seq_input_list(s)?;
     let (s, b) = symbol(":")(s)?;
     let (s, c) = current_state(s)?;
@@ -218,7 +218,7 @@ pub fn sequential_entry(s: Span) -> IResult<Span, SequentialEntry> {
 }
 
 #[parser]
-pub fn seq_input_list(s: Span) -> IResult<Span, SeqInputList> {
+pub(crate) fn seq_input_list(s: Span) -> IResult<Span, SeqInputList> {
     alt((
         map(level_input_list, |x| {
             SeqInputList::LevelInputList(Box::new(x))
@@ -230,14 +230,14 @@ pub fn seq_input_list(s: Span) -> IResult<Span, SeqInputList> {
 }
 
 #[parser]
-pub fn level_input_list(s: Span) -> IResult<Span, LevelInputList> {
+pub(crate) fn level_input_list(s: Span) -> IResult<Span, LevelInputList> {
     let (s, a) = level_symbol(s)?;
     let (s, b) = many0(level_symbol)(s)?;
     Ok((s, LevelInputList { nodes: (a, b) }))
 }
 
 #[parser]
-pub fn edge_input_list(s: Span) -> IResult<Span, EdgeInputList> {
+pub(crate) fn edge_input_list(s: Span) -> IResult<Span, EdgeInputList> {
     let (s, a) = many0(level_symbol)(s)?;
     let (s, b) = edge_indicator(s)?;
     let (s, c) = many0(level_symbol)(s)?;
@@ -245,7 +245,7 @@ pub fn edge_input_list(s: Span) -> IResult<Span, EdgeInputList> {
 }
 
 #[parser]
-pub fn edge_indicator(s: Span) -> IResult<Span, EdgeIndicator> {
+pub(crate) fn edge_indicator(s: Span) -> IResult<Span, EdgeIndicator> {
     alt((
         edge_indicator_paren,
         map(edge_symbol, |x| EdgeIndicator::EdgeSymbol(Box::new(x))),
@@ -253,7 +253,7 @@ pub fn edge_indicator(s: Span) -> IResult<Span, EdgeIndicator> {
 }
 
 #[parser]
-pub fn edge_indicator_paren(s: Span) -> IResult<Span, EdgeIndicator> {
+pub(crate) fn edge_indicator_paren(s: Span) -> IResult<Span, EdgeIndicator> {
     let (s, a) = paren(pair(level_symbol, level_symbol))(s)?;
     Ok((
         s,
@@ -262,13 +262,13 @@ pub fn edge_indicator_paren(s: Span) -> IResult<Span, EdgeIndicator> {
 }
 
 #[parser]
-pub fn current_state(s: Span) -> IResult<Span, CurrentState> {
+pub(crate) fn current_state(s: Span) -> IResult<Span, CurrentState> {
     let (s, a) = level_symbol(s)?;
     Ok((s, CurrentState { nodes: (a,) }))
 }
 
 #[parser]
-pub fn next_state(s: Span) -> IResult<Span, NextState> {
+pub(crate) fn next_state(s: Span) -> IResult<Span, NextState> {
     alt((
         map(output_symbol, |x| NextState::OutputSymbol(Box::new(x))),
         map(symbol("-"), |x| NextState::Minus(Box::new(x))),
@@ -276,7 +276,7 @@ pub fn next_state(s: Span) -> IResult<Span, NextState> {
 }
 
 #[parser]
-pub fn output_symbol(s: Span) -> IResult<Span, OutputSymbol> {
+pub(crate) fn output_symbol(s: Span) -> IResult<Span, OutputSymbol> {
     alt((
         map(keyword("0"), |x| OutputSymbol { nodes: (x,) }),
         map(keyword("1"), |x| OutputSymbol { nodes: (x,) }),
@@ -286,7 +286,7 @@ pub fn output_symbol(s: Span) -> IResult<Span, OutputSymbol> {
 }
 
 #[parser]
-pub fn level_symbol(s: Span) -> IResult<Span, LevelSymbol> {
+pub(crate) fn level_symbol(s: Span) -> IResult<Span, LevelSymbol> {
     alt((
         map(keyword("0"), |x| LevelSymbol { nodes: (x,) }),
         map(keyword("1"), |x| LevelSymbol { nodes: (x,) }),
@@ -299,7 +299,7 @@ pub fn level_symbol(s: Span) -> IResult<Span, LevelSymbol> {
 }
 
 #[parser]
-pub fn edge_symbol(s: Span) -> IResult<Span, EdgeSymbol> {
+pub(crate) fn edge_symbol(s: Span) -> IResult<Span, EdgeSymbol> {
     alt((
         map(keyword("r"), |x| EdgeSymbol { nodes: (x,) }),
         map(keyword("R"), |x| EdgeSymbol { nodes: (x,) }),

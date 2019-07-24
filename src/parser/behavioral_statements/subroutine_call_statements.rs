@@ -21,7 +21,7 @@ pub struct SubroutineCallStatementFunction {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn subroutine_call_statement(s: Span) -> IResult<Span, SubroutineCallStatement> {
+pub(crate) fn subroutine_call_statement(s: Span) -> IResult<Span, SubroutineCallStatement> {
     alt((
         map(pair(subroutine_call, symbol(";")), |x| {
             SubroutineCallStatement::SubroutineCall(Box::new(x))
@@ -31,7 +31,7 @@ pub fn subroutine_call_statement(s: Span) -> IResult<Span, SubroutineCallStateme
 }
 
 #[parser]
-pub fn subroutine_call_statement_function(s: Span) -> IResult<Span, SubroutineCallStatement> {
+pub(crate) fn subroutine_call_statement_function(s: Span) -> IResult<Span, SubroutineCallStatement> {
     let (s, a) = keyword("void")(s)?;
     let (s, b) = symbol("'")(s)?;
     let (s, c) = paren(function_subroutine_call)(s)?;

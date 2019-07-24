@@ -254,7 +254,7 @@ pub struct Cast {
 
 #[packrat_parser]
 #[parser]
-pub fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
+pub(crate) fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
     alt((
         map(keyword("null"), |x| ConstantPrimary::Null(Box::new(x))),
         map(primary_literal, |x| {
@@ -289,7 +289,7 @@ pub fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
 }
 
 #[parser]
-pub fn constant_primary_ps_parameter(s: Span) -> IResult<Span, ConstantPrimary> {
+pub(crate) fn constant_primary_ps_parameter(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = ps_parameter_identifier(s)?;
     let (s, b) = constant_select(s)?;
     Ok((
@@ -299,7 +299,7 @@ pub fn constant_primary_ps_parameter(s: Span) -> IResult<Span, ConstantPrimary> 
 }
 
 #[parser]
-pub fn constant_primary_specparam(s: Span) -> IResult<Span, ConstantPrimary> {
+pub(crate) fn constant_primary_specparam(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = specparam_identifier(s)?;
     let (s, b) = opt(bracket(constant_range_expression))(s)?;
     Ok((
@@ -309,7 +309,7 @@ pub fn constant_primary_specparam(s: Span) -> IResult<Span, ConstantPrimary> {
 }
 
 #[parser]
-pub fn constant_primary_formal_port(s: Span) -> IResult<Span, ConstantPrimary> {
+pub(crate) fn constant_primary_formal_port(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = formal_port_identifier(s)?;
     let (s, b) = constant_select(s)?;
     Ok((
@@ -319,7 +319,7 @@ pub fn constant_primary_formal_port(s: Span) -> IResult<Span, ConstantPrimary> {
 }
 
 #[parser]
-pub fn constant_primary_enum(s: Span) -> IResult<Span, ConstantPrimary> {
+pub(crate) fn constant_primary_enum(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = package_scope_or_class_scope(s)?;
     let (s, b) = enum_identifier(s)?;
     Ok((
@@ -329,7 +329,7 @@ pub fn constant_primary_enum(s: Span) -> IResult<Span, ConstantPrimary> {
 }
 
 #[parser]
-pub fn constant_primary_concatenation(s: Span) -> IResult<Span, ConstantPrimary> {
+pub(crate) fn constant_primary_concatenation(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = constant_concatenation(s)?;
     let (s, b) = opt(bracket(constant_range_expression))(s)?;
     Ok((
@@ -339,7 +339,7 @@ pub fn constant_primary_concatenation(s: Span) -> IResult<Span, ConstantPrimary>
 }
 
 #[parser]
-pub fn constant_primary_multiple_concatenation(s: Span) -> IResult<Span, ConstantPrimary> {
+pub(crate) fn constant_primary_multiple_concatenation(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = constant_multiple_concatenation(s)?;
     let (s, b) = opt(bracket(constant_range_expression))(s)?;
     Ok((
@@ -351,7 +351,7 @@ pub fn constant_primary_multiple_concatenation(s: Span) -> IResult<Span, Constan
 }
 
 #[parser]
-pub fn constant_primary_mintypmax_expression(s: Span) -> IResult<Span, ConstantPrimary> {
+pub(crate) fn constant_primary_mintypmax_expression(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = paren(constant_mintypmax_expression)(s)?;
     Ok((
         s,
@@ -362,7 +362,7 @@ pub fn constant_primary_mintypmax_expression(s: Span) -> IResult<Span, ConstantP
 }
 
 #[parser]
-pub fn module_path_primary(s: Span) -> IResult<Span, ModulePathPrimary> {
+pub(crate) fn module_path_primary(s: Span) -> IResult<Span, ModulePathPrimary> {
     alt((
         map(number, |x| ModulePathPrimary::Number(Box::new(x))),
         map(identifier, |x| ModulePathPrimary::Identifier(Box::new(x))),
@@ -380,7 +380,9 @@ pub fn module_path_primary(s: Span) -> IResult<Span, ModulePathPrimary> {
 }
 
 #[parser]
-pub fn module_path_primary_mintypmax_expression(s: Span) -> IResult<Span, ModulePathPrimary> {
+pub(crate) fn module_path_primary_mintypmax_expression(
+    s: Span,
+) -> IResult<Span, ModulePathPrimary> {
     let (s, a) = paren(module_path_mintypmax_expression)(s)?;
     Ok((
         s,
@@ -390,7 +392,7 @@ pub fn module_path_primary_mintypmax_expression(s: Span) -> IResult<Span, Module
 
 #[packrat_parser]
 #[parser]
-pub fn primary(s: Span) -> IResult<Span, Primary> {
+pub(crate) fn primary(s: Span) -> IResult<Span, Primary> {
     alt((
         map(keyword("this"), |x| Primary::This(Box::new(x))),
         map(symbol("$"), |x| Primary::Dollar(Box::new(x))),
@@ -401,6 +403,7 @@ pub fn primary(s: Span) -> IResult<Span, Primary> {
             Primary::EmptyUnpackedArrayConcatenation(Box::new(x))
         }),
         primary_concatenation,
+        primary_multiple_concatenation,
         map(function_subroutine_call, |x| {
             Primary::FunctionSubroutineCall(Box::new(x))
         }),
@@ -420,7 +423,7 @@ pub fn primary(s: Span) -> IResult<Span, Primary> {
 }
 
 #[parser]
-pub fn primary_hierarchical(s: Span) -> IResult<Span, Primary> {
+pub(crate) fn primary_hierarchical(s: Span) -> IResult<Span, Primary> {
     let (s, a) = opt(class_qualifier_or_package_scope)(s)?;
     let (s, b) = hierarchical_identifier(s)?;
     let (s, c) = select(s)?;
@@ -431,7 +434,7 @@ pub fn primary_hierarchical(s: Span) -> IResult<Span, Primary> {
 }
 
 #[parser]
-pub fn primary_concatenation(s: Span) -> IResult<Span, Primary> {
+pub(crate) fn primary_concatenation(s: Span) -> IResult<Span, Primary> {
     let (s, a) = concatenation(s)?;
     let (s, b) = opt(bracket(range_expression))(s)?;
     Ok((
@@ -441,7 +444,7 @@ pub fn primary_concatenation(s: Span) -> IResult<Span, Primary> {
 }
 
 #[parser]
-pub fn primary_multiple_concatenation(s: Span) -> IResult<Span, Primary> {
+pub(crate) fn primary_multiple_concatenation(s: Span) -> IResult<Span, Primary> {
     let (s, a) = multiple_concatenation(s)?;
     let (s, b) = opt(bracket(range_expression))(s)?;
     Ok((
@@ -451,7 +454,7 @@ pub fn primary_multiple_concatenation(s: Span) -> IResult<Span, Primary> {
 }
 
 #[parser]
-pub fn primary_mintypmax_expression(s: Span) -> IResult<Span, Primary> {
+pub(crate) fn primary_mintypmax_expression(s: Span) -> IResult<Span, Primary> {
     let (s, a) = paren(mintypmax_expression)(s)?;
     Ok((
         s,
@@ -460,7 +463,9 @@ pub fn primary_mintypmax_expression(s: Span) -> IResult<Span, Primary> {
 }
 
 #[parser]
-pub fn class_qualifier_or_package_scope(s: Span) -> IResult<Span, ClassQualifierOrPackageScope> {
+pub(crate) fn class_qualifier_or_package_scope(
+    s: Span,
+) -> IResult<Span, ClassQualifierOrPackageScope> {
     alt((
         map(class_qualifier, |x| {
             ClassQualifierOrPackageScope::ClassQualifier(Box::new(x))
@@ -472,14 +477,14 @@ pub fn class_qualifier_or_package_scope(s: Span) -> IResult<Span, ClassQualifier
 }
 
 #[parser(MaybeRecursive)]
-pub fn class_qualifier(s: Span) -> IResult<Span, ClassQualifier> {
+pub(crate) fn class_qualifier(s: Span) -> IResult<Span, ClassQualifier> {
     let (s, a) = opt(local)(s)?;
     let (s, b) = opt(implicit_class_handle_or_class_scope)(s)?;
     Ok((s, ClassQualifier { nodes: (a, b) }))
 }
 
 #[parser]
-pub fn range_expression(s: Span) -> IResult<Span, RangeExpression> {
+pub(crate) fn range_expression(s: Span) -> IResult<Span, RangeExpression> {
     alt((
         map(expression, |x| RangeExpression::Expression(Box::new(x))),
         map(part_select_range, |x| {
@@ -490,7 +495,7 @@ pub fn range_expression(s: Span) -> IResult<Span, RangeExpression> {
 
 #[packrat_parser]
 #[parser]
-pub fn primary_literal(s: Span) -> IResult<Span, PrimaryLiteral> {
+pub(crate) fn primary_literal(s: Span) -> IResult<Span, PrimaryLiteral> {
     alt((
         map(time_literal, |x| PrimaryLiteral::TimeLiteral(Box::new(x))),
         map(number, |x| PrimaryLiteral::Number(Box::new(x))),
@@ -504,12 +509,12 @@ pub fn primary_literal(s: Span) -> IResult<Span, PrimaryLiteral> {
 }
 
 #[parser]
-pub fn time_literal(s: Span) -> IResult<Span, TimeLiteral> {
+pub(crate) fn time_literal(s: Span) -> IResult<Span, TimeLiteral> {
     alt((time_literal_unsigned, time_literal_fixed_point))(s)
 }
 
 #[parser]
-pub fn time_literal_unsigned(s: Span) -> IResult<Span, TimeLiteral> {
+pub(crate) fn time_literal_unsigned(s: Span) -> IResult<Span, TimeLiteral> {
     let (s, a) = unsigned_number(s)?;
     let (s, b) = time_unit(s)?;
     Ok((
@@ -519,7 +524,7 @@ pub fn time_literal_unsigned(s: Span) -> IResult<Span, TimeLiteral> {
 }
 
 #[parser]
-pub fn time_literal_fixed_point(s: Span) -> IResult<Span, TimeLiteral> {
+pub(crate) fn time_literal_fixed_point(s: Span) -> IResult<Span, TimeLiteral> {
     let (s, a) = fixed_point_number(s)?;
     let (s, b) = time_unit(s)?;
     Ok((
@@ -529,7 +534,7 @@ pub fn time_literal_fixed_point(s: Span) -> IResult<Span, TimeLiteral> {
 }
 
 #[parser]
-pub fn time_unit(s: Span) -> IResult<Span, TimeUnit> {
+pub(crate) fn time_unit(s: Span) -> IResult<Span, TimeUnit> {
     alt((
         map(keyword("s"), |x| TimeUnit::S(Box::new(x))),
         map(keyword("ms"), |x| TimeUnit::MS(Box::new(x))),
@@ -541,7 +546,7 @@ pub fn time_unit(s: Span) -> IResult<Span, TimeUnit> {
 }
 
 #[parser]
-pub fn implicit_class_handle(s: Span) -> IResult<Span, ImplicitClassHandle> {
+pub(crate) fn implicit_class_handle(s: Span) -> IResult<Span, ImplicitClassHandle> {
     alt((
         map(
             triple(keyword("this"), symbol("."), keyword("super")),
@@ -555,13 +560,13 @@ pub fn implicit_class_handle(s: Span) -> IResult<Span, ImplicitClassHandle> {
 }
 
 #[parser]
-pub fn bit_select(s: Span) -> IResult<Span, BitSelect> {
+pub(crate) fn bit_select(s: Span) -> IResult<Span, BitSelect> {
     let (s, a) = many0(bracket(expression))(s)?;
     Ok((s, BitSelect { nodes: (a,) }))
 }
 
 #[parser]
-pub fn select(s: Span) -> IResult<Span, Select> {
+pub(crate) fn select(s: Span) -> IResult<Span, Select> {
     let (s, a) = opt(triple(
         many0(triple(symbol("."), member_identifier, bit_select)),
         symbol("."),
@@ -573,7 +578,7 @@ pub fn select(s: Span) -> IResult<Span, Select> {
 }
 
 #[parser]
-pub fn nonrange_select(s: Span) -> IResult<Span, NonrangeSelect> {
+pub(crate) fn nonrange_select(s: Span) -> IResult<Span, NonrangeSelect> {
     let (s, a) = opt(triple(
         many0(triple(symbol("."), member_identifier, bit_select)),
         symbol("."),
@@ -584,13 +589,13 @@ pub fn nonrange_select(s: Span) -> IResult<Span, NonrangeSelect> {
 }
 
 #[parser]
-pub fn constant_bit_select(s: Span) -> IResult<Span, ConstantBitSelect> {
+pub(crate) fn constant_bit_select(s: Span) -> IResult<Span, ConstantBitSelect> {
     let (s, a) = many0(bracket(constant_expression))(s)?;
     Ok((s, ConstantBitSelect { nodes: (a,) }))
 }
 
 #[parser]
-pub fn constant_select(s: Span) -> IResult<Span, ConstantSelect> {
+pub(crate) fn constant_select(s: Span) -> IResult<Span, ConstantSelect> {
     let (s, a) = opt(triple(
         many0(triple(symbol("."), member_identifier, constant_bit_select)),
         symbol("."),
@@ -602,7 +607,7 @@ pub fn constant_select(s: Span) -> IResult<Span, ConstantSelect> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn constant_cast(s: Span) -> IResult<Span, ConstantCast> {
+pub(crate) fn constant_cast(s: Span) -> IResult<Span, ConstantCast> {
     let (s, a) = casting_type(s)?;
     let (s, b) = symbol("'")(s)?;
     let (s, c) = paren(constant_expression)(s)?;
@@ -610,13 +615,13 @@ pub fn constant_cast(s: Span) -> IResult<Span, ConstantCast> {
 }
 
 #[parser]
-pub fn constant_let_expression(s: Span) -> IResult<Span, ConstantLetExpression> {
+pub(crate) fn constant_let_expression(s: Span) -> IResult<Span, ConstantLetExpression> {
     let (s, a) = let_expression(s)?;
     Ok((s, ConstantLetExpression { nodes: (a,) }))
 }
 
 #[parser(MaybeRecursive)]
-pub fn cast(s: Span) -> IResult<Span, Cast> {
+pub(crate) fn cast(s: Span) -> IResult<Span, Cast> {
     let (s, a) = casting_type(s)?;
     let (s, b) = symbol("'")(s)?;
     let (s, c) = paren(expression)(s)?;

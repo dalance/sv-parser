@@ -126,21 +126,21 @@ pub struct VariableAssignment {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn initial_construct(s: Span) -> IResult<Span, InitialConstruct> {
+pub(crate) fn initial_construct(s: Span) -> IResult<Span, InitialConstruct> {
     let (s, a) = keyword("initial")(s)?;
     let (s, b) = statement_or_null(s)?;
     Ok((s, InitialConstruct { nodes: (a, b) }))
 }
 
 #[parser]
-pub fn always_construct(s: Span) -> IResult<Span, AlwaysConstruct> {
+pub(crate) fn always_construct(s: Span) -> IResult<Span, AlwaysConstruct> {
     let (s, a) = always_keyword(s)?;
     let (s, b) = statement(s)?;
     Ok((s, AlwaysConstruct { nodes: (a, b) }))
 }
 
 #[parser]
-pub fn always_keyword(s: Span) -> IResult<Span, AlwaysKeyword> {
+pub(crate) fn always_keyword(s: Span) -> IResult<Span, AlwaysKeyword> {
     alt((
         map(keyword("always_comb"), |x| {
             AlwaysKeyword::AlwaysComb(Box::new(x))
@@ -156,14 +156,14 @@ pub fn always_keyword(s: Span) -> IResult<Span, AlwaysKeyword> {
 }
 
 #[parser]
-pub fn final_construct(s: Span) -> IResult<Span, FinalConstruct> {
+pub(crate) fn final_construct(s: Span) -> IResult<Span, FinalConstruct> {
     let (s, a) = keyword("final")(s)?;
     let (s, b) = function_statement(s)?;
     Ok((s, FinalConstruct { nodes: (a, b) }))
 }
 
 #[parser]
-pub fn blocking_assignment(s: Span) -> IResult<Span, BlockingAssignment> {
+pub(crate) fn blocking_assignment(s: Span) -> IResult<Span, BlockingAssignment> {
     alt((
         blocking_assignment_variable,
         blocking_assignment_nonrange_variable,
@@ -175,7 +175,7 @@ pub fn blocking_assignment(s: Span) -> IResult<Span, BlockingAssignment> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn blocking_assignment_variable(s: Span) -> IResult<Span, BlockingAssignment> {
+pub(crate) fn blocking_assignment_variable(s: Span) -> IResult<Span, BlockingAssignment> {
     let (s, a) = variable_lvalue(s)?;
     let (s, b) = symbol("=")(s)?;
     let (s, c) = delay_or_event_control(s)?;
@@ -189,7 +189,7 @@ pub fn blocking_assignment_variable(s: Span) -> IResult<Span, BlockingAssignment
 }
 
 #[parser(MaybeRecursive)]
-pub fn blocking_assignment_nonrange_variable(s: Span) -> IResult<Span, BlockingAssignment> {
+pub(crate) fn blocking_assignment_nonrange_variable(s: Span) -> IResult<Span, BlockingAssignment> {
     let (s, a) = nonrange_variable_lvalue(s)?;
     let (s, b) = symbol("=")(s)?;
     let (s, c) = dynamic_array_new(s)?;
@@ -202,7 +202,7 @@ pub fn blocking_assignment_nonrange_variable(s: Span) -> IResult<Span, BlockingA
 }
 
 #[parser]
-pub fn blocking_assignment_hierarchical_variable(s: Span) -> IResult<Span, BlockingAssignment> {
+pub(crate) fn blocking_assignment_hierarchical_variable(s: Span) -> IResult<Span, BlockingAssignment> {
     let (s, a) = opt(implicit_class_handle_or_class_scope_or_package_scope)(s)?;
     let (s, b) = hierarchical_variable_identifier(s)?;
     let (s, c) = select(s)?;
@@ -219,7 +219,7 @@ pub fn blocking_assignment_hierarchical_variable(s: Span) -> IResult<Span, Block
 }
 
 #[parser(MaybeRecursive)]
-pub fn operator_assignment(s: Span) -> IResult<Span, OperatorAssignment> {
+pub(crate) fn operator_assignment(s: Span) -> IResult<Span, OperatorAssignment> {
     let (s, a) = variable_lvalue(s)?;
     let (s, b) = assignment_operator(s)?;
     let (s, c) = expression(s)?;
@@ -227,7 +227,7 @@ pub fn operator_assignment(s: Span) -> IResult<Span, OperatorAssignment> {
 }
 
 #[parser]
-pub fn assignment_operator(s: Span) -> IResult<Span, AssignmentOperator> {
+pub(crate) fn assignment_operator(s: Span) -> IResult<Span, AssignmentOperator> {
     alt((
         map(symbol("="), |x| AssignmentOperator { nodes: (x,) }),
         map(symbol("+="), |x| AssignmentOperator { nodes: (x,) }),
@@ -246,7 +246,7 @@ pub fn assignment_operator(s: Span) -> IResult<Span, AssignmentOperator> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn nonblocking_assignment(s: Span) -> IResult<Span, NonblockingAssignment> {
+pub(crate) fn nonblocking_assignment(s: Span) -> IResult<Span, NonblockingAssignment> {
     let (s, a) = variable_lvalue(s)?;
     let (s, b) = symbol("<=")(s)?;
     let (s, c) = opt(delay_or_event_control)(s)?;
@@ -260,7 +260,7 @@ pub fn nonblocking_assignment(s: Span) -> IResult<Span, NonblockingAssignment> {
 }
 
 #[parser]
-pub fn procedural_continuous_assignment(s: Span) -> IResult<Span, ProceduralContinuousAssignment> {
+pub(crate) fn procedural_continuous_assignment(s: Span) -> IResult<Span, ProceduralContinuousAssignment> {
     alt((
         procedural_continuous_assignment_assign,
         procedural_continuous_assignment_deassign,
@@ -272,7 +272,7 @@ pub fn procedural_continuous_assignment(s: Span) -> IResult<Span, ProceduralCont
 }
 
 #[parser]
-pub fn procedural_continuous_assignment_assign(
+pub(crate) fn procedural_continuous_assignment_assign(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
     let (s, a) = keyword("assign")(s)?;
@@ -286,7 +286,7 @@ pub fn procedural_continuous_assignment_assign(
 }
 
 #[parser]
-pub fn procedural_continuous_assignment_deassign(
+pub(crate) fn procedural_continuous_assignment_deassign(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
     let (s, a) = keyword("deassign")(s)?;
@@ -300,7 +300,7 @@ pub fn procedural_continuous_assignment_deassign(
 }
 
 #[parser]
-pub fn procedural_continuous_assignment_force_variable(
+pub(crate) fn procedural_continuous_assignment_force_variable(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
     let (s, a) = keyword("force")(s)?;
@@ -314,7 +314,7 @@ pub fn procedural_continuous_assignment_force_variable(
 }
 
 #[parser]
-pub fn procedural_continuous_assignment_force_net(
+pub(crate) fn procedural_continuous_assignment_force_net(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
     let (s, a) = keyword("force")(s)?;
@@ -328,7 +328,7 @@ pub fn procedural_continuous_assignment_force_net(
 }
 
 #[parser]
-pub fn procedural_continuous_assignment_release_variable(
+pub(crate) fn procedural_continuous_assignment_release_variable(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
     let (s, a) = keyword("release")(s)?;
@@ -342,7 +342,7 @@ pub fn procedural_continuous_assignment_release_variable(
 }
 
 #[parser]
-pub fn procedural_continuous_assignment_release_net(
+pub(crate) fn procedural_continuous_assignment_release_net(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
     let (s, a) = keyword("release")(s)?;
@@ -356,7 +356,7 @@ pub fn procedural_continuous_assignment_release_net(
 }
 
 #[parser(MaybeRecursive)]
-pub fn variable_assignment(s: Span) -> IResult<Span, VariableAssignment> {
+pub(crate) fn variable_assignment(s: Span) -> IResult<Span, VariableAssignment> {
     let (s, a) = variable_lvalue(s)?;
     let (s, b) = symbol("=")(s)?;
     let (s, c) = expression(s)?;

@@ -18,7 +18,7 @@ pub struct InterfaceInstantiation {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn interface_instantiation(s: Span) -> IResult<Span, InterfaceInstantiation> {
+pub(crate) fn interface_instantiation(s: Span) -> IResult<Span, InterfaceInstantiation> {
     let (s, a) = interface_identifier(s)?;
     let (s, b) = opt(parameter_value_assignment)(s)?;
     let (s, c) = list(symbol(","), hierarchical_instance)(s)?;

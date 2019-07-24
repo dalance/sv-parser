@@ -180,7 +180,7 @@ pub struct IdentifierList {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn constraint_declaration(s: Span) -> IResult<Span, ConstraintDeclaration> {
+pub(crate) fn constraint_declaration(s: Span) -> IResult<Span, ConstraintDeclaration> {
     let (s, a) = opt(r#static)(s)?;
     let (s, b) = keyword("constraint")(s)?;
     let (s, c) = constraint_identifier(s)?;
@@ -194,19 +194,19 @@ pub fn constraint_declaration(s: Span) -> IResult<Span, ConstraintDeclaration> {
 }
 
 #[parser]
-pub fn r#static(s: Span) -> IResult<Span, Static> {
+pub(crate) fn r#static(s: Span) -> IResult<Span, Static> {
     let (s, a) = keyword("static")(s)?;
     Ok((s, Static { nodes: (a,) }))
 }
 
 #[parser]
-pub fn constraint_block(s: Span) -> IResult<Span, ConstraintBlock> {
+pub(crate) fn constraint_block(s: Span) -> IResult<Span, ConstraintBlock> {
     let (s, a) = brace(many0(constraint_block_item))(s)?;
     Ok((s, ConstraintBlock { nodes: (a,) }))
 }
 
 #[parser]
-pub fn constraint_block_item(s: Span) -> IResult<Span, ConstraintBlockItem> {
+pub(crate) fn constraint_block_item(s: Span) -> IResult<Span, ConstraintBlockItem> {
     alt((
         constraint_block_item_solve,
         map(constraint_expression, |x| {
@@ -216,7 +216,7 @@ pub fn constraint_block_item(s: Span) -> IResult<Span, ConstraintBlockItem> {
 }
 
 #[parser]
-pub fn constraint_block_item_solve(s: Span) -> IResult<Span, ConstraintBlockItem> {
+pub(crate) fn constraint_block_item_solve(s: Span) -> IResult<Span, ConstraintBlockItem> {
     let (s, a) = keyword("solve")(s)?;
     let (s, b) = solve_before_list(s)?;
     let (s, c) = keyword("before")(s)?;
@@ -231,13 +231,13 @@ pub fn constraint_block_item_solve(s: Span) -> IResult<Span, ConstraintBlockItem
 }
 
 #[parser]
-pub fn solve_before_list(s: Span) -> IResult<Span, SolveBeforeList> {
+pub(crate) fn solve_before_list(s: Span) -> IResult<Span, SolveBeforeList> {
     let (s, a) = list(symbol(","), constraint_primary)(s)?;
     Ok((s, SolveBeforeList { nodes: (a,) }))
 }
 
 #[parser]
-pub fn constraint_primary(s: Span) -> IResult<Span, ConstraintPrimary> {
+pub(crate) fn constraint_primary(s: Span) -> IResult<Span, ConstraintPrimary> {
     let (s, a) = opt(implicit_class_handle_or_class_scope)(s)?;
     let (s, b) = hierarchical_identifier(s)?;
     let (s, c) = select(s)?;
@@ -245,7 +245,7 @@ pub fn constraint_primary(s: Span) -> IResult<Span, ConstraintPrimary> {
 }
 
 #[parser]
-pub fn constraint_expression(s: Span) -> IResult<Span, ConstraintExpression> {
+pub(crate) fn constraint_expression(s: Span) -> IResult<Span, ConstraintExpression> {
     alt((
         constraint_expression_expression,
         map(pair(uniqueness_constraint, symbol(";")), |x| {
@@ -259,7 +259,7 @@ pub fn constraint_expression(s: Span) -> IResult<Span, ConstraintExpression> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn constraint_expression_expression(s: Span) -> IResult<Span, ConstraintExpression> {
+pub(crate) fn constraint_expression_expression(s: Span) -> IResult<Span, ConstraintExpression> {
     let (s, a) = opt(soft)(s)?;
     let (s, b) = expression_or_dist(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -272,13 +272,13 @@ pub fn constraint_expression_expression(s: Span) -> IResult<Span, ConstraintExpr
 }
 
 #[parser]
-pub fn soft(s: Span) -> IResult<Span, Soft> {
+pub(crate) fn soft(s: Span) -> IResult<Span, Soft> {
     let (s, a) = keyword("soft")(s)?;
     Ok((s, Soft { nodes: (a,) }))
 }
 
 #[parser(MaybeRecursive)]
-pub fn constraint_expression_arrow(s: Span) -> IResult<Span, ConstraintExpression> {
+pub(crate) fn constraint_expression_arrow(s: Span) -> IResult<Span, ConstraintExpression> {
     let (s, a) = expression(s)?;
     let (s, b) = symbol("->")(s)?;
     let (s, c) = constraint_set(s)?;
@@ -289,7 +289,7 @@ pub fn constraint_expression_arrow(s: Span) -> IResult<Span, ConstraintExpressio
 }
 
 #[parser]
-pub fn constraint_expression_if(s: Span) -> IResult<Span, ConstraintExpression> {
+pub(crate) fn constraint_expression_if(s: Span) -> IResult<Span, ConstraintExpression> {
     let (s, a) = keyword("if")(s)?;
     let (s, b) = paren(expression)(s)?;
     let (s, c) = constraint_set(s)?;
@@ -303,7 +303,7 @@ pub fn constraint_expression_if(s: Span) -> IResult<Span, ConstraintExpression> 
 }
 
 #[parser]
-pub fn constraint_expression_foreach(s: Span) -> IResult<Span, ConstraintExpression> {
+pub(crate) fn constraint_expression_foreach(s: Span) -> IResult<Span, ConstraintExpression> {
     let (s, a) = keyword("foreach")(s)?;
     let (s, b) = paren(pair(
         ps_or_hierarchical_array_identifier,
@@ -317,7 +317,7 @@ pub fn constraint_expression_foreach(s: Span) -> IResult<Span, ConstraintExpress
 }
 
 #[parser]
-pub fn constraint_expression_disable(s: Span) -> IResult<Span, ConstraintExpression> {
+pub(crate) fn constraint_expression_disable(s: Span) -> IResult<Span, ConstraintExpression> {
     let (s, a) = keyword("disable")(s)?;
     let (s, b) = keyword("soft")(s)?;
     let (s, c) = constraint_primary(s)?;
@@ -331,14 +331,14 @@ pub fn constraint_expression_disable(s: Span) -> IResult<Span, ConstraintExpress
 }
 
 #[parser]
-pub fn uniqueness_constraint(s: Span) -> IResult<Span, UniquenessConstraint> {
+pub(crate) fn uniqueness_constraint(s: Span) -> IResult<Span, UniquenessConstraint> {
     let (s, a) = keyword("unique")(s)?;
     let (s, b) = brace(open_range_list)(s)?;
     Ok((s, UniquenessConstraint { nodes: (a, b) }))
 }
 
 #[parser]
-pub fn constraint_set(s: Span) -> IResult<Span, ConstraintSet> {
+pub(crate) fn constraint_set(s: Span) -> IResult<Span, ConstraintSet> {
     alt((
         map(constraint_expression, |x| {
             ConstraintSet::ConstraintExpression(Box::new(x))
@@ -348,7 +348,7 @@ pub fn constraint_set(s: Span) -> IResult<Span, ConstraintSet> {
 }
 
 #[parser]
-pub fn constraint_set_brace(s: Span) -> IResult<Span, ConstraintSet> {
+pub(crate) fn constraint_set_brace(s: Span) -> IResult<Span, ConstraintSet> {
     let (s, a) = brace(many0(constraint_expression))(s)?;
     Ok((
         s,
@@ -357,25 +357,25 @@ pub fn constraint_set_brace(s: Span) -> IResult<Span, ConstraintSet> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn dist_list(s: Span) -> IResult<Span, DistList> {
+pub(crate) fn dist_list(s: Span) -> IResult<Span, DistList> {
     let (s, a) = list(symbol(","), dist_item)(s)?;
     Ok((s, DistList { nodes: (a,) }))
 }
 
 #[parser(MaybeRecursive)]
-pub fn dist_item(s: Span) -> IResult<Span, DistItem> {
+pub(crate) fn dist_item(s: Span) -> IResult<Span, DistItem> {
     let (s, a) = value_range(s)?;
     let (s, b) = opt(dist_weight)(s)?;
     Ok((s, DistItem { nodes: (a, b) }))
 }
 
 #[parser]
-pub fn dist_weight(s: Span) -> IResult<Span, DistWeight> {
+pub(crate) fn dist_weight(s: Span) -> IResult<Span, DistWeight> {
     alt((dist_weight_equal, dist_weight_divide))(s)
 }
 
 #[parser]
-pub fn dist_weight_equal(s: Span) -> IResult<Span, DistWeight> {
+pub(crate) fn dist_weight_equal(s: Span) -> IResult<Span, DistWeight> {
     let (s, a) = symbol(":=")(s)?;
     let (s, b) = expression(s)?;
     Ok((
@@ -385,7 +385,7 @@ pub fn dist_weight_equal(s: Span) -> IResult<Span, DistWeight> {
 }
 
 #[parser]
-pub fn dist_weight_divide(s: Span) -> IResult<Span, DistWeight> {
+pub(crate) fn dist_weight_divide(s: Span) -> IResult<Span, DistWeight> {
     let (s, a) = symbol(":/")(s)?;
     let (s, b) = expression(s)?;
     Ok((
@@ -395,7 +395,7 @@ pub fn dist_weight_divide(s: Span) -> IResult<Span, DistWeight> {
 }
 
 #[parser]
-pub fn constraint_prototype(s: Span) -> IResult<Span, ConstraintPrototype> {
+pub(crate) fn constraint_prototype(s: Span) -> IResult<Span, ConstraintPrototype> {
     let (s, a) = opt(constraint_prototype_qualifier)(s)?;
     let (s, b) = opt(r#static)(s)?;
     let (s, c) = keyword("constraint")(s)?;
@@ -410,7 +410,7 @@ pub fn constraint_prototype(s: Span) -> IResult<Span, ConstraintPrototype> {
 }
 
 #[parser]
-pub fn constraint_prototype_qualifier(s: Span) -> IResult<Span, ConstraintPrototypeQualifier> {
+pub(crate) fn constraint_prototype_qualifier(s: Span) -> IResult<Span, ConstraintPrototypeQualifier> {
     alt((
         map(keyword("extern"), |x| {
             ConstraintPrototypeQualifier::Extern(Box::new(x))
@@ -422,7 +422,7 @@ pub fn constraint_prototype_qualifier(s: Span) -> IResult<Span, ConstraintProtot
 }
 
 #[parser]
-pub fn extern_constraint_declaration(s: Span) -> IResult<Span, ExternConstraintDeclaration> {
+pub(crate) fn extern_constraint_declaration(s: Span) -> IResult<Span, ExternConstraintDeclaration> {
     let (s, a) = opt(r#static)(s)?;
     let (s, b) = keyword("constraint")(s)?;
     let (s, c) = class_scope(s)?;
@@ -437,7 +437,7 @@ pub fn extern_constraint_declaration(s: Span) -> IResult<Span, ExternConstraintD
 }
 
 #[parser]
-pub fn identifier_list(s: Span) -> IResult<Span, IdentifierList> {
+pub(crate) fn identifier_list(s: Span) -> IResult<Span, IdentifierList> {
     let (s, a) = list(symbol(","), identifier)(s)?;
     Ok((s, IdentifierList { nodes: (a,) }))
 }

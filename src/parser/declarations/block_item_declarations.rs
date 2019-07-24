@@ -37,7 +37,7 @@ pub struct BlockItemDeclarationLet {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn block_item_declaration(s: Span) -> IResult<Span, BlockItemDeclaration> {
+pub(crate) fn block_item_declaration(s: Span) -> IResult<Span, BlockItemDeclaration> {
     alt((
         block_item_declaration_data,
         block_item_declaration_local_parameter,
@@ -47,7 +47,7 @@ pub fn block_item_declaration(s: Span) -> IResult<Span, BlockItemDeclaration> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn block_item_declaration_data(s: Span) -> IResult<Span, BlockItemDeclaration> {
+pub(crate) fn block_item_declaration_data(s: Span) -> IResult<Span, BlockItemDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = data_declaration(s)?;
     Ok((
@@ -57,7 +57,7 @@ pub fn block_item_declaration_data(s: Span) -> IResult<Span, BlockItemDeclaratio
 }
 
 #[parser]
-pub fn block_item_declaration_local_parameter(s: Span) -> IResult<Span, BlockItemDeclaration> {
+pub(crate) fn block_item_declaration_local_parameter(s: Span) -> IResult<Span, BlockItemDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = local_parameter_declaration(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -70,7 +70,7 @@ pub fn block_item_declaration_local_parameter(s: Span) -> IResult<Span, BlockIte
 }
 
 #[parser]
-pub fn block_item_declaration_parameter(s: Span) -> IResult<Span, BlockItemDeclaration> {
+pub(crate) fn block_item_declaration_parameter(s: Span) -> IResult<Span, BlockItemDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = parameter_declaration(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -83,7 +83,7 @@ pub fn block_item_declaration_parameter(s: Span) -> IResult<Span, BlockItemDecla
 }
 
 #[parser]
-pub fn block_item_declaration_let(s: Span) -> IResult<Span, BlockItemDeclaration> {
+pub(crate) fn block_item_declaration_let(s: Span) -> IResult<Span, BlockItemDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = let_declaration(s)?;
     Ok((

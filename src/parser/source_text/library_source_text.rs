@@ -45,13 +45,13 @@ pub struct FilePathSpec {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn library_text(s: Span) -> IResult<Span, LibraryText> {
+pub(crate) fn library_text(s: Span) -> IResult<Span, LibraryText> {
     let (s, a) = many0(library_description)(s)?;
     Ok((s, LibraryText { nodes: (a,) }))
 }
 
 #[parser]
-pub fn library_description(s: Span) -> IResult<Span, LibraryDescription> {
+pub(crate) fn library_description(s: Span) -> IResult<Span, LibraryDescription> {
     alt((
         map(library_declaration, |x| {
             LibraryDescription::LibraryDeclaration(Box::new(x))
@@ -67,7 +67,7 @@ pub fn library_description(s: Span) -> IResult<Span, LibraryDescription> {
 }
 
 #[parser]
-pub fn library_declaration(s: Span) -> IResult<Span, LibraryDeclaration> {
+pub(crate) fn library_declaration(s: Span) -> IResult<Span, LibraryDeclaration> {
     let (s, a) = keyword("library")(s)?;
     let (s, b) = library_identifier(s)?;
     let (s, c) = list(symbol(","), file_path_spec)(s)?;
@@ -82,7 +82,7 @@ pub fn library_declaration(s: Span) -> IResult<Span, LibraryDeclaration> {
 }
 
 #[parser]
-pub fn include_statement(s: Span) -> IResult<Span, IncludeStatement> {
+pub(crate) fn include_statement(s: Span) -> IResult<Span, IncludeStatement> {
     let (s, a) = keyword("include")(s)?;
     let (s, b) = file_path_spec(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -91,7 +91,7 @@ pub fn include_statement(s: Span) -> IResult<Span, IncludeStatement> {
 
 //TODO support non literal path
 #[parser]
-pub fn file_path_spec(s: Span) -> IResult<Span, FilePathSpec> {
+pub(crate) fn file_path_spec(s: Span) -> IResult<Span, FilePathSpec> {
     let (s, a) = string_literal(s)?;
     Ok((s, FilePathSpec { nodes: (a,) }))
 }

@@ -34,7 +34,7 @@ pub struct UdpInstance {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn udp_instantiation(s: Span) -> IResult<Span, UdpInstantiation> {
+pub(crate) fn udp_instantiation(s: Span) -> IResult<Span, UdpInstantiation> {
     let (s, a) = udp_identifier(s)?;
     let (s, b) = opt(drive_strength)(s)?;
     let (s, c) = opt(delay2)(s)?;
@@ -49,7 +49,7 @@ pub fn udp_instantiation(s: Span) -> IResult<Span, UdpInstantiation> {
 }
 
 #[parser]
-pub fn udp_instance(s: Span) -> IResult<Span, UdpInstance> {
+pub(crate) fn udp_instance(s: Span) -> IResult<Span, UdpInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(tuple((
         output_terminal,

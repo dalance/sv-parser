@@ -217,7 +217,7 @@ pub enum Lifetime {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn data_declaration(s: Span) -> IResult<Span, DataDeclaration> {
+pub(crate) fn data_declaration(s: Span) -> IResult<Span, DataDeclaration> {
     alt((
         data_declaration_variable,
         map(type_declaration, |x| {
@@ -233,7 +233,7 @@ pub fn data_declaration(s: Span) -> IResult<Span, DataDeclaration> {
 }
 
 #[parser(Ambiguous)]
-pub fn data_declaration_variable(s: Span) -> IResult<Span, DataDeclaration> {
+pub(crate) fn data_declaration_variable(s: Span) -> IResult<Span, DataDeclaration> {
     let (s, a) = opt(r#const)(s)?;
     let (s, b) = opt(var)(s)?;
     let (s, c) = opt(lifetime)(s)?;
@@ -249,13 +249,13 @@ pub fn data_declaration_variable(s: Span) -> IResult<Span, DataDeclaration> {
 }
 
 #[parser]
-pub fn r#const(s: Span) -> IResult<Span, Const> {
+pub(crate) fn r#const(s: Span) -> IResult<Span, Const> {
     let (s, a) = keyword("const")(s)?;
     Ok((s, Const { nodes: (a,) }))
 }
 
 #[parser]
-pub fn package_import_declaration(s: Span) -> IResult<Span, PackageImportDeclaration> {
+pub(crate) fn package_import_declaration(s: Span) -> IResult<Span, PackageImportDeclaration> {
     let (s, a) = keyword("import")(s)?;
     let (s, b) = list(symbol(","), package_import_item)(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -263,12 +263,12 @@ pub fn package_import_declaration(s: Span) -> IResult<Span, PackageImportDeclara
 }
 
 #[parser]
-pub fn package_import_item(s: Span) -> IResult<Span, PackageImportItem> {
+pub(crate) fn package_import_item(s: Span) -> IResult<Span, PackageImportItem> {
     alt((package_import_item_identifier, package_import_item_asterisk))(s)
 }
 
 #[parser]
-pub fn package_import_item_identifier(s: Span) -> IResult<Span, PackageImportItem> {
+pub(crate) fn package_import_item_identifier(s: Span) -> IResult<Span, PackageImportItem> {
     let (s, a) = package_identifier(s)?;
     let (s, b) = symbol("::")(s)?;
     let (s, c) = identifier(s)?;
@@ -279,7 +279,7 @@ pub fn package_import_item_identifier(s: Span) -> IResult<Span, PackageImportIte
 }
 
 #[parser]
-pub fn package_import_item_asterisk(s: Span) -> IResult<Span, PackageImportItem> {
+pub(crate) fn package_import_item_asterisk(s: Span) -> IResult<Span, PackageImportItem> {
     let (s, a) = package_identifier(s)?;
     let (s, b) = symbol("::")(s)?;
     let (s, c) = symbol("*")(s)?;
@@ -290,7 +290,7 @@ pub fn package_import_item_asterisk(s: Span) -> IResult<Span, PackageImportItem>
 }
 
 #[parser]
-pub fn package_export_declaration(s: Span) -> IResult<Span, PackageExportDeclaration> {
+pub(crate) fn package_export_declaration(s: Span) -> IResult<Span, PackageExportDeclaration> {
     alt((
         package_export_declaration_asterisk,
         package_export_declaration_item,
@@ -298,7 +298,7 @@ pub fn package_export_declaration(s: Span) -> IResult<Span, PackageExportDeclara
 }
 
 #[parser]
-pub fn package_export_declaration_asterisk(s: Span) -> IResult<Span, PackageExportDeclaration> {
+pub(crate) fn package_export_declaration_asterisk(s: Span) -> IResult<Span, PackageExportDeclaration> {
     let (s, a) = keyword("export")(s)?;
     let (s, b) = symbol("*::*")(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -311,7 +311,7 @@ pub fn package_export_declaration_asterisk(s: Span) -> IResult<Span, PackageExpo
 }
 
 #[parser]
-pub fn package_export_declaration_item(s: Span) -> IResult<Span, PackageExportDeclaration> {
+pub(crate) fn package_export_declaration_item(s: Span) -> IResult<Span, PackageExportDeclaration> {
     let (s, a) = keyword("export")(s)?;
     let (s, b) = list(symbol(","), package_import_item)(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -322,7 +322,7 @@ pub fn package_export_declaration_item(s: Span) -> IResult<Span, PackageExportDe
 }
 
 #[parser]
-pub fn genvar_declaration(s: Span) -> IResult<Span, GenvarDeclaration> {
+pub(crate) fn genvar_declaration(s: Span) -> IResult<Span, GenvarDeclaration> {
     let (s, a) = keyword("genvar")(s)?;
     let (s, b) = list_of_genvar_identifiers(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -330,7 +330,7 @@ pub fn genvar_declaration(s: Span) -> IResult<Span, GenvarDeclaration> {
 }
 
 #[parser]
-pub fn net_declaration(s: Span) -> IResult<Span, NetDeclaration> {
+pub(crate) fn net_declaration(s: Span) -> IResult<Span, NetDeclaration> {
     alt((
         net_declaration_interconnect,
         net_declaration_net_type,
@@ -339,7 +339,7 @@ pub fn net_declaration(s: Span) -> IResult<Span, NetDeclaration> {
 }
 
 #[parser(Ambiguous)]
-pub fn net_declaration_net_type(s: Span) -> IResult<Span, NetDeclaration> {
+pub(crate) fn net_declaration_net_type(s: Span) -> IResult<Span, NetDeclaration> {
     let (s, a) = net_type(s)?;
     let (s, b) = opt(strength)(s)?;
     let (s, c) = opt(vector_scalar)(s)?;
@@ -356,7 +356,7 @@ pub fn net_declaration_net_type(s: Span) -> IResult<Span, NetDeclaration> {
 }
 
 #[parser]
-pub fn strength(s: Span) -> IResult<Span, Strength> {
+pub(crate) fn strength(s: Span) -> IResult<Span, Strength> {
     alt((
         map(drive_strength, |x| Strength::Drive(Box::new(x))),
         map(charge_strength, |x| Strength::Charge(Box::new(x))),
@@ -364,7 +364,7 @@ pub fn strength(s: Span) -> IResult<Span, Strength> {
 }
 
 #[parser]
-pub fn vector_scalar(s: Span) -> IResult<Span, VectorScalar> {
+pub(crate) fn vector_scalar(s: Span) -> IResult<Span, VectorScalar> {
     alt((
         map(keyword("vectored"), |x| VectorScalar::Vectored(Box::new(x))),
         map(keyword("scalared"), |x| VectorScalar::Scalared(Box::new(x))),
@@ -372,7 +372,7 @@ pub fn vector_scalar(s: Span) -> IResult<Span, VectorScalar> {
 }
 
 #[parser]
-pub fn net_declaration_net_type_identifier(s: Span) -> IResult<Span, NetDeclaration> {
+pub(crate) fn net_declaration_net_type_identifier(s: Span) -> IResult<Span, NetDeclaration> {
     let (s, a) = net_type_identifier(s)?;
     let (s, b) = opt(delay_control)(s)?;
     let (s, c) = list_of_net_decl_assignments(s)?;
@@ -386,7 +386,7 @@ pub fn net_declaration_net_type_identifier(s: Span) -> IResult<Span, NetDeclarat
 }
 
 #[parser]
-pub fn net_declaration_interconnect(s: Span) -> IResult<Span, NetDeclaration> {
+pub(crate) fn net_declaration_interconnect(s: Span) -> IResult<Span, NetDeclaration> {
     let (s, a) = keyword("interconnect")(s)?;
     let (s, b) = implicit_data_type(s)?;
     let (s, c) = opt(pair(symbol("#"), delay_value))(s)?;
@@ -407,7 +407,7 @@ pub fn net_declaration_interconnect(s: Span) -> IResult<Span, NetDeclaration> {
 }
 
 #[parser]
-pub fn type_declaration(s: Span) -> IResult<Span, TypeDeclaration> {
+pub(crate) fn type_declaration(s: Span) -> IResult<Span, TypeDeclaration> {
     alt((
         type_declaration_data_type,
         type_declaration_interface,
@@ -416,7 +416,7 @@ pub fn type_declaration(s: Span) -> IResult<Span, TypeDeclaration> {
 }
 
 #[parser]
-pub fn type_declaration_data_type(s: Span) -> IResult<Span, TypeDeclaration> {
+pub(crate) fn type_declaration_data_type(s: Span) -> IResult<Span, TypeDeclaration> {
     let (s, a) = keyword("typedef")(s)?;
     let (s, b) = data_type(s)?;
     let (s, c) = type_identifier(s)?;
@@ -431,7 +431,7 @@ pub fn type_declaration_data_type(s: Span) -> IResult<Span, TypeDeclaration> {
 }
 
 #[parser]
-pub fn type_declaration_interface(s: Span) -> IResult<Span, TypeDeclaration> {
+pub(crate) fn type_declaration_interface(s: Span) -> IResult<Span, TypeDeclaration> {
     let (s, a) = keyword("typedef")(s)?;
     let (s, b) = interface_instance_identifier(s)?;
     let (s, c) = constant_bit_select(s)?;
@@ -448,7 +448,7 @@ pub fn type_declaration_interface(s: Span) -> IResult<Span, TypeDeclaration> {
 }
 
 #[parser]
-pub fn type_declaration_reserved(s: Span) -> IResult<Span, TypeDeclaration> {
+pub(crate) fn type_declaration_reserved(s: Span) -> IResult<Span, TypeDeclaration> {
     let (s, a) = keyword("typedef")(s)?;
     let (s, b) = opt(type_declaration_keyword)(s)?;
     let (s, c) = type_identifier(s)?;
@@ -462,7 +462,7 @@ pub fn type_declaration_reserved(s: Span) -> IResult<Span, TypeDeclaration> {
 }
 
 #[parser]
-pub fn type_declaration_keyword(s: Span) -> IResult<Span, TypeDeclarationKeyword> {
+pub(crate) fn type_declaration_keyword(s: Span) -> IResult<Span, TypeDeclarationKeyword> {
     alt((
         map(keyword("enum"), |x| {
             TypeDeclarationKeyword::Enum(Box::new(x))
@@ -483,7 +483,7 @@ pub fn type_declaration_keyword(s: Span) -> IResult<Span, TypeDeclarationKeyword
 }
 
 #[parser]
-pub fn net_type_declaration(s: Span) -> IResult<Span, NetTypeDeclaration> {
+pub(crate) fn net_type_declaration(s: Span) -> IResult<Span, NetTypeDeclaration> {
     alt((
         net_type_declaration_data_type,
         net_type_declaration_net_type,
@@ -491,7 +491,7 @@ pub fn net_type_declaration(s: Span) -> IResult<Span, NetTypeDeclaration> {
 }
 
 #[parser]
-pub fn net_type_declaration_data_type(s: Span) -> IResult<Span, NetTypeDeclaration> {
+pub(crate) fn net_type_declaration_data_type(s: Span) -> IResult<Span, NetTypeDeclaration> {
     let (s, a) = keyword("nettype")(s)?;
     let (s, b) = data_type(s)?;
     let (s, c) = net_type_identifier(s)?;
@@ -510,7 +510,7 @@ pub fn net_type_declaration_data_type(s: Span) -> IResult<Span, NetTypeDeclarati
 }
 
 #[parser]
-pub fn net_type_declaration_net_type(s: Span) -> IResult<Span, NetTypeDeclaration> {
+pub(crate) fn net_type_declaration_net_type(s: Span) -> IResult<Span, NetTypeDeclaration> {
     let (s, a) = keyword("nettype")(s)?;
     let (s, b) = opt(package_scope_or_class_scope)(s)?;
     let (s, c) = net_type_identifier(s)?;
@@ -525,7 +525,7 @@ pub fn net_type_declaration_net_type(s: Span) -> IResult<Span, NetTypeDeclaratio
 }
 
 #[parser]
-pub fn lifetime(s: Span) -> IResult<Span, Lifetime> {
+pub(crate) fn lifetime(s: Span) -> IResult<Span, Lifetime> {
     alt((
         map(keyword("static"), |x| Lifetime::Static(Box::new(x))),
         map(keyword("automatic"), |x| Lifetime::Automatic(Box::new(x))),

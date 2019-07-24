@@ -170,13 +170,13 @@ pub enum ArrayMethodName {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn constant_function_call(s: Span) -> IResult<Span, ConstantFunctionCall> {
+pub(crate) fn constant_function_call(s: Span) -> IResult<Span, ConstantFunctionCall> {
     let (s, a) = function_subroutine_call(s)?;
     Ok((s, ConstantFunctionCall { nodes: (a,) }))
 }
 
 #[parser]
-pub fn tf_call(s: Span) -> IResult<Span, TfCall> {
+pub(crate) fn tf_call(s: Span) -> IResult<Span, TfCall> {
     let (s, a) = ps_or_hierarchical_tf_identifier(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
     let (s, c) = opt(paren(list_of_arguments))(s)?;
@@ -184,7 +184,7 @@ pub fn tf_call(s: Span) -> IResult<Span, TfCall> {
 }
 
 #[parser]
-pub fn system_tf_call(s: Span) -> IResult<Span, SystemTfCall> {
+pub(crate) fn system_tf_call(s: Span) -> IResult<Span, SystemTfCall> {
     alt((
         system_tf_call_arg_optional,
         system_tf_call_arg_data_type,
@@ -193,7 +193,7 @@ pub fn system_tf_call(s: Span) -> IResult<Span, SystemTfCall> {
 }
 
 #[parser]
-pub fn system_tf_call_arg_optional(s: Span) -> IResult<Span, SystemTfCall> {
+pub(crate) fn system_tf_call_arg_optional(s: Span) -> IResult<Span, SystemTfCall> {
     let (s, a) = system_tf_identifier(s)?;
     let (s, b) = opt(paren(list_of_arguments))(s)?;
     Ok((
@@ -203,7 +203,7 @@ pub fn system_tf_call_arg_optional(s: Span) -> IResult<Span, SystemTfCall> {
 }
 
 #[parser]
-pub fn system_tf_call_arg_data_type(s: Span) -> IResult<Span, SystemTfCall> {
+pub(crate) fn system_tf_call_arg_data_type(s: Span) -> IResult<Span, SystemTfCall> {
     let (s, a) = system_tf_identifier(s)?;
     let (s, b) = paren(pair(data_type, opt(pair(symbol(","), expression))))(s)?;
     Ok((
@@ -213,7 +213,7 @@ pub fn system_tf_call_arg_data_type(s: Span) -> IResult<Span, SystemTfCall> {
 }
 
 #[parser]
-pub fn system_tf_call_arg_expression(s: Span) -> IResult<Span, SystemTfCall> {
+pub(crate) fn system_tf_call_arg_expression(s: Span) -> IResult<Span, SystemTfCall> {
     let (s, a) = system_tf_identifier(s)?;
     let (s, b) = paren(pair(
         list(symbol(","), opt(expression)),
@@ -227,7 +227,7 @@ pub fn system_tf_call_arg_expression(s: Span) -> IResult<Span, SystemTfCall> {
 
 #[packrat_parser]
 #[parser]
-pub fn subroutine_call(s: Span) -> IResult<Span, SubroutineCall> {
+pub(crate) fn subroutine_call(s: Span) -> IResult<Span, SubroutineCall> {
     alt((
         map(tf_call, |x| SubroutineCall::TfCall(Box::new(x))),
         map(system_tf_call, |x| {
@@ -239,7 +239,7 @@ pub fn subroutine_call(s: Span) -> IResult<Span, SubroutineCall> {
 }
 
 #[parser]
-pub fn subroutine_call_randomize(s: Span) -> IResult<Span, SubroutineCall> {
+pub(crate) fn subroutine_call_randomize(s: Span) -> IResult<Span, SubroutineCall> {
     let (s, a) = opt(pair(keyword("std"), symbol("::")))(s)?;
     let (s, b) = randomize_call(s)?;
     Ok((
@@ -249,17 +249,17 @@ pub fn subroutine_call_randomize(s: Span) -> IResult<Span, SubroutineCall> {
 }
 
 #[parser]
-pub fn function_subroutine_call(s: Span) -> IResult<Span, FunctionSubroutineCall> {
+pub(crate) fn function_subroutine_call(s: Span) -> IResult<Span, FunctionSubroutineCall> {
     map(subroutine_call, |x| FunctionSubroutineCall { nodes: (x,) })(s)
 }
 
 #[parser]
-pub fn list_of_arguments(s: Span) -> IResult<Span, ListOfArguments> {
+pub(crate) fn list_of_arguments(s: Span) -> IResult<Span, ListOfArguments> {
     alt((list_of_arguments_ordered, list_of_arguments_named))(s)
 }
 
 #[parser(MaybeRecursive)]
-pub fn list_of_arguments_ordered(s: Span) -> IResult<Span, ListOfArguments> {
+pub(crate) fn list_of_arguments_ordered(s: Span) -> IResult<Span, ListOfArguments> {
     let (s, a) = list(symbol(","), opt(expression))(s)?;
     let (s, b) = many0(tuple((
         symbol(","),
@@ -274,7 +274,7 @@ pub fn list_of_arguments_ordered(s: Span) -> IResult<Span, ListOfArguments> {
 }
 
 #[parser]
-pub fn list_of_arguments_named(s: Span) -> IResult<Span, ListOfArguments> {
+pub(crate) fn list_of_arguments_named(s: Span) -> IResult<Span, ListOfArguments> {
     let (s, a) = symbol(".")(s)?;
     let (s, b) = identifier(s)?;
     let (s, c) = paren(opt(expression))(s)?;
@@ -293,7 +293,7 @@ pub fn list_of_arguments_named(s: Span) -> IResult<Span, ListOfArguments> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn method_call(s: Span) -> IResult<Span, MethodCall> {
+pub(crate) fn method_call(s: Span) -> IResult<Span, MethodCall> {
     let (s, a) = method_call_root(s)?;
     let (s, b) = symbol(".")(s)?;
     let (s, c) = method_call_body(s)?;
@@ -302,7 +302,7 @@ pub fn method_call(s: Span) -> IResult<Span, MethodCall> {
 }
 
 #[parser]
-pub fn method_call_body(s: Span) -> IResult<Span, MethodCallBody> {
+pub(crate) fn method_call_body(s: Span) -> IResult<Span, MethodCallBody> {
     alt((
         method_call_body_user,
         map(built_in_method_call, |x| {
@@ -312,7 +312,7 @@ pub fn method_call_body(s: Span) -> IResult<Span, MethodCallBody> {
 }
 
 #[parser]
-pub fn method_call_body_user(s: Span) -> IResult<Span, MethodCallBody> {
+pub(crate) fn method_call_body_user(s: Span) -> IResult<Span, MethodCallBody> {
     let (s, a) = method_identifier(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
     let (s, c) = opt(paren(list_of_arguments))(s)?;
@@ -323,7 +323,7 @@ pub fn method_call_body_user(s: Span) -> IResult<Span, MethodCallBody> {
 }
 
 #[parser]
-pub fn built_in_method_call(s: Span) -> IResult<Span, BuiltInMethodCall> {
+pub(crate) fn built_in_method_call(s: Span) -> IResult<Span, BuiltInMethodCall> {
     alt((
         map(array_manipulation_call, |x| {
             BuiltInMethodCall::ArrayManipulationCall(Box::new(x))
@@ -335,7 +335,7 @@ pub fn built_in_method_call(s: Span) -> IResult<Span, BuiltInMethodCall> {
 }
 
 #[parser]
-pub fn array_manipulation_call(s: Span) -> IResult<Span, ArrayManipulationCall> {
+pub(crate) fn array_manipulation_call(s: Span) -> IResult<Span, ArrayManipulationCall> {
     let (s, a) = array_method_name(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
     let (s, c) = opt(paren(list_of_arguments))(s)?;
@@ -349,7 +349,7 @@ pub fn array_manipulation_call(s: Span) -> IResult<Span, ArrayManipulationCall> 
 }
 
 #[parser]
-pub fn randomize_call(s: Span) -> IResult<Span, RandomizeCall> {
+pub(crate) fn randomize_call(s: Span) -> IResult<Span, RandomizeCall> {
     let (s, a) = keyword("randomize")(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
     let (s, c) = opt(paren(opt(variable_identifier_list_or_null)))(s)?;
@@ -367,7 +367,7 @@ pub fn randomize_call(s: Span) -> IResult<Span, RandomizeCall> {
 }
 
 #[parser]
-pub fn variable_identifier_list_or_null(s: Span) -> IResult<Span, VariableIdentifierListOrNull> {
+pub(crate) fn variable_identifier_list_or_null(s: Span) -> IResult<Span, VariableIdentifierListOrNull> {
     alt((
         map(variable_identifier_list, |x| {
             VariableIdentifierListOrNull::VariableIdentifierList(Box::new(x))
@@ -379,7 +379,7 @@ pub fn variable_identifier_list_or_null(s: Span) -> IResult<Span, VariableIdenti
 }
 
 #[parser]
-pub fn method_call_root(s: Span) -> IResult<Span, MethodCallRoot> {
+pub(crate) fn method_call_root(s: Span) -> IResult<Span, MethodCallRoot> {
     alt((
         map(primary, |x| MethodCallRoot::Primary(Box::new(x))),
         map(implicit_class_handle, |x| {
@@ -389,7 +389,7 @@ pub fn method_call_root(s: Span) -> IResult<Span, MethodCallRoot> {
 }
 
 #[parser]
-pub fn array_method_name(s: Span) -> IResult<Span, ArrayMethodName> {
+pub(crate) fn array_method_name(s: Span) -> IResult<Span, ArrayMethodName> {
     alt((
         map(keyword("unique"), |x| ArrayMethodName::Unique(Box::new(x))),
         map(keyword("and"), |x| ArrayMethodName::And(Box::new(x))),

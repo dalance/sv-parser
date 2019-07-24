@@ -130,7 +130,7 @@ pub struct PolarityOperator {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn path_delay_value(s: Span) -> IResult<Span, PathDelayValue> {
+pub(crate) fn path_delay_value(s: Span) -> IResult<Span, PathDelayValue> {
     alt((
         map(list_of_path_delay_expressions, |x| {
             PathDelayValue::ListOfPathDelayExpressions(Box::new(x))
@@ -140,7 +140,7 @@ pub fn path_delay_value(s: Span) -> IResult<Span, PathDelayValue> {
 }
 
 #[parser]
-pub fn path_delay_value_paren(s: Span) -> IResult<Span, PathDelayValue> {
+pub(crate) fn path_delay_value_paren(s: Span) -> IResult<Span, PathDelayValue> {
     let (s, a) = paren(list_of_path_delay_expressions)(s)?;
     Ok((
         s,
@@ -149,25 +149,25 @@ pub fn path_delay_value_paren(s: Span) -> IResult<Span, PathDelayValue> {
 }
 
 #[parser]
-pub fn list_of_path_delay_expressions(s: Span) -> IResult<Span, ListOfPathDelayExpressions> {
+pub(crate) fn list_of_path_delay_expressions(s: Span) -> IResult<Span, ListOfPathDelayExpressions> {
     let (s, a) = list(symbol(","), t_path_delay_expression)(s)?;
     Ok((s, ListOfPathDelayExpressions { nodes: (a,) }))
 }
 
 #[parser]
-pub fn t_path_delay_expression(s: Span) -> IResult<Span, TPathDelayExpression> {
+pub(crate) fn t_path_delay_expression(s: Span) -> IResult<Span, TPathDelayExpression> {
     let (s, a) = path_delay_expression(s)?;
     Ok((s, TPathDelayExpression { nodes: (a,) }))
 }
 
 #[parser]
-pub fn path_delay_expression(s: Span) -> IResult<Span, PathDelayExpression> {
+pub(crate) fn path_delay_expression(s: Span) -> IResult<Span, PathDelayExpression> {
     let (s, a) = constant_mintypmax_expression(s)?;
     Ok((s, PathDelayExpression { nodes: (a,) }))
 }
 
 #[parser]
-pub fn edge_sensitive_path_declaration(s: Span) -> IResult<Span, EdgeSensitivePathDeclaration> {
+pub(crate) fn edge_sensitive_path_declaration(s: Span) -> IResult<Span, EdgeSensitivePathDeclaration> {
     alt((
         edge_sensitive_path_declaration_parallel,
         edge_sensitive_path_declaration_full,
@@ -175,7 +175,7 @@ pub fn edge_sensitive_path_declaration(s: Span) -> IResult<Span, EdgeSensitivePa
 }
 
 #[parser]
-pub fn edge_sensitive_path_declaration_parallel(
+pub(crate) fn edge_sensitive_path_declaration_parallel(
     s: Span,
 ) -> IResult<Span, EdgeSensitivePathDeclaration> {
     let (s, a) = parallel_edge_sensitive_path_description(s)?;
@@ -190,7 +190,7 @@ pub fn edge_sensitive_path_declaration_parallel(
 }
 
 #[parser]
-pub fn edge_sensitive_path_declaration_full(
+pub(crate) fn edge_sensitive_path_declaration_full(
     s: Span,
 ) -> IResult<Span, EdgeSensitivePathDeclaration> {
     let (s, a) = full_edge_sensitive_path_description(s)?;
@@ -205,7 +205,7 @@ pub fn edge_sensitive_path_declaration_full(
 }
 
 #[parser]
-pub fn parallel_edge_sensitive_path_description(
+pub(crate) fn parallel_edge_sensitive_path_description(
     s: Span,
 ) -> IResult<Span, ParallelEdgeSensitivePathDescription> {
     let (s, a) = paren(tuple((
@@ -224,7 +224,7 @@ pub fn parallel_edge_sensitive_path_description(
 }
 
 #[parser]
-pub fn full_edge_sensitive_path_description(
+pub(crate) fn full_edge_sensitive_path_description(
     s: Span,
 ) -> IResult<Span, FullEdgeSensitivePathDescription> {
     let (s, a) = paren(tuple((
@@ -243,13 +243,13 @@ pub fn full_edge_sensitive_path_description(
 }
 
 #[parser]
-pub fn data_source_expression(s: Span) -> IResult<Span, DataSourceExpression> {
+pub(crate) fn data_source_expression(s: Span) -> IResult<Span, DataSourceExpression> {
     let (s, a) = expression(s)?;
     Ok((s, DataSourceExpression { nodes: (a,) }))
 }
 
 #[parser]
-pub fn edge_identifier(s: Span) -> IResult<Span, EdgeIdentifier> {
+pub(crate) fn edge_identifier(s: Span) -> IResult<Span, EdgeIdentifier> {
     alt((
         map(keyword("posedge"), |x| EdgeIdentifier::Posedge(Box::new(x))),
         map(keyword("negedge"), |x| EdgeIdentifier::Negedge(Box::new(x))),
@@ -258,7 +258,7 @@ pub fn edge_identifier(s: Span) -> IResult<Span, EdgeIdentifier> {
 }
 
 #[parser]
-pub fn state_dependent_path_declaration(s: Span) -> IResult<Span, StateDependentPathDeclaration> {
+pub(crate) fn state_dependent_path_declaration(s: Span) -> IResult<Span, StateDependentPathDeclaration> {
     alt((
         state_dependent_path_declaration_if_simple,
         state_dependent_path_declaration_if_edge_sensitive,
@@ -267,7 +267,7 @@ pub fn state_dependent_path_declaration(s: Span) -> IResult<Span, StateDependent
 }
 
 #[parser]
-pub fn state_dependent_path_declaration_if_simple(
+pub(crate) fn state_dependent_path_declaration_if_simple(
     s: Span,
 ) -> IResult<Span, StateDependentPathDeclaration> {
     let (s, a) = keyword("if")(s)?;
@@ -282,7 +282,7 @@ pub fn state_dependent_path_declaration_if_simple(
 }
 
 #[parser]
-pub fn state_dependent_path_declaration_if_edge_sensitive(
+pub(crate) fn state_dependent_path_declaration_if_edge_sensitive(
     s: Span,
 ) -> IResult<Span, StateDependentPathDeclaration> {
     let (s, a) = keyword("if")(s)?;
@@ -297,7 +297,7 @@ pub fn state_dependent_path_declaration_if_edge_sensitive(
 }
 
 #[parser]
-pub fn state_dependent_path_declaration_if_none(
+pub(crate) fn state_dependent_path_declaration_if_none(
     s: Span,
 ) -> IResult<Span, StateDependentPathDeclaration> {
     let (s, a) = keyword("ifnone")(s)?;
@@ -311,7 +311,7 @@ pub fn state_dependent_path_declaration_if_none(
 }
 
 #[parser]
-pub fn polarity_operator(s: Span) -> IResult<Span, PolarityOperator> {
+pub(crate) fn polarity_operator(s: Span) -> IResult<Span, PolarityOperator> {
     alt((
         map(symbol("+"), |x| PolarityOperator { nodes: (x,) }),
         map(symbol("-"), |x| PolarityOperator { nodes: (x,) }),

@@ -194,7 +194,7 @@ pub enum BindInstantiation {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn elaboration_system_task(s: Span) -> IResult<Span, ElaborationSystemTask> {
+pub(crate) fn elaboration_system_task(s: Span) -> IResult<Span, ElaborationSystemTask> {
     alt((
         elaboration_system_task_fatal,
         elaboration_system_task_error,
@@ -204,7 +204,7 @@ pub fn elaboration_system_task(s: Span) -> IResult<Span, ElaborationSystemTask> 
 }
 
 #[parser]
-pub fn elaboration_system_task_fatal(s: Span) -> IResult<Span, ElaborationSystemTask> {
+pub(crate) fn elaboration_system_task_fatal(s: Span) -> IResult<Span, ElaborationSystemTask> {
     let (s, a) = keyword("$fatal")(s)?;
     let (s, b) = opt(paren(pair(
         finish_number,
@@ -218,7 +218,7 @@ pub fn elaboration_system_task_fatal(s: Span) -> IResult<Span, ElaborationSystem
 }
 
 #[parser]
-pub fn elaboration_system_task_error(s: Span) -> IResult<Span, ElaborationSystemTask> {
+pub(crate) fn elaboration_system_task_error(s: Span) -> IResult<Span, ElaborationSystemTask> {
     let (s, a) = keyword("$error")(s)?;
     let (s, b) = opt(paren(opt(list_of_arguments)))(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -229,7 +229,7 @@ pub fn elaboration_system_task_error(s: Span) -> IResult<Span, ElaborationSystem
 }
 
 #[parser]
-pub fn elaboration_system_task_warning(s: Span) -> IResult<Span, ElaborationSystemTask> {
+pub(crate) fn elaboration_system_task_warning(s: Span) -> IResult<Span, ElaborationSystemTask> {
     let (s, a) = keyword("$warning")(s)?;
     let (s, b) = opt(paren(opt(list_of_arguments)))(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -242,7 +242,7 @@ pub fn elaboration_system_task_warning(s: Span) -> IResult<Span, ElaborationSyst
 }
 
 #[parser]
-pub fn elaboration_system_task_info(s: Span) -> IResult<Span, ElaborationSystemTask> {
+pub(crate) fn elaboration_system_task_info(s: Span) -> IResult<Span, ElaborationSystemTask> {
     let (s, a) = keyword("$info")(s)?;
     let (s, b) = opt(paren(opt(list_of_arguments)))(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -253,7 +253,7 @@ pub fn elaboration_system_task_info(s: Span) -> IResult<Span, ElaborationSystemT
 }
 
 #[parser]
-pub fn finish_number(s: Span) -> IResult<Span, FinishNumber> {
+pub(crate) fn finish_number(s: Span) -> IResult<Span, FinishNumber> {
     alt((
         map(symbol("0"), |x| FinishNumber::Zero(Box::new(x))),
         map(symbol("1"), |x| FinishNumber::One(Box::new(x))),
@@ -262,7 +262,7 @@ pub fn finish_number(s: Span) -> IResult<Span, FinishNumber> {
 }
 
 #[parser]
-pub fn module_common_item(s: Span) -> IResult<Span, ModuleCommonItem> {
+pub(crate) fn module_common_item(s: Span) -> IResult<Span, ModuleCommonItem> {
     alt((
         map(module_or_generate_item_declaration, |x| {
             ModuleCommonItem::ModuleOrGenerateItemDeclaration(Box::new(x))
@@ -305,7 +305,7 @@ pub fn module_common_item(s: Span) -> IResult<Span, ModuleCommonItem> {
 }
 
 #[parser]
-pub fn module_item(s: Span) -> IResult<Span, ModuleItem> {
+pub(crate) fn module_item(s: Span) -> IResult<Span, ModuleItem> {
     alt((
         map(pair(port_declaration, symbol(";")), |x| {
             ModuleItem::PortDeclaration(Box::new(x))
@@ -317,7 +317,7 @@ pub fn module_item(s: Span) -> IResult<Span, ModuleItem> {
 }
 
 #[parser]
-pub fn module_or_generate_item(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
+pub(crate) fn module_or_generate_item(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
     alt((
         module_or_generate_item_parameter,
         module_or_generate_item_gate,
@@ -328,7 +328,7 @@ pub fn module_or_generate_item(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
 }
 
 #[parser]
-pub fn module_or_generate_item_parameter(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
+pub(crate) fn module_or_generate_item_parameter(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = parameter_override(s)?;
     Ok((
@@ -338,7 +338,7 @@ pub fn module_or_generate_item_parameter(s: Span) -> IResult<Span, ModuleOrGener
 }
 
 #[parser]
-pub fn module_or_generate_item_gate(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
+pub(crate) fn module_or_generate_item_gate(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = gate_instantiation(s)?;
     Ok((
@@ -348,7 +348,7 @@ pub fn module_or_generate_item_gate(s: Span) -> IResult<Span, ModuleOrGenerateIt
 }
 
 #[parser]
-pub fn module_or_generate_item_udp(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
+pub(crate) fn module_or_generate_item_udp(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = udp_instantiation(s)?;
     Ok((
@@ -358,7 +358,7 @@ pub fn module_or_generate_item_udp(s: Span) -> IResult<Span, ModuleOrGenerateIte
 }
 
 #[parser]
-pub fn module_or_generate_item_module(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
+pub(crate) fn module_or_generate_item_module(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = module_instantiation(s)?;
     Ok((
@@ -368,7 +368,7 @@ pub fn module_or_generate_item_module(s: Span) -> IResult<Span, ModuleOrGenerate
 }
 
 #[parser(MaybeRecursive)]
-pub fn module_or_generate_item_module_item(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
+pub(crate) fn module_or_generate_item_module_item(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = module_common_item(s)?;
     Ok((
@@ -380,7 +380,7 @@ pub fn module_or_generate_item_module_item(s: Span) -> IResult<Span, ModuleOrGen
 }
 
 #[parser]
-pub fn module_or_generate_item_declaration(
+pub(crate) fn module_or_generate_item_declaration(
     s: Span,
 ) -> IResult<Span, ModuleOrGenerateItemDeclaration> {
     alt((
@@ -399,7 +399,7 @@ pub fn module_or_generate_item_declaration(
 }
 
 #[parser]
-pub fn module_or_generate_item_declaration_clocking(
+pub(crate) fn module_or_generate_item_declaration_clocking(
     s: Span,
 ) -> IResult<Span, ModuleOrGenerateItemDeclaration> {
     let (s, a) = keyword("default")(s)?;
@@ -417,7 +417,7 @@ pub fn module_or_generate_item_declaration_clocking(
 }
 
 #[parser]
-pub fn module_or_generate_item_declaration_disable(
+pub(crate) fn module_or_generate_item_declaration_disable(
     s: Span,
 ) -> IResult<Span, ModuleOrGenerateItemDeclaration> {
     let (s, a) = keyword("default")(s)?;
@@ -436,7 +436,7 @@ pub fn module_or_generate_item_declaration_disable(
 }
 
 #[parser]
-pub fn non_port_module_item(s: Span) -> IResult<Span, NonPortModuleItem> {
+pub(crate) fn non_port_module_item(s: Span) -> IResult<Span, NonPortModuleItem> {
     alt((
         map(generate_region, |x| {
             NonPortModuleItem::GenerateRegion(Box::new(x))
@@ -464,7 +464,7 @@ pub fn non_port_module_item(s: Span) -> IResult<Span, NonPortModuleItem> {
 }
 
 #[parser]
-pub fn non_port_module_item_specparam(s: Span) -> IResult<Span, NonPortModuleItem> {
+pub(crate) fn non_port_module_item_specparam(s: Span) -> IResult<Span, NonPortModuleItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = specparam_declaration(s)?;
     Ok((
@@ -474,7 +474,7 @@ pub fn non_port_module_item_specparam(s: Span) -> IResult<Span, NonPortModuleIte
 }
 
 #[parser]
-pub fn parameter_override(s: Span) -> IResult<Span, ParameterOverride> {
+pub(crate) fn parameter_override(s: Span) -> IResult<Span, ParameterOverride> {
     let (s, a) = keyword("defparam")(s)?;
     let (s, b) = list_of_defparam_assignments(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -482,12 +482,12 @@ pub fn parameter_override(s: Span) -> IResult<Span, ParameterOverride> {
 }
 
 #[parser]
-pub fn bind_directive(s: Span) -> IResult<Span, BindDirective> {
+pub(crate) fn bind_directive(s: Span) -> IResult<Span, BindDirective> {
     alt((bind_directive_scope, bind_directive_instance))(s)
 }
 
 #[parser]
-pub fn bind_directive_scope(s: Span) -> IResult<Span, BindDirective> {
+pub(crate) fn bind_directive_scope(s: Span) -> IResult<Span, BindDirective> {
     let (s, a) = keyword("bind")(s)?;
     let (s, b) = bind_target_scope(s)?;
     let (s, c) = opt(pair(symbol(":"), bind_target_instance_list))(s)?;
@@ -502,7 +502,7 @@ pub fn bind_directive_scope(s: Span) -> IResult<Span, BindDirective> {
 }
 
 #[parser]
-pub fn bind_directive_instance(s: Span) -> IResult<Span, BindDirective> {
+pub(crate) fn bind_directive_instance(s: Span) -> IResult<Span, BindDirective> {
     let (s, a) = keyword("bind")(s)?;
     let (s, b) = bind_target_instance(s)?;
     let (s, c) = bind_instantiation(s)?;
@@ -516,7 +516,7 @@ pub fn bind_directive_instance(s: Span) -> IResult<Span, BindDirective> {
 }
 
 #[parser]
-pub fn bind_target_scope(s: Span) -> IResult<Span, BindTargetScope> {
+pub(crate) fn bind_target_scope(s: Span) -> IResult<Span, BindTargetScope> {
     alt((
         map(module_identifier, |x| {
             BindTargetScope::ModuleIdentifier(Box::new(x))
@@ -528,20 +528,20 @@ pub fn bind_target_scope(s: Span) -> IResult<Span, BindTargetScope> {
 }
 
 #[parser]
-pub fn bind_target_instance(s: Span) -> IResult<Span, BindTargetInstance> {
+pub(crate) fn bind_target_instance(s: Span) -> IResult<Span, BindTargetInstance> {
     let (s, a) = hierarchical_identifier(s)?;
     let (s, b) = constant_bit_select(s)?;
     Ok((s, BindTargetInstance { nodes: (a, b) }))
 }
 
 #[parser]
-pub fn bind_target_instance_list(s: Span) -> IResult<Span, BindTargetInstanceList> {
+pub(crate) fn bind_target_instance_list(s: Span) -> IResult<Span, BindTargetInstanceList> {
     let (s, a) = list(symbol(","), bind_target_instance)(s)?;
     Ok((s, BindTargetInstanceList { nodes: (a,) }))
 }
 
 #[parser]
-pub fn bind_instantiation(s: Span) -> IResult<Span, BindInstantiation> {
+pub(crate) fn bind_instantiation(s: Span) -> IResult<Span, BindInstantiation> {
     alt((
         map(program_instantiation, |x| {
             BindInstantiation::ProgramInstantiation(Box::new(x))

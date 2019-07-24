@@ -213,7 +213,7 @@ pub struct DisableStatementFork {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn procedural_timing_control_statement(
+pub(crate) fn procedural_timing_control_statement(
     s: Span,
 ) -> IResult<Span, ProceduralTimingControlStatement> {
     let (s, a) = procedural_timing_control(s)?;
@@ -222,7 +222,7 @@ pub fn procedural_timing_control_statement(
 }
 
 #[parser]
-pub fn delay_or_event_control(s: Span) -> IResult<Span, DelayOrEventControl> {
+pub(crate) fn delay_or_event_control(s: Span) -> IResult<Span, DelayOrEventControl> {
     alt((
         map(delay_control, |x| DelayOrEventControl::Delay(Box::new(x))),
         map(event_control, |x| DelayOrEventControl::Event(Box::new(x))),
@@ -231,7 +231,7 @@ pub fn delay_or_event_control(s: Span) -> IResult<Span, DelayOrEventControl> {
 }
 
 #[parser]
-pub fn delay_or_event_control_repeat(s: Span) -> IResult<Span, DelayOrEventControl> {
+pub(crate) fn delay_or_event_control_repeat(s: Span) -> IResult<Span, DelayOrEventControl> {
     let (s, a) = keyword("repeat")(s)?;
     let (s, b) = paren(expression)(s)?;
     let (s, c) = event_control(s)?;
@@ -242,12 +242,12 @@ pub fn delay_or_event_control_repeat(s: Span) -> IResult<Span, DelayOrEventContr
 }
 
 #[parser]
-pub fn delay_control(s: Span) -> IResult<Span, DelayControl> {
+pub(crate) fn delay_control(s: Span) -> IResult<Span, DelayControl> {
     alt((delay_control_delay, delay_control_mintypmax))(s)
 }
 
 #[parser]
-pub fn delay_control_delay(s: Span) -> IResult<Span, DelayControl> {
+pub(crate) fn delay_control_delay(s: Span) -> IResult<Span, DelayControl> {
     let (s, a) = symbol("#")(s)?;
     let (s, b) = delay_value(s)?;
     Ok((
@@ -257,7 +257,7 @@ pub fn delay_control_delay(s: Span) -> IResult<Span, DelayControl> {
 }
 
 #[parser]
-pub fn delay_control_mintypmax(s: Span) -> IResult<Span, DelayControl> {
+pub(crate) fn delay_control_mintypmax(s: Span) -> IResult<Span, DelayControl> {
     let (s, a) = symbol("#")(s)?;
     let (s, b) = paren(mintypmax_expression)(s)?;
     Ok((
@@ -267,7 +267,7 @@ pub fn delay_control_mintypmax(s: Span) -> IResult<Span, DelayControl> {
 }
 
 #[parser]
-pub fn event_control(s: Span) -> IResult<Span, EventControl> {
+pub(crate) fn event_control(s: Span) -> IResult<Span, EventControl> {
     alt((
         event_control_event_identifier,
         event_control_event_expression,
@@ -278,7 +278,7 @@ pub fn event_control(s: Span) -> IResult<Span, EventControl> {
 }
 
 #[parser]
-pub fn event_control_event_identifier(s: Span) -> IResult<Span, EventControl> {
+pub(crate) fn event_control_event_identifier(s: Span) -> IResult<Span, EventControl> {
     let (s, a) = symbol("@")(s)?;
     let (s, b) = hierarchical_event_identifier(s)?;
     Ok((
@@ -288,7 +288,7 @@ pub fn event_control_event_identifier(s: Span) -> IResult<Span, EventControl> {
 }
 
 #[parser]
-pub fn event_control_event_expression(s: Span) -> IResult<Span, EventControl> {
+pub(crate) fn event_control_event_expression(s: Span) -> IResult<Span, EventControl> {
     let (s, a) = symbol("@")(s)?;
     let (s, b) = paren(event_expression)(s)?;
     Ok((
@@ -298,7 +298,7 @@ pub fn event_control_event_expression(s: Span) -> IResult<Span, EventControl> {
 }
 
 #[parser]
-pub fn event_control_asterisk(s: Span) -> IResult<Span, EventControl> {
+pub(crate) fn event_control_asterisk(s: Span) -> IResult<Span, EventControl> {
     let (s, a) = symbol("@*")(s)?;
     Ok((
         s,
@@ -307,7 +307,7 @@ pub fn event_control_asterisk(s: Span) -> IResult<Span, EventControl> {
 }
 
 #[parser]
-pub fn event_control_paren_asterisk(s: Span) -> IResult<Span, EventControl> {
+pub(crate) fn event_control_paren_asterisk(s: Span) -> IResult<Span, EventControl> {
     let (s, a) = symbol("@")(s)?;
     let (s, b) = paren(symbol("*"))(s)?;
     Ok((
@@ -317,7 +317,7 @@ pub fn event_control_paren_asterisk(s: Span) -> IResult<Span, EventControl> {
 }
 
 #[parser]
-pub fn event_control_sequence_identifier(s: Span) -> IResult<Span, EventControl> {
+pub(crate) fn event_control_sequence_identifier(s: Span) -> IResult<Span, EventControl> {
     let (s, a) = symbol("@")(s)?;
     let (s, b) = ps_or_hierarchical_sequence_identifier(s)?;
     Ok((
@@ -329,7 +329,7 @@ pub fn event_control_sequence_identifier(s: Span) -> IResult<Span, EventControl>
 }
 
 #[parser]
-pub fn event_expression(s: Span) -> IResult<Span, EventExpression> {
+pub(crate) fn event_expression(s: Span) -> IResult<Span, EventExpression> {
     alt((
         event_expression_expression,
         event_expression_sequence,
@@ -340,7 +340,7 @@ pub fn event_expression(s: Span) -> IResult<Span, EventExpression> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn event_expression_expression(s: Span) -> IResult<Span, EventExpression> {
+pub(crate) fn event_expression_expression(s: Span) -> IResult<Span, EventExpression> {
     let (s, a) = opt(edge_identifier)(s)?;
     let (s, b) = expression(s)?;
     let (s, c) = opt(pair(keyword("iff"), expression))(s)?;
@@ -351,7 +351,7 @@ pub fn event_expression_expression(s: Span) -> IResult<Span, EventExpression> {
 }
 
 #[parser]
-pub fn event_expression_sequence(s: Span) -> IResult<Span, EventExpression> {
+pub(crate) fn event_expression_sequence(s: Span) -> IResult<Span, EventExpression> {
     let (s, a) = sequence_instance(s)?;
     let (s, b) = opt(pair(keyword("iff"), expression))(s)?;
     Ok((
@@ -361,7 +361,7 @@ pub fn event_expression_sequence(s: Span) -> IResult<Span, EventExpression> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn event_expression_or(s: Span) -> IResult<Span, EventExpression> {
+pub(crate) fn event_expression_or(s: Span) -> IResult<Span, EventExpression> {
     let (s, a) = event_expression(s)?;
     let (s, b) = keyword("or")(s)?;
     let (s, c) = event_expression(s)?;
@@ -372,7 +372,7 @@ pub fn event_expression_or(s: Span) -> IResult<Span, EventExpression> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn event_expression_comma(s: Span) -> IResult<Span, EventExpression> {
+pub(crate) fn event_expression_comma(s: Span) -> IResult<Span, EventExpression> {
     let (s, a) = event_expression(s)?;
     let (s, b) = symbol(",")(s)?;
     let (s, c) = event_expression(s)?;
@@ -383,7 +383,7 @@ pub fn event_expression_comma(s: Span) -> IResult<Span, EventExpression> {
 }
 
 #[parser]
-pub fn event_expression_paren(s: Span) -> IResult<Span, EventExpression> {
+pub(crate) fn event_expression_paren(s: Span) -> IResult<Span, EventExpression> {
     let (s, a) = paren(event_expression)(s)?;
     Ok((
         s,
@@ -392,7 +392,7 @@ pub fn event_expression_paren(s: Span) -> IResult<Span, EventExpression> {
 }
 
 #[parser]
-pub fn procedural_timing_control(s: Span) -> IResult<Span, ProceduralTimingControl> {
+pub(crate) fn procedural_timing_control(s: Span) -> IResult<Span, ProceduralTimingControl> {
     alt((
         map(delay_control, |x| {
             ProceduralTimingControl::DelayControl(Box::new(x))
@@ -407,7 +407,7 @@ pub fn procedural_timing_control(s: Span) -> IResult<Span, ProceduralTimingContr
 }
 
 #[parser]
-pub fn jump_statement(s: Span) -> IResult<Span, JumpStatement> {
+pub(crate) fn jump_statement(s: Span) -> IResult<Span, JumpStatement> {
     alt((
         jump_statement_return,
         jump_statement_break,
@@ -416,7 +416,7 @@ pub fn jump_statement(s: Span) -> IResult<Span, JumpStatement> {
 }
 
 #[parser]
-pub fn jump_statement_return(s: Span) -> IResult<Span, JumpStatement> {
+pub(crate) fn jump_statement_return(s: Span) -> IResult<Span, JumpStatement> {
     let (s, a) = keyword("return")(s)?;
     let (s, b) = opt(expression)(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -427,7 +427,7 @@ pub fn jump_statement_return(s: Span) -> IResult<Span, JumpStatement> {
 }
 
 #[parser]
-pub fn jump_statement_break(s: Span) -> IResult<Span, JumpStatement> {
+pub(crate) fn jump_statement_break(s: Span) -> IResult<Span, JumpStatement> {
     let (s, a) = keyword("break")(s)?;
     let (s, b) = symbol(";")(s)?;
     Ok((
@@ -437,7 +437,7 @@ pub fn jump_statement_break(s: Span) -> IResult<Span, JumpStatement> {
 }
 
 #[parser]
-pub fn jump_statement_continue(s: Span) -> IResult<Span, JumpStatement> {
+pub(crate) fn jump_statement_continue(s: Span) -> IResult<Span, JumpStatement> {
     let (s, a) = keyword("continue")(s)?;
     let (s, b) = symbol(";")(s)?;
     Ok((
@@ -447,7 +447,7 @@ pub fn jump_statement_continue(s: Span) -> IResult<Span, JumpStatement> {
 }
 
 #[parser]
-pub fn wait_statement(s: Span) -> IResult<Span, WaitStatement> {
+pub(crate) fn wait_statement(s: Span) -> IResult<Span, WaitStatement> {
     alt((
         wait_statement_wait,
         wait_statement_fork,
@@ -456,7 +456,7 @@ pub fn wait_statement(s: Span) -> IResult<Span, WaitStatement> {
 }
 
 #[parser]
-pub fn wait_statement_wait(s: Span) -> IResult<Span, WaitStatement> {
+pub(crate) fn wait_statement_wait(s: Span) -> IResult<Span, WaitStatement> {
     let (s, a) = keyword("wait")(s)?;
     let (s, b) = paren(expression)(s)?;
     let (s, c) = statement_or_null(s)?;
@@ -467,7 +467,7 @@ pub fn wait_statement_wait(s: Span) -> IResult<Span, WaitStatement> {
 }
 
 #[parser]
-pub fn wait_statement_fork(s: Span) -> IResult<Span, WaitStatement> {
+pub(crate) fn wait_statement_fork(s: Span) -> IResult<Span, WaitStatement> {
     let (s, a) = keyword("wait")(s)?;
     let (s, b) = keyword("fork")(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -478,7 +478,7 @@ pub fn wait_statement_fork(s: Span) -> IResult<Span, WaitStatement> {
 }
 
 #[parser]
-pub fn wait_statement_order(s: Span) -> IResult<Span, WaitStatement> {
+pub(crate) fn wait_statement_order(s: Span) -> IResult<Span, WaitStatement> {
     let (s, a) = keyword("wait_order")(s)?;
     let (s, b) = paren(list(symbol(","), hierarchical_identifier))(s)?;
     let (s, c) = action_block(s)?;
@@ -489,12 +489,12 @@ pub fn wait_statement_order(s: Span) -> IResult<Span, WaitStatement> {
 }
 
 #[parser]
-pub fn event_trigger(s: Span) -> IResult<Span, EventTrigger> {
+pub(crate) fn event_trigger(s: Span) -> IResult<Span, EventTrigger> {
     alt((event_trigger_named, event_trigger_nonblocking))(s)
 }
 
 #[parser]
-pub fn event_trigger_named(s: Span) -> IResult<Span, EventTrigger> {
+pub(crate) fn event_trigger_named(s: Span) -> IResult<Span, EventTrigger> {
     let (s, a) = symbol("->")(s)?;
     let (s, b) = hierarchical_event_identifier(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -505,7 +505,7 @@ pub fn event_trigger_named(s: Span) -> IResult<Span, EventTrigger> {
 }
 
 #[parser]
-pub fn event_trigger_nonblocking(s: Span) -> IResult<Span, EventTrigger> {
+pub(crate) fn event_trigger_nonblocking(s: Span) -> IResult<Span, EventTrigger> {
     let (s, a) = symbol("->>")(s)?;
     let (s, b) = opt(delay_or_event_control)(s)?;
     let (s, c) = hierarchical_event_identifier(s)?;
@@ -519,7 +519,7 @@ pub fn event_trigger_nonblocking(s: Span) -> IResult<Span, EventTrigger> {
 }
 
 #[parser]
-pub fn disable_statement(s: Span) -> IResult<Span, DisableStatement> {
+pub(crate) fn disable_statement(s: Span) -> IResult<Span, DisableStatement> {
     alt((
         disable_statement_task,
         disable_statement_block,
@@ -528,7 +528,7 @@ pub fn disable_statement(s: Span) -> IResult<Span, DisableStatement> {
 }
 
 #[parser]
-pub fn disable_statement_task(s: Span) -> IResult<Span, DisableStatement> {
+pub(crate) fn disable_statement_task(s: Span) -> IResult<Span, DisableStatement> {
     let (s, a) = keyword("disable")(s)?;
     let (s, b) = hierarchical_task_identifier(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -539,7 +539,7 @@ pub fn disable_statement_task(s: Span) -> IResult<Span, DisableStatement> {
 }
 
 #[parser]
-pub fn disable_statement_block(s: Span) -> IResult<Span, DisableStatement> {
+pub(crate) fn disable_statement_block(s: Span) -> IResult<Span, DisableStatement> {
     let (s, a) = keyword("disable")(s)?;
     let (s, b) = hierarchical_block_identifier(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -550,7 +550,7 @@ pub fn disable_statement_block(s: Span) -> IResult<Span, DisableStatement> {
 }
 
 #[parser]
-pub fn disable_statement_fork(s: Span) -> IResult<Span, DisableStatement> {
+pub(crate) fn disable_statement_fork(s: Span) -> IResult<Span, DisableStatement> {
     let (s, a) = keyword("disable")(s)?;
     let (s, b) = keyword("fork")(s)?;
     let (s, c) = symbol(";")(s)?;

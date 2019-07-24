@@ -35,7 +35,7 @@ pub struct BinaryModulePathOperator {
 
 #[packrat_parser]
 #[parser]
-pub fn unary_operator(s: Span) -> IResult<Span, UnaryOperator> {
+pub(crate) fn unary_operator(s: Span) -> IResult<Span, UnaryOperator> {
     let (s, a) = alt((
         symbol("+"),
         symbol("-"),
@@ -53,7 +53,7 @@ pub fn unary_operator(s: Span) -> IResult<Span, UnaryOperator> {
 }
 
 #[parser]
-pub fn binary_operator(s: Span) -> IResult<Span, BinaryOperator> {
+pub(crate) fn binary_operator(s: Span) -> IResult<Span, BinaryOperator> {
     let (s, a) = alt((
         alt((
             symbol("+"),
@@ -93,13 +93,13 @@ pub fn binary_operator(s: Span) -> IResult<Span, BinaryOperator> {
 }
 
 #[parser]
-pub fn inc_or_dec_operator(s: Span) -> IResult<Span, IncOrDecOperator> {
+pub(crate) fn inc_or_dec_operator(s: Span) -> IResult<Span, IncOrDecOperator> {
     let (s, a) = alt((symbol("++"), symbol("--")))(s)?;
     Ok((s, IncOrDecOperator { nodes: (a,) }))
 }
 
 #[parser]
-pub fn unary_module_path_operator(s: Span) -> IResult<Span, UnaryModulePathOperator> {
+pub(crate) fn unary_module_path_operator(s: Span) -> IResult<Span, UnaryModulePathOperator> {
     let (s, a) = alt((
         symbol("!"),
         symbol("&"),
@@ -115,7 +115,7 @@ pub fn unary_module_path_operator(s: Span) -> IResult<Span, UnaryModulePathOpera
 }
 
 #[parser]
-pub fn binary_module_path_operator(s: Span) -> IResult<Span, BinaryModulePathOperator> {
+pub(crate) fn binary_module_path_operator(s: Span) -> IResult<Span, BinaryModulePathOperator> {
     let (s, a) = alt((
         symbol("=="),
         symbol("!="),

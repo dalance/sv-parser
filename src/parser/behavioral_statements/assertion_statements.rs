@@ -87,7 +87,7 @@ pub enum AssertTiming {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn assertion_item(s: Span) -> IResult<Span, AssertionItem> {
+pub(crate) fn assertion_item(s: Span) -> IResult<Span, AssertionItem> {
     alt((
         map(concurrent_assertion_item, |x| {
             AssertionItem::Concurrent(Box::new(x))
@@ -99,14 +99,14 @@ pub fn assertion_item(s: Span) -> IResult<Span, AssertionItem> {
 }
 
 #[parser]
-pub fn deferred_immediate_assertion_item(s: Span) -> IResult<Span, DeferredImmediateAssetionItem> {
+pub(crate) fn deferred_immediate_assertion_item(s: Span) -> IResult<Span, DeferredImmediateAssetionItem> {
     let (s, a) = opt(pair(block_identifier, symbol(":")))(s)?;
     let (s, b) = deferred_immediate_assertion_statement(s)?;
     Ok((s, DeferredImmediateAssetionItem { nodes: (a, b) }))
 }
 
 #[parser]
-pub fn procedural_assertion_statement(s: Span) -> IResult<Span, ProceduralAssertionStatement> {
+pub(crate) fn procedural_assertion_statement(s: Span) -> IResult<Span, ProceduralAssertionStatement> {
     alt((
         map(concurrent_assertion_statement, |x| {
             ProceduralAssertionStatement::Concurrent(Box::new(x))
@@ -121,7 +121,7 @@ pub fn procedural_assertion_statement(s: Span) -> IResult<Span, ProceduralAssert
 }
 
 #[parser]
-pub fn immediate_assertion_statement(s: Span) -> IResult<Span, ImmediateAssetionStatement> {
+pub(crate) fn immediate_assertion_statement(s: Span) -> IResult<Span, ImmediateAssetionStatement> {
     alt((
         map(simple_immediate_assertion_statement, |x| {
             ImmediateAssetionStatement::Simple(Box::new(x))
@@ -133,7 +133,7 @@ pub fn immediate_assertion_statement(s: Span) -> IResult<Span, ImmediateAssetion
 }
 
 #[parser]
-pub fn simple_immediate_assertion_statement(
+pub(crate) fn simple_immediate_assertion_statement(
     s: Span,
 ) -> IResult<Span, SimpleImmediateAssertionStatement> {
     alt((
@@ -150,7 +150,7 @@ pub fn simple_immediate_assertion_statement(
 }
 
 #[parser]
-pub fn simple_immediate_assert_statement(s: Span) -> IResult<Span, SimpleImmediateAssertStatement> {
+pub(crate) fn simple_immediate_assert_statement(s: Span) -> IResult<Span, SimpleImmediateAssertStatement> {
     let (s, a) = keyword("assert")(s)?;
     let (s, b) = paren(expression)(s)?;
     let (s, c) = action_block(s)?;
@@ -158,7 +158,7 @@ pub fn simple_immediate_assert_statement(s: Span) -> IResult<Span, SimpleImmedia
 }
 
 #[parser]
-pub fn simple_immediate_assume_statement(s: Span) -> IResult<Span, SimpleImmediateAssumeStatement> {
+pub(crate) fn simple_immediate_assume_statement(s: Span) -> IResult<Span, SimpleImmediateAssumeStatement> {
     let (s, a) = keyword("assume")(s)?;
     let (s, b) = paren(expression)(s)?;
     let (s, c) = action_block(s)?;
@@ -166,7 +166,7 @@ pub fn simple_immediate_assume_statement(s: Span) -> IResult<Span, SimpleImmedia
 }
 
 #[parser]
-pub fn simple_immediate_cover_statement(s: Span) -> IResult<Span, SimpleImmediateCoverStatement> {
+pub(crate) fn simple_immediate_cover_statement(s: Span) -> IResult<Span, SimpleImmediateCoverStatement> {
     let (s, a) = keyword("cover")(s)?;
     let (s, b) = paren(expression)(s)?;
     let (s, c) = statement_or_null(s)?;
@@ -174,7 +174,7 @@ pub fn simple_immediate_cover_statement(s: Span) -> IResult<Span, SimpleImmediat
 }
 
 #[parser]
-pub fn deferred_immediate_assertion_statement(
+pub(crate) fn deferred_immediate_assertion_statement(
     s: Span,
 ) -> IResult<Span, DeferredImmediateAssertionStatement> {
     alt((
@@ -191,7 +191,7 @@ pub fn deferred_immediate_assertion_statement(
 }
 
 #[parser]
-pub fn deferred_immediate_assert_statement(
+pub(crate) fn deferred_immediate_assert_statement(
     s: Span,
 ) -> IResult<Span, DeferredImmediateAssertStatement> {
     let (s, a) = keyword("assert")(s)?;
@@ -207,7 +207,7 @@ pub fn deferred_immediate_assert_statement(
 }
 
 #[parser]
-pub fn deferred_immediate_assume_statement(
+pub(crate) fn deferred_immediate_assume_statement(
     s: Span,
 ) -> IResult<Span, DeferredImmediateAssumeStatement> {
     let (s, a) = keyword("assume")(s)?;
@@ -223,7 +223,7 @@ pub fn deferred_immediate_assume_statement(
 }
 
 #[parser]
-pub fn deferred_immediate_cover_statement(
+pub(crate) fn deferred_immediate_cover_statement(
     s: Span,
 ) -> IResult<Span, DeferredImmediateCoverStatement> {
     let (s, a) = keyword("cover")(s)?;
@@ -239,7 +239,7 @@ pub fn deferred_immediate_cover_statement(
 }
 
 #[parser]
-pub fn assert_timing(s: Span) -> IResult<Span, AssertTiming> {
+pub(crate) fn assert_timing(s: Span) -> IResult<Span, AssertTiming> {
     alt((
         map(symbol("#0"), |x| AssertTiming::Zero(Box::new(x))),
         map(keyword("final"), |x| AssertTiming::Final(Box::new(x))),

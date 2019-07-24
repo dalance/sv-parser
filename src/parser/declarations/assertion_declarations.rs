@@ -670,7 +670,7 @@ pub struct AssertionVariableDeclaration {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn concurrent_assertion_item(s: Span) -> IResult<Span, ConcurrentAssertionItem> {
+pub(crate) fn concurrent_assertion_item(s: Span) -> IResult<Span, ConcurrentAssertionItem> {
     alt((
         concurrent_assertion_item_statement,
         map(checker_instantiation, |x| {
@@ -680,7 +680,7 @@ pub fn concurrent_assertion_item(s: Span) -> IResult<Span, ConcurrentAssertionIt
 }
 
 #[parser]
-pub fn concurrent_assertion_item_statement(s: Span) -> IResult<Span, ConcurrentAssertionItem> {
+pub(crate) fn concurrent_assertion_item_statement(s: Span) -> IResult<Span, ConcurrentAssertionItem> {
     let (s, a) = opt(pair(block_identifier, symbol(":")))(s)?;
     let (s, b) = concurrent_assertion_statement(s)?;
     Ok((
@@ -692,7 +692,7 @@ pub fn concurrent_assertion_item_statement(s: Span) -> IResult<Span, ConcurrentA
 }
 
 #[parser]
-pub fn concurrent_assertion_statement(s: Span) -> IResult<Span, ConcurrentAssertionStatement> {
+pub(crate) fn concurrent_assertion_statement(s: Span) -> IResult<Span, ConcurrentAssertionStatement> {
     alt((
         map(assert_property_statement, |x| {
             ConcurrentAssertionStatement::AssertPropertyStatement(Box::new(x))
@@ -713,7 +713,7 @@ pub fn concurrent_assertion_statement(s: Span) -> IResult<Span, ConcurrentAssert
 }
 
 #[parser]
-pub fn assert_property_statement(s: Span) -> IResult<Span, AssertPropertyStatement> {
+pub(crate) fn assert_property_statement(s: Span) -> IResult<Span, AssertPropertyStatement> {
     let (s, a) = keyword("assert")(s)?;
     let (s, b) = keyword("property")(s)?;
     let (s, c) = paren(property_spec)(s)?;
@@ -727,7 +727,7 @@ pub fn assert_property_statement(s: Span) -> IResult<Span, AssertPropertyStateme
 }
 
 #[parser]
-pub fn assume_property_statement(s: Span) -> IResult<Span, AssumePropertyStatement> {
+pub(crate) fn assume_property_statement(s: Span) -> IResult<Span, AssumePropertyStatement> {
     let (s, a) = keyword("assume")(s)?;
     let (s, b) = keyword("property")(s)?;
     let (s, c) = paren(property_spec)(s)?;
@@ -741,7 +741,7 @@ pub fn assume_property_statement(s: Span) -> IResult<Span, AssumePropertyStateme
 }
 
 #[parser]
-pub fn cover_property_statement(s: Span) -> IResult<Span, CoverPropertyStatement> {
+pub(crate) fn cover_property_statement(s: Span) -> IResult<Span, CoverPropertyStatement> {
     let (s, a) = keyword("cover")(s)?;
     let (s, b) = keyword("property")(s)?;
     let (s, c) = paren(property_spec)(s)?;
@@ -755,7 +755,7 @@ pub fn cover_property_statement(s: Span) -> IResult<Span, CoverPropertyStatement
 }
 
 #[parser]
-pub fn expect_property_statement(s: Span) -> IResult<Span, ExpectPropertyStatement> {
+pub(crate) fn expect_property_statement(s: Span) -> IResult<Span, ExpectPropertyStatement> {
     let (s, a) = keyword("expect")(s)?;
     let (s, b) = paren(property_spec)(s)?;
     let (s, c) = action_block(s)?;
@@ -763,7 +763,7 @@ pub fn expect_property_statement(s: Span) -> IResult<Span, ExpectPropertyStateme
 }
 
 #[parser]
-pub fn cover_sequence_statement(s: Span) -> IResult<Span, CoverSequenceStatement> {
+pub(crate) fn cover_sequence_statement(s: Span) -> IResult<Span, CoverSequenceStatement> {
     let (s, a) = keyword("cover")(s)?;
     let (s, b) = keyword("sequence")(s)?;
     let (s, c) = paren(triple(
@@ -785,7 +785,7 @@ pub fn cover_sequence_statement(s: Span) -> IResult<Span, CoverSequenceStatement
 }
 
 #[parser]
-pub fn restrict_property_statement(s: Span) -> IResult<Span, RestrictPropertyStatement> {
+pub(crate) fn restrict_property_statement(s: Span) -> IResult<Span, RestrictPropertyStatement> {
     let (s, a) = keyword("restrict")(s)?;
     let (s, b) = keyword("property")(s)?;
     let (s, c) = paren(property_spec)(s)?;
@@ -799,14 +799,14 @@ pub fn restrict_property_statement(s: Span) -> IResult<Span, RestrictPropertySta
 }
 
 #[parser]
-pub fn property_instance(s: Span) -> IResult<Span, PropertyInstance> {
+pub(crate) fn property_instance(s: Span) -> IResult<Span, PropertyInstance> {
     let (s, a) = ps_or_hierarchical_property_identifier(s)?;
     let (s, b) = opt(paren(opt(property_list_of_arguments)))(s)?;
     Ok((s, PropertyInstance { nodes: (a, b) }))
 }
 
 #[parser]
-pub fn property_list_of_arguments(s: Span) -> IResult<Span, PropertyListOfArguments> {
+pub(crate) fn property_list_of_arguments(s: Span) -> IResult<Span, PropertyListOfArguments> {
     alt((
         property_list_of_arguments_ordered,
         property_list_of_arguments_named,
@@ -814,7 +814,7 @@ pub fn property_list_of_arguments(s: Span) -> IResult<Span, PropertyListOfArgume
 }
 
 #[parser(MaybeRecursive)]
-pub fn property_list_of_arguments_ordered(s: Span) -> IResult<Span, PropertyListOfArguments> {
+pub(crate) fn property_list_of_arguments_ordered(s: Span) -> IResult<Span, PropertyListOfArguments> {
     let (s, a) = list(symbol(","), opt(property_actual_arg))(s)?;
     let (s, b) = many0(tuple((
         symbol(","),
@@ -831,7 +831,7 @@ pub fn property_list_of_arguments_ordered(s: Span) -> IResult<Span, PropertyList
 }
 
 #[parser]
-pub fn property_list_of_arguments_named(s: Span) -> IResult<Span, PropertyListOfArguments> {
+pub(crate) fn property_list_of_arguments_named(s: Span) -> IResult<Span, PropertyListOfArguments> {
     let (s, a) = list(
         symbol(","),
         triple(symbol("."), identifier, paren(opt(property_actual_arg))),
@@ -843,7 +843,7 @@ pub fn property_list_of_arguments_named(s: Span) -> IResult<Span, PropertyListOf
 }
 
 #[parser]
-pub fn property_actual_arg(s: Span) -> IResult<Span, PropertyActualArg> {
+pub(crate) fn property_actual_arg(s: Span) -> IResult<Span, PropertyActualArg> {
     alt((
         map(property_expr, |x| {
             PropertyActualArg::PropertyExpr(Box::new(x))
@@ -855,7 +855,7 @@ pub fn property_actual_arg(s: Span) -> IResult<Span, PropertyActualArg> {
 }
 
 #[parser]
-pub fn assertion_item_declaration(s: Span) -> IResult<Span, AssertionItemDeclaration> {
+pub(crate) fn assertion_item_declaration(s: Span) -> IResult<Span, AssertionItemDeclaration> {
     alt((
         map(property_declaration, |x| {
             AssertionItemDeclaration::PropertyDeclaration(Box::new(x))
@@ -870,7 +870,7 @@ pub fn assertion_item_declaration(s: Span) -> IResult<Span, AssertionItemDeclara
 }
 
 #[parser]
-pub fn property_declaration(s: Span) -> IResult<Span, PropertyDeclaration> {
+pub(crate) fn property_declaration(s: Span) -> IResult<Span, PropertyDeclaration> {
     let (s, a) = keyword("property")(s)?;
     let (s, b) = property_identifier(s)?;
     let (s, c) = opt(paren(opt(property_port_list)))(s)?;
@@ -889,13 +889,13 @@ pub fn property_declaration(s: Span) -> IResult<Span, PropertyDeclaration> {
 }
 
 #[parser]
-pub fn property_port_list(s: Span) -> IResult<Span, PropertyPortList> {
+pub(crate) fn property_port_list(s: Span) -> IResult<Span, PropertyPortList> {
     let (s, a) = list(symbol(","), property_port_item)(s)?;
     Ok((s, PropertyPortList { nodes: (a,) }))
 }
 
 #[parser(Ambiguous)]
-pub fn property_port_item(s: Span) -> IResult<Span, PropertyPortItem> {
+pub(crate) fn property_port_item(s: Span) -> IResult<Span, PropertyPortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = opt(pair(local, opt(property_lvar_port_direction)))(s)?;
     let (s, c) = ambiguous_opt(property_formal_type)(s)?;
@@ -911,13 +911,13 @@ pub fn property_port_item(s: Span) -> IResult<Span, PropertyPortItem> {
 }
 
 #[parser]
-pub fn property_lvar_port_direction(s: Span) -> IResult<Span, PropertyLvarPortDirection> {
+pub(crate) fn property_lvar_port_direction(s: Span) -> IResult<Span, PropertyLvarPortDirection> {
     let (s, a) = keyword("input")(s)?;
     Ok((s, PropertyLvarPortDirection::Input(Box::new(a))))
 }
 
 #[parser]
-pub fn property_formal_type(s: Span) -> IResult<Span, PropertyFormalType> {
+pub(crate) fn property_formal_type(s: Span) -> IResult<Span, PropertyFormalType> {
     alt((
         map(sequence_formal_type, |x| {
             PropertyFormalType::SequenceFormalType(Box::new(x))
@@ -929,7 +929,7 @@ pub fn property_formal_type(s: Span) -> IResult<Span, PropertyFormalType> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn property_spec(s: Span) -> IResult<Span, PropertySpec> {
+pub(crate) fn property_spec(s: Span) -> IResult<Span, PropertySpec> {
     let (s, a) = opt(clocking_event)(s)?;
     let (s, b) = opt(triple(
         keyword("disable"),
@@ -941,7 +941,7 @@ pub fn property_spec(s: Span) -> IResult<Span, PropertySpec> {
 }
 
 #[parser]
-pub fn property_expr(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr(s: Span) -> IResult<Span, PropertyExpr> {
     alt((
         alt((
             map(sequence_expr, |x| PropertyExpr::SequenceExpr(Box::new(x))),
@@ -984,7 +984,7 @@ pub fn property_expr(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser]
-pub fn property_expr_strong(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_strong(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = keyword("strong")(s)?;
     let (s, b) = paren(sequence_expr)(s)?;
     Ok((
@@ -994,7 +994,7 @@ pub fn property_expr_strong(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser]
-pub fn property_expr_weak(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_weak(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = keyword("weak")(s)?;
     let (s, b) = paren(sequence_expr)(s)?;
     Ok((
@@ -1004,7 +1004,7 @@ pub fn property_expr_weak(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser]
-pub fn property_expr_paren(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_paren(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = paren(sequence_expr)(s)?;
     Ok((
         s,
@@ -1013,7 +1013,7 @@ pub fn property_expr_paren(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser]
-pub fn property_expr_not(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_not(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = keyword("not")(s)?;
     let (s, b) = property_expr(s)?;
     Ok((
@@ -1023,7 +1023,7 @@ pub fn property_expr_not(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn property_expr_or(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_or(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = keyword("or")(s)?;
     let (s, c) = property_expr(s)?;
@@ -1034,7 +1034,7 @@ pub fn property_expr_or(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn property_expr_and(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_and(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = keyword("and")(s)?;
     let (s, c) = property_expr(s)?;
@@ -1045,7 +1045,7 @@ pub fn property_expr_and(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn property_expr_implication_overlapped(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_implication_overlapped(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("|->")(s)?;
     let (s, c) = property_expr(s)?;
@@ -1058,7 +1058,7 @@ pub fn property_expr_implication_overlapped(s: Span) -> IResult<Span, PropertyEx
 }
 
 #[parser(MaybeRecursive)]
-pub fn property_expr_implication_nonoverlapped(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_implication_nonoverlapped(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("|=>")(s)?;
     let (s, c) = property_expr(s)?;
@@ -1071,7 +1071,7 @@ pub fn property_expr_implication_nonoverlapped(s: Span) -> IResult<Span, Propert
 }
 
 #[parser]
-pub fn property_expr_if(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_if(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = keyword("if")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
     let (s, c) = property_expr(s)?;
@@ -1085,7 +1085,7 @@ pub fn property_expr_if(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser]
-pub fn property_expr_case(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_case(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = keyword("case")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
     let (s, c) = property_case_item(s)?;
@@ -1100,7 +1100,7 @@ pub fn property_expr_case(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn property_expr_followed_by_overlapped(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_followed_by_overlapped(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("#-#")(s)?;
     let (s, c) = property_expr(s)?;
@@ -1113,7 +1113,7 @@ pub fn property_expr_followed_by_overlapped(s: Span) -> IResult<Span, PropertyEx
 }
 
 #[parser(MaybeRecursive)]
-pub fn property_expr_followed_by_nonoverlapped(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_followed_by_nonoverlapped(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = symbol("#=#")(s)?;
     let (s, c) = property_expr(s)?;
@@ -1126,7 +1126,7 @@ pub fn property_expr_followed_by_nonoverlapped(s: Span) -> IResult<Span, Propert
 }
 
 #[parser]
-pub fn property_expr_nexttime(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_nexttime(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = keyword("nexttime")(s)?;
     let (s, b) = opt(bracket(constant_expression))(s)?;
     let (s, c) = property_expr(s)?;
@@ -1137,7 +1137,7 @@ pub fn property_expr_nexttime(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser]
-pub fn property_expr_s_nexttime(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_s_nexttime(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = keyword("s_nexttime")(s)?;
     let (s, b) = opt(bracket(constant_expression))(s)?;
     let (s, c) = property_expr(s)?;
@@ -1148,7 +1148,7 @@ pub fn property_expr_s_nexttime(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser]
-pub fn property_expr_always(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_always(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = keyword("always")(s)?;
     let (s, b) = opt(bracket(cycle_delay_const_range_expression))(s)?;
     let (s, c) = property_expr(s)?;
@@ -1159,7 +1159,7 @@ pub fn property_expr_always(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser]
-pub fn property_expr_s_always(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_s_always(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = keyword("s_always")(s)?;
     let (s, b) = bracket(cycle_delay_const_range_expression)(s)?;
     let (s, c) = property_expr(s)?;
@@ -1170,7 +1170,7 @@ pub fn property_expr_s_always(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser]
-pub fn property_expr_eventually(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_eventually(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = keyword("eventually")(s)?;
     let (s, b) = bracket(constant_range)(s)?;
     let (s, c) = property_expr(s)?;
@@ -1181,7 +1181,7 @@ pub fn property_expr_eventually(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser]
-pub fn property_expr_s_eventually(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_s_eventually(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = keyword("s_eventually")(s)?;
     let (s, b) = opt(bracket(cycle_delay_const_range_expression))(s)?;
     let (s, c) = property_expr(s)?;
@@ -1192,7 +1192,7 @@ pub fn property_expr_s_eventually(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn property_expr_until(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_until(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = keyword("until")(s)?;
     let (s, c) = property_expr(s)?;
@@ -1203,7 +1203,7 @@ pub fn property_expr_until(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn property_expr_s_until(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_s_until(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = keyword("s_until")(s)?;
     let (s, c) = property_expr(s)?;
@@ -1214,7 +1214,7 @@ pub fn property_expr_s_until(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn property_expr_until_with(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_until_with(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = keyword("until_with")(s)?;
     let (s, c) = property_expr(s)?;
@@ -1225,7 +1225,7 @@ pub fn property_expr_until_with(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn property_expr_s_until_with(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_s_until_with(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = keyword("s_until_with")(s)?;
     let (s, c) = property_expr(s)?;
@@ -1236,7 +1236,7 @@ pub fn property_expr_s_until_with(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn property_expr_implies(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_implies(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = keyword("implies")(s)?;
     let (s, c) = property_expr(s)?;
@@ -1247,7 +1247,7 @@ pub fn property_expr_implies(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn property_expr_iff(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_iff(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = keyword("iff")(s)?;
     let (s, c) = property_expr(s)?;
@@ -1258,7 +1258,7 @@ pub fn property_expr_iff(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser]
-pub fn property_expr_accept_on(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_accept_on(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = keyword("accept_on")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
     let (s, c) = property_expr(s)?;
@@ -1269,7 +1269,7 @@ pub fn property_expr_accept_on(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser]
-pub fn property_expr_reject_on(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_reject_on(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = keyword("reject_on")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
     let (s, c) = property_expr(s)?;
@@ -1280,7 +1280,7 @@ pub fn property_expr_reject_on(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser]
-pub fn property_expr_sync_accept_on(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_sync_accept_on(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = keyword("sync_accept_on")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
     let (s, c) = property_expr(s)?;
@@ -1291,7 +1291,7 @@ pub fn property_expr_sync_accept_on(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser]
-pub fn property_expr_sync_reject_on(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_sync_reject_on(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = keyword("sync_reject_on")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
     let (s, c) = property_expr(s)?;
@@ -1302,7 +1302,7 @@ pub fn property_expr_sync_reject_on(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser]
-pub fn property_expr_clocking_event(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_clocking_event(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = clocking_event(s)?;
     let (s, b) = property_expr(s)?;
     Ok((
@@ -1312,12 +1312,12 @@ pub fn property_expr_clocking_event(s: Span) -> IResult<Span, PropertyExpr> {
 }
 
 #[parser]
-pub fn property_case_item(s: Span) -> IResult<Span, PropertyCaseItem> {
+pub(crate) fn property_case_item(s: Span) -> IResult<Span, PropertyCaseItem> {
     alt((property_case_item_nondefault, property_case_item_default))(s)
 }
 
 #[parser(MaybeRecursive)]
-pub fn property_case_item_nondefault(s: Span) -> IResult<Span, PropertyCaseItem> {
+pub(crate) fn property_case_item_nondefault(s: Span) -> IResult<Span, PropertyCaseItem> {
     let (s, a) = list(symbol(","), expression_or_dist)(s)?;
     let (s, b) = symbol(":")(s)?;
     let (s, c) = property_expr(s)?;
@@ -1331,7 +1331,7 @@ pub fn property_case_item_nondefault(s: Span) -> IResult<Span, PropertyCaseItem>
 }
 
 #[parser]
-pub fn property_case_item_default(s: Span) -> IResult<Span, PropertyCaseItem> {
+pub(crate) fn property_case_item_default(s: Span) -> IResult<Span, PropertyCaseItem> {
     let (s, a) = keyword("default")(s)?;
     let (s, b) = opt(symbol(":"))(s)?;
     let (s, c) = property_expr(s)?;
@@ -1345,7 +1345,7 @@ pub fn property_case_item_default(s: Span) -> IResult<Span, PropertyCaseItem> {
 }
 
 #[parser]
-pub fn sequence_declaration(s: Span) -> IResult<Span, SequenceDeclaration> {
+pub(crate) fn sequence_declaration(s: Span) -> IResult<Span, SequenceDeclaration> {
     let (s, a) = keyword("sequence")(s)?;
     let (s, b) = sequence_identifier(s)?;
     let (s, c) = opt(paren(opt(sequence_port_list)))(s)?;
@@ -1364,13 +1364,13 @@ pub fn sequence_declaration(s: Span) -> IResult<Span, SequenceDeclaration> {
 }
 
 #[parser]
-pub fn sequence_port_list(s: Span) -> IResult<Span, SequencePortList> {
+pub(crate) fn sequence_port_list(s: Span) -> IResult<Span, SequencePortList> {
     let (s, a) = list(symbol(","), sequence_port_item)(s)?;
     Ok((s, SequencePortList { nodes: (a,) }))
 }
 
 #[parser(Ambiguous)]
-pub fn sequence_port_item(s: Span) -> IResult<Span, SequencePortItem> {
+pub(crate) fn sequence_port_item(s: Span) -> IResult<Span, SequencePortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = opt(pair(local, opt(sequence_lvar_port_direction)))(s)?;
     let (s, c) = ambiguous_opt(sequence_formal_type)(s)?;
@@ -1386,7 +1386,7 @@ pub fn sequence_port_item(s: Span) -> IResult<Span, SequencePortItem> {
 }
 
 #[parser]
-pub fn sequence_lvar_port_direction(s: Span) -> IResult<Span, SequenceLvarPortDirection> {
+pub(crate) fn sequence_lvar_port_direction(s: Span) -> IResult<Span, SequenceLvarPortDirection> {
     alt((
         map(keyword("input"), |x| {
             SequenceLvarPortDirection::Input(Box::new(x))
@@ -1401,7 +1401,7 @@ pub fn sequence_lvar_port_direction(s: Span) -> IResult<Span, SequenceLvarPortDi
 }
 
 #[parser]
-pub fn sequence_formal_type(s: Span) -> IResult<Span, SequenceFormalType> {
+pub(crate) fn sequence_formal_type(s: Span) -> IResult<Span, SequenceFormalType> {
     alt((
         map(data_type_or_implicit, |x| {
             SequenceFormalType::DataTypeOrImplicit(Box::new(x))
@@ -1416,7 +1416,7 @@ pub fn sequence_formal_type(s: Span) -> IResult<Span, SequenceFormalType> {
 }
 
 #[parser]
-pub fn sequence_expr(s: Span) -> IResult<Span, SequenceExpr> {
+pub(crate) fn sequence_expr(s: Span) -> IResult<Span, SequenceExpr> {
     alt((
         sequence_expr_cycle_delay_expr,
         sequence_expr_expr_cycle_delay_expr,
@@ -1434,7 +1434,7 @@ pub fn sequence_expr(s: Span) -> IResult<Span, SequenceExpr> {
 }
 
 #[parser]
-pub fn sequence_expr_cycle_delay_expr(s: Span) -> IResult<Span, SequenceExpr> {
+pub(crate) fn sequence_expr_cycle_delay_expr(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = cycle_delay_range(s)?;
     let (s, b) = sequence_expr(s)?;
     let (s, c) = many0(pair(cycle_delay_range, sequence_expr))(s)?;
@@ -1445,7 +1445,7 @@ pub fn sequence_expr_cycle_delay_expr(s: Span) -> IResult<Span, SequenceExpr> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn sequence_expr_expr_cycle_delay_expr(s: Span) -> IResult<Span, SequenceExpr> {
+pub(crate) fn sequence_expr_expr_cycle_delay_expr(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = cycle_delay_range(s)?;
     let (s, c) = sequence_expr(s)?;
@@ -1459,7 +1459,7 @@ pub fn sequence_expr_expr_cycle_delay_expr(s: Span) -> IResult<Span, SequenceExp
 }
 
 #[parser(MaybeRecursive)]
-pub fn sequence_expr_expression(s: Span) -> IResult<Span, SequenceExpr> {
+pub(crate) fn sequence_expr_expression(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = expression_or_dist(s)?;
     let (s, b) = opt(boolean_abbrev)(s)?;
     Ok((
@@ -1469,7 +1469,7 @@ pub fn sequence_expr_expression(s: Span) -> IResult<Span, SequenceExpr> {
 }
 
 #[parser]
-pub fn sequence_expr_instance(s: Span) -> IResult<Span, SequenceExpr> {
+pub(crate) fn sequence_expr_instance(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_instance(s)?;
     let (s, b) = opt(sequence_abbrev)(s)?;
     Ok((
@@ -1479,7 +1479,7 @@ pub fn sequence_expr_instance(s: Span) -> IResult<Span, SequenceExpr> {
 }
 
 #[parser]
-pub fn sequence_expr_paren(s: Span) -> IResult<Span, SequenceExpr> {
+pub(crate) fn sequence_expr_paren(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = paren(pair(
         sequence_expr,
         many0(pair(symbol(","), sequence_match_item)),
@@ -1492,7 +1492,7 @@ pub fn sequence_expr_paren(s: Span) -> IResult<Span, SequenceExpr> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn sequence_expr_and(s: Span) -> IResult<Span, SequenceExpr> {
+pub(crate) fn sequence_expr_and(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = keyword("and")(s)?;
     let (s, c) = sequence_expr(s)?;
@@ -1503,7 +1503,7 @@ pub fn sequence_expr_and(s: Span) -> IResult<Span, SequenceExpr> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn sequence_expr_intersect(s: Span) -> IResult<Span, SequenceExpr> {
+pub(crate) fn sequence_expr_intersect(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = keyword("intersect")(s)?;
     let (s, c) = sequence_expr(s)?;
@@ -1514,7 +1514,7 @@ pub fn sequence_expr_intersect(s: Span) -> IResult<Span, SequenceExpr> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn sequence_expr_or(s: Span) -> IResult<Span, SequenceExpr> {
+pub(crate) fn sequence_expr_or(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = keyword("or")(s)?;
     let (s, c) = sequence_expr(s)?;
@@ -1525,7 +1525,7 @@ pub fn sequence_expr_or(s: Span) -> IResult<Span, SequenceExpr> {
 }
 
 #[parser]
-pub fn sequence_expr_first_match(s: Span) -> IResult<Span, SequenceExpr> {
+pub(crate) fn sequence_expr_first_match(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = keyword("first_match")(s)?;
     let (s, b) = paren(pair(
         sequence_expr,
@@ -1538,7 +1538,7 @@ pub fn sequence_expr_first_match(s: Span) -> IResult<Span, SequenceExpr> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn sequence_expr_throughout(s: Span) -> IResult<Span, SequenceExpr> {
+pub(crate) fn sequence_expr_throughout(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = expression_or_dist(s)?;
     let (s, b) = keyword("throughout")(s)?;
     let (s, c) = sequence_expr(s)?;
@@ -1549,7 +1549,7 @@ pub fn sequence_expr_throughout(s: Span) -> IResult<Span, SequenceExpr> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn sequence_expr_within(s: Span) -> IResult<Span, SequenceExpr> {
+pub(crate) fn sequence_expr_within(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
     let (s, b) = keyword("within")(s)?;
     let (s, c) = sequence_expr(s)?;
@@ -1560,7 +1560,7 @@ pub fn sequence_expr_within(s: Span) -> IResult<Span, SequenceExpr> {
 }
 
 #[parser]
-pub fn sequence_expr_clocking_event(s: Span) -> IResult<Span, SequenceExpr> {
+pub(crate) fn sequence_expr_clocking_event(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = clocking_event(s)?;
     let (s, b) = sequence_expr(s)?;
     Ok((
@@ -1570,7 +1570,7 @@ pub fn sequence_expr_clocking_event(s: Span) -> IResult<Span, SequenceExpr> {
 }
 
 #[parser]
-pub fn cycle_delay_range(s: Span) -> IResult<Span, CycleDelayRange> {
+pub(crate) fn cycle_delay_range(s: Span) -> IResult<Span, CycleDelayRange> {
     alt((
         cycle_delay_range_primary,
         cycle_delay_range_expression,
@@ -1580,7 +1580,7 @@ pub fn cycle_delay_range(s: Span) -> IResult<Span, CycleDelayRange> {
 }
 
 #[parser]
-pub fn cycle_delay_range_primary(s: Span) -> IResult<Span, CycleDelayRange> {
+pub(crate) fn cycle_delay_range_primary(s: Span) -> IResult<Span, CycleDelayRange> {
     let (s, a) = symbol("##")(s)?;
     let (s, b) = constant_primary(s)?;
     Ok((
@@ -1590,7 +1590,7 @@ pub fn cycle_delay_range_primary(s: Span) -> IResult<Span, CycleDelayRange> {
 }
 
 #[parser]
-pub fn cycle_delay_range_expression(s: Span) -> IResult<Span, CycleDelayRange> {
+pub(crate) fn cycle_delay_range_expression(s: Span) -> IResult<Span, CycleDelayRange> {
     let (s, a) = symbol("##")(s)?;
     let (s, b) = bracket(cycle_delay_const_range_expression)(s)?;
     Ok((
@@ -1600,7 +1600,7 @@ pub fn cycle_delay_range_expression(s: Span) -> IResult<Span, CycleDelayRange> {
 }
 
 #[parser]
-pub fn cycle_delay_range_asterisk(s: Span) -> IResult<Span, CycleDelayRange> {
+pub(crate) fn cycle_delay_range_asterisk(s: Span) -> IResult<Span, CycleDelayRange> {
     let (s, a) = symbol("##")(s)?;
     let (s, b) = bracket(symbol("*"))(s)?;
     Ok((
@@ -1610,7 +1610,7 @@ pub fn cycle_delay_range_asterisk(s: Span) -> IResult<Span, CycleDelayRange> {
 }
 
 #[parser]
-pub fn cycle_delay_range_plus(s: Span) -> IResult<Span, CycleDelayRange> {
+pub(crate) fn cycle_delay_range_plus(s: Span) -> IResult<Span, CycleDelayRange> {
     let (s, a) = symbol("##")(s)?;
     let (s, b) = bracket(symbol("+"))(s)?;
     Ok((
@@ -1620,7 +1620,7 @@ pub fn cycle_delay_range_plus(s: Span) -> IResult<Span, CycleDelayRange> {
 }
 
 #[parser]
-pub fn sequence_method_call(s: Span) -> IResult<Span, SequenceMethodCall> {
+pub(crate) fn sequence_method_call(s: Span) -> IResult<Span, SequenceMethodCall> {
     let (s, a) = sequence_instance(s)?;
     let (s, b) = symbol(".")(s)?;
     let (s, c) = method_identifier(s)?;
@@ -1628,7 +1628,7 @@ pub fn sequence_method_call(s: Span) -> IResult<Span, SequenceMethodCall> {
 }
 
 #[parser]
-pub fn sequence_match_item(s: Span) -> IResult<Span, SequenceMatchItem> {
+pub(crate) fn sequence_match_item(s: Span) -> IResult<Span, SequenceMatchItem> {
     alt((
         map(operator_assignment, |x| {
             SequenceMatchItem::OperatorAssignment(Box::new(x))
@@ -1643,14 +1643,14 @@ pub fn sequence_match_item(s: Span) -> IResult<Span, SequenceMatchItem> {
 }
 
 #[parser]
-pub fn sequence_instance(s: Span) -> IResult<Span, SequenceInstance> {
+pub(crate) fn sequence_instance(s: Span) -> IResult<Span, SequenceInstance> {
     let (s, a) = ps_or_hierarchical_sequence_identifier(s)?;
     let (s, b) = opt(paren(opt(sequence_list_of_arguments)))(s)?;
     Ok((s, SequenceInstance { nodes: (a, b) }))
 }
 
 #[parser]
-pub fn sequence_list_of_arguments(s: Span) -> IResult<Span, SequenceListOfArguments> {
+pub(crate) fn sequence_list_of_arguments(s: Span) -> IResult<Span, SequenceListOfArguments> {
     alt((
         sequence_list_of_arguments_ordered,
         sequence_list_of_arguments_named,
@@ -1658,7 +1658,7 @@ pub fn sequence_list_of_arguments(s: Span) -> IResult<Span, SequenceListOfArgume
 }
 
 #[parser(MaybeRecursive)]
-pub fn sequence_list_of_arguments_ordered(s: Span) -> IResult<Span, SequenceListOfArguments> {
+pub(crate) fn sequence_list_of_arguments_ordered(s: Span) -> IResult<Span, SequenceListOfArguments> {
     let (s, a) = list(symbol(","), opt(sequence_actual_arg))(s)?;
     let (s, b) = many0(tuple((
         symbol(","),
@@ -1675,7 +1675,7 @@ pub fn sequence_list_of_arguments_ordered(s: Span) -> IResult<Span, SequenceList
 }
 
 #[parser]
-pub fn sequence_list_of_arguments_named(s: Span) -> IResult<Span, SequenceListOfArguments> {
+pub(crate) fn sequence_list_of_arguments_named(s: Span) -> IResult<Span, SequenceListOfArguments> {
     let (s, a) = list(
         symbol(","),
         triple(symbol("."), identifier, paren(opt(sequence_actual_arg))),
@@ -1687,7 +1687,7 @@ pub fn sequence_list_of_arguments_named(s: Span) -> IResult<Span, SequenceListOf
 }
 
 #[parser]
-pub fn sequence_actual_arg(s: Span) -> IResult<Span, SequenceActualArg> {
+pub(crate) fn sequence_actual_arg(s: Span) -> IResult<Span, SequenceActualArg> {
     alt((
         map(event_expression, |x| {
             SequenceActualArg::EventExpression(Box::new(x))
@@ -1699,7 +1699,7 @@ pub fn sequence_actual_arg(s: Span) -> IResult<Span, SequenceActualArg> {
 }
 
 #[parser]
-pub fn boolean_abbrev(s: Span) -> IResult<Span, BooleanAbbrev> {
+pub(crate) fn boolean_abbrev(s: Span) -> IResult<Span, BooleanAbbrev> {
     alt((
         map(consecutive_repetition, |x| {
             BooleanAbbrev::ConsecutiveRepetition(Box::new(x))
@@ -1714,13 +1714,13 @@ pub fn boolean_abbrev(s: Span) -> IResult<Span, BooleanAbbrev> {
 }
 
 #[parser]
-pub fn sequence_abbrev(s: Span) -> IResult<Span, SequenceAbbrev> {
+pub(crate) fn sequence_abbrev(s: Span) -> IResult<Span, SequenceAbbrev> {
     let (s, a) = consecutive_repetition(s)?;
     Ok((s, SequenceAbbrev { nodes: (a,) }))
 }
 
 #[parser]
-pub fn consecutive_repetition(s: Span) -> IResult<Span, ConsecutiveRepetition> {
+pub(crate) fn consecutive_repetition(s: Span) -> IResult<Span, ConsecutiveRepetition> {
     alt((
         consecutive_repetition_expression,
         consecutive_repetition_asterisk,
@@ -1729,7 +1729,7 @@ pub fn consecutive_repetition(s: Span) -> IResult<Span, ConsecutiveRepetition> {
 }
 
 #[parser]
-pub fn consecutive_repetition_expression(s: Span) -> IResult<Span, ConsecutiveRepetition> {
+pub(crate) fn consecutive_repetition_expression(s: Span) -> IResult<Span, ConsecutiveRepetition> {
     let (s, a) = bracket(pair(symbol("*"), const_or_range_expression))(s)?;
     Ok((
         s,
@@ -1740,7 +1740,7 @@ pub fn consecutive_repetition_expression(s: Span) -> IResult<Span, ConsecutiveRe
 }
 
 #[parser]
-pub fn consecutive_repetition_asterisk(s: Span) -> IResult<Span, ConsecutiveRepetition> {
+pub(crate) fn consecutive_repetition_asterisk(s: Span) -> IResult<Span, ConsecutiveRepetition> {
     let (s, a) = bracket(symbol("*"))(s)?;
     Ok((
         s,
@@ -1749,7 +1749,7 @@ pub fn consecutive_repetition_asterisk(s: Span) -> IResult<Span, ConsecutiveRepe
 }
 
 #[parser]
-pub fn consecutive_repetition_plus(s: Span) -> IResult<Span, ConsecutiveRepetition> {
+pub(crate) fn consecutive_repetition_plus(s: Span) -> IResult<Span, ConsecutiveRepetition> {
     let (s, a) = bracket(symbol("+"))(s)?;
     Ok((
         s,
@@ -1758,19 +1758,19 @@ pub fn consecutive_repetition_plus(s: Span) -> IResult<Span, ConsecutiveRepetiti
 }
 
 #[parser]
-pub fn non_consecutive_repetition(s: Span) -> IResult<Span, NonConsecutiveRepetition> {
+pub(crate) fn non_consecutive_repetition(s: Span) -> IResult<Span, NonConsecutiveRepetition> {
     let (s, a) = bracket(pair(symbol("="), const_or_range_expression))(s)?;
     Ok((s, NonConsecutiveRepetition { nodes: (a,) }))
 }
 
 #[parser]
-pub fn goto_repetition(s: Span) -> IResult<Span, GotoRepetition> {
+pub(crate) fn goto_repetition(s: Span) -> IResult<Span, GotoRepetition> {
     let (s, a) = bracket(pair(symbol("->"), const_or_range_expression))(s)?;
     Ok((s, GotoRepetition { nodes: (a,) }))
 }
 
 #[parser]
-pub fn const_or_range_expression(s: Span) -> IResult<Span, ConstOrRangeExpression> {
+pub(crate) fn const_or_range_expression(s: Span) -> IResult<Span, ConstOrRangeExpression> {
     alt((
         map(constant_expression, |x| {
             ConstOrRangeExpression::ConstantExpression(Box::new(x))
@@ -1782,7 +1782,7 @@ pub fn const_or_range_expression(s: Span) -> IResult<Span, ConstOrRangeExpressio
 }
 
 #[parser]
-pub fn cycle_delay_const_range_expression(
+pub(crate) fn cycle_delay_const_range_expression(
     s: Span,
 ) -> IResult<Span, CycleDelayConstRangeExpression> {
     alt((
@@ -1792,7 +1792,7 @@ pub fn cycle_delay_const_range_expression(
 }
 
 #[parser(MaybeRecursive)]
-pub fn cycle_delay_const_range_expression_binary(
+pub(crate) fn cycle_delay_const_range_expression_binary(
     s: Span,
 ) -> IResult<Span, CycleDelayConstRangeExpression> {
     let (s, a) = constant_expression(s)?;
@@ -1807,7 +1807,7 @@ pub fn cycle_delay_const_range_expression_binary(
 }
 
 #[parser(MaybeRecursive)]
-pub fn cycle_delay_const_range_expression_dollar(
+pub(crate) fn cycle_delay_const_range_expression_dollar(
     s: Span,
 ) -> IResult<Span, CycleDelayConstRangeExpression> {
     let (s, a) = constant_expression(s)?;
@@ -1822,14 +1822,14 @@ pub fn cycle_delay_const_range_expression_dollar(
 }
 
 #[parser(MaybeRecursive)]
-pub fn expression_or_dist(s: Span) -> IResult<Span, ExpressionOrDist> {
+pub(crate) fn expression_or_dist(s: Span) -> IResult<Span, ExpressionOrDist> {
     let (s, a) = expression(s)?;
     let (s, b) = opt(pair(keyword("dist"), brace(dist_list)))(s)?;
     Ok((s, ExpressionOrDist { nodes: (a, b) }))
 }
 
 #[parser]
-pub fn assertion_variable_declaration(s: Span) -> IResult<Span, AssertionVariableDeclaration> {
+pub(crate) fn assertion_variable_declaration(s: Span) -> IResult<Span, AssertionVariableDeclaration> {
     let (s, a) = var_data_type(s)?;
     let (s, b) = list_of_variable_decl_assignments(s)?;
     let (s, c) = symbol(";")(s)?;

@@ -34,7 +34,7 @@ pub struct ShowcancelledDeclaration {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn specify_block(s: Span) -> IResult<Span, SpecifyBlock> {
+pub(crate) fn specify_block(s: Span) -> IResult<Span, SpecifyBlock> {
     let (s, a) = keyword("specify")(s)?;
     let (s, b) = many0(specify_item)(s)?;
     let (s, c) = keyword("endspecify")(s)?;
@@ -42,7 +42,7 @@ pub fn specify_block(s: Span) -> IResult<Span, SpecifyBlock> {
 }
 
 #[parser]
-pub fn specify_item(s: Span) -> IResult<Span, SpecifyItem> {
+pub(crate) fn specify_item(s: Span) -> IResult<Span, SpecifyItem> {
     alt((
         map(specparam_declaration, |x| {
             SpecifyItem::SpecparamDeclaration(Box::new(x))
@@ -63,7 +63,7 @@ pub fn specify_item(s: Span) -> IResult<Span, SpecifyItem> {
 }
 
 #[parser]
-pub fn pulsestyle_declaration(s: Span) -> IResult<Span, PulsestyleDeclaration> {
+pub(crate) fn pulsestyle_declaration(s: Span) -> IResult<Span, PulsestyleDeclaration> {
     let (s, a) = alt((
         keyword("pulsestyle_onevent"),
         keyword("pulsestyle_ondetect"),
@@ -74,7 +74,7 @@ pub fn pulsestyle_declaration(s: Span) -> IResult<Span, PulsestyleDeclaration> {
 }
 
 #[parser]
-pub fn showcancelled_declaration(s: Span) -> IResult<Span, ShowcancelledDeclaration> {
+pub(crate) fn showcancelled_declaration(s: Span) -> IResult<Span, ShowcancelledDeclaration> {
     let (s, a) = alt((keyword("showcalcelled"), keyword("noshowcancelled")))(s)?;
     let (s, b) = list_of_path_outputs(s)?;
     let (s, c) = symbol(";")(s)?;

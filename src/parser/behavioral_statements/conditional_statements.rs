@@ -46,7 +46,7 @@ pub struct CondPattern {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn conditional_statement(s: Span) -> IResult<Span, ConditionalStatement> {
+pub(crate) fn conditional_statement(s: Span) -> IResult<Span, ConditionalStatement> {
     let (s, a) = opt(unique_priority)(s)?;
     let (s, b) = keyword("if")(s)?;
     let (s, c) = paren(cond_predicate)(s)?;
@@ -68,7 +68,7 @@ pub fn conditional_statement(s: Span) -> IResult<Span, ConditionalStatement> {
 }
 
 #[parser]
-pub fn unique_priority(s: Span) -> IResult<Span, UniquePriority> {
+pub(crate) fn unique_priority(s: Span) -> IResult<Span, UniquePriority> {
     alt((
         map(keyword("unique0"), |x| UniquePriority::Unique0(Box::new(x))),
         map(keyword("unique"), |x| UniquePriority::Unique(Box::new(x))),
@@ -79,13 +79,13 @@ pub fn unique_priority(s: Span) -> IResult<Span, UniquePriority> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn cond_predicate(s: Span) -> IResult<Span, CondPredicate> {
+pub(crate) fn cond_predicate(s: Span) -> IResult<Span, CondPredicate> {
     let (s, a) = list(symbol("&&&"), expression_or_cond_pattern)(s)?;
     Ok((s, CondPredicate { nodes: (a,) }))
 }
 
 #[parser]
-pub fn expression_or_cond_pattern(s: Span) -> IResult<Span, ExpressionOrCondPattern> {
+pub(crate) fn expression_or_cond_pattern(s: Span) -> IResult<Span, ExpressionOrCondPattern> {
     alt((
         map(expression, |x| {
             ExpressionOrCondPattern::Expression(Box::new(x))
@@ -97,7 +97,7 @@ pub fn expression_or_cond_pattern(s: Span) -> IResult<Span, ExpressionOrCondPatt
 }
 
 #[parser(MaybeRecursive)]
-pub fn cond_pattern(s: Span) -> IResult<Span, CondPattern> {
+pub(crate) fn cond_pattern(s: Span) -> IResult<Span, CondPattern> {
     let (s, a) = expression(s)?;
     let (s, b) = keyword("matches")(s)?;
     let (s, c) = pattern(s)?;

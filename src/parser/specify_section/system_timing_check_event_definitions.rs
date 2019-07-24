@@ -85,7 +85,7 @@ pub struct ScalarConstant {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn timing_check_event(s: Span) -> IResult<Span, TimingCheckEvent> {
+pub(crate) fn timing_check_event(s: Span) -> IResult<Span, TimingCheckEvent> {
     let (s, a) = opt(timing_check_event_control)(s)?;
     let (s, b) = specify_terminal_descriptor(s)?;
     let (s, c) = opt(pair(symbol("&&&"), timing_check_condition))(s)?;
@@ -93,7 +93,7 @@ pub fn timing_check_event(s: Span) -> IResult<Span, TimingCheckEvent> {
 }
 
 #[parser]
-pub fn controlled_timing_check_event(s: Span) -> IResult<Span, ControlledTimingCheckEvent> {
+pub(crate) fn controlled_timing_check_event(s: Span) -> IResult<Span, ControlledTimingCheckEvent> {
     let (s, a) = timing_check_event_control(s)?;
     let (s, b) = specify_terminal_descriptor(s)?;
     let (s, c) = opt(pair(symbol("&&&"), timing_check_condition))(s)?;
@@ -101,7 +101,7 @@ pub fn controlled_timing_check_event(s: Span) -> IResult<Span, ControlledTimingC
 }
 
 #[parser]
-pub fn timing_check_event_control(s: Span) -> IResult<Span, TimingCheckEventControl> {
+pub(crate) fn timing_check_event_control(s: Span) -> IResult<Span, TimingCheckEventControl> {
     alt((
         map(keyword("posedge"), |x| {
             TimingCheckEventControl::Posedge(Box::new(x))
@@ -119,7 +119,7 @@ pub fn timing_check_event_control(s: Span) -> IResult<Span, TimingCheckEventCont
 }
 
 #[parser]
-pub fn specify_terminal_descriptor(s: Span) -> IResult<Span, SpecifyTerminalDescriptor> {
+pub(crate) fn specify_terminal_descriptor(s: Span) -> IResult<Span, SpecifyTerminalDescriptor> {
     alt((
         map(specify_input_terminal_descriptor, |x| {
             SpecifyTerminalDescriptor::SpecifyInputTerminalDescriptor(Box::new(x))
@@ -131,14 +131,14 @@ pub fn specify_terminal_descriptor(s: Span) -> IResult<Span, SpecifyTerminalDesc
 }
 
 #[parser]
-pub fn edge_control_specifier(s: Span) -> IResult<Span, EdgeControlSpecifier> {
+pub(crate) fn edge_control_specifier(s: Span) -> IResult<Span, EdgeControlSpecifier> {
     let (s, a) = keyword("edge")(s)?;
     let (s, b) = bracket(list(symbol(","), edge_descriptor))(s)?;
     Ok((s, EdgeControlSpecifier { nodes: (a, b) }))
 }
 
 #[parser]
-pub fn edge_descriptor(s: Span) -> IResult<Span, EdgeDescriptor> {
+pub(crate) fn edge_descriptor(s: Span) -> IResult<Span, EdgeDescriptor> {
     alt((
         map(keyword("01"), |x| EdgeDescriptor { nodes: (x,) }),
         map(keyword("10"), |x| EdgeDescriptor { nodes: (x,) }),
@@ -162,7 +162,7 @@ pub fn edge_descriptor(s: Span) -> IResult<Span, EdgeDescriptor> {
 }
 
 #[parser]
-pub fn timing_check_condition(s: Span) -> IResult<Span, TimingCheckCondition> {
+pub(crate) fn timing_check_condition(s: Span) -> IResult<Span, TimingCheckCondition> {
     alt((
         map(scalar_timing_check_condition, |x| {
             TimingCheckCondition::ScalarTimingCheckCondition(Box::new(x))
@@ -172,7 +172,7 @@ pub fn timing_check_condition(s: Span) -> IResult<Span, TimingCheckCondition> {
 }
 
 #[parser]
-pub fn timing_check_condition_paren(s: Span) -> IResult<Span, TimingCheckCondition> {
+pub(crate) fn timing_check_condition_paren(s: Span) -> IResult<Span, TimingCheckCondition> {
     let (s, a) = paren(scalar_timing_check_condition)(s)?;
     Ok((
         s,
@@ -181,7 +181,7 @@ pub fn timing_check_condition_paren(s: Span) -> IResult<Span, TimingCheckConditi
 }
 
 #[parser]
-pub fn scalar_timing_check_condition(s: Span) -> IResult<Span, ScalarTimingCheckCondition> {
+pub(crate) fn scalar_timing_check_condition(s: Span) -> IResult<Span, ScalarTimingCheckCondition> {
     alt((
         map(expression, |x| {
             ScalarTimingCheckCondition::Expression(Box::new(x))
@@ -192,7 +192,7 @@ pub fn scalar_timing_check_condition(s: Span) -> IResult<Span, ScalarTimingCheck
 }
 
 #[parser]
-pub fn scalar_timing_check_condition_unary(s: Span) -> IResult<Span, ScalarTimingCheckCondition> {
+pub(crate) fn scalar_timing_check_condition_unary(s: Span) -> IResult<Span, ScalarTimingCheckCondition> {
     let (s, a) = symbol("~")(s)?;
     let (s, b) = expression(s)?;
     Ok((
@@ -204,7 +204,7 @@ pub fn scalar_timing_check_condition_unary(s: Span) -> IResult<Span, ScalarTimin
 }
 
 #[parser]
-pub fn scalar_timing_check_condition_binary(s: Span) -> IResult<Span, ScalarTimingCheckCondition> {
+pub(crate) fn scalar_timing_check_condition_binary(s: Span) -> IResult<Span, ScalarTimingCheckCondition> {
     let (s, a) = expression(s)?;
     let (s, b) = alt((symbol("==="), symbol("=="), symbol("!=="), symbol("!=")))(s)?;
     let (s, c) = scalar_constant(s)?;
@@ -217,7 +217,7 @@ pub fn scalar_timing_check_condition_binary(s: Span) -> IResult<Span, ScalarTimi
 }
 
 #[parser]
-pub fn scalar_constant(s: Span) -> IResult<Span, ScalarConstant> {
+pub(crate) fn scalar_constant(s: Span) -> IResult<Span, ScalarConstant> {
     alt((
         map(keyword("1'b0"), |x| ScalarConstant { nodes: (x,) }),
         map(keyword("1'b1"), |x| ScalarConstant { nodes: (x,) }),

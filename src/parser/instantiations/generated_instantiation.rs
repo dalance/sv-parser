@@ -130,7 +130,7 @@ pub enum GenerateItem {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn generate_region(s: Span) -> IResult<Span, GenerateRegion> {
+pub(crate) fn generate_region(s: Span) -> IResult<Span, GenerateRegion> {
     let (s, a) = keyword("generate")(s)?;
     let (s, b) = many0(generate_item)(s)?;
     let (s, c) = keyword("endgenerate")(s)?;
@@ -138,7 +138,7 @@ pub fn generate_region(s: Span) -> IResult<Span, GenerateRegion> {
 }
 
 #[parser]
-pub fn loop_generate_construct(s: Span) -> IResult<Span, LoopGenerateConstruct> {
+pub(crate) fn loop_generate_construct(s: Span) -> IResult<Span, LoopGenerateConstruct> {
     let (s, a) = keyword("for")(s)?;
     let (s, b) = paren(tuple((
         generate_initialization,
@@ -152,7 +152,7 @@ pub fn loop_generate_construct(s: Span) -> IResult<Span, LoopGenerateConstruct> 
 }
 
 #[parser]
-pub fn generate_initialization(s: Span) -> IResult<Span, GenvarInitialization> {
+pub(crate) fn generate_initialization(s: Span) -> IResult<Span, GenvarInitialization> {
     let (s, a) = opt(map(keyword("genvar"), |x| Genvar { nodes: (x,) }))(s)?;
     let (s, b) = genvar_identifier(s)?;
     let (s, c) = symbol("=")(s)?;
@@ -166,7 +166,7 @@ pub fn generate_initialization(s: Span) -> IResult<Span, GenvarInitialization> {
 }
 
 #[parser]
-pub fn genvar_iteration(s: Span) -> IResult<Span, GenvarIteration> {
+pub(crate) fn genvar_iteration(s: Span) -> IResult<Span, GenvarIteration> {
     alt((
         genvar_iteration_assignment,
         genvar_iteration_prefix,
@@ -175,7 +175,7 @@ pub fn genvar_iteration(s: Span) -> IResult<Span, GenvarIteration> {
 }
 
 #[parser]
-pub fn genvar_iteration_assignment(s: Span) -> IResult<Span, GenvarIteration> {
+pub(crate) fn genvar_iteration_assignment(s: Span) -> IResult<Span, GenvarIteration> {
     let (s, a) = genvar_identifier(s)?;
     let (s, b) = assignment_operator(s)?;
     let (s, c) = genvar_expression(s)?;
@@ -186,7 +186,7 @@ pub fn genvar_iteration_assignment(s: Span) -> IResult<Span, GenvarIteration> {
 }
 
 #[parser]
-pub fn genvar_iteration_prefix(s: Span) -> IResult<Span, GenvarIteration> {
+pub(crate) fn genvar_iteration_prefix(s: Span) -> IResult<Span, GenvarIteration> {
     let (s, a) = inc_or_dec_operator(s)?;
     let (s, b) = genvar_identifier(s)?;
     Ok((
@@ -196,7 +196,7 @@ pub fn genvar_iteration_prefix(s: Span) -> IResult<Span, GenvarIteration> {
 }
 
 #[parser]
-pub fn genvar_iteration_suffix(s: Span) -> IResult<Span, GenvarIteration> {
+pub(crate) fn genvar_iteration_suffix(s: Span) -> IResult<Span, GenvarIteration> {
     let (s, a) = genvar_identifier(s)?;
     let (s, b) = inc_or_dec_operator(s)?;
     Ok((
@@ -206,7 +206,7 @@ pub fn genvar_iteration_suffix(s: Span) -> IResult<Span, GenvarIteration> {
 }
 
 #[parser]
-pub fn conditional_generate_construct(s: Span) -> IResult<Span, ConditionalGenerateConstruct> {
+pub(crate) fn conditional_generate_construct(s: Span) -> IResult<Span, ConditionalGenerateConstruct> {
     alt((
         map(if_generate_construct, |x| {
             ConditionalGenerateConstruct::If(Box::new(x))
@@ -218,7 +218,7 @@ pub fn conditional_generate_construct(s: Span) -> IResult<Span, ConditionalGener
 }
 
 #[parser]
-pub fn if_generate_construct(s: Span) -> IResult<Span, IfGenerateConstruct> {
+pub(crate) fn if_generate_construct(s: Span) -> IResult<Span, IfGenerateConstruct> {
     let (s, a) = keyword("if")(s)?;
     let (s, b) = paren(constant_expression)(s)?;
     let (s, c) = generate_block(s)?;
@@ -232,7 +232,7 @@ pub fn if_generate_construct(s: Span) -> IResult<Span, IfGenerateConstruct> {
 }
 
 #[parser]
-pub fn case_generate_construct(s: Span) -> IResult<Span, CaseGenerateConstruct> {
+pub(crate) fn case_generate_construct(s: Span) -> IResult<Span, CaseGenerateConstruct> {
     let (s, a) = keyword("case")(s)?;
     let (s, b) = paren(constant_expression)(s)?;
     let (s, c) = many1(case_generate_item)(s)?;
@@ -246,12 +246,12 @@ pub fn case_generate_construct(s: Span) -> IResult<Span, CaseGenerateConstruct> 
 }
 
 #[parser]
-pub fn case_generate_item(s: Span) -> IResult<Span, CaseGenerateItem> {
+pub(crate) fn case_generate_item(s: Span) -> IResult<Span, CaseGenerateItem> {
     alt((case_generate_item_nondefault, case_generate_item_default))(s)
 }
 
 #[parser(MaybeRecursive)]
-pub fn case_generate_item_nondefault(s: Span) -> IResult<Span, CaseGenerateItem> {
+pub(crate) fn case_generate_item_nondefault(s: Span) -> IResult<Span, CaseGenerateItem> {
     let (s, a) = list(symbol(","), constant_expression)(s)?;
     let (s, b) = symbol(":")(s)?;
     let (s, c) = generate_block(s)?;
@@ -262,7 +262,7 @@ pub fn case_generate_item_nondefault(s: Span) -> IResult<Span, CaseGenerateItem>
 }
 
 #[parser]
-pub fn case_generate_item_default(s: Span) -> IResult<Span, CaseGenerateItem> {
+pub(crate) fn case_generate_item_default(s: Span) -> IResult<Span, CaseGenerateItem> {
     let (s, a) = keyword("default")(s)?;
     let (s, b) = opt(symbol(":"))(s)?;
     let (s, c) = generate_block(s)?;
@@ -273,7 +273,7 @@ pub fn case_generate_item_default(s: Span) -> IResult<Span, CaseGenerateItem> {
 }
 
 #[parser]
-pub fn generate_block(s: Span) -> IResult<Span, GenerateBlock> {
+pub(crate) fn generate_block(s: Span) -> IResult<Span, GenerateBlock> {
     alt((
         map(generate_item, |x| GenerateBlock::GenerateItem(Box::new(x))),
         generate_block_multiple,
@@ -281,7 +281,7 @@ pub fn generate_block(s: Span) -> IResult<Span, GenerateBlock> {
 }
 
 #[parser]
-pub fn generate_block_multiple(s: Span) -> IResult<Span, GenerateBlock> {
+pub(crate) fn generate_block_multiple(s: Span) -> IResult<Span, GenerateBlock> {
     let (s, a) = opt(pair(generate_block_identifier, symbol(":")))(s)?;
     let (s, b) = keyword("begin")(s)?;
     let (s, c) = opt(pair(symbol(":"), generate_block_identifier))(s)?;
@@ -297,7 +297,7 @@ pub fn generate_block_multiple(s: Span) -> IResult<Span, GenerateBlock> {
 }
 
 #[parser]
-pub fn generate_item(s: Span) -> IResult<Span, GenerateItem> {
+pub(crate) fn generate_item(s: Span) -> IResult<Span, GenerateItem> {
     alt((
         map(module_or_generate_item, |x| {
             GenerateItem::ModuleOrGenerateItem(Box::new(x))

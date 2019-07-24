@@ -77,5 +77,12 @@ A parser library for System Verilog.
 | general                           | comments                              | x    | x      | x    |
 | general                           | identifiers                           | x    | x      | x    |
 
+## Missing entry of specification
+
+* interface_class_declaration -> connect to description
+* formal_identifier -> ignore
+* covergroup_variable_identifier -> ignore
+* array_identifier -> ignore
+
 ## Test
 6.25

@@ -6,12 +6,12 @@ use core::convert::TryFrom;
 
 include!(concat!(env!("OUT_DIR"), "/any_node.rs"));
 
-pub struct RefNodes<'a>(pub Vec<RefNode<'a>>);
+pub(crate) struct RefNodes<'a>(pub Vec<RefNode<'a>>);
 
 // -----------------------------------------------------------------------------
 
 pub struct Iter<'a> {
-    pub next: RefNodes<'a>,
+    pub(crate) next: RefNodes<'a>,
 }
 
 impl<'a> Iterator for Iter<'a> {

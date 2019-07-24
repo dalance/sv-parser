@@ -14,12 +14,12 @@ pub struct Comment {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn comment(s: Span) -> IResult<Span, Comment> {
+pub(crate) fn comment(s: Span) -> IResult<Span, Comment> {
     alt((one_line_comment, block_comment))(s)
 }
 
 #[parser]
-pub fn one_line_comment(s: Span) -> IResult<Span, Comment> {
+pub(crate) fn one_line_comment(s: Span) -> IResult<Span, Comment> {
     let (s, a) = tag("//")(s)?;
     let (s, b) = is_not("\n")(s)?;
     let a = concat(a, b).unwrap();
@@ -27,7 +27,7 @@ pub fn one_line_comment(s: Span) -> IResult<Span, Comment> {
 }
 
 #[parser]
-pub fn block_comment(s: Span) -> IResult<Span, Comment> {
+pub(crate) fn block_comment(s: Span) -> IResult<Span, Comment> {
     let (s, a) = tag("/*")(s)?;
     let (s, b) = is_not("*/")(s)?;
     let (s, c) = tag("*/")(s)?;

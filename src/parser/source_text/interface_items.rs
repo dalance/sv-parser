@@ -59,7 +59,7 @@ pub enum NonPortInterfaceItem {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn interface_or_generate_item(s: Span) -> IResult<Span, InterfaceOrGenerateItem> {
+pub(crate) fn interface_or_generate_item(s: Span) -> IResult<Span, InterfaceOrGenerateItem> {
     alt((
         interface_or_generate_item_module,
         interface_or_generate_item_extern,
@@ -67,7 +67,7 @@ pub fn interface_or_generate_item(s: Span) -> IResult<Span, InterfaceOrGenerateI
 }
 
 #[parser(MaybeRecursive)]
-pub fn interface_or_generate_item_module(s: Span) -> IResult<Span, InterfaceOrGenerateItem> {
+pub(crate) fn interface_or_generate_item_module(s: Span) -> IResult<Span, InterfaceOrGenerateItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = module_common_item(s)?;
     Ok((
@@ -77,7 +77,7 @@ pub fn interface_or_generate_item_module(s: Span) -> IResult<Span, InterfaceOrGe
 }
 
 #[parser]
-pub fn interface_or_generate_item_extern(s: Span) -> IResult<Span, InterfaceOrGenerateItem> {
+pub(crate) fn interface_or_generate_item_extern(s: Span) -> IResult<Span, InterfaceOrGenerateItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = extern_tf_declaration(s)?;
     Ok((
@@ -87,12 +87,12 @@ pub fn interface_or_generate_item_extern(s: Span) -> IResult<Span, InterfaceOrGe
 }
 
 #[parser]
-pub fn extern_tf_declaration(s: Span) -> IResult<Span, ExternTfDeclaration> {
+pub(crate) fn extern_tf_declaration(s: Span) -> IResult<Span, ExternTfDeclaration> {
     alt((extern_tf_declaration_method, extern_tf_declaration_task))(s)
 }
 
 #[parser]
-pub fn extern_tf_declaration_method(s: Span) -> IResult<Span, ExternTfDeclaration> {
+pub(crate) fn extern_tf_declaration_method(s: Span) -> IResult<Span, ExternTfDeclaration> {
     let (s, a) = keyword("extern")(s)?;
     let (s, b) = method_prototype(s)?;
     let (s, c) = symbol(";")(s)?;
@@ -103,7 +103,7 @@ pub fn extern_tf_declaration_method(s: Span) -> IResult<Span, ExternTfDeclaratio
 }
 
 #[parser]
-pub fn extern_tf_declaration_task(s: Span) -> IResult<Span, ExternTfDeclaration> {
+pub(crate) fn extern_tf_declaration_task(s: Span) -> IResult<Span, ExternTfDeclaration> {
     let (s, a) = keyword("extern")(s)?;
     let (s, b) = keyword("forkjoin")(s)?;
     let (s, c) = task_prototype(s)?;
@@ -117,7 +117,7 @@ pub fn extern_tf_declaration_task(s: Span) -> IResult<Span, ExternTfDeclaration>
 }
 
 #[parser]
-pub fn interface_item(s: Span) -> IResult<Span, InterfaceItem> {
+pub(crate) fn interface_item(s: Span) -> IResult<Span, InterfaceItem> {
     alt((
         map(pair(port_declaration, symbol(";")), |x| {
             InterfaceItem::PortDeclaration(Box::new(x))
@@ -129,7 +129,7 @@ pub fn interface_item(s: Span) -> IResult<Span, InterfaceItem> {
 }
 
 #[parser]
-pub fn non_port_interface_item(s: Span) -> IResult<Span, NonPortInterfaceItem> {
+pub(crate) fn non_port_interface_item(s: Span) -> IResult<Span, NonPortInterfaceItem> {
     alt((
         map(generate_region, |x| {
             NonPortInterfaceItem::GenerateRegion(Box::new(x))

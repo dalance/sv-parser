@@ -89,7 +89,7 @@ pub struct UdpDeclarationWildcard {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn udp_nonansi_declaration(s: Span) -> IResult<Span, UdpNonansiDeclaration> {
+pub(crate) fn udp_nonansi_declaration(s: Span) -> IResult<Span, UdpNonansiDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("primitive")(s)?;
     let (s, c) = udp_identifier(s)?;
@@ -104,7 +104,7 @@ pub fn udp_nonansi_declaration(s: Span) -> IResult<Span, UdpNonansiDeclaration> 
 }
 
 #[parser]
-pub fn udp_ansi_declaration(s: Span) -> IResult<Span, UdpAnsiDeclaration> {
+pub(crate) fn udp_ansi_declaration(s: Span) -> IResult<Span, UdpAnsiDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("primitive")(s)?;
     let (s, c) = udp_identifier(s)?;
@@ -119,7 +119,7 @@ pub fn udp_ansi_declaration(s: Span) -> IResult<Span, UdpAnsiDeclaration> {
 }
 
 #[parser]
-pub fn udp_declaration(s: Span) -> IResult<Span, UdpDeclaration> {
+pub(crate) fn udp_declaration(s: Span) -> IResult<Span, UdpDeclaration> {
     alt((
         udp_declaration_nonansi,
         udp_declaration_ansi,
@@ -130,7 +130,7 @@ pub fn udp_declaration(s: Span) -> IResult<Span, UdpDeclaration> {
 }
 
 #[parser]
-pub fn udp_declaration_nonansi(s: Span) -> IResult<Span, UdpDeclaration> {
+pub(crate) fn udp_declaration_nonansi(s: Span) -> IResult<Span, UdpDeclaration> {
     let (s, a) = udp_nonansi_declaration(s)?;
     let (s, b) = udp_port_declaration(s)?;
     let (s, c) = many0(udp_port_declaration)(s)?;
@@ -146,7 +146,7 @@ pub fn udp_declaration_nonansi(s: Span) -> IResult<Span, UdpDeclaration> {
 }
 
 #[parser]
-pub fn udp_declaration_ansi(s: Span) -> IResult<Span, UdpDeclaration> {
+pub(crate) fn udp_declaration_ansi(s: Span) -> IResult<Span, UdpDeclaration> {
     let (s, a) = udp_ansi_declaration(s)?;
     let (s, b) = udp_body(s)?;
     let (s, c) = keyword("endprimitive")(s)?;
@@ -160,7 +160,7 @@ pub fn udp_declaration_ansi(s: Span) -> IResult<Span, UdpDeclaration> {
 }
 
 #[parser]
-pub fn udp_declaration_extern_nonansi(s: Span) -> IResult<Span, UdpDeclaration> {
+pub(crate) fn udp_declaration_extern_nonansi(s: Span) -> IResult<Span, UdpDeclaration> {
     let (s, a) = keyword("extern")(s)?;
     let (s, b) = udp_nonansi_declaration(s)?;
     Ok((
@@ -170,7 +170,7 @@ pub fn udp_declaration_extern_nonansi(s: Span) -> IResult<Span, UdpDeclaration> 
 }
 
 #[parser]
-pub fn udp_declaration_extern_ansi(s: Span) -> IResult<Span, UdpDeclaration> {
+pub(crate) fn udp_declaration_extern_ansi(s: Span) -> IResult<Span, UdpDeclaration> {
     let (s, a) = keyword("extern")(s)?;
     let (s, b) = udp_ansi_declaration(s)?;
     Ok((
@@ -180,7 +180,7 @@ pub fn udp_declaration_extern_ansi(s: Span) -> IResult<Span, UdpDeclaration> {
 }
 
 #[parser]
-pub fn udp_declaration_wildcard(s: Span) -> IResult<Span, UdpDeclaration> {
+pub(crate) fn udp_declaration_wildcard(s: Span) -> IResult<Span, UdpDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("primitive")(s)?;
     let (s, c) = udp_identifier(s)?;

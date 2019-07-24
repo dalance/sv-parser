@@ -76,7 +76,7 @@ pub struct VariableIdentifierList {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn statement_or_null(s: Span) -> IResult<Span, StatementOrNull> {
+pub(crate) fn statement_or_null(s: Span) -> IResult<Span, StatementOrNull> {
     alt((
         map(statement, |x| StatementOrNull::Statement(Box::new(x))),
         statement_or_null_attribute,
@@ -84,7 +84,7 @@ pub fn statement_or_null(s: Span) -> IResult<Span, StatementOrNull> {
 }
 
 #[parser]
-pub fn statement_or_null_attribute(s: Span) -> IResult<Span, StatementOrNull> {
+pub(crate) fn statement_or_null_attribute(s: Span) -> IResult<Span, StatementOrNull> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = symbol(";")(s)?;
     Ok((
@@ -94,7 +94,7 @@ pub fn statement_or_null_attribute(s: Span) -> IResult<Span, StatementOrNull> {
 }
 
 #[parser(MaybeRecursive)]
-pub fn statement(s: Span) -> IResult<Span, Statement> {
+pub(crate) fn statement(s: Span) -> IResult<Span, Statement> {
     let (s, a) = opt(pair(block_identifier, symbol(":")))(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
     let (s, c) = statement_item(s)?;
@@ -102,7 +102,7 @@ pub fn statement(s: Span) -> IResult<Span, Statement> {
 }
 
 #[parser]
-pub fn statement_item(s: Span) -> IResult<Span, StatementItem> {
+pub(crate) fn statement_item(s: Span) -> IResult<Span, StatementItem> {
     alt((
         map(pair(blocking_assignment, symbol(";")), |x| {
             StatementItem::BlockingAssignment(Box::new(x))
@@ -162,13 +162,13 @@ pub fn statement_item(s: Span) -> IResult<Span, StatementItem> {
 }
 
 #[parser]
-pub fn function_statement(s: Span) -> IResult<Span, FunctionStatement> {
+pub(crate) fn function_statement(s: Span) -> IResult<Span, FunctionStatement> {
     let (s, a) = statement(s)?;
     Ok((s, FunctionStatement { nodes: (a,) }))
 }
 
 #[parser]
-pub fn function_statement_or_null(s: Span) -> IResult<Span, FunctionStatementOrNull> {
+pub(crate) fn function_statement_or_null(s: Span) -> IResult<Span, FunctionStatementOrNull> {
     alt((
         map(function_statement, |x| {
             FunctionStatementOrNull::Statement(Box::new(x))
@@ -178,7 +178,7 @@ pub fn function_statement_or_null(s: Span) -> IResult<Span, FunctionStatementOrN
 }
 
 #[parser]
-pub fn function_statement_or_null_attribute(s: Span) -> IResult<Span, FunctionStatementOrNull> {
+pub(crate) fn function_statement_or_null_attribute(s: Span) -> IResult<Span, FunctionStatementOrNull> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = symbol(";")(s)?;
     Ok((
@@ -190,7 +190,7 @@ pub fn function_statement_or_null_attribute(s: Span) -> IResult<Span, FunctionSt
 }
 
 #[parser]
-pub fn variable_identifier_list(s: Span) -> IResult<Span, VariableIdentifierList> {
+pub(crate) fn variable_identifier_list(s: Span) -> IResult<Span, VariableIdentifierList> {
     let (s, a) = list(symbol(","), variable_identifier)(s)?;
     Ok((s, VariableIdentifierList { nodes: (a,) }))
 }

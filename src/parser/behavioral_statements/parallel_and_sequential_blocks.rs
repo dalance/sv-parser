@@ -53,7 +53,7 @@ pub enum JoinKeyword {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn action_block(s: Span) -> IResult<Span, ActionBlock> {
+pub(crate) fn action_block(s: Span) -> IResult<Span, ActionBlock> {
     alt((
         map(statement_or_null, |x| {
             ActionBlock::StatementOrNull(Box::new(x))
@@ -63,7 +63,7 @@ pub fn action_block(s: Span) -> IResult<Span, ActionBlock> {
 }
 
 #[parser]
-pub fn action_block_else(s: Span) -> IResult<Span, ActionBlock> {
+pub(crate) fn action_block_else(s: Span) -> IResult<Span, ActionBlock> {
     let (s, a) = opt(statement)(s)?;
     let (s, b) = keyword("else")(s)?;
     let (s, c) = statement_or_null(s)?;
@@ -74,7 +74,7 @@ pub fn action_block_else(s: Span) -> IResult<Span, ActionBlock> {
 }
 
 #[parser]
-pub fn seq_block(s: Span) -> IResult<Span, SeqBlock> {
+pub(crate) fn seq_block(s: Span) -> IResult<Span, SeqBlock> {
     let (s, a) = keyword("begin")(s)?;
     let (s, b) = opt(pair(symbol(":"), block_identifier))(s)?;
     let (s, c) = many0(block_item_declaration)(s)?;
@@ -90,7 +90,7 @@ pub fn seq_block(s: Span) -> IResult<Span, SeqBlock> {
 }
 
 #[parser]
-pub fn par_block(s: Span) -> IResult<Span, ParBlock> {
+pub(crate) fn par_block(s: Span) -> IResult<Span, ParBlock> {
     let (s, a) = keyword("fork")(s)?;
     let (s, b) = opt(pair(symbol(":"), block_identifier))(s)?;
     let (s, c) = many0(block_item_declaration)(s)?;
@@ -106,7 +106,7 @@ pub fn par_block(s: Span) -> IResult<Span, ParBlock> {
 }
 
 #[parser]
-pub fn join_keyword(s: Span) -> IResult<Span, JoinKeyword> {
+pub(crate) fn join_keyword(s: Span) -> IResult<Span, JoinKeyword> {
     alt((
         map(keyword("join_any"), |x| JoinKeyword::JoinAny(Box::new(x))),
         map(keyword("join_none"), |x| JoinKeyword::JoinNone(Box::new(x))),

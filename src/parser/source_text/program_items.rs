@@ -61,7 +61,7 @@ pub enum ProgramGenerateItem {
 // -----------------------------------------------------------------------------
 
 #[parser]
-pub fn program_item(s: Span) -> IResult<Span, ProgramItem> {
+pub(crate) fn program_item(s: Span) -> IResult<Span, ProgramItem> {
     alt((
         map(pair(port_declaration, symbol(";")), |x| {
             ProgramItem::PortDeclaration(Box::new(x))
@@ -73,7 +73,7 @@ pub fn program_item(s: Span) -> IResult<Span, ProgramItem> {
 }
 
 #[parser]
-pub fn non_port_program_item(s: Span) -> IResult<Span, NonPortProgramItem> {
+pub(crate) fn non_port_program_item(s: Span) -> IResult<Span, NonPortProgramItem> {
     alt((
         non_port_program_item_assign,
         non_port_program_item_module,
@@ -90,7 +90,7 @@ pub fn non_port_program_item(s: Span) -> IResult<Span, NonPortProgramItem> {
 }
 
 #[parser]
-pub fn non_port_program_item_assign(s: Span) -> IResult<Span, NonPortProgramItem> {
+pub(crate) fn non_port_program_item_assign(s: Span) -> IResult<Span, NonPortProgramItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = continuous_assign(s)?;
     Ok((
@@ -100,7 +100,7 @@ pub fn non_port_program_item_assign(s: Span) -> IResult<Span, NonPortProgramItem
 }
 
 #[parser(MaybeRecursive)]
-pub fn non_port_program_item_module(s: Span) -> IResult<Span, NonPortProgramItem> {
+pub(crate) fn non_port_program_item_module(s: Span) -> IResult<Span, NonPortProgramItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = module_or_generate_item_declaration(s)?;
     Ok((
@@ -110,7 +110,7 @@ pub fn non_port_program_item_module(s: Span) -> IResult<Span, NonPortProgramItem
 }
 
 #[parser]
-pub fn non_port_program_item_initial(s: Span) -> IResult<Span, NonPortProgramItem> {
+pub(crate) fn non_port_program_item_initial(s: Span) -> IResult<Span, NonPortProgramItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = initial_construct(s)?;
     Ok((
@@ -120,7 +120,7 @@ pub fn non_port_program_item_initial(s: Span) -> IResult<Span, NonPortProgramIte
 }
 
 #[parser]
-pub fn non_port_program_item_final(s: Span) -> IResult<Span, NonPortProgramItem> {
+pub(crate) fn non_port_program_item_final(s: Span) -> IResult<Span, NonPortProgramItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = final_construct(s)?;
     Ok((
@@ -130,7 +130,7 @@ pub fn non_port_program_item_final(s: Span) -> IResult<Span, NonPortProgramItem>
 }
 
 #[parser]
-pub fn non_port_program_item_assertion(s: Span) -> IResult<Span, NonPortProgramItem> {
+pub(crate) fn non_port_program_item_assertion(s: Span) -> IResult<Span, NonPortProgramItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = concurrent_assertion_item(s)?;
     Ok((
@@ -140,7 +140,7 @@ pub fn non_port_program_item_assertion(s: Span) -> IResult<Span, NonPortProgramI
 }
 
 #[parser]
-pub fn program_generate_item(s: Span) -> IResult<Span, ProgramGenerateItem> {
+pub(crate) fn program_generate_item(s: Span) -> IResult<Span, ProgramGenerateItem> {
     alt((
         map(loop_generate_construct, |x| {
             ProgramGenerateItem::LoopGenerateConstruct(Box::new(x))

@@ -41,8 +41,8 @@ pub struct RsRule {
 
 #[derive(Clone, Debug, Node)]
 pub enum RsProductionList {
-    Prod(RsProductionListProd),
-    Join(RsProductionListJoin),
+    Prod(Box<RsProductionListProd>),
+    Join(Box<RsProductionListJoin>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -64,9 +64,9 @@ pub struct RsProductionListJoin {
 
 #[derive(Clone, Debug, Node)]
 pub enum WeightSpecification {
-    IntegralNumber(IntegralNumber),
-    PsIdentifier(PsIdentifier),
-    Expression(WeightSpecificationExpression),
+    IntegralNumber(Box<IntegralNumber>),
+    PsIdentifier(Box<PsIdentifier>),
+    Expression(Box<WeightSpecificationExpression>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -81,11 +81,11 @@ pub struct RsCodeBlock {
 
 #[derive(Clone, Debug, Node)]
 pub enum RsProd {
-    ProductionItem(ProductionItem),
-    RsCodeBlock(RsCodeBlock),
-    RsIfElse(RsIfElse),
-    RsRepeat(RsRepeat),
-    RsCase(RsCase),
+    ProductionItem(Box<ProductionItem>),
+    RsCodeBlock(Box<RsCodeBlock>),
+    RsIfElse(Box<RsIfElse>),
+    RsRepeat(Box<RsRepeat>),
+    RsCase(Box<RsCase>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -121,8 +121,8 @@ pub struct RsCase {
 
 #[derive(Clone, Debug, Node)]
 pub enum RsCaseItem {
-    NonDefault(RsCaseItemNondefault),
-    Default(RsCaseItemDefault),
+    NonDefault(Box<RsCaseItemNondefault>),
+    Default(Box<RsCaseItemDefault>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -195,7 +195,7 @@ pub fn rs_production_list_prod(s: Span) -> IResult<Span, RsProductionList> {
     let (s, b) = many0(rs_prod)(s)?;
     Ok((
         s,
-        RsProductionList::Prod(RsProductionListProd { nodes: (a, b) }),
+        RsProductionList::Prod(Box::new(RsProductionListProd { nodes: (a, b) })),
     ))
 }
 
@@ -209,17 +209,21 @@ pub fn rs_production_list_join(s: Span) -> IResult<Span, RsProductionList> {
     let (s, f) = many0(production_item)(s)?;
     Ok((
         s,
-        RsProductionList::Join(RsProductionListJoin {
+        RsProductionList::Join(Box::new(RsProductionListJoin {
             nodes: (a, b, c, d, e, f),
-        }),
+        })),
     ))
 }
 
 #[parser]
 pub fn weight_specification(s: Span) -> IResult<Span, WeightSpecification> {
     alt((
-        map(integral_number, |x| WeightSpecification::IntegralNumber(x)),
-        map(ps_identifier, |x| WeightSpecification::PsIdentifier(x)),
+        map(integral_number, |x| {
+            WeightSpecification::IntegralNumber(Box::new(x))
+        }),
+        map(ps_identifier, |x| {
+            WeightSpecification::PsIdentifier(Box::new(x))
+        }),
         weight_specification_expression,
     ))(s)
 }
@@ -229,7 +233,7 @@ pub fn weight_specification_expression(s: Span) -> IResult<Span, WeightSpecifica
     let (s, a) = paren(expression)(s)?;
     Ok((
         s,
-        WeightSpecification::Expression(WeightSpecificationExpression { nodes: (a,) }),
+        WeightSpecification::Expression(Box::new(WeightSpecificationExpression { nodes: (a,) })),
     ))
 }
 
@@ -242,11 +246,11 @@ pub fn rs_code_block(s: Span) -> IResult<Span, RsCodeBlock> {
 #[parser]
 pub fn rs_prod(s: Span) -> IResult<Span, RsProd> {
     alt((
-        map(production_item, |x| RsProd::ProductionItem(x)),
-        map(rs_code_block, |x| RsProd::RsCodeBlock(x)),
-        map(rs_if_else, |x| RsProd::RsIfElse(x)),
-        map(rs_repeat, |x| RsProd::RsRepeat(x)),
-        map(rs_case, |x| RsProd::RsCase(x)),
+        map(production_item, |x| RsProd::ProductionItem(Box::new(x))),
+        map(rs_code_block, |x| RsProd::RsCodeBlock(Box::new(x))),
+        map(rs_if_else, |x| RsProd::RsIfElse(Box::new(x))),
+        map(rs_repeat, |x| RsProd::RsRepeat(Box::new(x))),
+        map(rs_case, |x| RsProd::RsCase(Box::new(x))),
     ))(s)
 }
 
@@ -307,9 +311,9 @@ pub fn rs_case_item_nondefault(s: Span) -> IResult<Span, RsCaseItem> {
     let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        RsCaseItem::NonDefault(RsCaseItemNondefault {
+        RsCaseItem::NonDefault(Box::new(RsCaseItemNondefault {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -321,8 +325,8 @@ pub fn rs_case_item_default(s: Span) -> IResult<Span, RsCaseItem> {
     let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        RsCaseItem::Default(RsCaseItemDefault {
+        RsCaseItem::Default(Box::new(RsCaseItemDefault {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }

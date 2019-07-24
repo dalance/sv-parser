@@ -8,12 +8,12 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum DriveStrength {
-    Strength01(DriveStrength01),
-    Strength10(DriveStrength10),
-    Strength0z(DriveStrength0z),
-    Strength1z(DriveStrength1z),
-    Strengthz0(DriveStrengthz0),
-    Strengthz1(DriveStrengthz1),
+    Strength01(Box<DriveStrength01>),
+    Strength10(Box<DriveStrength10>),
+    Strength0z(Box<DriveStrength0z>),
+    Strength1z(Box<DriveStrength1z>),
+    Strengthz0(Box<DriveStrengthz0>),
+    Strengthz1(Box<DriveStrengthz1>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -48,25 +48,25 @@ pub struct DriveStrengthz0 {
 
 #[derive(Clone, Debug, Node)]
 pub enum Strength0 {
-    Supply0(Keyword),
-    Strong0(Keyword),
-    Pull0(Keyword),
-    Weak0(Keyword),
+    Supply0(Box<Keyword>),
+    Strong0(Box<Keyword>),
+    Pull0(Box<Keyword>),
+    Weak0(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum Strength1 {
-    Supply1(Keyword),
-    Strong1(Keyword),
-    Pull1(Keyword),
-    Weak1(Keyword),
+    Supply1(Box<Keyword>),
+    Strong1(Box<Keyword>),
+    Pull1(Box<Keyword>),
+    Weak1(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum ChargeStrength {
-    Small(ChargeStrengthSmall),
-    Medium(ChargeStrengthMedium),
-    Large(ChargeStrengthLarge),
+    Small(Box<ChargeStrengthSmall>),
+    Medium(Box<ChargeStrengthMedium>),
+    Large(Box<ChargeStrengthLarge>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -103,7 +103,7 @@ pub fn drive_strength01(s: Span) -> IResult<Span, DriveStrength> {
     let (s, a) = paren(triple(strength0, symbol(","), strength1))(s)?;
     Ok((
         s,
-        DriveStrength::Strength01(DriveStrength01 { nodes: (a,) }),
+        DriveStrength::Strength01(Box::new(DriveStrength01 { nodes: (a,) })),
     ))
 }
 
@@ -112,7 +112,7 @@ pub fn drive_strength10(s: Span) -> IResult<Span, DriveStrength> {
     let (s, a) = paren(triple(strength1, symbol(","), strength0))(s)?;
     Ok((
         s,
-        DriveStrength::Strength10(DriveStrength10 { nodes: (a,) }),
+        DriveStrength::Strength10(Box::new(DriveStrength10 { nodes: (a,) })),
     ))
 }
 
@@ -121,7 +121,7 @@ pub fn drive_strength0z(s: Span) -> IResult<Span, DriveStrength> {
     let (s, a) = paren(triple(strength0, symbol(","), keyword("highz1")))(s)?;
     Ok((
         s,
-        DriveStrength::Strength0z(DriveStrength0z { nodes: (a,) }),
+        DriveStrength::Strength0z(Box::new(DriveStrength0z { nodes: (a,) })),
     ))
 }
 
@@ -130,7 +130,7 @@ pub fn drive_strength1z(s: Span) -> IResult<Span, DriveStrength> {
     let (s, a) = paren(triple(strength1, symbol(","), keyword("highz0")))(s)?;
     Ok((
         s,
-        DriveStrength::Strength1z(DriveStrength1z { nodes: (a,) }),
+        DriveStrength::Strength1z(Box::new(DriveStrength1z { nodes: (a,) })),
     ))
 }
 
@@ -139,7 +139,7 @@ pub fn drive_strengthz1(s: Span) -> IResult<Span, DriveStrength> {
     let (s, a) = paren(triple(keyword("highz0"), symbol(","), strength1))(s)?;
     Ok((
         s,
-        DriveStrength::Strengthz1(DriveStrengthz1 { nodes: (a,) }),
+        DriveStrength::Strengthz1(Box::new(DriveStrengthz1 { nodes: (a,) })),
     ))
 }
 
@@ -148,27 +148,27 @@ pub fn drive_strengthz0(s: Span) -> IResult<Span, DriveStrength> {
     let (s, a) = paren(triple(keyword("highz1"), symbol(","), strength0))(s)?;
     Ok((
         s,
-        DriveStrength::Strengthz0(DriveStrengthz0 { nodes: (a,) }),
+        DriveStrength::Strengthz0(Box::new(DriveStrengthz0 { nodes: (a,) })),
     ))
 }
 
 #[parser]
 pub fn strength0(s: Span) -> IResult<Span, Strength0> {
     alt((
-        map(keyword("supply0"), |x| Strength0::Supply0(x)),
-        map(keyword("strong0"), |x| Strength0::Strong0(x)),
-        map(keyword("pull0"), |x| Strength0::Pull0(x)),
-        map(keyword("weak0"), |x| Strength0::Weak0(x)),
+        map(keyword("supply0"), |x| Strength0::Supply0(Box::new(x))),
+        map(keyword("strong0"), |x| Strength0::Strong0(Box::new(x))),
+        map(keyword("pull0"), |x| Strength0::Pull0(Box::new(x))),
+        map(keyword("weak0"), |x| Strength0::Weak0(Box::new(x))),
     ))(s)
 }
 
 #[parser]
 pub fn strength1(s: Span) -> IResult<Span, Strength1> {
     alt((
-        map(keyword("supply1"), |x| Strength1::Supply1(x)),
-        map(keyword("strong1"), |x| Strength1::Strong1(x)),
-        map(keyword("pull1"), |x| Strength1::Pull1(x)),
-        map(keyword("weak1"), |x| Strength1::Weak1(x)),
+        map(keyword("supply1"), |x| Strength1::Supply1(Box::new(x))),
+        map(keyword("strong1"), |x| Strength1::Strong1(Box::new(x))),
+        map(keyword("pull1"), |x| Strength1::Pull1(Box::new(x))),
+        map(keyword("weak1"), |x| Strength1::Weak1(Box::new(x))),
     ))(s)
 }
 
@@ -186,7 +186,7 @@ pub fn charge_strength_small(s: Span) -> IResult<Span, ChargeStrength> {
     let (s, a) = paren(keyword("small"))(s)?;
     Ok((
         s,
-        ChargeStrength::Small(ChargeStrengthSmall { nodes: (a,) }),
+        ChargeStrength::Small(Box::new(ChargeStrengthSmall { nodes: (a,) })),
     ))
 }
 
@@ -195,7 +195,7 @@ pub fn charge_strength_medium(s: Span) -> IResult<Span, ChargeStrength> {
     let (s, a) = paren(keyword("medium"))(s)?;
     Ok((
         s,
-        ChargeStrength::Medium(ChargeStrengthMedium { nodes: (a,) }),
+        ChargeStrength::Medium(Box::new(ChargeStrengthMedium { nodes: (a,) })),
     ))
 }
 
@@ -204,7 +204,7 @@ pub fn charge_strength_large(s: Span) -> IResult<Span, ChargeStrength> {
     let (s, a) = paren(keyword("large"))(s)?;
     Ok((
         s,
-        ChargeStrength::Large(ChargeStrengthLarge { nodes: (a,) }),
+        ChargeStrength::Large(Box::new(ChargeStrengthLarge { nodes: (a,) })),
     ))
 }
 

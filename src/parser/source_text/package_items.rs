@@ -10,28 +10,28 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum PackageItem {
-    PackageOrGenerateItemDeclaration(PackageOrGenerateItemDeclaration),
-    AnonymousProgram(AnonymousProgram),
-    PackageExportDeclaration(PackageExportDeclaration),
-    TimeunitsDeclaration(TimeunitsDeclaration),
+    PackageOrGenerateItemDeclaration(Box<PackageOrGenerateItemDeclaration>),
+    AnonymousProgram(Box<AnonymousProgram>),
+    PackageExportDeclaration(Box<PackageExportDeclaration>),
+    TimeunitsDeclaration(Box<TimeunitsDeclaration>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum PackageOrGenerateItemDeclaration {
-    NetDeclaration(NetDeclaration),
-    DataDeclaration(DataDeclaration),
-    TaskDeclaration(TaskDeclaration),
-    FunctionDeclaration(FunctionDeclaration),
-    CheckerDeclaration(CheckerDeclaration),
-    DpiImportExport(DpiImportExport),
-    ExternConstraintDeclaration(ExternConstraintDeclaration),
-    ClassDeclaration(ClassDeclaration),
-    ClassConstructorDeclaration(ClassConstructorDeclaration),
-    LocalParameterDeclaration((LocalParameterDeclaration, Symbol)),
-    ParameterDeclaration((ParameterDeclaration, Symbol)),
-    CovergroupDeclaration(CovergroupDeclaration),
-    AssertionItemDeclaration(AssertionItemDeclaration),
-    Empty(Symbol),
+    NetDeclaration(Box<NetDeclaration>),
+    DataDeclaration(Box<DataDeclaration>),
+    TaskDeclaration(Box<TaskDeclaration>),
+    FunctionDeclaration(Box<FunctionDeclaration>),
+    CheckerDeclaration(Box<CheckerDeclaration>),
+    DpiImportExport(Box<DpiImportExport>),
+    ExternConstraintDeclaration(Box<ExternConstraintDeclaration>),
+    ClassDeclaration(Box<ClassDeclaration>),
+    ClassConstructorDeclaration(Box<ClassConstructorDeclaration>),
+    LocalParameterDeclaration(Box<(LocalParameterDeclaration, Symbol)>),
+    ParameterDeclaration(Box<(ParameterDeclaration, Symbol)>),
+    CovergroupDeclaration(Box<CovergroupDeclaration>),
+    AssertionItemDeclaration(Box<AssertionItemDeclaration>),
+    Empty(Box<Symbol>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -41,12 +41,12 @@ pub struct AnonymousProgram {
 
 #[derive(Clone, Debug, Node)]
 pub enum AnonymousProgramItem {
-    TaskDeclaration(TaskDeclaration),
-    FunctionDeclaration(FunctionDeclaration),
-    ClassDeclaration(ClassDeclaration),
-    CovergroupDeclaration(CovergroupDeclaration),
-    ClassConstructorDeclaration(ClassConstructorDeclaration),
-    Empty(Symbol),
+    TaskDeclaration(Box<TaskDeclaration>),
+    FunctionDeclaration(Box<FunctionDeclaration>),
+    ClassDeclaration(Box<ClassDeclaration>),
+    CovergroupDeclaration(Box<CovergroupDeclaration>),
+    ClassConstructorDeclaration(Box<ClassConstructorDeclaration>),
+    Empty(Box<Symbol>),
 }
 
 // -----------------------------------------------------------------------------
@@ -55,14 +55,16 @@ pub enum AnonymousProgramItem {
 pub fn package_item(s: Span) -> IResult<Span, PackageItem> {
     alt((
         map(package_or_generate_item_declaration, |x| {
-            PackageItem::PackageOrGenerateItemDeclaration(x)
+            PackageItem::PackageOrGenerateItemDeclaration(Box::new(x))
         }),
-        map(anonymous_program, |x| PackageItem::AnonymousProgram(x)),
+        map(anonymous_program, |x| {
+            PackageItem::AnonymousProgram(Box::new(x))
+        }),
         map(package_export_declaration, |x| {
-            PackageItem::PackageExportDeclaration(x)
+            PackageItem::PackageExportDeclaration(Box::new(x))
         }),
         map(timeunits_declaration, |x| {
-            PackageItem::TimeunitsDeclaration(x)
+            PackageItem::TimeunitsDeclaration(Box::new(x))
         }),
     ))(s)
 }
@@ -73,45 +75,47 @@ pub fn package_or_generate_item_declaration(
 ) -> IResult<Span, PackageOrGenerateItemDeclaration> {
     alt((
         map(net_declaration, |x| {
-            PackageOrGenerateItemDeclaration::NetDeclaration(x)
+            PackageOrGenerateItemDeclaration::NetDeclaration(Box::new(x))
         }),
         map(data_declaration, |x| {
-            PackageOrGenerateItemDeclaration::DataDeclaration(x)
+            PackageOrGenerateItemDeclaration::DataDeclaration(Box::new(x))
         }),
         map(task_declaration, |x| {
-            PackageOrGenerateItemDeclaration::TaskDeclaration(x)
+            PackageOrGenerateItemDeclaration::TaskDeclaration(Box::new(x))
         }),
         map(function_declaration, |x| {
-            PackageOrGenerateItemDeclaration::FunctionDeclaration(x)
+            PackageOrGenerateItemDeclaration::FunctionDeclaration(Box::new(x))
         }),
         map(checker_declaration, |x| {
-            PackageOrGenerateItemDeclaration::CheckerDeclaration(x)
+            PackageOrGenerateItemDeclaration::CheckerDeclaration(Box::new(x))
         }),
         map(dpi_import_export, |x| {
-            PackageOrGenerateItemDeclaration::DpiImportExport(x)
+            PackageOrGenerateItemDeclaration::DpiImportExport(Box::new(x))
         }),
         map(extern_constraint_declaration, |x| {
-            PackageOrGenerateItemDeclaration::ExternConstraintDeclaration(x)
+            PackageOrGenerateItemDeclaration::ExternConstraintDeclaration(Box::new(x))
         }),
         map(class_declaration, |x| {
-            PackageOrGenerateItemDeclaration::ClassDeclaration(x)
+            PackageOrGenerateItemDeclaration::ClassDeclaration(Box::new(x))
         }),
         map(class_constructor_declaration, |x| {
-            PackageOrGenerateItemDeclaration::ClassConstructorDeclaration(x)
+            PackageOrGenerateItemDeclaration::ClassConstructorDeclaration(Box::new(x))
         }),
         map(pair(local_parameter_declaration, symbol(";")), |x| {
-            PackageOrGenerateItemDeclaration::LocalParameterDeclaration(x)
+            PackageOrGenerateItemDeclaration::LocalParameterDeclaration(Box::new(x))
         }),
         map(pair(parameter_declaration, symbol(";")), |x| {
-            PackageOrGenerateItemDeclaration::ParameterDeclaration(x)
+            PackageOrGenerateItemDeclaration::ParameterDeclaration(Box::new(x))
         }),
         map(covergroup_declaration, |x| {
-            PackageOrGenerateItemDeclaration::CovergroupDeclaration(x)
+            PackageOrGenerateItemDeclaration::CovergroupDeclaration(Box::new(x))
         }),
         map(assertion_item_declaration, |x| {
-            PackageOrGenerateItemDeclaration::AssertionItemDeclaration(x)
+            PackageOrGenerateItemDeclaration::AssertionItemDeclaration(Box::new(x))
         }),
-        map(symbol(";"), |x| PackageOrGenerateItemDeclaration::Empty(x)),
+        map(symbol(";"), |x| {
+            PackageOrGenerateItemDeclaration::Empty(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -133,20 +137,20 @@ pub fn anonymous_program(s: Span) -> IResult<Span, AnonymousProgram> {
 pub fn anonymous_program_item(s: Span) -> IResult<Span, AnonymousProgramItem> {
     alt((
         map(task_declaration, |x| {
-            AnonymousProgramItem::TaskDeclaration(x)
+            AnonymousProgramItem::TaskDeclaration(Box::new(x))
         }),
         map(function_declaration, |x| {
-            AnonymousProgramItem::FunctionDeclaration(x)
+            AnonymousProgramItem::FunctionDeclaration(Box::new(x))
         }),
         map(class_declaration, |x| {
-            AnonymousProgramItem::ClassDeclaration(x)
+            AnonymousProgramItem::ClassDeclaration(Box::new(x))
         }),
         map(covergroup_declaration, |x| {
-            AnonymousProgramItem::CovergroupDeclaration(x)
+            AnonymousProgramItem::CovergroupDeclaration(Box::new(x))
         }),
         map(class_constructor_declaration, |x| {
-            AnonymousProgramItem::ClassConstructorDeclaration(x)
+            AnonymousProgramItem::ClassConstructorDeclaration(Box::new(x))
         }),
-        map(symbol(";"), |x| AnonymousProgramItem::Empty(x)),
+        map(symbol(";"), |x| AnonymousProgramItem::Empty(Box::new(x))),
     ))(s)
 }

@@ -9,15 +9,15 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum GateInstantiation {
-    Cmos(GateInstantiationCmos),
-    Enable(GateInstantiationEnable),
-    Mos(GateInstantiationMos),
-    NInput(GateInstantiationNInput),
-    NOutput(GateInstantiationNOutput),
-    PassEn(GateInstantiationPassEn),
-    Pass(GateInstantiationPass),
-    Pulldown(GateInstantiationPulldown),
-    Pullup(GateInstantiationPullup),
+    Cmos(Box<GateInstantiationCmos>),
+    Enable(Box<GateInstantiationEnable>),
+    Mos(Box<GateInstantiationMos>),
+    NInput(Box<GateInstantiationNInput>),
+    NOutput(Box<GateInstantiationNOutput>),
+    PassEn(Box<GateInstantiationPassEn>),
+    Pass(Box<GateInstantiationPass>),
+    Pulldown(Box<GateInstantiationPulldown>),
+    Pullup(Box<GateInstantiationPullup>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -214,9 +214,9 @@ pub fn gate_instantiation_cmos(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        GateInstantiation::Cmos(GateInstantiationCmos {
+        GateInstantiation::Cmos(Box::new(GateInstantiationCmos {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -229,9 +229,9 @@ pub fn gate_instantiation_enable(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, e) = symbol(";")(s)?;
     Ok((
         s,
-        GateInstantiation::Enable(GateInstantiationEnable {
+        GateInstantiation::Enable(Box::new(GateInstantiationEnable {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
@@ -243,9 +243,9 @@ pub fn gate_instantiation_mos(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        GateInstantiation::Mos(GateInstantiationMos {
+        GateInstantiation::Mos(Box::new(GateInstantiationMos {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -258,9 +258,9 @@ pub fn gate_instantiation_n_input(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, e) = symbol(";")(s)?;
     Ok((
         s,
-        GateInstantiation::NInput(GateInstantiationNInput {
+        GateInstantiation::NInput(Box::new(GateInstantiationNInput {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
@@ -273,9 +273,9 @@ pub fn gate_instantiation_n_output(s: Span) -> IResult<Span, GateInstantiation> 
     let (s, e) = symbol(";")(s)?;
     Ok((
         s,
-        GateInstantiation::NOutput(GateInstantiationNOutput {
+        GateInstantiation::NOutput(Box::new(GateInstantiationNOutput {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
@@ -287,9 +287,9 @@ pub fn gate_instantiation_pass_en(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        GateInstantiation::PassEn(GateInstantiationPassEn {
+        GateInstantiation::PassEn(Box::new(GateInstantiationPassEn {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -300,7 +300,7 @@ pub fn gate_instantiation_pass(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        GateInstantiation::Pass(GateInstantiationPass { nodes: (a, b, c) }),
+        GateInstantiation::Pass(Box::new(GateInstantiationPass { nodes: (a, b, c) })),
     ))
 }
 
@@ -312,9 +312,9 @@ pub fn gate_instantiation_pulldown(s: Span) -> IResult<Span, GateInstantiation> 
     let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        GateInstantiation::Pulldown(GateInstantiationPulldown {
+        GateInstantiation::Pulldown(Box::new(GateInstantiationPulldown {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -326,9 +326,9 @@ pub fn gate_instantiation_pullup(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        GateInstantiation::Pullup(GateInstantiationPullup {
+        GateInstantiation::Pullup(Box::new(GateInstantiationPullup {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 

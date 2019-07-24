@@ -13,24 +13,24 @@ use nom_packrat::packrat_parser;
 
 #[derive(Clone, Debug, Node)]
 pub enum Number {
-    IntegralNumber(IntegralNumber),
-    RealNumber(RealNumber),
+    IntegralNumber(Box<IntegralNumber>),
+    RealNumber(Box<RealNumber>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum IntegralNumber {
-    DecimalNumber(DecimalNumber),
-    OctalNumber(OctalNumber),
-    BinaryNumber(BinaryNumber),
-    HexNumber(HexNumber),
+    DecimalNumber(Box<DecimalNumber>),
+    OctalNumber(Box<OctalNumber>),
+    BinaryNumber(Box<BinaryNumber>),
+    HexNumber(Box<HexNumber>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum DecimalNumber {
-    UnsignedNumber(UnsignedNumber),
-    BaseUnsigned(DecimalNumberBaseUnsigned),
-    BaseXNumber(DecimalNumberBaseXNumber),
-    BaseZNumber(DecimalNumberBaseZNumber),
+    UnsignedNumber(Box<UnsignedNumber>),
+    BaseUnsigned(Box<DecimalNumberBaseUnsigned>),
+    BaseXNumber(Box<DecimalNumberBaseXNumber>),
+    BaseZNumber(Box<DecimalNumberBaseZNumber>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -65,8 +65,8 @@ pub struct HexNumber {
 
 #[derive(Clone, Debug, Node)]
 pub enum Sign {
-    Plus(Symbol),
-    Minus(Symbol),
+    Plus(Box<Symbol>),
+    Minus(Box<Symbol>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -81,8 +81,8 @@ pub struct NonZeroUnsignedNumber {
 
 #[derive(Clone, Debug, Node)]
 pub enum RealNumber {
-    FixedPointNumber(FixedPointNumber),
-    Floating(RealNumberFloating),
+    FixedPointNumber(Box<FixedPointNumber>),
+    Floating(Box<RealNumberFloating>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -167,18 +167,20 @@ pub struct UnbasedUnsizedLiteral {
 #[parser]
 pub fn number(s: Span) -> IResult<Span, Number> {
     alt((
-        map(real_number, |x| Number::RealNumber(x)),
-        map(integral_number, |x| Number::IntegralNumber(x)),
+        map(real_number, |x| Number::RealNumber(Box::new(x))),
+        map(integral_number, |x| Number::IntegralNumber(Box::new(x))),
     ))(s)
 }
 
 #[parser]
 pub fn integral_number(s: Span) -> IResult<Span, IntegralNumber> {
     alt((
-        map(octal_number, |x| IntegralNumber::OctalNumber(x)),
-        map(binary_number, |x| IntegralNumber::BinaryNumber(x)),
-        map(hex_number, |x| IntegralNumber::HexNumber(x)),
-        map(decimal_number, |x| IntegralNumber::DecimalNumber(x)),
+        map(octal_number, |x| IntegralNumber::OctalNumber(Box::new(x))),
+        map(binary_number, |x| IntegralNumber::BinaryNumber(Box::new(x))),
+        map(hex_number, |x| IntegralNumber::HexNumber(Box::new(x))),
+        map(decimal_number, |x| {
+            IntegralNumber::DecimalNumber(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -188,7 +190,9 @@ pub fn decimal_number(s: Span) -> IResult<Span, DecimalNumber> {
         decimal_number_base_unsigned,
         decimal_number_base_x_number,
         decimal_number_base_z_number,
-        map(unsigned_number, |x| DecimalNumber::UnsignedNumber(x)),
+        map(unsigned_number, |x| {
+            DecimalNumber::UnsignedNumber(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -199,7 +203,7 @@ pub fn decimal_number_base_unsigned(s: Span) -> IResult<Span, DecimalNumber> {
     let (s, c) = unsigned_number(s)?;
     Ok((
         s,
-        DecimalNumber::BaseUnsigned(DecimalNumberBaseUnsigned { nodes: (a, b, c) }),
+        DecimalNumber::BaseUnsigned(Box::new(DecimalNumberBaseUnsigned { nodes: (a, b, c) })),
     ))
 }
 
@@ -210,7 +214,7 @@ pub fn decimal_number_base_x_number(s: Span) -> IResult<Span, DecimalNumber> {
     let (s, c) = x_number(s)?;
     Ok((
         s,
-        DecimalNumber::BaseXNumber(DecimalNumberBaseXNumber { nodes: (a, b, c) }),
+        DecimalNumber::BaseXNumber(Box::new(DecimalNumberBaseXNumber { nodes: (a, b, c) })),
     ))
 }
 
@@ -221,7 +225,7 @@ pub fn decimal_number_base_z_number(s: Span) -> IResult<Span, DecimalNumber> {
     let (s, c) = z_number(s)?;
     Ok((
         s,
-        DecimalNumber::BaseZNumber(DecimalNumberBaseZNumber { nodes: (a, b, c) }),
+        DecimalNumber::BaseZNumber(Box::new(DecimalNumberBaseZNumber { nodes: (a, b, c) })),
     ))
 }
 
@@ -252,8 +256,8 @@ pub fn hex_number(s: Span) -> IResult<Span, HexNumber> {
 #[parser]
 pub fn sign(s: Span) -> IResult<Span, Sign> {
     alt((
-        map(symbol("+"), |x| Sign::Plus(x)),
-        map(symbol("-"), |x| Sign::Minus(x)),
+        map(symbol("+"), |x| Sign::Plus(Box::new(x))),
+        map(symbol("-"), |x| Sign::Minus(Box::new(x))),
     ))(s)
 }
 
@@ -282,7 +286,9 @@ pub fn non_zero_unsigned_number_impl(s: Span) -> IResult<Span, Locate> {
 pub fn real_number(s: Span) -> IResult<Span, RealNumber> {
     alt((
         real_number_floating,
-        map(fixed_point_number, |x| RealNumber::FixedPointNumber(x)),
+        map(fixed_point_number, |x| {
+            RealNumber::FixedPointNumber(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -295,9 +301,9 @@ pub fn real_number_floating(s: Span) -> IResult<Span, RealNumber> {
     let (s, e) = unsigned_number(s)?;
     Ok((
         s,
-        RealNumber::Floating(RealNumberFloating {
+        RealNumber::Floating(Box::new(RealNumberFloating {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
@@ -471,123 +477,39 @@ mod tests {
 
     #[test]
     fn test_number() {
-        parser_test!(
-            number,
-            "659",
-            Ok((_, Number::IntegralNumber(IntegralNumber::DecimalNumber(_))))
-        );
-        parser_test!(
-            number,
-            "'h 837FF",
-            Ok((_, Number::IntegralNumber(IntegralNumber::HexNumber(_))))
-        );
-        parser_test!(
-            number,
-            "'h 837FF",
-            Ok((_, Number::IntegralNumber(IntegralNumber::HexNumber(_))))
-        );
-        parser_test!(
-            number,
-            "'o7460",
-            Ok((_, Number::IntegralNumber(IntegralNumber::OctalNumber(_))))
-        );
+        parser_test!(number, "659", Ok((_, Number::IntegralNumber(_))));
+        parser_test!(number, "'h 837FF", Ok((_, Number::IntegralNumber(_))));
+        parser_test!(number, "'h 837FF", Ok((_, Number::IntegralNumber(_))));
+        parser_test!(number, "'o7460", Ok((_, Number::IntegralNumber(_))));
         parser_test!(number, "'4af", Err(_));
-        parser_test!(
-            number,
-            "4'b1001",
-            Ok((_, Number::IntegralNumber(IntegralNumber::BinaryNumber(_))))
-        );
-        parser_test!(
-            number,
-            "5 'D 3",
-            Ok((_, Number::IntegralNumber(IntegralNumber::DecimalNumber(_))))
-        );
-        parser_test!(
-            number,
-            "3'b01x",
-            Ok((_, Number::IntegralNumber(IntegralNumber::BinaryNumber(_))))
-        );
-        parser_test!(
-            number,
-            "12'hx",
-            Ok((_, Number::IntegralNumber(IntegralNumber::HexNumber(_))))
-        );
-        parser_test!(
-            number,
-            "16'hz",
-            Ok((_, Number::IntegralNumber(IntegralNumber::HexNumber(_))))
-        );
+        parser_test!(number, "4'b1001", Ok((_, Number::IntegralNumber(_))));
+        parser_test!(number, "5 'D 3", Ok((_, Number::IntegralNumber(_))));
+        parser_test!(number, "3'b01x", Ok((_, Number::IntegralNumber(_))));
+        parser_test!(number, "12'hx", Ok((_, Number::IntegralNumber(_))));
+        parser_test!(number, "16'hz", Ok((_, Number::IntegralNumber(_))));
         parser_test!(number, "8 'd -6", Err(_));
-        parser_test!(
-            number,
-            "4 'shf",
-            Ok((_, Number::IntegralNumber(IntegralNumber::HexNumber(_))))
-        );
-        parser_test!(
-            number,
-            "16'sd?",
-            Ok((_, Number::IntegralNumber(IntegralNumber::DecimalNumber(_))))
-        );
-        parser_test!(
-            number,
-            "27_195_000",
-            Ok((_, Number::IntegralNumber(IntegralNumber::DecimalNumber(_))))
-        );
+        parser_test!(number, "4 'shf", Ok((_, Number::IntegralNumber(_))));
+        parser_test!(number, "16'sd?", Ok((_, Number::IntegralNumber(_))));
+        parser_test!(number, "27_195_000", Ok((_, Number::IntegralNumber(_))));
         parser_test!(
             number,
             "16'b0011_0101_0001_1111",
-            Ok((_, Number::IntegralNumber(IntegralNumber::BinaryNumber(_))))
+            Ok((_, Number::IntegralNumber(_)))
         );
         parser_test!(
             number,
             "32 'h 12ab_f001",
-            Ok((_, Number::IntegralNumber(IntegralNumber::HexNumber(_))))
+            Ok((_, Number::IntegralNumber(_)))
         );
-        parser_test!(
-            number,
-            "1.2",
-            Ok((_, Number::RealNumber(RealNumber::FixedPointNumber(_))))
-        );
-        parser_test!(
-            number,
-            "0.1",
-            Ok((_, Number::RealNumber(RealNumber::FixedPointNumber(_))))
-        );
-        parser_test!(
-            number,
-            "2394.26331",
-            Ok((_, Number::RealNumber(RealNumber::FixedPointNumber(_))))
-        );
-        parser_test!(
-            number,
-            "1.2E12",
-            Ok((_, Number::RealNumber(RealNumber::Floating(_))))
-        );
-        parser_test!(
-            number,
-            "1.30e-2",
-            Ok((_, Number::RealNumber(RealNumber::Floating(_))))
-        );
-        parser_test!(
-            number,
-            "0.1e-0",
-            Ok((_, Number::RealNumber(RealNumber::Floating(_))))
-        );
-        parser_test!(
-            number,
-            "23E10",
-            Ok((_, Number::RealNumber(RealNumber::Floating(_))))
-        );
-        parser_test!(
-            number,
-            "29E-2",
-            Ok((_, Number::RealNumber(RealNumber::Floating(_))))
-        );
-        parser_test!(
-            number,
-            "236.123_763_e-12",
-            Ok((_, Number::RealNumber(RealNumber::Floating(_))))
-        );
+        parser_test!(number, "1.2", Ok((_, Number::RealNumber(_))));
+        parser_test!(number, "0.1", Ok((_, Number::RealNumber(_))));
+        parser_test!(number, "2394.26331", Ok((_, Number::RealNumber(_))));
+        parser_test!(number, "1.2E12", Ok((_, Number::RealNumber(_))));
+        parser_test!(number, "1.30e-2", Ok((_, Number::RealNumber(_))));
+        parser_test!(number, "0.1e-0", Ok((_, Number::RealNumber(_))));
+        parser_test!(number, "23E10", Ok((_, Number::RealNumber(_))));
+        parser_test!(number, "29E-2", Ok((_, Number::RealNumber(_))));
+        parser_test!(number, "236.123_763_e-12", Ok((_, Number::RealNumber(_))));
         parser_test!(number, ".12", Err(_));
         parser_test!(number, "9.", Err(_));
         parser_test!(number, "4.E3", Err(_));

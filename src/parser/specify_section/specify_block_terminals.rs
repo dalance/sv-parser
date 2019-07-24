@@ -18,9 +18,9 @@ pub struct SpecifyOutputTerminalDescriptor {
 
 #[derive(Clone, Debug, Node)]
 pub enum InputIdentifier {
-    InputPortIdentifier(InputPortIdentifier),
-    InoutPortIdentifier(InoutPortIdentifier),
-    Interface(InputIdentifierInterface),
+    InputPortIdentifier(Box<InputPortIdentifier>),
+    InoutPortIdentifier(Box<InoutPortIdentifier>),
+    Interface(Box<InputIdentifierInterface>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -30,9 +30,9 @@ pub struct InputIdentifierInterface {
 
 #[derive(Clone, Debug, Node)]
 pub enum OutputIdentifier {
-    OutputPortIdentifier(OutputPortIdentifier),
-    InoutPortIdentifier(InoutPortIdentifier),
-    Interface(OutputIdentifierInterface),
+    OutputPortIdentifier(Box<OutputPortIdentifier>),
+    InoutPortIdentifier(Box<InoutPortIdentifier>),
+    Interface(Box<OutputIdentifierInterface>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -62,10 +62,10 @@ pub fn specify_output_terminal_descriptor(
 pub fn input_identifier(s: Span) -> IResult<Span, InputIdentifier> {
     alt((
         map(input_port_identifier, |x| {
-            InputIdentifier::InputPortIdentifier(x)
+            InputIdentifier::InputPortIdentifier(Box::new(x))
         }),
         map(inout_port_identifier, |x| {
-            InputIdentifier::InoutPortIdentifier(x)
+            InputIdentifier::InoutPortIdentifier(Box::new(x))
         }),
         input_identifier_interface,
     ))(s)
@@ -78,7 +78,7 @@ pub fn input_identifier_interface(s: Span) -> IResult<Span, InputIdentifier> {
     let (s, c) = port_identifier(s)?;
     Ok((
         s,
-        InputIdentifier::Interface(InputIdentifierInterface { nodes: (a, b, c) }),
+        InputIdentifier::Interface(Box::new(InputIdentifierInterface { nodes: (a, b, c) })),
     ))
 }
 
@@ -86,10 +86,10 @@ pub fn input_identifier_interface(s: Span) -> IResult<Span, InputIdentifier> {
 pub fn output_identifier(s: Span) -> IResult<Span, OutputIdentifier> {
     alt((
         map(output_port_identifier, |x| {
-            OutputIdentifier::OutputPortIdentifier(x)
+            OutputIdentifier::OutputPortIdentifier(Box::new(x))
         }),
         map(inout_port_identifier, |x| {
-            OutputIdentifier::InoutPortIdentifier(x)
+            OutputIdentifier::InoutPortIdentifier(Box::new(x))
         }),
         output_identifier_interface,
     ))(s)
@@ -102,6 +102,6 @@ pub fn output_identifier_interface(s: Span) -> IResult<Span, OutputIdentifier> {
     let (s, c) = port_identifier(s)?;
     Ok((
         s,
-        OutputIdentifier::Interface(OutputIdentifierInterface { nodes: (a, b, c) }),
+        OutputIdentifier::Interface(Box::new(OutputIdentifierInterface { nodes: (a, b, c) })),
     ))
 }

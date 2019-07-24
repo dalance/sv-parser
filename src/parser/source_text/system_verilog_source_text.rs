@@ -15,14 +15,14 @@ pub struct SourceText {
 
 #[derive(Clone, Debug, Node)]
 pub enum Description {
-    ModuleDeclaration(ModuleDeclaration),
-    UdpDeclaration(UdpDeclaration),
-    InterfaceDeclaration(InterfaceDeclaration),
-    ProgramDeclaration(ProgramDeclaration),
-    PackageDeclaration(PackageDeclaration),
-    PackageItem(DescriptionPackageItem),
-    BindDirective(DescriptionBindDirective),
-    ConfigDeclaration(ConfigDeclaration),
+    ModuleDeclaration(Box<ModuleDeclaration>),
+    UdpDeclaration(Box<UdpDeclaration>),
+    InterfaceDeclaration(Box<InterfaceDeclaration>),
+    ProgramDeclaration(Box<ProgramDeclaration>),
+    PackageDeclaration(Box<PackageDeclaration>),
+    PackageItem(Box<DescriptionPackageItem>),
+    BindDirective(Box<DescriptionBindDirective>),
+    ConfigDeclaration(Box<ConfigDeclaration>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -65,11 +65,11 @@ pub struct ModuleAnsiHeader {
 
 #[derive(Clone, Debug, Node)]
 pub enum ModuleDeclaration {
-    Nonansi(ModuleDeclarationNonansi),
-    Ansi(ModuleDeclarationAnsi),
-    Wildcard(ModuleDeclarationWildcard),
-    ExternNonansi(ModuleDeclarationExternNonansi),
-    ExternAnsi(ModuleDeclarationExternAnsi),
+    Nonansi(Box<ModuleDeclarationNonansi>),
+    Ansi(Box<ModuleDeclarationAnsi>),
+    Wildcard(Box<ModuleDeclarationWildcard>),
+    ExternNonansi(Box<ModuleDeclarationExternNonansi>),
+    ExternAnsi(Box<ModuleDeclarationExternAnsi>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -122,17 +122,17 @@ pub struct ModuleDeclarationExternAnsi {
 
 #[derive(Clone, Debug, Node)]
 pub enum ModuleKeyword {
-    Module(Keyword),
-    Macromodule(Keyword),
+    Module(Box<Keyword>),
+    Macromodule(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum InterfaceDeclaration {
-    Nonansi(InterfaceDeclarationNonansi),
-    Ansi(InterfaceDeclarationAnsi),
-    Wildcard(InterfaceDeclarationWildcard),
-    ExternNonansi(InterfaceDeclarationExternNonansi),
-    ExternAnsi(InterfaceDeclarationExternAnsi),
+    Nonansi(Box<InterfaceDeclarationNonansi>),
+    Ansi(Box<InterfaceDeclarationAnsi>),
+    Wildcard(Box<InterfaceDeclarationWildcard>),
+    ExternNonansi(Box<InterfaceDeclarationExternNonansi>),
+    ExternAnsi(Box<InterfaceDeclarationExternAnsi>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -213,11 +213,11 @@ pub struct InterfaceAnsiHeader {
 
 #[derive(Clone, Debug, Node)]
 pub enum ProgramDeclaration {
-    Nonansi(ProgramDeclarationNonansi),
-    Ansi(ProgramDeclarationAnsi),
-    Wildcard(ProgramDeclarationWildcard),
-    ExternNonansi(ProgramDeclarationExternNonansi),
-    ExternAnsi(ProgramDeclarationExternAnsi),
+    Nonansi(Box<ProgramDeclarationNonansi>),
+    Ansi(Box<ProgramDeclarationAnsi>),
+    Wildcard(Box<ProgramDeclarationWildcard>),
+    ExternNonansi(Box<ProgramDeclarationExternNonansi>),
+    ExternAnsi(Box<ProgramDeclarationExternAnsi>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -352,11 +352,11 @@ pub struct InterfaceClassDeclaration {
 
 #[derive(Clone, Debug, Node)]
 pub enum InterfaceClassItem {
-    TypeDeclaration(TypeDeclaration),
-    Method(InterfaceClassItemMethod),
-    LocalParameterDeclaration((LocalParameterDeclaration, Symbol)),
-    ParameterDeclaration((ParameterDeclaration, Symbol)),
-    Null(Symbol),
+    TypeDeclaration(Box<TypeDeclaration>),
+    Method(Box<InterfaceClassItemMethod>),
+    LocalParameterDeclaration(Box<(LocalParameterDeclaration, Symbol)>),
+    ParameterDeclaration(Box<(ParameterDeclaration, Symbol)>),
+    Null(Box<Symbol>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -386,10 +386,10 @@ pub struct PackageDeclaration {
 
 #[derive(Clone, Debug, Node)]
 pub enum TimeunitsDeclaration {
-    Timeunit(TimeunitsDeclarationTimeunit),
-    Timeprecision(TimeunitsDeclarationTimeprecision),
-    TimeunitTimeprecision(TimeunitsDeclarationTimeunitTimeprecision),
-    TimeprecisionTimeunit(TimeunitsDeclarationTimeprecisionTimeunit),
+    Timeunit(Box<TimeunitsDeclarationTimeunit>),
+    Timeprecision(Box<TimeunitsDeclarationTimeprecision>),
+    TimeunitTimeprecision(Box<TimeunitsDeclarationTimeunitTimeprecision>),
+    TimeprecisionTimeunit(Box<TimeunitsDeclarationTimeprecisionTimeunit>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -424,16 +424,26 @@ pub fn source_text(s: Span) -> IResult<Span, SourceText> {
 #[parser]
 pub fn description(s: Span) -> IResult<Span, Description> {
     alt((
-        map(module_declaration, |x| Description::ModuleDeclaration(x)),
-        map(udp_declaration, |x| Description::UdpDeclaration(x)),
-        map(interface_declaration, |x| {
-            Description::InterfaceDeclaration(x)
+        map(module_declaration, |x| {
+            Description::ModuleDeclaration(Box::new(x))
         }),
-        map(program_declaration, |x| Description::ProgramDeclaration(x)),
-        map(package_declaration, |x| Description::PackageDeclaration(x)),
+        map(udp_declaration, |x| {
+            Description::UdpDeclaration(Box::new(x))
+        }),
+        map(interface_declaration, |x| {
+            Description::InterfaceDeclaration(Box::new(x))
+        }),
+        map(program_declaration, |x| {
+            Description::ProgramDeclaration(Box::new(x))
+        }),
+        map(package_declaration, |x| {
+            Description::PackageDeclaration(Box::new(x))
+        }),
         description_package_item,
         description_bind_directive,
-        map(config_declaration, |x| Description::ConfigDeclaration(x)),
+        map(config_declaration, |x| {
+            Description::ConfigDeclaration(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -443,7 +453,7 @@ pub fn description_package_item(s: Span) -> IResult<Span, Description> {
     let (s, b) = package_item(s)?;
     Ok((
         s,
-        Description::PackageItem(DescriptionPackageItem { nodes: (a, b) }),
+        Description::PackageItem(Box::new(DescriptionPackageItem { nodes: (a, b) })),
     ))
 }
 
@@ -453,7 +463,7 @@ pub fn description_bind_directive(s: Span) -> IResult<Span, Description> {
     let (s, b) = bind_directive(s)?;
     Ok((
         s,
-        Description::BindDirective(DescriptionBindDirective { nodes: (a, b) }),
+        Description::BindDirective(Box::new(DescriptionBindDirective { nodes: (a, b) })),
     ))
 }
 
@@ -513,9 +523,9 @@ pub fn module_declaration_nonansi(s: Span) -> IResult<Span, ModuleDeclaration> {
     let (s, e) = opt(pair(symbol(":"), module_identifier))(s)?;
     Ok((
         s,
-        ModuleDeclaration::Nonansi(ModuleDeclarationNonansi {
+        ModuleDeclaration::Nonansi(Box::new(ModuleDeclarationNonansi {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
@@ -528,9 +538,9 @@ pub fn module_declaration_ansi(s: Span) -> IResult<Span, ModuleDeclaration> {
     let (s, e) = opt(pair(symbol(":"), module_identifier))(s)?;
     Ok((
         s,
-        ModuleDeclaration::Ansi(ModuleDeclarationAnsi {
+        ModuleDeclaration::Ansi(Box::new(ModuleDeclarationAnsi {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
@@ -548,9 +558,9 @@ pub fn module_declaration_wildcard(s: Span) -> IResult<Span, ModuleDeclaration> 
     let (s, j) = opt(pair(symbol(":"), module_identifier))(s)?;
     Ok((
         s,
-        ModuleDeclaration::Wildcard(ModuleDeclarationWildcard {
+        ModuleDeclaration::Wildcard(Box::new(ModuleDeclarationWildcard {
             nodes: (a, b, c, d, e, f, g, h, i, j),
-        }),
+        })),
     ))
 }
 
@@ -560,7 +570,9 @@ pub fn module_declaration_extern_nonansi(s: Span) -> IResult<Span, ModuleDeclara
     let (s, b) = module_nonansi_header(s)?;
     Ok((
         s,
-        ModuleDeclaration::ExternNonansi(ModuleDeclarationExternNonansi { nodes: (a, b) }),
+        ModuleDeclaration::ExternNonansi(Box::new(ModuleDeclarationExternNonansi {
+            nodes: (a, b),
+        })),
     ))
 }
 
@@ -570,15 +582,17 @@ pub fn module_declaration_extern_ansi(s: Span) -> IResult<Span, ModuleDeclaratio
     let (s, b) = module_ansi_header(s)?;
     Ok((
         s,
-        ModuleDeclaration::ExternAnsi(ModuleDeclarationExternAnsi { nodes: (a, b) }),
+        ModuleDeclaration::ExternAnsi(Box::new(ModuleDeclarationExternAnsi { nodes: (a, b) })),
     ))
 }
 
 #[parser]
 pub fn module_keyword(s: Span) -> IResult<Span, ModuleKeyword> {
     alt((
-        map(keyword("module"), |x| ModuleKeyword::Module(x)),
-        map(keyword("macromodule"), |x| ModuleKeyword::Macromodule(x)),
+        map(keyword("module"), |x| ModuleKeyword::Module(Box::new(x))),
+        map(keyword("macromodule"), |x| {
+            ModuleKeyword::Macromodule(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -602,9 +616,9 @@ pub fn interface_declaration_nonansi(s: Span) -> IResult<Span, InterfaceDeclarat
     let (s, e) = opt(pair(symbol(":"), interface_identifier))(s)?;
     Ok((
         s,
-        InterfaceDeclaration::Nonansi(InterfaceDeclarationNonansi {
+        InterfaceDeclaration::Nonansi(Box::new(InterfaceDeclarationNonansi {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
@@ -617,9 +631,9 @@ pub fn interface_declaration_ansi(s: Span) -> IResult<Span, InterfaceDeclaration
     let (s, e) = opt(pair(symbol(":"), interface_identifier))(s)?;
     Ok((
         s,
-        InterfaceDeclaration::Ansi(InterfaceDeclarationAnsi {
+        InterfaceDeclaration::Ansi(Box::new(InterfaceDeclarationAnsi {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
@@ -637,9 +651,9 @@ pub fn interface_declaration_wildcard(s: Span) -> IResult<Span, InterfaceDeclara
     let (s, j) = opt(pair(symbol(":"), interface_identifier))(s)?;
     Ok((
         s,
-        InterfaceDeclaration::Wildcard(InterfaceDeclarationWildcard {
+        InterfaceDeclaration::Wildcard(Box::new(InterfaceDeclarationWildcard {
             nodes: (a, b, c, d, e, f, g, h, i, j),
-        }),
+        })),
     ))
 }
 
@@ -649,7 +663,9 @@ pub fn interface_declaration_extern_nonansi(s: Span) -> IResult<Span, InterfaceD
     let (s, b) = interface_nonansi_header(s)?;
     Ok((
         s,
-        InterfaceDeclaration::ExternNonansi(InterfaceDeclarationExternNonansi { nodes: (a, b) }),
+        InterfaceDeclaration::ExternNonansi(Box::new(InterfaceDeclarationExternNonansi {
+            nodes: (a, b),
+        })),
     ))
 }
 
@@ -659,7 +675,9 @@ pub fn interface_declaration_extern_ansi(s: Span) -> IResult<Span, InterfaceDecl
     let (s, b) = interface_ansi_header(s)?;
     Ok((
         s,
-        InterfaceDeclaration::ExternAnsi(InterfaceDeclarationExternAnsi { nodes: (a, b) }),
+        InterfaceDeclaration::ExternAnsi(Box::new(InterfaceDeclarationExternAnsi {
+            nodes: (a, b),
+        })),
     ))
 }
 
@@ -719,9 +737,9 @@ pub fn program_declaration_nonansi(s: Span) -> IResult<Span, ProgramDeclaration>
     let (s, e) = opt(pair(symbol(":"), program_identifier))(s)?;
     Ok((
         s,
-        ProgramDeclaration::Nonansi(ProgramDeclarationNonansi {
+        ProgramDeclaration::Nonansi(Box::new(ProgramDeclarationNonansi {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
@@ -734,9 +752,9 @@ pub fn program_declaration_ansi(s: Span) -> IResult<Span, ProgramDeclaration> {
     let (s, e) = opt(pair(symbol(":"), program_identifier))(s)?;
     Ok((
         s,
-        ProgramDeclaration::Ansi(ProgramDeclarationAnsi {
+        ProgramDeclaration::Ansi(Box::new(ProgramDeclarationAnsi {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
@@ -753,9 +771,9 @@ pub fn program_declaration_wildcard(s: Span) -> IResult<Span, ProgramDeclaration
     let (s, i) = opt(pair(symbol(":"), program_identifier))(s)?;
     Ok((
         s,
-        ProgramDeclaration::Wildcard(ProgramDeclarationWildcard {
+        ProgramDeclaration::Wildcard(Box::new(ProgramDeclarationWildcard {
             nodes: (a, b, c, d, e, f, g, h, i),
-        }),
+        })),
     ))
 }
 
@@ -765,7 +783,9 @@ pub fn program_declaration_extern_nonansi(s: Span) -> IResult<Span, ProgramDecla
     let (s, b) = program_nonansi_header(s)?;
     Ok((
         s,
-        ProgramDeclaration::ExternNonansi(ProgramDeclarationExternNonansi { nodes: (a, b) }),
+        ProgramDeclaration::ExternNonansi(Box::new(ProgramDeclarationExternNonansi {
+            nodes: (a, b),
+        })),
     ))
 }
 
@@ -775,7 +795,7 @@ pub fn program_declaration_extern_ansi(s: Span) -> IResult<Span, ProgramDeclarat
     let (s, b) = program_ansi_header(s)?;
     Ok((
         s,
-        ProgramDeclaration::ExternAnsi(ProgramDeclarationExternAnsi { nodes: (a, b) }),
+        ProgramDeclaration::ExternAnsi(Box::new(ProgramDeclarationExternAnsi { nodes: (a, b) })),
     ))
 }
 
@@ -892,15 +912,17 @@ pub fn interface_class_declaration(s: Span) -> IResult<Span, InterfaceClassDecla
 #[parser]
 pub fn interface_class_item(s: Span) -> IResult<Span, InterfaceClassItem> {
     alt((
-        map(type_declaration, |x| InterfaceClassItem::TypeDeclaration(x)),
+        map(type_declaration, |x| {
+            InterfaceClassItem::TypeDeclaration(Box::new(x))
+        }),
         interface_class_item_method,
         map(pair(local_parameter_declaration, symbol(";")), |x| {
-            InterfaceClassItem::LocalParameterDeclaration(x)
+            InterfaceClassItem::LocalParameterDeclaration(Box::new(x))
         }),
         map(pair(parameter_declaration, symbol(";")), |x| {
-            InterfaceClassItem::ParameterDeclaration(x)
+            InterfaceClassItem::ParameterDeclaration(Box::new(x))
         }),
-        map(symbol(";"), |x| InterfaceClassItem::Null(x)),
+        map(symbol(";"), |x| InterfaceClassItem::Null(Box::new(x))),
     ))(s)
 }
 
@@ -910,7 +932,7 @@ pub fn interface_class_item_method(s: Span) -> IResult<Span, InterfaceClassItem>
     let (s, b) = interface_class_method(s)?;
     Ok((
         s,
-        InterfaceClassItem::Method(InterfaceClassItemMethod { nodes: (a, b) }),
+        InterfaceClassItem::Method(Box::new(InterfaceClassItemMethod { nodes: (a, b) })),
     ))
 }
 
@@ -965,9 +987,9 @@ pub fn timeunits_declaration_timeunit(s: Span) -> IResult<Span, TimeunitsDeclara
     let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        TimeunitsDeclaration::Timeunit(TimeunitsDeclarationTimeunit {
+        TimeunitsDeclaration::Timeunit(Box::new(TimeunitsDeclarationTimeunit {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -978,7 +1000,9 @@ pub fn timeunits_declaration_timeprecision(s: Span) -> IResult<Span, TimeunitsDe
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        TimeunitsDeclaration::Timeprecision(TimeunitsDeclarationTimeprecision { nodes: (a, b, c) }),
+        TimeunitsDeclaration::Timeprecision(Box::new(TimeunitsDeclarationTimeprecision {
+            nodes: (a, b, c),
+        })),
     ))
 }
 
@@ -994,9 +1018,11 @@ pub fn timeunits_declaration_timeunit_timeprecision(
     let (s, f) = symbol(";")(s)?;
     Ok((
         s,
-        TimeunitsDeclaration::TimeunitTimeprecision(TimeunitsDeclarationTimeunitTimeprecision {
-            nodes: (a, b, c, d, e, f),
-        }),
+        TimeunitsDeclaration::TimeunitTimeprecision(Box::new(
+            TimeunitsDeclarationTimeunitTimeprecision {
+                nodes: (a, b, c, d, e, f),
+            },
+        )),
     ))
 }
 
@@ -1012,9 +1038,11 @@ pub fn timeunits_declaration_timeprecision_timeunit(
     let (s, f) = symbol(";")(s)?;
     Ok((
         s,
-        TimeunitsDeclaration::TimeprecisionTimeunit(TimeunitsDeclarationTimeprecisionTimeunit {
-            nodes: (a, b, c, d, e, f),
-        }),
+        TimeunitsDeclaration::TimeprecisionTimeunit(Box::new(
+            TimeunitsDeclarationTimeprecisionTimeunit {
+                nodes: (a, b, c, d, e, f),
+            },
+        )),
     ))
 }
 

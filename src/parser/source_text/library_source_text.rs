@@ -15,10 +15,10 @@ pub struct LibraryText {
 
 #[derive(Clone, Debug, Node)]
 pub enum LibraryDescription {
-    LibraryDeclaration(LibraryDeclaration),
-    IncludeStatement(IncludeStatement),
-    ConfigDeclaration(ConfigDeclaration),
-    Null(Symbol),
+    LibraryDeclaration(Box<LibraryDeclaration>),
+    IncludeStatement(Box<IncludeStatement>),
+    ConfigDeclaration(Box<ConfigDeclaration>),
+    Null(Box<Symbol>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -54,15 +54,15 @@ pub fn library_text(s: Span) -> IResult<Span, LibraryText> {
 pub fn library_description(s: Span) -> IResult<Span, LibraryDescription> {
     alt((
         map(library_declaration, |x| {
-            LibraryDescription::LibraryDeclaration(x)
+            LibraryDescription::LibraryDeclaration(Box::new(x))
         }),
         map(include_statement, |x| {
-            LibraryDescription::IncludeStatement(x)
+            LibraryDescription::IncludeStatement(Box::new(x))
         }),
         map(config_declaration, |x| {
-            LibraryDescription::ConfigDeclaration(x)
+            LibraryDescription::ConfigDeclaration(Box::new(x))
         }),
-        map(symbol(";"), |x| LibraryDescription::Null(x)),
+        map(symbol(";"), |x| LibraryDescription::Null(Box::new(x))),
     ))(s)
 }
 

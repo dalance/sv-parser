@@ -10,8 +10,8 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum ClockingDeclaration {
-    Local(ClockingDeclarationLocal),
-    Global(ClockingDeclarationGlobal),
+    Local(Box<ClockingDeclarationLocal>),
+    Global(Box<ClockingDeclarationGlobal>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -48,8 +48,8 @@ pub struct ClockingDeclarationGlobal {
 
 #[derive(Clone, Debug, Node)]
 pub enum ClockingEvent {
-    Identifier(ClockingEventIdentifier),
-    Expression(ClockingEventExpression),
+    Identifier(Box<ClockingEventIdentifier>),
+    Expression(Box<ClockingEventExpression>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -64,9 +64,9 @@ pub struct ClockingEventExpression {
 
 #[derive(Clone, Debug, Node)]
 pub enum ClockingItem {
-    Default(ClockingItemDefault),
-    Direction(ClockingItemDirection),
-    Assertion(ClockingItemAssertion),
+    Default(Box<ClockingItemDefault>),
+    Direction(Box<ClockingItemDirection>),
+    Assertion(Box<ClockingItemAssertion>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -86,9 +86,9 @@ pub struct ClockingItemAssertion {
 
 #[derive(Clone, Debug, Node)]
 pub enum DefaultSkew {
-    Input(DefaultSkewInput),
-    Output(DefaultSkewOutput),
-    InputOutput(DefaultSkewInputOutput),
+    Input(Box<DefaultSkewInput>),
+    Output(Box<DefaultSkewOutput>),
+    InputOutput(Box<DefaultSkewInputOutput>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -108,10 +108,10 @@ pub struct DefaultSkewInputOutput {
 
 #[derive(Clone, Debug, Node)]
 pub enum ClockingDirection {
-    Input(ClockingDirectionInput),
-    Output(ClockingDirectionOutput),
-    InputOutput(ClockingDirectionInputOutput),
-    Inout(Keyword),
+    Input(Box<ClockingDirectionInput>),
+    Output(Box<ClockingDirectionOutput>),
+    InputOutput(Box<ClockingDirectionInputOutput>),
+    Inout(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -141,8 +141,8 @@ pub struct ClockingDeclAssign {
 
 #[derive(Clone, Debug, Node)]
 pub enum ClockingSkew {
-    Edge(ClockingSkewEdge),
-    DelayControl(DelayControl),
+    Edge(Box<ClockingSkewEdge>),
+    DelayControl(Box<DelayControl>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -157,9 +157,9 @@ pub struct ClockingDrive {
 
 #[derive(Clone, Debug, Node)]
 pub enum CycleDelay {
-    Integral(CycleDelayIntegral),
-    Identifier(CycleDelayIdentifier),
-    Expression(CycleDelayExpression),
+    Integral(Box<CycleDelayIntegral>),
+    Identifier(Box<CycleDelayIdentifier>),
+    Expression(Box<CycleDelayExpression>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -205,9 +205,9 @@ pub fn clocking_declaration_local(s: Span) -> IResult<Span, ClockingDeclaration>
     let (s, h) = opt(pair(symbol(":"), clocking_identifier))(s)?;
     Ok((
         s,
-        ClockingDeclaration::Local(ClockingDeclarationLocal {
+        ClockingDeclaration::Local(Box::new(ClockingDeclarationLocal {
             nodes: (a, b, c, d, e, f, g, h),
-        }),
+        })),
     ))
 }
 
@@ -228,9 +228,9 @@ pub fn clocking_declaration_global(s: Span) -> IResult<Span, ClockingDeclaration
     let (s, g) = opt(pair(symbol(":"), clocking_identifier))(s)?;
     Ok((
         s,
-        ClockingDeclaration::Global(ClockingDeclarationGlobal {
+        ClockingDeclaration::Global(Box::new(ClockingDeclarationGlobal {
             nodes: (a, b, c, d, e, f, g),
-        }),
+        })),
     ))
 }
 
@@ -245,7 +245,7 @@ pub fn clocking_event_identifier(s: Span) -> IResult<Span, ClockingEvent> {
     let (s, b) = identifier(s)?;
     Ok((
         s,
-        ClockingEvent::Identifier(ClockingEventIdentifier { nodes: (a, b) }),
+        ClockingEvent::Identifier(Box::new(ClockingEventIdentifier { nodes: (a, b) })),
     ))
 }
 
@@ -255,7 +255,7 @@ pub fn clocking_event_expression(s: Span) -> IResult<Span, ClockingEvent> {
     let (s, b) = paren(event_expression)(s)?;
     Ok((
         s,
-        ClockingEvent::Expression(ClockingEventExpression { nodes: (a, b) }),
+        ClockingEvent::Expression(Box::new(ClockingEventExpression { nodes: (a, b) })),
     ))
 }
 
@@ -275,7 +275,7 @@ pub fn clocking_item_default(s: Span) -> IResult<Span, ClockingItem> {
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        ClockingItem::Default(ClockingItemDefault { nodes: (a, b, c) }),
+        ClockingItem::Default(Box::new(ClockingItemDefault { nodes: (a, b, c) })),
     ))
 }
 
@@ -286,7 +286,7 @@ pub fn clocking_item_direction(s: Span) -> IResult<Span, ClockingItem> {
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        ClockingItem::Direction(ClockingItemDirection { nodes: (a, b, c) }),
+        ClockingItem::Direction(Box::new(ClockingItemDirection { nodes: (a, b, c) })),
     ))
 }
 
@@ -296,7 +296,7 @@ pub fn clocking_item_assertion(s: Span) -> IResult<Span, ClockingItem> {
     let (s, b) = assertion_item_declaration(s)?;
     Ok((
         s,
-        ClockingItem::Assertion(ClockingItemAssertion { nodes: (a, b) }),
+        ClockingItem::Assertion(Box::new(ClockingItemAssertion { nodes: (a, b) })),
     ))
 }
 
@@ -313,14 +313,20 @@ pub fn default_skew(s: Span) -> IResult<Span, DefaultSkew> {
 pub fn default_skew_input(s: Span) -> IResult<Span, DefaultSkew> {
     let (s, a) = keyword("input")(s)?;
     let (s, b) = clocking_skew(s)?;
-    Ok((s, DefaultSkew::Input(DefaultSkewInput { nodes: (a, b) })))
+    Ok((
+        s,
+        DefaultSkew::Input(Box::new(DefaultSkewInput { nodes: (a, b) })),
+    ))
 }
 
 #[parser]
 pub fn default_skew_output(s: Span) -> IResult<Span, DefaultSkew> {
     let (s, a) = keyword("output")(s)?;
     let (s, b) = clocking_skew(s)?;
-    Ok((s, DefaultSkew::Output(DefaultSkewOutput { nodes: (a, b) })))
+    Ok((
+        s,
+        DefaultSkew::Output(Box::new(DefaultSkewOutput { nodes: (a, b) })),
+    ))
 }
 
 #[parser]
@@ -331,9 +337,9 @@ pub fn default_skew_input_output(s: Span) -> IResult<Span, DefaultSkew> {
     let (s, d) = clocking_skew(s)?;
     Ok((
         s,
-        DefaultSkew::InputOutput(DefaultSkewInputOutput {
+        DefaultSkew::InputOutput(Box::new(DefaultSkewInputOutput {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -353,7 +359,7 @@ pub fn clocking_direction_input(s: Span) -> IResult<Span, ClockingDirection> {
     let (s, b) = opt(clocking_skew)(s)?;
     Ok((
         s,
-        ClockingDirection::Input(ClockingDirectionInput { nodes: (a, b) }),
+        ClockingDirection::Input(Box::new(ClockingDirectionInput { nodes: (a, b) })),
     ))
 }
 
@@ -363,7 +369,7 @@ pub fn clocking_direction_output(s: Span) -> IResult<Span, ClockingDirection> {
     let (s, b) = opt(clocking_skew)(s)?;
     Ok((
         s,
-        ClockingDirection::Output(ClockingDirectionOutput { nodes: (a, b) }),
+        ClockingDirection::Output(Box::new(ClockingDirectionOutput { nodes: (a, b) })),
     ))
 }
 
@@ -375,16 +381,16 @@ pub fn clocking_direction_input_output(s: Span) -> IResult<Span, ClockingDirecti
     let (s, d) = opt(clocking_skew)(s)?;
     Ok((
         s,
-        ClockingDirection::InputOutput(ClockingDirectionInputOutput {
+        ClockingDirection::InputOutput(Box::new(ClockingDirectionInputOutput {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
 #[parser]
 pub fn clocking_direction_inout(s: Span) -> IResult<Span, ClockingDirection> {
     let (s, a) = keyword("inout")(s)?;
-    Ok((s, ClockingDirection::Inout(a)))
+    Ok((s, ClockingDirection::Inout(Box::new(a))))
 }
 
 #[parser]
@@ -404,7 +410,7 @@ pub fn clocking_decl_assign(s: Span) -> IResult<Span, ClockingDeclAssign> {
 pub fn clocking_skew(s: Span) -> IResult<Span, ClockingSkew> {
     alt((
         clocking_skew_edge,
-        map(delay_control, |x| ClockingSkew::DelayControl(x)),
+        map(delay_control, |x| ClockingSkew::DelayControl(Box::new(x))),
     ))(s)
 }
 
@@ -412,7 +418,10 @@ pub fn clocking_skew(s: Span) -> IResult<Span, ClockingSkew> {
 pub fn clocking_skew_edge(s: Span) -> IResult<Span, ClockingSkew> {
     let (s, a) = edge_identifier(s)?;
     let (s, b) = opt(delay_control)(s)?;
-    Ok((s, ClockingSkew::Edge(ClockingSkewEdge { nodes: (a, b) })))
+    Ok((
+        s,
+        ClockingSkew::Edge(Box::new(ClockingSkewEdge { nodes: (a, b) })),
+    ))
 }
 
 #[parser]
@@ -444,7 +453,7 @@ pub fn cycle_delay_integral(s: Span) -> IResult<Span, CycleDelay> {
     let (s, b) = integral_number(s)?;
     Ok((
         s,
-        CycleDelay::Integral(CycleDelayIntegral { nodes: (a, b) }),
+        CycleDelay::Integral(Box::new(CycleDelayIntegral { nodes: (a, b) })),
     ))
 }
 
@@ -454,7 +463,7 @@ pub fn cycle_delay_identifier(s: Span) -> IResult<Span, CycleDelay> {
     let (s, b) = identifier(s)?;
     Ok((
         s,
-        CycleDelay::Identifier(CycleDelayIdentifier { nodes: (a, b) }),
+        CycleDelay::Identifier(Box::new(CycleDelayIdentifier { nodes: (a, b) })),
     ))
 }
 
@@ -464,7 +473,7 @@ pub fn cycle_delay_expression(s: Span) -> IResult<Span, CycleDelay> {
     let (s, b) = paren(expression)(s)?;
     Ok((
         s,
-        CycleDelay::Expression(CycleDelayExpression { nodes: (a, b) }),
+        CycleDelay::Expression(Box::new(CycleDelayExpression { nodes: (a, b) })),
     ))
 }
 

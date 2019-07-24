@@ -27,16 +27,16 @@ pub struct ControlledTimingCheckEvent {
 
 #[derive(Clone, Debug, Node)]
 pub enum TimingCheckEventControl {
-    Posedge(Keyword),
-    Negedge(Keyword),
-    Edge(Keyword),
-    EdgeControlSpecifier(EdgeControlSpecifier),
+    Posedge(Box<Keyword>),
+    Negedge(Box<Keyword>),
+    Edge(Box<Keyword>),
+    EdgeControlSpecifier(Box<EdgeControlSpecifier>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum SpecifyTerminalDescriptor {
-    SpecifyInputTerminalDescriptor(SpecifyInputTerminalDescriptor),
-    SpecifyOutputTerminalDescriptor(SpecifyOutputTerminalDescriptor),
+    SpecifyInputTerminalDescriptor(Box<SpecifyInputTerminalDescriptor>),
+    SpecifyOutputTerminalDescriptor(Box<SpecifyOutputTerminalDescriptor>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -51,8 +51,8 @@ pub struct EdgeDescriptor {
 
 #[derive(Clone, Debug, Node)]
 pub enum TimingCheckCondition {
-    ScalarTimingCheckCondition(ScalarTimingCheckCondition),
-    Paren(TimingCheckConditionParen),
+    ScalarTimingCheckCondition(Box<ScalarTimingCheckCondition>),
+    Paren(Box<TimingCheckConditionParen>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -62,9 +62,9 @@ pub struct TimingCheckConditionParen {
 
 #[derive(Clone, Debug, Node)]
 pub enum ScalarTimingCheckCondition {
-    Expression(Expression),
-    Unary(ScalarTimingCheckConditionUnary),
-    Binary(ScalarTimingCheckConditionBinary),
+    Expression(Box<Expression>),
+    Unary(Box<ScalarTimingCheckConditionUnary>),
+    Binary(Box<ScalarTimingCheckConditionBinary>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -103,11 +103,17 @@ pub fn controlled_timing_check_event(s: Span) -> IResult<Span, ControlledTimingC
 #[parser]
 pub fn timing_check_event_control(s: Span) -> IResult<Span, TimingCheckEventControl> {
     alt((
-        map(keyword("posedge"), |x| TimingCheckEventControl::Posedge(x)),
-        map(keyword("negedge"), |x| TimingCheckEventControl::Negedge(x)),
-        map(keyword("edge"), |x| TimingCheckEventControl::Edge(x)),
+        map(keyword("posedge"), |x| {
+            TimingCheckEventControl::Posedge(Box::new(x))
+        }),
+        map(keyword("negedge"), |x| {
+            TimingCheckEventControl::Negedge(Box::new(x))
+        }),
+        map(keyword("edge"), |x| {
+            TimingCheckEventControl::Edge(Box::new(x))
+        }),
         map(edge_control_specifier, |x| {
-            TimingCheckEventControl::EdgeControlSpecifier(x)
+            TimingCheckEventControl::EdgeControlSpecifier(Box::new(x))
         }),
     ))(s)
 }
@@ -116,10 +122,10 @@ pub fn timing_check_event_control(s: Span) -> IResult<Span, TimingCheckEventCont
 pub fn specify_terminal_descriptor(s: Span) -> IResult<Span, SpecifyTerminalDescriptor> {
     alt((
         map(specify_input_terminal_descriptor, |x| {
-            SpecifyTerminalDescriptor::SpecifyInputTerminalDescriptor(x)
+            SpecifyTerminalDescriptor::SpecifyInputTerminalDescriptor(Box::new(x))
         }),
         map(specify_output_terminal_descriptor, |x| {
-            SpecifyTerminalDescriptor::SpecifyOutputTerminalDescriptor(x)
+            SpecifyTerminalDescriptor::SpecifyOutputTerminalDescriptor(Box::new(x))
         }),
     ))(s)
 }
@@ -159,7 +165,7 @@ pub fn edge_descriptor(s: Span) -> IResult<Span, EdgeDescriptor> {
 pub fn timing_check_condition(s: Span) -> IResult<Span, TimingCheckCondition> {
     alt((
         map(scalar_timing_check_condition, |x| {
-            TimingCheckCondition::ScalarTimingCheckCondition(x)
+            TimingCheckCondition::ScalarTimingCheckCondition(Box::new(x))
         }),
         timing_check_condition_paren,
     ))(s)
@@ -170,14 +176,16 @@ pub fn timing_check_condition_paren(s: Span) -> IResult<Span, TimingCheckConditi
     let (s, a) = paren(scalar_timing_check_condition)(s)?;
     Ok((
         s,
-        TimingCheckCondition::Paren(TimingCheckConditionParen { nodes: (a,) }),
+        TimingCheckCondition::Paren(Box::new(TimingCheckConditionParen { nodes: (a,) })),
     ))
 }
 
 #[parser]
 pub fn scalar_timing_check_condition(s: Span) -> IResult<Span, ScalarTimingCheckCondition> {
     alt((
-        map(expression, |x| ScalarTimingCheckCondition::Expression(x)),
+        map(expression, |x| {
+            ScalarTimingCheckCondition::Expression(Box::new(x))
+        }),
         scalar_timing_check_condition_unary,
         scalar_timing_check_condition_binary,
     ))(s)
@@ -189,7 +197,9 @@ pub fn scalar_timing_check_condition_unary(s: Span) -> IResult<Span, ScalarTimin
     let (s, b) = expression(s)?;
     Ok((
         s,
-        ScalarTimingCheckCondition::Unary(ScalarTimingCheckConditionUnary { nodes: (a, b) }),
+        ScalarTimingCheckCondition::Unary(Box::new(ScalarTimingCheckConditionUnary {
+            nodes: (a, b),
+        })),
     ))
 }
 
@@ -200,7 +210,9 @@ pub fn scalar_timing_check_condition_binary(s: Span) -> IResult<Span, ScalarTimi
     let (s, c) = scalar_constant(s)?;
     Ok((
         s,
-        ScalarTimingCheckCondition::Binary(ScalarTimingCheckConditionBinary { nodes: (a, b, c) }),
+        ScalarTimingCheckCondition::Binary(Box::new(ScalarTimingCheckConditionBinary {
+            nodes: (a, b, c),
+        })),
     ))
 }
 

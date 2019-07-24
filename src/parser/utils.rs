@@ -273,8 +273,8 @@ pub struct Keyword {
 
 #[derive(Clone, Debug, Node)]
 pub enum WhiteSpace {
-    Space(Locate),
-    Comment(Comment),
+    Space(Box<Locate>),
+    Comment(Box<Comment>),
 }
 
 #[derive(Clone, Debug)]
@@ -473,8 +473,8 @@ where
 #[parser]
 pub fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
     alt((
-        map(multispace1, |x: Span| WhiteSpace::Space(x.into())),
-        map(comment, |x| WhiteSpace::Comment(x)),
+        map(multispace1, |x: Span| WhiteSpace::Space(Box::new(x.into()))),
+        map(comment, |x| WhiteSpace::Comment(Box::new(x))),
     ))(s)
 }
 

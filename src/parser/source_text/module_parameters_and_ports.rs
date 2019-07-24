@@ -10,9 +10,9 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum ParameterPortList {
-    Assignment(ParameterPortListAssignment),
-    Declaration(ParameterPortListDeclaration),
-    Empty((Symbol, Symbol, Symbol)),
+    Assignment(Box<ParameterPortListAssignment>),
+    Declaration(Box<ParameterPortListDeclaration>),
+    Empty(Box<(Symbol, Symbol, Symbol)>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -33,10 +33,10 @@ pub struct ParameterPortListDeclaration {
 
 #[derive(Clone, Debug, Node)]
 pub enum ParameterPortDeclaration {
-    ParameterDeclaration(ParameterDeclaration),
-    LocalParameterDeclaration(LocalParameterDeclaration),
-    ParamList(ParameterPortDeclarationParamList),
-    TypeList(ParameterPortDeclarationTypeList),
+    ParameterDeclaration(Box<ParameterDeclaration>),
+    LocalParameterDeclaration(Box<LocalParameterDeclaration>),
+    ParamList(Box<ParameterPortDeclarationParamList>),
+    TypeList(Box<ParameterPortDeclarationTypeList>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -61,11 +61,11 @@ pub struct ListOfPortDeclarations {
 
 #[derive(Clone, Debug, Node)]
 pub enum PortDeclaration {
-    Inout(PortDeclarationInout),
-    Input(PortDeclarationInput),
-    Output(PortDeclarationOutput),
-    Ref(PortDeclarationRef),
-    Interface(PortDeclarationInterface),
+    Inout(Box<PortDeclarationInout>),
+    Input(Box<PortDeclarationInput>),
+    Output(Box<PortDeclarationOutput>),
+    Ref(Box<PortDeclarationRef>),
+    Interface(Box<PortDeclarationInterface>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -95,8 +95,8 @@ pub struct PortDeclarationInterface {
 
 #[derive(Clone, Debug, Node)]
 pub enum Port {
-    NonNamed(PortNonNamed),
-    Named(PortNamed),
+    NonNamed(Box<PortNonNamed>),
+    Named(Box<PortNamed>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -111,8 +111,8 @@ pub struct PortNamed {
 
 #[derive(Clone, Debug, Node)]
 pub enum PortExpression {
-    PortReference(PortReference),
-    Brace(PortExpressionBrace),
+    PortReference(Box<PortReference>),
+    Brace(Box<PortExpressionBrace>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -127,10 +127,10 @@ pub struct PortReference {
 
 #[derive(Clone, Debug, Node)]
 pub enum PortDirection {
-    Input(Keyword),
-    Output(Keyword),
-    Inout(Keyword),
-    Ref(Keyword),
+    Input(Box<Keyword>),
+    Output(Box<Keyword>),
+    Inout(Box<Keyword>),
+    Ref(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -145,8 +145,8 @@ pub struct VariablePortHeader {
 
 #[derive(Clone, Debug, Node)]
 pub enum InterfacePortHeader {
-    Identifier(InterfacePortHeaderIdentifier),
-    Interface(InterfacePortHeaderInterface),
+    Identifier(Box<InterfacePortHeaderIdentifier>),
+    Interface(Box<InterfacePortHeaderInterface>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -161,14 +161,14 @@ pub struct InterfacePortHeaderInterface {
 
 #[derive(Clone, Debug, Node)]
 pub enum NetPortHeaderOrInterfacePortHeader {
-    NetPortHeader(NetPortHeader),
-    InterfacePortHeader(InterfacePortHeader),
+    NetPortHeader(Box<NetPortHeader>),
+    InterfacePortHeader(Box<InterfacePortHeader>),
 }
 #[derive(Clone, Debug, Node)]
 pub enum AnsiPortDeclaration {
-    Net(AnsiPortDeclarationNet),
-    Variable(AnsiPortDeclarationVariable),
-    Paren(AnsiPortDeclarationParen),
+    Net(Box<AnsiPortDeclarationNet>),
+    Variable(Box<AnsiPortDeclarationVariable>),
+    Paren(Box<AnsiPortDeclarationParen>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -221,7 +221,7 @@ pub fn parameter_port_list_assignment(s: Span) -> IResult<Span, ParameterPortLis
     ))(s)?;
     Ok((
         s,
-        ParameterPortList::Assignment(ParameterPortListAssignment { nodes: (a, b) }),
+        ParameterPortList::Assignment(Box::new(ParameterPortListAssignment { nodes: (a, b) })),
     ))
 }
 
@@ -231,7 +231,7 @@ pub fn parameter_port_list_declaration(s: Span) -> IResult<Span, ParameterPortLi
     let (s, b) = paren(list(symbol(","), parameter_port_declaration))(s)?;
     Ok((
         s,
-        ParameterPortList::Declaration(ParameterPortListDeclaration { nodes: (a, b) }),
+        ParameterPortList::Declaration(Box::new(ParameterPortListDeclaration { nodes: (a, b) })),
     ))
 }
 
@@ -240,17 +240,17 @@ pub fn parameter_port_list_empty(s: Span) -> IResult<Span, ParameterPortList> {
     let (s, a) = symbol("#")(s)?;
     let (s, b) = symbol("(")(s)?;
     let (s, c) = symbol(")")(s)?;
-    Ok((s, ParameterPortList::Empty((a, b, c))))
+    Ok((s, ParameterPortList::Empty(Box::new((a, b, c)))))
 }
 
 #[parser]
 pub fn parameter_port_declaration(s: Span) -> IResult<Span, ParameterPortDeclaration> {
     alt((
         map(parameter_declaration, |x| {
-            ParameterPortDeclaration::ParameterDeclaration(x)
+            ParameterPortDeclaration::ParameterDeclaration(Box::new(x))
         }),
         map(local_parameter_declaration, |x| {
-            ParameterPortDeclaration::LocalParameterDeclaration(x)
+            ParameterPortDeclaration::LocalParameterDeclaration(Box::new(x))
         }),
         parameter_port_declaration_param_list,
         parameter_port_declaration_type_list,
@@ -263,7 +263,9 @@ pub fn parameter_port_declaration_param_list(s: Span) -> IResult<Span, Parameter
     let (s, b) = list_of_param_assignments(s)?;
     Ok((
         s,
-        ParameterPortDeclaration::ParamList(ParameterPortDeclarationParamList { nodes: (a, b) }),
+        ParameterPortDeclaration::ParamList(Box::new(ParameterPortDeclarationParamList {
+            nodes: (a, b),
+        })),
     ))
 }
 
@@ -273,7 +275,9 @@ pub fn parameter_port_declaration_type_list(s: Span) -> IResult<Span, ParameterP
     let (s, b) = list_of_type_assignments(s)?;
     Ok((
         s,
-        ParameterPortDeclaration::TypeList(ParameterPortDeclarationTypeList { nodes: (a, b) }),
+        ParameterPortDeclaration::TypeList(Box::new(ParameterPortDeclarationTypeList {
+            nodes: (a, b),
+        })),
     ))
 }
 
@@ -309,7 +313,7 @@ pub fn port_declaration_inout(s: Span) -> IResult<Span, PortDeclaration> {
     let (s, b) = inout_declaration(s)?;
     Ok((
         s,
-        PortDeclaration::Inout(PortDeclarationInout { nodes: (a, b) }),
+        PortDeclaration::Inout(Box::new(PortDeclarationInout { nodes: (a, b) })),
     ))
 }
 
@@ -319,7 +323,7 @@ pub fn port_declaration_input(s: Span) -> IResult<Span, PortDeclaration> {
     let (s, b) = input_declaration(s)?;
     Ok((
         s,
-        PortDeclaration::Input(PortDeclarationInput { nodes: (a, b) }),
+        PortDeclaration::Input(Box::new(PortDeclarationInput { nodes: (a, b) })),
     ))
 }
 
@@ -329,7 +333,7 @@ pub fn port_declaration_output(s: Span) -> IResult<Span, PortDeclaration> {
     let (s, b) = output_declaration(s)?;
     Ok((
         s,
-        PortDeclaration::Output(PortDeclarationOutput { nodes: (a, b) }),
+        PortDeclaration::Output(Box::new(PortDeclarationOutput { nodes: (a, b) })),
     ))
 }
 
@@ -339,7 +343,7 @@ pub fn port_declaration_ref(s: Span) -> IResult<Span, PortDeclaration> {
     let (s, b) = ref_declaration(s)?;
     Ok((
         s,
-        PortDeclaration::Ref(PortDeclarationRef { nodes: (a, b) }),
+        PortDeclaration::Ref(Box::new(PortDeclarationRef { nodes: (a, b) })),
     ))
 }
 
@@ -349,7 +353,7 @@ pub fn port_declaration_interface(s: Span) -> IResult<Span, PortDeclaration> {
     let (s, b) = interface_port_declaration(s)?;
     Ok((
         s,
-        PortDeclaration::Interface(PortDeclarationInterface { nodes: (a, b) }),
+        PortDeclaration::Interface(Box::new(PortDeclarationInterface { nodes: (a, b) })),
     ))
 }
 
@@ -361,7 +365,7 @@ pub fn port(s: Span) -> IResult<Span, Port> {
 #[parser(MaybeRecursive)]
 pub fn port_non_named(s: Span) -> IResult<Span, Port> {
     let (s, a) = opt(port_expression)(s)?;
-    Ok((s, Port::NonNamed(PortNonNamed { nodes: (a,) })))
+    Ok((s, Port::NonNamed(Box::new(PortNonNamed { nodes: (a,) }))))
 }
 
 #[parser]
@@ -369,13 +373,15 @@ pub fn port_named(s: Span) -> IResult<Span, Port> {
     let (s, a) = symbol(".")(s)?;
     let (s, b) = port_identifier(s)?;
     let (s, c) = paren(opt(port_expression))(s)?;
-    Ok((s, Port::Named(PortNamed { nodes: (a, b, c) })))
+    Ok((s, Port::Named(Box::new(PortNamed { nodes: (a, b, c) }))))
 }
 
 #[parser]
 pub fn port_expression(s: Span) -> IResult<Span, PortExpression> {
     alt((
-        map(port_reference, |x| PortExpression::PortReference(x)),
+        map(port_reference, |x| {
+            PortExpression::PortReference(Box::new(x))
+        }),
         port_expressio_named,
     ))(s)
 }
@@ -385,7 +391,7 @@ pub fn port_expressio_named(s: Span) -> IResult<Span, PortExpression> {
     let (s, a) = brace(list(symbol(","), port_reference))(s)?;
     Ok((
         s,
-        PortExpression::Brace(PortExpressionBrace { nodes: (a,) }),
+        PortExpression::Brace(Box::new(PortExpressionBrace { nodes: (a,) })),
     ))
 }
 
@@ -399,10 +405,10 @@ pub fn port_reference(s: Span) -> IResult<Span, PortReference> {
 #[parser]
 pub fn port_direction(s: Span) -> IResult<Span, PortDirection> {
     alt((
-        map(keyword("input"), |x| PortDirection::Input(x)),
-        map(keyword("output"), |x| PortDirection::Output(x)),
-        map(keyword("inout"), |x| PortDirection::Inout(x)),
-        map(keyword("ref"), |x| PortDirection::Ref(x)),
+        map(keyword("input"), |x| PortDirection::Input(Box::new(x))),
+        map(keyword("output"), |x| PortDirection::Output(Box::new(x))),
+        map(keyword("inout"), |x| PortDirection::Inout(Box::new(x))),
+        map(keyword("ref"), |x| PortDirection::Ref(Box::new(x))),
     ))(s)
 }
 
@@ -434,7 +440,7 @@ pub fn interface_port_header_identifier(s: Span) -> IResult<Span, InterfacePortH
     let (s, b) = opt(pair(symbol("."), modport_identifier))(s)?;
     Ok((
         s,
-        InterfacePortHeader::Identifier(InterfacePortHeaderIdentifier { nodes: (a, b) }),
+        InterfacePortHeader::Identifier(Box::new(InterfacePortHeaderIdentifier { nodes: (a, b) })),
     ))
 }
 
@@ -444,7 +450,7 @@ pub fn interface_port_header_interface(s: Span) -> IResult<Span, InterfacePortHe
     let (s, b) = opt(pair(symbol("."), modport_identifier))(s)?;
     Ok((
         s,
-        InterfacePortHeader::Interface(InterfacePortHeaderInterface { nodes: (a, b) }),
+        InterfacePortHeader::Interface(Box::new(InterfacePortHeaderInterface { nodes: (a, b) })),
     ))
 }
 
@@ -465,9 +471,9 @@ pub fn ansi_port_declaration_net(s: Span) -> IResult<Span, AnsiPortDeclaration> 
     let (s, d) = opt(pair(symbol("="), constant_expression))(s)?;
     Ok((
         s,
-        AnsiPortDeclaration::Net(AnsiPortDeclarationNet {
+        AnsiPortDeclaration::Net(Box::new(AnsiPortDeclarationNet {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -477,10 +483,10 @@ pub fn net_port_header_or_interface_port_header(
 ) -> IResult<Span, NetPortHeaderOrInterfacePortHeader> {
     alt((
         map(net_port_header, |x| {
-            NetPortHeaderOrInterfacePortHeader::NetPortHeader(x)
+            NetPortHeaderOrInterfacePortHeader::NetPortHeader(Box::new(x))
         }),
         map(interface_port_header, |x| {
-            NetPortHeaderOrInterfacePortHeader::InterfacePortHeader(x)
+            NetPortHeaderOrInterfacePortHeader::InterfacePortHeader(Box::new(x))
         }),
     ))(s)
 }
@@ -493,9 +499,9 @@ pub fn ansi_port_declaration_port(s: Span) -> IResult<Span, AnsiPortDeclaration>
     let (s, d) = opt(pair(symbol("="), constant_expression))(s)?;
     Ok((
         s,
-        AnsiPortDeclaration::Variable(AnsiPortDeclarationVariable {
+        AnsiPortDeclaration::Variable(Box::new(AnsiPortDeclarationVariable {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -507,8 +513,8 @@ pub fn ansi_port_declaration_paren(s: Span) -> IResult<Span, AnsiPortDeclaration
     let (s, d) = paren(opt(expression))(s)?;
     Ok((
         s,
-        AnsiPortDeclaration::Paren(AnsiPortDeclarationParen {
+        AnsiPortDeclaration::Paren(Box::new(AnsiPortDeclarationParen {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }

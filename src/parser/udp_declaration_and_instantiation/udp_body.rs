@@ -10,8 +10,8 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum UdpBody {
-    CombinationalBody(CombinationalBody),
-    SequentialBody(SequentialBody),
+    CombinationalBody(Box<CombinationalBody>),
+    SequentialBody(Box<SequentialBody>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -64,8 +64,8 @@ pub struct SequentialEntry {
 
 #[derive(Clone, Debug, Node)]
 pub enum SeqInputList {
-    LevelInputList(LevelInputList),
-    EdgeInputList(EdgeInputList),
+    LevelInputList(Box<LevelInputList>),
+    EdgeInputList(Box<EdgeInputList>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -80,8 +80,8 @@ pub struct EdgeInputList {
 
 #[derive(Clone, Debug, Node)]
 pub enum EdgeIndicator {
-    Paren(EdgeIndicatorParen),
-    EdgeSymbol(EdgeSymbol),
+    Paren(Box<EdgeIndicatorParen>),
+    EdgeSymbol(Box<EdgeSymbol>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -96,8 +96,8 @@ pub struct CurrentState {
 
 #[derive(Clone, Debug, Node)]
 pub enum NextState {
-    OutputSymbol(OutputSymbol),
-    Minus(Symbol),
+    OutputSymbol(Box<OutputSymbol>),
+    Minus(Box<Symbol>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -120,8 +120,10 @@ pub struct EdgeSymbol {
 #[parser]
 pub fn udp_body(s: Span) -> IResult<Span, UdpBody> {
     alt((
-        map(combinational_body, |x| UdpBody::CombinationalBody(x)),
-        map(sequential_body, |x| UdpBody::SequentialBody(x)),
+        map(combinational_body, |x| {
+            UdpBody::CombinationalBody(Box::new(x))
+        }),
+        map(sequential_body, |x| UdpBody::SequentialBody(Box::new(x))),
     ))(s)
 }
 
@@ -218,8 +220,12 @@ pub fn sequential_entry(s: Span) -> IResult<Span, SequentialEntry> {
 #[parser]
 pub fn seq_input_list(s: Span) -> IResult<Span, SeqInputList> {
     alt((
-        map(level_input_list, |x| SeqInputList::LevelInputList(x)),
-        map(edge_input_list, |x| SeqInputList::EdgeInputList(x)),
+        map(level_input_list, |x| {
+            SeqInputList::LevelInputList(Box::new(x))
+        }),
+        map(edge_input_list, |x| {
+            SeqInputList::EdgeInputList(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -242,14 +248,17 @@ pub fn edge_input_list(s: Span) -> IResult<Span, EdgeInputList> {
 pub fn edge_indicator(s: Span) -> IResult<Span, EdgeIndicator> {
     alt((
         edge_indicator_paren,
-        map(edge_symbol, |x| EdgeIndicator::EdgeSymbol(x)),
+        map(edge_symbol, |x| EdgeIndicator::EdgeSymbol(Box::new(x))),
     ))(s)
 }
 
 #[parser]
 pub fn edge_indicator_paren(s: Span) -> IResult<Span, EdgeIndicator> {
     let (s, a) = paren(pair(level_symbol, level_symbol))(s)?;
-    Ok((s, EdgeIndicator::Paren(EdgeIndicatorParen { nodes: (a,) })))
+    Ok((
+        s,
+        EdgeIndicator::Paren(Box::new(EdgeIndicatorParen { nodes: (a,) })),
+    ))
 }
 
 #[parser]
@@ -261,8 +270,8 @@ pub fn current_state(s: Span) -> IResult<Span, CurrentState> {
 #[parser]
 pub fn next_state(s: Span) -> IResult<Span, NextState> {
     alt((
-        map(output_symbol, |x| NextState::OutputSymbol(x)),
-        map(symbol("-"), |x| NextState::Minus(x)),
+        map(output_symbol, |x| NextState::OutputSymbol(Box::new(x))),
+        map(symbol("-"), |x| NextState::Minus(Box::new(x))),
     ))(s)
 }
 

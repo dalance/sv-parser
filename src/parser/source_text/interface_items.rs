@@ -10,8 +10,8 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum InterfaceOrGenerateItem {
-    Module(InterfaceOrGenerateItemModule),
-    Extern(InterfaceOrGenerateItemExtern),
+    Module(Box<InterfaceOrGenerateItemModule>),
+    Extern(Box<InterfaceOrGenerateItemExtern>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -26,8 +26,8 @@ pub struct InterfaceOrGenerateItemExtern {
 
 #[derive(Clone, Debug, Node)]
 pub enum ExternTfDeclaration {
-    Method(ExternTfDeclarationMethod),
-    Task(ExternTfDeclarationTask),
+    Method(Box<ExternTfDeclarationMethod>),
+    Task(Box<ExternTfDeclarationTask>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -42,18 +42,18 @@ pub struct ExternTfDeclarationTask {
 
 #[derive(Clone, Debug, Node)]
 pub enum InterfaceItem {
-    PortDeclaration((PortDeclaration, Symbol)),
-    NonPortInterfaceItem(NonPortInterfaceItem),
+    PortDeclaration(Box<(PortDeclaration, Symbol)>),
+    NonPortInterfaceItem(Box<NonPortInterfaceItem>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum NonPortInterfaceItem {
-    GenerateRegion(GenerateRegion),
-    InterfaceOrGenerateItem(InterfaceOrGenerateItem),
-    ProgramDeclaration(ProgramDeclaration),
-    ModportDeclaration(ModportDeclaration),
-    InterfaceDeclaration(InterfaceDeclaration),
-    TimeunitsDeclaration(TimeunitsDeclaration),
+    GenerateRegion(Box<GenerateRegion>),
+    InterfaceOrGenerateItem(Box<InterfaceOrGenerateItem>),
+    ProgramDeclaration(Box<ProgramDeclaration>),
+    ModportDeclaration(Box<ModportDeclaration>),
+    InterfaceDeclaration(Box<InterfaceDeclaration>),
+    TimeunitsDeclaration(Box<TimeunitsDeclaration>),
 }
 
 // -----------------------------------------------------------------------------
@@ -72,7 +72,7 @@ pub fn interface_or_generate_item_module(s: Span) -> IResult<Span, InterfaceOrGe
     let (s, b) = module_common_item(s)?;
     Ok((
         s,
-        InterfaceOrGenerateItem::Module(InterfaceOrGenerateItemModule { nodes: (a, b) }),
+        InterfaceOrGenerateItem::Module(Box::new(InterfaceOrGenerateItemModule { nodes: (a, b) })),
     ))
 }
 
@@ -82,7 +82,7 @@ pub fn interface_or_generate_item_extern(s: Span) -> IResult<Span, InterfaceOrGe
     let (s, b) = extern_tf_declaration(s)?;
     Ok((
         s,
-        InterfaceOrGenerateItem::Extern(InterfaceOrGenerateItemExtern { nodes: (a, b) }),
+        InterfaceOrGenerateItem::Extern(Box::new(InterfaceOrGenerateItemExtern { nodes: (a, b) })),
     ))
 }
 
@@ -98,7 +98,7 @@ pub fn extern_tf_declaration_method(s: Span) -> IResult<Span, ExternTfDeclaratio
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        ExternTfDeclaration::Method(ExternTfDeclarationMethod { nodes: (a, b, c) }),
+        ExternTfDeclaration::Method(Box::new(ExternTfDeclarationMethod { nodes: (a, b, c) })),
     ))
 }
 
@@ -110,9 +110,9 @@ pub fn extern_tf_declaration_task(s: Span) -> IResult<Span, ExternTfDeclaration>
     let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        ExternTfDeclaration::Task(ExternTfDeclarationTask {
+        ExternTfDeclaration::Task(Box::new(ExternTfDeclarationTask {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -120,10 +120,10 @@ pub fn extern_tf_declaration_task(s: Span) -> IResult<Span, ExternTfDeclaration>
 pub fn interface_item(s: Span) -> IResult<Span, InterfaceItem> {
     alt((
         map(pair(port_declaration, symbol(";")), |x| {
-            InterfaceItem::PortDeclaration(x)
+            InterfaceItem::PortDeclaration(Box::new(x))
         }),
         map(non_port_interface_item, |x| {
-            InterfaceItem::NonPortInterfaceItem(x)
+            InterfaceItem::NonPortInterfaceItem(Box::new(x))
         }),
     ))(s)
 }
@@ -131,21 +131,23 @@ pub fn interface_item(s: Span) -> IResult<Span, InterfaceItem> {
 #[parser]
 pub fn non_port_interface_item(s: Span) -> IResult<Span, NonPortInterfaceItem> {
     alt((
-        map(generate_region, |x| NonPortInterfaceItem::GenerateRegion(x)),
+        map(generate_region, |x| {
+            NonPortInterfaceItem::GenerateRegion(Box::new(x))
+        }),
         map(interface_or_generate_item, |x| {
-            NonPortInterfaceItem::InterfaceOrGenerateItem(x)
+            NonPortInterfaceItem::InterfaceOrGenerateItem(Box::new(x))
         }),
         map(program_declaration, |x| {
-            NonPortInterfaceItem::ProgramDeclaration(x)
+            NonPortInterfaceItem::ProgramDeclaration(Box::new(x))
         }),
         map(modport_declaration, |x| {
-            NonPortInterfaceItem::ModportDeclaration(x)
+            NonPortInterfaceItem::ModportDeclaration(Box::new(x))
         }),
         map(interface_declaration, |x| {
-            NonPortInterfaceItem::InterfaceDeclaration(x)
+            NonPortInterfaceItem::InterfaceDeclaration(Box::new(x))
         }),
         map(timeunits_declaration, |x| {
-            NonPortInterfaceItem::TimeunitsDeclaration(x)
+            NonPortInterfaceItem::TimeunitsDeclaration(Box::new(x))
         }),
     ))(s)
 }

@@ -14,9 +14,9 @@ pub struct ProceduralTimingControlStatement {
 
 #[derive(Clone, Debug, Node)]
 pub enum DelayOrEventControl {
-    Delay(DelayControl),
-    Event(EventControl),
-    Repeat(DelayOrEventControlRepeat),
+    Delay(Box<DelayControl>),
+    Event(Box<EventControl>),
+    Repeat(Box<DelayOrEventControlRepeat>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -26,8 +26,8 @@ pub struct DelayOrEventControlRepeat {
 
 #[derive(Clone, Debug, Node)]
 pub enum DelayControl {
-    Delay(DelayControlDelay),
-    Mintypmax(DelayControlMintypmax),
+    Delay(Box<DelayControlDelay>),
+    Mintypmax(Box<DelayControlMintypmax>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -42,11 +42,11 @@ pub struct DelayControlMintypmax {
 
 #[derive(Clone, Debug, Node)]
 pub enum EventControl {
-    EventIdentifier(EventControlEventIdentifier),
-    EventExpression(EventControlEventExpression),
-    Asterisk(EventControlAsterisk),
-    ParenAsterisk(EventControlParenAsterisk),
-    SequenceIdentifier(EventControlSequenceIdentifier),
+    EventIdentifier(Box<EventControlEventIdentifier>),
+    EventExpression(Box<EventControlEventExpression>),
+    Asterisk(Box<EventControlAsterisk>),
+    ParenAsterisk(Box<EventControlParenAsterisk>),
+    SequenceIdentifier(Box<EventControlSequenceIdentifier>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -114,16 +114,16 @@ pub struct EventExpressionParen {
 
 #[derive(Clone, Debug, Node)]
 pub enum ProceduralTimingControl {
-    DelayControl(DelayControl),
-    EventControl(EventControl),
-    CycleDelay(CycleDelay),
+    DelayControl(Box<DelayControl>),
+    EventControl(Box<EventControl>),
+    CycleDelay(Box<CycleDelay>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum JumpStatement {
-    Return(JumpStatementReturn),
-    Break(JumpStatementBreak),
-    Continue(JumpStatementContinue),
+    Return(Box<JumpStatementReturn>),
+    Break(Box<JumpStatementBreak>),
+    Continue(Box<JumpStatementContinue>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -143,9 +143,9 @@ pub struct JumpStatementContinue {
 
 #[derive(Clone, Debug, Node)]
 pub enum WaitStatement {
-    Wait(WaitStatementWait),
-    Fork(WaitStatementFork),
-    Order(WaitStatementOrder),
+    Wait(Box<WaitStatementWait>),
+    Fork(Box<WaitStatementFork>),
+    Order(Box<WaitStatementOrder>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -169,8 +169,8 @@ pub struct WaitStatementOrder {
 
 #[derive(Clone, Debug, Node)]
 pub enum EventTrigger {
-    Named(EventTriggerNamed),
-    Nonblocking(EventTriggerNonblocking),
+    Named(Box<EventTriggerNamed>),
+    Nonblocking(Box<EventTriggerNonblocking>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -190,9 +190,9 @@ pub struct EventTriggerNonblocking {
 
 #[derive(Clone, Debug, Node)]
 pub enum DisableStatement {
-    Task(DisableStatementTask),
-    Block(DisableStatementBlock),
-    Fork(DisableStatementFork),
+    Task(Box<DisableStatementTask>),
+    Block(Box<DisableStatementBlock>),
+    Fork(Box<DisableStatementFork>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -224,8 +224,8 @@ pub fn procedural_timing_control_statement(
 #[parser]
 pub fn delay_or_event_control(s: Span) -> IResult<Span, DelayOrEventControl> {
     alt((
-        map(delay_control, |x| DelayOrEventControl::Delay(x)),
-        map(event_control, |x| DelayOrEventControl::Event(x)),
+        map(delay_control, |x| DelayOrEventControl::Delay(Box::new(x))),
+        map(event_control, |x| DelayOrEventControl::Event(Box::new(x))),
         delay_or_event_control_repeat,
     ))(s)
 }
@@ -237,7 +237,7 @@ pub fn delay_or_event_control_repeat(s: Span) -> IResult<Span, DelayOrEventContr
     let (s, c) = event_control(s)?;
     Ok((
         s,
-        DelayOrEventControl::Repeat(DelayOrEventControlRepeat { nodes: (a, b, c) }),
+        DelayOrEventControl::Repeat(Box::new(DelayOrEventControlRepeat { nodes: (a, b, c) })),
     ))
 }
 
@@ -250,7 +250,10 @@ pub fn delay_control(s: Span) -> IResult<Span, DelayControl> {
 pub fn delay_control_delay(s: Span) -> IResult<Span, DelayControl> {
     let (s, a) = symbol("#")(s)?;
     let (s, b) = delay_value(s)?;
-    Ok((s, DelayControl::Delay(DelayControlDelay { nodes: (a, b) })))
+    Ok((
+        s,
+        DelayControl::Delay(Box::new(DelayControlDelay { nodes: (a, b) })),
+    ))
 }
 
 #[parser]
@@ -259,7 +262,7 @@ pub fn delay_control_mintypmax(s: Span) -> IResult<Span, DelayControl> {
     let (s, b) = paren(mintypmax_expression)(s)?;
     Ok((
         s,
-        DelayControl::Mintypmax(DelayControlMintypmax { nodes: (a, b) }),
+        DelayControl::Mintypmax(Box::new(DelayControlMintypmax { nodes: (a, b) })),
     ))
 }
 
@@ -280,7 +283,7 @@ pub fn event_control_event_identifier(s: Span) -> IResult<Span, EventControl> {
     let (s, b) = hierarchical_event_identifier(s)?;
     Ok((
         s,
-        EventControl::EventIdentifier(EventControlEventIdentifier { nodes: (a, b) }),
+        EventControl::EventIdentifier(Box::new(EventControlEventIdentifier { nodes: (a, b) })),
     ))
 }
 
@@ -290,7 +293,7 @@ pub fn event_control_event_expression(s: Span) -> IResult<Span, EventControl> {
     let (s, b) = paren(event_expression)(s)?;
     Ok((
         s,
-        EventControl::EventExpression(EventControlEventExpression { nodes: (a, b) }),
+        EventControl::EventExpression(Box::new(EventControlEventExpression { nodes: (a, b) })),
     ))
 }
 
@@ -299,7 +302,7 @@ pub fn event_control_asterisk(s: Span) -> IResult<Span, EventControl> {
     let (s, a) = symbol("@*")(s)?;
     Ok((
         s,
-        EventControl::Asterisk(EventControlAsterisk { nodes: (a,) }),
+        EventControl::Asterisk(Box::new(EventControlAsterisk { nodes: (a,) })),
     ))
 }
 
@@ -309,7 +312,7 @@ pub fn event_control_paren_asterisk(s: Span) -> IResult<Span, EventControl> {
     let (s, b) = paren(symbol("*"))(s)?;
     Ok((
         s,
-        EventControl::ParenAsterisk(EventControlParenAsterisk { nodes: (a, b) }),
+        EventControl::ParenAsterisk(Box::new(EventControlParenAsterisk { nodes: (a, b) })),
     ))
 }
 
@@ -319,7 +322,9 @@ pub fn event_control_sequence_identifier(s: Span) -> IResult<Span, EventControl>
     let (s, b) = ps_or_hierarchical_sequence_identifier(s)?;
     Ok((
         s,
-        EventControl::SequenceIdentifier(EventControlSequenceIdentifier { nodes: (a, b) }),
+        EventControl::SequenceIdentifier(Box::new(EventControlSequenceIdentifier {
+            nodes: (a, b),
+        })),
     ))
 }
 
@@ -389,9 +394,15 @@ pub fn event_expression_paren(s: Span) -> IResult<Span, EventExpression> {
 #[parser]
 pub fn procedural_timing_control(s: Span) -> IResult<Span, ProceduralTimingControl> {
     alt((
-        map(delay_control, |x| ProceduralTimingControl::DelayControl(x)),
-        map(event_control, |x| ProceduralTimingControl::EventControl(x)),
-        map(cycle_delay, |x| ProceduralTimingControl::CycleDelay(x)),
+        map(delay_control, |x| {
+            ProceduralTimingControl::DelayControl(Box::new(x))
+        }),
+        map(event_control, |x| {
+            ProceduralTimingControl::EventControl(Box::new(x))
+        }),
+        map(cycle_delay, |x| {
+            ProceduralTimingControl::CycleDelay(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -411,7 +422,7 @@ pub fn jump_statement_return(s: Span) -> IResult<Span, JumpStatement> {
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        JumpStatement::Return(JumpStatementReturn { nodes: (a, b, c) }),
+        JumpStatement::Return(Box::new(JumpStatementReturn { nodes: (a, b, c) })),
     ))
 }
 
@@ -421,7 +432,7 @@ pub fn jump_statement_break(s: Span) -> IResult<Span, JumpStatement> {
     let (s, b) = symbol(";")(s)?;
     Ok((
         s,
-        JumpStatement::Break(JumpStatementBreak { nodes: (a, b) }),
+        JumpStatement::Break(Box::new(JumpStatementBreak { nodes: (a, b) })),
     ))
 }
 
@@ -431,7 +442,7 @@ pub fn jump_statement_continue(s: Span) -> IResult<Span, JumpStatement> {
     let (s, b) = symbol(";")(s)?;
     Ok((
         s,
-        JumpStatement::Continue(JumpStatementContinue { nodes: (a, b) }),
+        JumpStatement::Continue(Box::new(JumpStatementContinue { nodes: (a, b) })),
     ))
 }
 
@@ -451,7 +462,7 @@ pub fn wait_statement_wait(s: Span) -> IResult<Span, WaitStatement> {
     let (s, c) = statement_or_null(s)?;
     Ok((
         s,
-        WaitStatement::Wait(WaitStatementWait { nodes: (a, b, c) }),
+        WaitStatement::Wait(Box::new(WaitStatementWait { nodes: (a, b, c) })),
     ))
 }
 
@@ -462,7 +473,7 @@ pub fn wait_statement_fork(s: Span) -> IResult<Span, WaitStatement> {
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        WaitStatement::Fork(WaitStatementFork { nodes: (a, b, c) }),
+        WaitStatement::Fork(Box::new(WaitStatementFork { nodes: (a, b, c) })),
     ))
 }
 
@@ -473,7 +484,7 @@ pub fn wait_statement_order(s: Span) -> IResult<Span, WaitStatement> {
     let (s, c) = action_block(s)?;
     Ok((
         s,
-        WaitStatement::Order(WaitStatementOrder { nodes: (a, b, c) }),
+        WaitStatement::Order(Box::new(WaitStatementOrder { nodes: (a, b, c) })),
     ))
 }
 
@@ -489,7 +500,7 @@ pub fn event_trigger_named(s: Span) -> IResult<Span, EventTrigger> {
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        EventTrigger::Named(EventTriggerNamed { nodes: (a, b, c) }),
+        EventTrigger::Named(Box::new(EventTriggerNamed { nodes: (a, b, c) })),
     ))
 }
 
@@ -501,9 +512,9 @@ pub fn event_trigger_nonblocking(s: Span) -> IResult<Span, EventTrigger> {
     let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        EventTrigger::Nonblocking(EventTriggerNonblocking {
+        EventTrigger::Nonblocking(Box::new(EventTriggerNonblocking {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -523,7 +534,7 @@ pub fn disable_statement_task(s: Span) -> IResult<Span, DisableStatement> {
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        DisableStatement::Task(DisableStatementTask { nodes: (a, b, c) }),
+        DisableStatement::Task(Box::new(DisableStatementTask { nodes: (a, b, c) })),
     ))
 }
 
@@ -534,7 +545,7 @@ pub fn disable_statement_block(s: Span) -> IResult<Span, DisableStatement> {
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        DisableStatement::Block(DisableStatementBlock { nodes: (a, b, c) }),
+        DisableStatement::Block(Box::new(DisableStatementBlock { nodes: (a, b, c) })),
     ))
 }
 
@@ -545,6 +556,6 @@ pub fn disable_statement_fork(s: Span) -> IResult<Span, DisableStatement> {
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        DisableStatement::Fork(DisableStatementFork { nodes: (a, b, c) }),
+        DisableStatement::Fork(Box::new(DisableStatementFork { nodes: (a, b, c) })),
     ))
 }

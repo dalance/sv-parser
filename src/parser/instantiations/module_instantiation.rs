@@ -24,8 +24,8 @@ pub struct ParameterValueAssignment {
 
 #[derive(Clone, Debug, Node)]
 pub enum ListOfParameterAssignments {
-    Ordered(ListOfParameterAssignmentsOrdered),
-    Named(ListOfParameterAssignmentsNamed),
+    Ordered(Box<ListOfParameterAssignmentsOrdered>),
+    Named(Box<ListOfParameterAssignmentsNamed>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -60,8 +60,8 @@ pub struct NameOfInstance {
 
 #[derive(Clone, Debug, Node)]
 pub enum ListOfPortConnections {
-    Ordered(ListOfPortConnectionsOrdered),
-    Named(ListOfPortConnectionsNamed),
+    Ordered(Box<ListOfPortConnectionsOrdered>),
+    Named(Box<ListOfPortConnectionsNamed>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -81,8 +81,8 @@ pub struct OrderedPortConnection {
 
 #[derive(Clone, Debug, Node)]
 pub enum NamedPortConnection {
-    Identifier(NamedPortConnectionIdentifier),
-    Asterisk(NamedPortConnectionAsterisk),
+    Identifier(Box<NamedPortConnectionIdentifier>),
+    Asterisk(Box<NamedPortConnectionAsterisk>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -136,7 +136,9 @@ pub fn list_of_parameter_assignments_ordered(s: Span) -> IResult<Span, ListOfPar
     let (s, a) = list(symbol(","), ordered_parameter_assignment)(s)?;
     Ok((
         s,
-        ListOfParameterAssignments::Ordered(ListOfParameterAssignmentsOrdered { nodes: (a,) }),
+        ListOfParameterAssignments::Ordered(Box::new(ListOfParameterAssignmentsOrdered {
+            nodes: (a,),
+        })),
     ))
 }
 
@@ -145,7 +147,9 @@ pub fn list_of_parameter_assignments_named(s: Span) -> IResult<Span, ListOfParam
     let (s, a) = list(symbol(","), named_parameter_assignment)(s)?;
     Ok((
         s,
-        ListOfParameterAssignments::Named(ListOfParameterAssignmentsNamed { nodes: (a,) }),
+        ListOfParameterAssignments::Named(Box::new(ListOfParameterAssignmentsNamed {
+            nodes: (a,),
+        })),
     ))
 }
 
@@ -190,7 +194,7 @@ pub fn list_of_port_connections_ordered(s: Span) -> IResult<Span, ListOfPortConn
     let (s, a) = list(symbol(","), ordered_port_connection)(s)?;
     Ok((
         s,
-        ListOfPortConnections::Ordered(ListOfPortConnectionsOrdered { nodes: (a,) }),
+        ListOfPortConnections::Ordered(Box::new(ListOfPortConnectionsOrdered { nodes: (a,) })),
     ))
 }
 
@@ -199,7 +203,7 @@ pub fn list_of_port_connections_named(s: Span) -> IResult<Span, ListOfPortConnec
     let (s, a) = list(symbol(","), named_port_connection)(s)?;
     Ok((
         s,
-        ListOfPortConnections::Named(ListOfPortConnectionsNamed { nodes: (a,) }),
+        ListOfPortConnections::Named(Box::new(ListOfPortConnectionsNamed { nodes: (a,) })),
     ))
 }
 
@@ -226,9 +230,9 @@ pub fn named_port_connection_identifier(s: Span) -> IResult<Span, NamedPortConne
     let (s, d) = opt(paren(opt(expression)))(s)?;
     Ok((
         s,
-        NamedPortConnection::Identifier(NamedPortConnectionIdentifier {
+        NamedPortConnection::Identifier(Box::new(NamedPortConnectionIdentifier {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -238,7 +242,7 @@ pub fn named_port_connection_asterisk(s: Span) -> IResult<Span, NamedPortConnect
     let (s, b) = symbol(".*")(s)?;
     Ok((
         s,
-        NamedPortConnection::Asterisk(NamedPortConnectionAsterisk { nodes: (a, b) }),
+        NamedPortConnection::Asterisk(Box::new(NamedPortConnectionAsterisk { nodes: (a, b) })),
     ))
 }
 

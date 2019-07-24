@@ -8,10 +8,10 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum BlockItemDeclaration {
-    Data(BlockItemDeclarationData),
-    LocalParameter(BlockItemDeclarationLocalParameter),
-    Parameter(BlockItemDeclarationParameter),
-    Let(BlockItemDeclarationLet),
+    Data(Box<BlockItemDeclarationData>),
+    LocalParameter(Box<BlockItemDeclarationLocalParameter>),
+    Parameter(Box<BlockItemDeclarationParameter>),
+    Let(Box<BlockItemDeclarationLet>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -52,7 +52,7 @@ pub fn block_item_declaration_data(s: Span) -> IResult<Span, BlockItemDeclaratio
     let (s, b) = data_declaration(s)?;
     Ok((
         s,
-        BlockItemDeclaration::Data(BlockItemDeclarationData { nodes: (a, b) }),
+        BlockItemDeclaration::Data(Box::new(BlockItemDeclarationData { nodes: (a, b) })),
     ))
 }
 
@@ -63,9 +63,9 @@ pub fn block_item_declaration_local_parameter(s: Span) -> IResult<Span, BlockIte
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        BlockItemDeclaration::LocalParameter(BlockItemDeclarationLocalParameter {
+        BlockItemDeclaration::LocalParameter(Box::new(BlockItemDeclarationLocalParameter {
             nodes: (a, b, c),
-        }),
+        })),
     ))
 }
 
@@ -76,7 +76,9 @@ pub fn block_item_declaration_parameter(s: Span) -> IResult<Span, BlockItemDecla
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        BlockItemDeclaration::Parameter(BlockItemDeclarationParameter { nodes: (a, b, c) }),
+        BlockItemDeclaration::Parameter(Box::new(BlockItemDeclarationParameter {
+            nodes: (a, b, c),
+        })),
     ))
 }
 
@@ -86,6 +88,6 @@ pub fn block_item_declaration_let(s: Span) -> IResult<Span, BlockItemDeclaration
     let (s, b) = let_declaration(s)?;
     Ok((
         s,
-        BlockItemDeclaration::Let(BlockItemDeclarationLet { nodes: (a, b) }),
+        BlockItemDeclaration::Let(Box::new(BlockItemDeclarationLet { nodes: (a, b) })),
     ))
 }

@@ -11,7 +11,7 @@ use nom_packrat::packrat_parser;
 #[derive(Clone, Debug, Node)]
 pub enum Pattern {
     Variable(Box<PatternVariable>),
-    Asterisk(Symbol),
+    Asterisk(Box<Symbol>),
     ConstantExpression(Box<ConstantExpression>),
     Tagged(Box<PatternTagged>),
     List(Box<PatternList>),
@@ -40,10 +40,10 @@ pub struct PatternIdentifierList {
 
 #[derive(Clone, Debug, Node)]
 pub enum AssignmentPattern {
-    List(AssignmentPatternList),
-    Structure(AssignmentPatternStructure),
-    Array(AssignmentPatternArray),
-    Repeat(AssignmentPatternRepeat),
+    List(Box<AssignmentPatternList>),
+    Structure(Box<AssignmentPatternStructure>),
+    Array(Box<AssignmentPatternArray>),
+    Repeat(Box<AssignmentPatternRepeat>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -68,20 +68,20 @@ pub struct AssignmentPatternRepeat {
 
 #[derive(Clone, Debug, Node)]
 pub enum StructurePatternKey {
-    MemberIdentifier(MemberIdentifier),
-    AssignmentPatternKey(AssignmentPatternKey),
+    MemberIdentifier(Box<MemberIdentifier>),
+    AssignmentPatternKey(Box<AssignmentPatternKey>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum ArrayPatternKey {
-    ConstantExpression(ConstantExpression),
-    AssignmentPatternKey(AssignmentPatternKey),
+    ConstantExpression(Box<ConstantExpression>),
+    AssignmentPatternKey(Box<AssignmentPatternKey>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum AssignmentPatternKey {
-    SimpleType(SimpleType),
-    Default(Keyword),
+    SimpleType(Box<SimpleType>),
+    Default(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -91,10 +91,10 @@ pub struct AssignmentPatternExpression {
 
 #[derive(Clone, Debug, Node)]
 pub enum AssignmentPatternExpressionType {
-    PsTypeIdentifier(PsTypeIdentifier),
-    PsParameterIdentifier(PsParameterIdentifier),
-    IntegerAtomType(IntegerAtomType),
-    TypeReference(TypeReference),
+    PsTypeIdentifier(Box<PsTypeIdentifier>),
+    PsParameterIdentifier(Box<PsParameterIdentifier>),
+    IntegerAtomType(Box<IntegerAtomType>),
+    TypeReference(Box<TypeReference>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -118,7 +118,7 @@ pub struct AssignmentPatternVariableLvalue {
 pub fn pattern(s: Span) -> IResult<Span, Pattern> {
     alt((
         pattern_variable,
-        map(symbol(".*"), |x| Pattern::Asterisk(x)),
+        map(symbol(".*"), |x| Pattern::Asterisk(Box::new(x))),
         map(constant_expression, |x| {
             Pattern::ConstantExpression(Box::new(x))
         }),
@@ -182,7 +182,7 @@ pub fn assignment_pattern_list(s: Span) -> IResult<Span, AssignmentPattern> {
     let (s, a) = apostrophe_brace(list(symbol(","), expression))(s)?;
     Ok((
         s,
-        AssignmentPattern::List(AssignmentPatternList { nodes: (a,) }),
+        AssignmentPattern::List(Box::new(AssignmentPatternList { nodes: (a,) })),
     ))
 }
 
@@ -194,7 +194,7 @@ pub fn assignment_pattern_structure(s: Span) -> IResult<Span, AssignmentPattern>
     ))(s)?;
     Ok((
         s,
-        AssignmentPattern::Structure(AssignmentPatternStructure { nodes: (a,) }),
+        AssignmentPattern::Structure(Box::new(AssignmentPatternStructure { nodes: (a,) })),
     ))
 }
 
@@ -206,7 +206,7 @@ pub fn assignment_pattern_array(s: Span) -> IResult<Span, AssignmentPattern> {
     ))(s)?;
     Ok((
         s,
-        AssignmentPattern::Array(AssignmentPatternArray { nodes: (a,) }),
+        AssignmentPattern::Array(Box::new(AssignmentPatternArray { nodes: (a,) })),
     ))
 }
 
@@ -218,7 +218,7 @@ pub fn assignment_pattern_repeat(s: Span) -> IResult<Span, AssignmentPattern> {
     ))(s)?;
     Ok((
         s,
-        AssignmentPattern::Repeat(AssignmentPatternRepeat { nodes: (a,) }),
+        AssignmentPattern::Repeat(Box::new(AssignmentPatternRepeat { nodes: (a,) })),
     ))
 }
 
@@ -226,10 +226,10 @@ pub fn assignment_pattern_repeat(s: Span) -> IResult<Span, AssignmentPattern> {
 pub fn structure_pattern_key(s: Span) -> IResult<Span, StructurePatternKey> {
     alt((
         map(member_identifier, |x| {
-            StructurePatternKey::MemberIdentifier(x)
+            StructurePatternKey::MemberIdentifier(Box::new(x))
         }),
         map(assignment_pattern_key, |x| {
-            StructurePatternKey::AssignmentPatternKey(x)
+            StructurePatternKey::AssignmentPatternKey(Box::new(x))
         }),
     ))(s)
 }
@@ -238,10 +238,10 @@ pub fn structure_pattern_key(s: Span) -> IResult<Span, StructurePatternKey> {
 pub fn array_pattern_key(s: Span) -> IResult<Span, ArrayPatternKey> {
     alt((
         map(constant_expression, |x| {
-            ArrayPatternKey::ConstantExpression(x)
+            ArrayPatternKey::ConstantExpression(Box::new(x))
         }),
         map(assignment_pattern_key, |x| {
-            ArrayPatternKey::AssignmentPatternKey(x)
+            ArrayPatternKey::AssignmentPatternKey(Box::new(x))
         }),
     ))(s)
 }
@@ -249,8 +249,12 @@ pub fn array_pattern_key(s: Span) -> IResult<Span, ArrayPatternKey> {
 #[parser]
 pub fn assignment_pattern_key(s: Span) -> IResult<Span, AssignmentPatternKey> {
     alt((
-        map(simple_type, |x| AssignmentPatternKey::SimpleType(x)),
-        map(keyword("default"), |x| AssignmentPatternKey::Default(x)),
+        map(simple_type, |x| {
+            AssignmentPatternKey::SimpleType(Box::new(x))
+        }),
+        map(keyword("default"), |x| {
+            AssignmentPatternKey::Default(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -268,16 +272,16 @@ pub fn assignment_pattern_expression_type(
 ) -> IResult<Span, AssignmentPatternExpressionType> {
     alt((
         map(ps_type_identifier, |x| {
-            AssignmentPatternExpressionType::PsTypeIdentifier(x)
+            AssignmentPatternExpressionType::PsTypeIdentifier(Box::new(x))
         }),
         map(ps_parameter_identifier, |x| {
-            AssignmentPatternExpressionType::PsParameterIdentifier(x)
+            AssignmentPatternExpressionType::PsParameterIdentifier(Box::new(x))
         }),
         map(integer_atom_type, |x| {
-            AssignmentPatternExpressionType::IntegerAtomType(x)
+            AssignmentPatternExpressionType::IntegerAtomType(Box::new(x))
         }),
         map(type_reference, |x| {
-            AssignmentPatternExpressionType::TypeReference(x)
+            AssignmentPatternExpressionType::TypeReference(Box::new(x))
         }),
     ))(s)
 }

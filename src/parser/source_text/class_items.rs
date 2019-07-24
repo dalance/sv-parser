@@ -10,14 +10,14 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum ClassItem {
-    Property(ClassItemProperty),
-    Method(ClassItemMethod),
-    Constraint(ClassItemConstraint),
-    Declaration(ClassItemDeclaration),
-    Covergroup(ClassItemCovergroup),
-    LocalParameterDeclaration((LocalParameterDeclaration, Symbol)),
-    ParameterDeclaration((ParameterDeclaration, Symbol)),
-    Empty(Symbol),
+    Property(Box<ClassItemProperty>),
+    Method(Box<ClassItemMethod>),
+    Constraint(Box<ClassItemConstraint>),
+    Declaration(Box<ClassItemDeclaration>),
+    Covergroup(Box<ClassItemCovergroup>),
+    LocalParameterDeclaration(Box<(LocalParameterDeclaration, Symbol)>),
+    ParameterDeclaration(Box<(ParameterDeclaration, Symbol)>),
+    Empty(Box<Symbol>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -47,8 +47,8 @@ pub struct ClassItemCovergroup {
 
 #[derive(Clone, Debug, Node)]
 pub enum ClassProperty {
-    NonConst(ClassPropertyNonConst),
-    Const(ClassPropertyConst),
+    NonConst(Box<ClassPropertyNonConst>),
+    Const(Box<ClassPropertyConst>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -70,12 +70,12 @@ pub struct ClassPropertyConst {
 
 #[derive(Clone, Debug, Node)]
 pub enum ClassMethod {
-    Task(ClassMethodTask),
-    Function(ClassMethodFunction),
-    PureVirtual(ClassMethodPureVirtual),
-    ExternMethod(ClassMethodExternMethod),
-    Constructor(ClassMethodConstructor),
-    ExternConstructor(ClassMethodExternConstructor),
+    Task(Box<ClassMethodTask>),
+    Function(Box<ClassMethodFunction>),
+    PureVirtual(Box<ClassMethodPureVirtual>),
+    ExternMethod(Box<ClassMethodExternMethod>),
+    Constructor(Box<ClassMethodConstructor>),
+    ExternConstructor(Box<ClassMethodExternConstructor>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -121,40 +121,40 @@ pub struct ClassConstructorPrototype {
 
 #[derive(Clone, Debug, Node)]
 pub enum ClassConstraint {
-    ConstraintPrototype(ConstraintPrototype),
-    ConstraintDeclaration(ConstraintDeclaration),
+    ConstraintPrototype(Box<ConstraintPrototype>),
+    ConstraintDeclaration(Box<ConstraintDeclaration>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum ClassItemQualifier {
-    Static(Keyword),
-    Protected(Keyword),
-    Local(Keyword),
+    Static(Box<Keyword>),
+    Protected(Box<Keyword>),
+    Local(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum PropertyQualifier {
-    RandomQualifier(RandomQualifier),
-    ClassItemQualifier(ClassItemQualifier),
+    RandomQualifier(Box<RandomQualifier>),
+    ClassItemQualifier(Box<ClassItemQualifier>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum RandomQualifier {
-    Rand(Keyword),
-    Randc(Keyword),
+    Rand(Box<Keyword>),
+    Randc(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum MethodQualifier {
-    Virtual(Keyword),
-    PureVirtual((Keyword, Keyword)),
-    ClassItemQualifier(ClassItemQualifier),
+    Virtual(Box<Keyword>),
+    PureVirtual(Box<(Keyword, Keyword)>),
+    ClassItemQualifier(Box<ClassItemQualifier>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum MethodPrototype {
-    TaskPrototype(TaskPrototype),
-    FunctionPrototype(FunctionPrototype),
+    TaskPrototype(Box<TaskPrototype>),
+    FunctionPrototype(Box<FunctionPrototype>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -195,12 +195,12 @@ pub fn class_item(s: Span) -> IResult<Span, ClassItem> {
         class_item_declaration,
         class_item_covergroup,
         map(pair(local_parameter_declaration, symbol(";")), |x| {
-            ClassItem::LocalParameterDeclaration(x)
+            ClassItem::LocalParameterDeclaration(Box::new(x))
         }),
         map(pair(parameter_declaration, symbol(";")), |x| {
-            ClassItem::ParameterDeclaration(x)
+            ClassItem::ParameterDeclaration(Box::new(x))
         }),
-        map(symbol(";"), |x| ClassItem::Empty(x)),
+        map(symbol(";"), |x| ClassItem::Empty(Box::new(x))),
     ))(s)
 }
 
@@ -208,14 +208,20 @@ pub fn class_item(s: Span) -> IResult<Span, ClassItem> {
 pub fn class_item_property(s: Span) -> IResult<Span, ClassItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = class_property(s)?;
-    Ok((s, ClassItem::Property(ClassItemProperty { nodes: (a, b) })))
+    Ok((
+        s,
+        ClassItem::Property(Box::new(ClassItemProperty { nodes: (a, b) })),
+    ))
 }
 
 #[parser]
 pub fn class_item_method(s: Span) -> IResult<Span, ClassItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = class_method(s)?;
-    Ok((s, ClassItem::Method(ClassItemMethod { nodes: (a, b) })))
+    Ok((
+        s,
+        ClassItem::Method(Box::new(ClassItemMethod { nodes: (a, b) })),
+    ))
 }
 
 #[parser]
@@ -224,7 +230,7 @@ pub fn class_item_constraint(s: Span) -> IResult<Span, ClassItem> {
     let (s, b) = class_constraint(s)?;
     Ok((
         s,
-        ClassItem::Constraint(ClassItemConstraint { nodes: (a, b) }),
+        ClassItem::Constraint(Box::new(ClassItemConstraint { nodes: (a, b) })),
     ))
 }
 
@@ -234,7 +240,7 @@ pub fn class_item_declaration(s: Span) -> IResult<Span, ClassItem> {
     let (s, b) = class_declaration(s)?;
     Ok((
         s,
-        ClassItem::Declaration(ClassItemDeclaration { nodes: (a, b) }),
+        ClassItem::Declaration(Box::new(ClassItemDeclaration { nodes: (a, b) })),
     ))
 }
 
@@ -244,7 +250,7 @@ pub fn class_item_covergroup(s: Span) -> IResult<Span, ClassItem> {
     let (s, b) = covergroup_declaration(s)?;
     Ok((
         s,
-        ClassItem::Covergroup(ClassItemCovergroup { nodes: (a, b) }),
+        ClassItem::Covergroup(Box::new(ClassItemCovergroup { nodes: (a, b) })),
     ))
 }
 
@@ -259,7 +265,7 @@ pub fn class_property_non_const(s: Span) -> IResult<Span, ClassProperty> {
     let (s, b) = data_declaration(s)?;
     Ok((
         s,
-        ClassProperty::NonConst(ClassPropertyNonConst { nodes: (a, b) }),
+        ClassProperty::NonConst(Box::new(ClassPropertyNonConst { nodes: (a, b) })),
     ))
 }
 
@@ -273,9 +279,9 @@ pub fn class_property_const(s: Span) -> IResult<Span, ClassProperty> {
     let (s, f) = symbol(";")(s)?;
     Ok((
         s,
-        ClassProperty::Const(ClassPropertyConst {
+        ClassProperty::Const(Box::new(ClassPropertyConst {
             nodes: (a, b, c, d, e, f),
-        }),
+        })),
     ))
 }
 
@@ -295,7 +301,10 @@ pub fn class_method(s: Span) -> IResult<Span, ClassMethod> {
 pub fn class_method_task(s: Span) -> IResult<Span, ClassMethod> {
     let (s, a) = many0(method_qualifier)(s)?;
     let (s, b) = task_declaration(s)?;
-    Ok((s, ClassMethod::Task(ClassMethodTask { nodes: (a, b) })))
+    Ok((
+        s,
+        ClassMethod::Task(Box::new(ClassMethodTask { nodes: (a, b) })),
+    ))
 }
 
 #[parser]
@@ -304,7 +313,7 @@ pub fn class_method_function(s: Span) -> IResult<Span, ClassMethod> {
     let (s, b) = function_declaration(s)?;
     Ok((
         s,
-        ClassMethod::Function(ClassMethodFunction { nodes: (a, b) }),
+        ClassMethod::Function(Box::new(ClassMethodFunction { nodes: (a, b) })),
     ))
 }
 
@@ -317,9 +326,9 @@ pub fn class_method_pure_virtual(s: Span) -> IResult<Span, ClassMethod> {
     let (s, e) = symbol(";")(s)?;
     Ok((
         s,
-        ClassMethod::PureVirtual(ClassMethodPureVirtual {
+        ClassMethod::PureVirtual(Box::new(ClassMethodPureVirtual {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
@@ -331,9 +340,9 @@ pub fn class_method_extern_method(s: Span) -> IResult<Span, ClassMethod> {
     let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        ClassMethod::ExternMethod(ClassMethodExternMethod {
+        ClassMethod::ExternMethod(Box::new(ClassMethodExternMethod {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -343,7 +352,7 @@ pub fn class_method_constructor(s: Span) -> IResult<Span, ClassMethod> {
     let (s, b) = class_constructor_declaration(s)?;
     Ok((
         s,
-        ClassMethod::Constructor(ClassMethodConstructor { nodes: (a, b) }),
+        ClassMethod::Constructor(Box::new(ClassMethodConstructor { nodes: (a, b) })),
     ))
 }
 
@@ -354,7 +363,7 @@ pub fn class_method_extern_constructor(s: Span) -> IResult<Span, ClassMethod> {
     let (s, c) = class_constructor_prototype(s)?;
     Ok((
         s,
-        ClassMethod::ExternConstructor(ClassMethodExternConstructor { nodes: (a, b, c) }),
+        ClassMethod::ExternConstructor(Box::new(ClassMethodExternConstructor { nodes: (a, b, c) })),
     ))
 }
 
@@ -376,10 +385,10 @@ pub fn class_constructor_prototype(s: Span) -> IResult<Span, ClassConstructorPro
 pub fn class_constraint(s: Span) -> IResult<Span, ClassConstraint> {
     alt((
         map(constraint_prototype, |x| {
-            ClassConstraint::ConstraintPrototype(x)
+            ClassConstraint::ConstraintPrototype(Box::new(x))
         }),
         map(constraint_declaration, |x| {
-            ClassConstraint::ConstraintDeclaration(x)
+            ClassConstraint::ConstraintDeclaration(Box::new(x))
         }),
     ))(s)
 }
@@ -387,18 +396,24 @@ pub fn class_constraint(s: Span) -> IResult<Span, ClassConstraint> {
 #[parser]
 pub fn class_item_qualifier(s: Span) -> IResult<Span, ClassItemQualifier> {
     alt((
-        map(keyword("static"), |x| ClassItemQualifier::Static(x)),
-        map(keyword("protected"), |x| ClassItemQualifier::Protected(x)),
-        map(keyword("local"), |x| ClassItemQualifier::Local(x)),
+        map(keyword("static"), |x| {
+            ClassItemQualifier::Static(Box::new(x))
+        }),
+        map(keyword("protected"), |x| {
+            ClassItemQualifier::Protected(Box::new(x))
+        }),
+        map(keyword("local"), |x| ClassItemQualifier::Local(Box::new(x))),
     ))(s)
 }
 
 #[parser]
 pub fn property_qualifier(s: Span) -> IResult<Span, PropertyQualifier> {
     alt((
-        map(random_qualifier, |x| PropertyQualifier::RandomQualifier(x)),
+        map(random_qualifier, |x| {
+            PropertyQualifier::RandomQualifier(Box::new(x))
+        }),
         map(class_item_qualifier, |x| {
-            PropertyQualifier::ClassItemQualifier(x)
+            PropertyQualifier::ClassItemQualifier(Box::new(x))
         }),
     ))(s)
 }
@@ -406,8 +421,8 @@ pub fn property_qualifier(s: Span) -> IResult<Span, PropertyQualifier> {
 #[parser]
 pub fn random_qualifier(s: Span) -> IResult<Span, RandomQualifier> {
     alt((
-        map(keyword("randc"), |x| RandomQualifier::Randc(x)),
-        map(keyword("rand"), |x| RandomQualifier::Rand(x)),
+        map(keyword("randc"), |x| RandomQualifier::Randc(Box::new(x))),
+        map(keyword("rand"), |x| RandomQualifier::Rand(Box::new(x))),
     ))(s)
 }
 
@@ -415,11 +430,13 @@ pub fn random_qualifier(s: Span) -> IResult<Span, RandomQualifier> {
 pub fn method_qualifier(s: Span) -> IResult<Span, MethodQualifier> {
     alt((
         map(pair(keyword("pure"), keyword("virtual")), |x| {
-            MethodQualifier::PureVirtual(x)
+            MethodQualifier::PureVirtual(Box::new(x))
         }),
-        map(keyword("virtual"), |x| MethodQualifier::Virtual(x)),
+        map(keyword("virtual"), |x| {
+            MethodQualifier::Virtual(Box::new(x))
+        }),
         map(class_item_qualifier, |x| {
-            MethodQualifier::ClassItemQualifier(x)
+            MethodQualifier::ClassItemQualifier(Box::new(x))
         }),
     ))(s)
 }
@@ -427,9 +444,11 @@ pub fn method_qualifier(s: Span) -> IResult<Span, MethodQualifier> {
 #[parser]
 pub fn method_prototype(s: Span) -> IResult<Span, MethodPrototype> {
     alt((
-        map(task_prototype, |x| MethodPrototype::TaskPrototype(x)),
+        map(task_prototype, |x| {
+            MethodPrototype::TaskPrototype(Box::new(x))
+        }),
         map(function_prototype, |x| {
-            MethodPrototype::FunctionPrototype(x)
+            MethodPrototype::FunctionPrototype(Box::new(x))
         }),
     ))(s)
 }

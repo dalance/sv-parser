@@ -43,8 +43,8 @@ pub struct LetPortItem {
 
 #[derive(Clone, Debug, Node)]
 pub enum LetFormalType {
-    DataTypeOrImplicit(DataTypeOrImplicit),
-    Untyped(Keyword),
+    DataTypeOrImplicit(Box<DataTypeOrImplicit>),
+    Untyped(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -58,8 +58,8 @@ pub struct LetExpression {
 
 #[derive(Clone, Debug, Node)]
 pub enum LetListOfArguments {
-    Ordered(LetListOfArgumentsOrdered),
-    Named(LetListOfArgumentsNamed),
+    Ordered(Box<LetListOfArgumentsOrdered>),
+    Named(Box<LetListOfArgumentsNamed>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -129,9 +129,9 @@ pub fn let_port_item(s: Span) -> IResult<Span, LetPortItem> {
 pub fn let_formal_type(s: Span) -> IResult<Span, LetFormalType> {
     alt((
         map(data_type_or_implicit, |x| {
-            LetFormalType::DataTypeOrImplicit(x)
+            LetFormalType::DataTypeOrImplicit(Box::new(x))
         }),
-        map(keyword("untyped"), |x| LetFormalType::Untyped(x)),
+        map(keyword("untyped"), |x| LetFormalType::Untyped(Box::new(x))),
     ))(s)
 }
 
@@ -159,7 +159,7 @@ pub fn let_list_of_arguments_ordered(s: Span) -> IResult<Span, LetListOfArgument
     )))(s)?;
     Ok((
         s,
-        LetListOfArguments::Ordered(LetListOfArgumentsOrdered { nodes: (a, b) }),
+        LetListOfArguments::Ordered(Box::new(LetListOfArgumentsOrdered { nodes: (a, b) })),
     ))
 }
 
@@ -171,7 +171,7 @@ pub fn let_list_of_arguments_named(s: Span) -> IResult<Span, LetListOfArguments>
     )(s)?;
     Ok((
         s,
-        LetListOfArguments::Named(LetListOfArgumentsNamed { nodes: (a,) }),
+        LetListOfArguments::Named(Box::new(LetListOfArgumentsNamed { nodes: (a,) })),
     ))
 }
 

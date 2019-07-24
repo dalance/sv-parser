@@ -10,8 +10,8 @@ use nom_packrat::packrat_parser;
 
 #[derive(Clone, Debug, Node)]
 pub enum IncOrDecExpression {
-    Prefix(IncOrDecExpressionPrefix),
-    Suffix(IncOrDecExpressionSuffix),
+    Prefix(Box<IncOrDecExpressionPrefix>),
+    Suffix(Box<IncOrDecExpressionSuffix>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -73,8 +73,8 @@ pub struct ConstantExpressionTernary {
 
 #[derive(Clone, Debug, Node)]
 pub enum ConstantMintypmaxExpression {
-    Unary(ConstantExpression),
-    Ternary(ConstantMintypmaxExpressionTernary),
+    Unary(Box<ConstantExpression>),
+    Ternary(Box<ConstantMintypmaxExpressionTernary>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -90,28 +90,28 @@ pub struct ConstantMintypmaxExpressionTernary {
 
 #[derive(Clone, Debug, Node)]
 pub enum ConstantParamExpression {
-    ConstantMintypmaxExpression(ConstantMintypmaxExpression),
-    DataType(DataType),
-    Dollar(Symbol),
+    ConstantMintypmaxExpression(Box<ConstantMintypmaxExpression>),
+    DataType(Box<DataType>),
+    Dollar(Box<Symbol>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum ParamExpression {
-    MintypmaxExpression(MintypmaxExpression),
+    MintypmaxExpression(Box<MintypmaxExpression>),
     DataType(Box<DataType>),
-    Dollar(Symbol),
+    Dollar(Box<Symbol>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum ConstantRangeExpression {
-    ConstantExpression(ConstantExpression),
-    ConstantPartSelectRange(ConstantPartSelectRange),
+    ConstantExpression(Box<ConstantExpression>),
+    ConstantPartSelectRange(Box<ConstantPartSelectRange>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum ConstantPartSelectRange {
-    ConstantRange(ConstantRange),
-    ConstantIndexedRange(ConstantIndexedRange),
+    ConstantRange(Box<ConstantRange>),
+    ConstantIndexedRange(Box<ConstantIndexedRange>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -168,8 +168,8 @@ pub struct InsideExpression {
 
 #[derive(Clone, Debug, Node)]
 pub enum ValueRange {
-    Expression(Expression),
-    Binary(ValueRangeBinary),
+    Expression(Box<Expression>),
+    Binary(Box<ValueRangeBinary>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -179,8 +179,8 @@ pub struct ValueRangeBinary {
 
 #[derive(Clone, Debug, Node)]
 pub enum MintypmaxExpression {
-    Expression(Expression),
-    Ternary(MintypmaxExpressionTernary),
+    Expression(Box<Expression>),
+    Ternary(Box<MintypmaxExpressionTernary>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -229,8 +229,8 @@ pub struct ModulePathExpressionBinary {
 
 #[derive(Clone, Debug, Node)]
 pub enum ModulePathMintypmaxExpression {
-    ModulePathExpression(ModulePathExpression),
-    Ternary(ModulePathMintypmaxExpressionTernary),
+    ModulePathExpression(Box<ModulePathExpression>),
+    Ternary(Box<ModulePathMintypmaxExpressionTernary>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -246,8 +246,8 @@ pub struct ModulePathMintypmaxExpressionTernary {
 
 #[derive(Clone, Debug, Node)]
 pub enum PartSelectRange {
-    ConstantRange(ConstantRange),
-    IndexedRange(IndexedRange),
+    ConstantRange(Box<ConstantRange>),
+    IndexedRange(Box<IndexedRange>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -274,7 +274,7 @@ pub fn inc_or_dec_expression_prefix(s: Span) -> IResult<Span, IncOrDecExpression
     let (s, c) = variable_lvalue(s)?;
     Ok((
         s,
-        IncOrDecExpression::Prefix(IncOrDecExpressionPrefix { nodes: (a, b, c) }),
+        IncOrDecExpression::Prefix(Box::new(IncOrDecExpressionPrefix { nodes: (a, b, c) })),
     ))
 }
 
@@ -285,7 +285,7 @@ pub fn inc_or_dec_expression_suffix(s: Span) -> IResult<Span, IncOrDecExpression
     let (s, c) = inc_or_dec_operator(s)?;
     Ok((
         s,
-        IncOrDecExpression::Suffix(IncOrDecExpressionSuffix { nodes: (a, b, c) }),
+        IncOrDecExpression::Suffix(Box::new(IncOrDecExpressionSuffix { nodes: (a, b, c) })),
     ))
 }
 
@@ -364,7 +364,7 @@ pub fn constant_mintypmax_expression(s: Span) -> IResult<Span, ConstantMintypmax
     alt((
         constant_mintypmax_expression_ternary,
         map(constant_expression, |x| {
-            ConstantMintypmaxExpression::Unary(x)
+            ConstantMintypmaxExpression::Unary(Box::new(x))
         }),
     ))(s)
 }
@@ -380,29 +380,33 @@ pub fn constant_mintypmax_expression_ternary(
     let (s, e) = constant_expression(s)?;
     Ok((
         s,
-        ConstantMintypmaxExpression::Ternary(ConstantMintypmaxExpressionTernary {
+        ConstantMintypmaxExpression::Ternary(Box::new(ConstantMintypmaxExpressionTernary {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
 #[parser]
 pub fn constant_param_expression(s: Span) -> IResult<Span, ConstantParamExpression> {
     alt((
-        map(symbol("$"), |x| ConstantParamExpression::Dollar(x)),
-        map(constant_mintypmax_expression, |x| {
-            ConstantParamExpression::ConstantMintypmaxExpression(x)
+        map(symbol("$"), |x| {
+            ConstantParamExpression::Dollar(Box::new(x))
         }),
-        map(data_type, |x| ConstantParamExpression::DataType(x)),
+        map(constant_mintypmax_expression, |x| {
+            ConstantParamExpression::ConstantMintypmaxExpression(Box::new(x))
+        }),
+        map(data_type, |x| {
+            ConstantParamExpression::DataType(Box::new(x))
+        }),
     ))(s)
 }
 
 #[parser]
 pub fn param_expression(s: Span) -> IResult<Span, ParamExpression> {
     alt((
-        map(symbol("$"), |x| ParamExpression::Dollar(x)),
+        map(symbol("$"), |x| ParamExpression::Dollar(Box::new(x))),
         map(mintypmax_expression, |x| {
-            ParamExpression::MintypmaxExpression(x)
+            ParamExpression::MintypmaxExpression(Box::new(x))
         }),
         map(data_type, |x| ParamExpression::DataType(Box::new(x))),
     ))(s)
@@ -412,10 +416,10 @@ pub fn param_expression(s: Span) -> IResult<Span, ParamExpression> {
 pub fn constant_range_expression(s: Span) -> IResult<Span, ConstantRangeExpression> {
     alt((
         map(constant_part_select_range, |x| {
-            ConstantRangeExpression::ConstantPartSelectRange(x)
+            ConstantRangeExpression::ConstantPartSelectRange(Box::new(x))
         }),
         map(constant_expression, |x| {
-            ConstantRangeExpression::ConstantExpression(x)
+            ConstantRangeExpression::ConstantExpression(Box::new(x))
         }),
     ))(s)
 }
@@ -424,10 +428,10 @@ pub fn constant_range_expression(s: Span) -> IResult<Span, ConstantRangeExpressi
 pub fn constant_part_select_range(s: Span) -> IResult<Span, ConstantPartSelectRange> {
     alt((
         map(constant_range, |x| {
-            ConstantPartSelectRange::ConstantRange(x)
+            ConstantPartSelectRange::ConstantRange(Box::new(x))
         }),
         map(constant_indexed_range, |x| {
-            ConstantPartSelectRange::ConstantIndexedRange(x)
+            ConstantPartSelectRange::ConstantIndexedRange(Box::new(x))
         }),
     ))(s)
 }
@@ -525,21 +529,24 @@ pub fn inside_expression(s: Span) -> IResult<Span, InsideExpression> {
 pub fn value_range(s: Span) -> IResult<Span, ValueRange> {
     alt((
         value_range_binary,
-        map(expression, |x| ValueRange::Expression(x)),
+        map(expression, |x| ValueRange::Expression(Box::new(x))),
     ))(s)
 }
 
 #[parser]
 pub fn value_range_binary(s: Span) -> IResult<Span, ValueRange> {
     let (s, a) = bracket(triple(expression, symbol(":"), expression))(s)?;
-    Ok((s, ValueRange::Binary(ValueRangeBinary { nodes: (a,) })))
+    Ok((
+        s,
+        ValueRange::Binary(Box::new(ValueRangeBinary { nodes: (a,) })),
+    ))
 }
 
 #[parser]
 pub fn mintypmax_expression(s: Span) -> IResult<Span, MintypmaxExpression> {
     alt((
         mintypmax_expression_ternary,
-        map(expression, |x| MintypmaxExpression::Expression(x)),
+        map(expression, |x| MintypmaxExpression::Expression(Box::new(x))),
     ))(s)
 }
 
@@ -552,9 +559,9 @@ pub fn mintypmax_expression_ternary(s: Span) -> IResult<Span, MintypmaxExpressio
     let (s, e) = expression(s)?;
     Ok((
         s,
-        MintypmaxExpression::Ternary(MintypmaxExpressionTernary {
+        MintypmaxExpression::Ternary(Box::new(MintypmaxExpressionTernary {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
@@ -620,7 +627,7 @@ pub fn module_path_mintypmax_expression(s: Span) -> IResult<Span, ModulePathMint
     alt((
         module_path_mintypmax_expression_ternary,
         map(module_path_expression, |x| {
-            ModulePathMintypmaxExpression::ModulePathExpression(x)
+            ModulePathMintypmaxExpression::ModulePathExpression(Box::new(x))
         }),
     ))(s)
 }
@@ -636,17 +643,21 @@ pub fn module_path_mintypmax_expression_ternary(
     let (s, e) = module_path_expression(s)?;
     Ok((
         s,
-        ModulePathMintypmaxExpression::Ternary(ModulePathMintypmaxExpressionTernary {
+        ModulePathMintypmaxExpression::Ternary(Box::new(ModulePathMintypmaxExpressionTernary {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
 #[parser]
 pub fn part_select_range(s: Span) -> IResult<Span, PartSelectRange> {
     alt((
-        map(constant_range, |x| PartSelectRange::ConstantRange(x)),
-        map(indexed_range, |x| PartSelectRange::IndexedRange(x)),
+        map(constant_range, |x| {
+            PartSelectRange::ConstantRange(Box::new(x))
+        }),
+        map(indexed_range, |x| {
+            PartSelectRange::IndexedRange(Box::new(x))
+        }),
     ))(s)
 }
 

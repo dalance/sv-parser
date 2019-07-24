@@ -49,8 +49,8 @@ pub struct StreamOperator {
 
 #[derive(Clone, Debug, Node)]
 pub enum SliceSize {
-    SimpleType(SimpleType),
-    ConstantExpression(ConstantExpression),
+    SimpleType(Box<SimpleType>),
+    ConstantExpression(Box<ConstantExpression>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -65,10 +65,10 @@ pub struct StreamExpression {
 
 #[derive(Clone, Debug, Node)]
 pub enum ArrayRangeExpression {
-    Expression(Expression),
-    Colon(ArrayRangeExpressionColon),
-    PlusColon(ArrayRangeExpressionPlusColon),
-    MinusColon(ArrayRangeExpressionMinusColon),
+    Expression(Box<Expression>),
+    Colon(Box<ArrayRangeExpressionColon>),
+    PlusColon(Box<ArrayRangeExpressionPlusColon>),
+    MinusColon(Box<ArrayRangeExpressionMinusColon>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -152,8 +152,10 @@ pub fn stream_operator(s: Span) -> IResult<Span, StreamOperator> {
 #[parser]
 pub fn slice_size(s: Span) -> IResult<Span, SliceSize> {
     alt((
-        map(simple_type, |x| SliceSize::SimpleType(x)),
-        map(constant_expression, |x| SliceSize::ConstantExpression(x)),
+        map(simple_type, |x| SliceSize::SimpleType(Box::new(x))),
+        map(constant_expression, |x| {
+            SliceSize::ConstantExpression(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -173,7 +175,9 @@ pub fn stream_expression(s: Span) -> IResult<Span, StreamExpression> {
 #[parser]
 pub fn array_range_expression(s: Span) -> IResult<Span, ArrayRangeExpression> {
     alt((
-        map(expression, |x| ArrayRangeExpression::Expression(x)),
+        map(expression, |x| {
+            ArrayRangeExpression::Expression(Box::new(x))
+        }),
         array_range_expression_colon,
         array_range_expression_plus_colon,
         array_range_expression_minus_colon,
@@ -187,7 +191,7 @@ pub fn array_range_expression_colon(s: Span) -> IResult<Span, ArrayRangeExpressi
     let (s, c) = expression(s)?;
     Ok((
         s,
-        ArrayRangeExpression::Colon(ArrayRangeExpressionColon { nodes: (a, b, c) }),
+        ArrayRangeExpression::Colon(Box::new(ArrayRangeExpressionColon { nodes: (a, b, c) })),
     ))
 }
 
@@ -198,7 +202,9 @@ pub fn array_range_expression_plus_colon(s: Span) -> IResult<Span, ArrayRangeExp
     let (s, c) = expression(s)?;
     Ok((
         s,
-        ArrayRangeExpression::PlusColon(ArrayRangeExpressionPlusColon { nodes: (a, b, c) }),
+        ArrayRangeExpression::PlusColon(Box::new(ArrayRangeExpressionPlusColon {
+            nodes: (a, b, c),
+        })),
     ))
 }
 
@@ -209,7 +215,9 @@ pub fn array_range_expression_minus_colon(s: Span) -> IResult<Span, ArrayRangeEx
     let (s, c) = expression(s)?;
     Ok((
         s,
-        ArrayRangeExpression::MinusColon(ArrayRangeExpressionMinusColon { nodes: (a, b, c) }),
+        ArrayRangeExpression::MinusColon(Box::new(ArrayRangeExpressionMinusColon {
+            nodes: (a, b, c),
+        })),
     ))
 }
 

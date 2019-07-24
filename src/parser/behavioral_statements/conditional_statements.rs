@@ -22,9 +22,9 @@ pub struct ConditionalStatement {
 
 #[derive(Clone, Debug, Node)]
 pub enum UniquePriority {
-    Unique(Keyword),
-    Unique0(Keyword),
-    Priority(Keyword),
+    Unique(Box<Keyword>),
+    Unique0(Box<Keyword>),
+    Priority(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -34,8 +34,8 @@ pub struct CondPredicate {
 
 #[derive(Clone, Debug, Node)]
 pub enum ExpressionOrCondPattern {
-    Expression(Expression),
-    CondPattern(CondPattern),
+    Expression(Box<Expression>),
+    CondPattern(Box<CondPattern>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -70,9 +70,11 @@ pub fn conditional_statement(s: Span) -> IResult<Span, ConditionalStatement> {
 #[parser]
 pub fn unique_priority(s: Span) -> IResult<Span, UniquePriority> {
     alt((
-        map(keyword("unique0"), |x| UniquePriority::Unique0(x)),
-        map(keyword("unique"), |x| UniquePriority::Unique(x)),
-        map(keyword("priority"), |x| UniquePriority::Priority(x)),
+        map(keyword("unique0"), |x| UniquePriority::Unique0(Box::new(x))),
+        map(keyword("unique"), |x| UniquePriority::Unique(Box::new(x))),
+        map(keyword("priority"), |x| {
+            UniquePriority::Priority(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -85,8 +87,12 @@ pub fn cond_predicate(s: Span) -> IResult<Span, CondPredicate> {
 #[parser]
 pub fn expression_or_cond_pattern(s: Span) -> IResult<Span, ExpressionOrCondPattern> {
     alt((
-        map(expression, |x| ExpressionOrCondPattern::Expression(x)),
-        map(cond_pattern, |x| ExpressionOrCondPattern::CondPattern(x)),
+        map(expression, |x| {
+            ExpressionOrCondPattern::Expression(Box::new(x))
+        }),
+        map(cond_pattern, |x| {
+            ExpressionOrCondPattern::CondPattern(Box::new(x))
+        }),
     ))(s)
 }
 

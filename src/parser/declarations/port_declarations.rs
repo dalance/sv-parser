@@ -14,8 +14,8 @@ pub struct InoutDeclaration {
 
 #[derive(Clone, Debug, Node)]
 pub enum InputDeclaration {
-    Net(InputDeclarationNet),
-    Variable(InputDeclarationVariable),
+    Net(Box<InputDeclarationNet>),
+    Variable(Box<InputDeclarationVariable>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -30,8 +30,8 @@ pub struct InputDeclarationVariable {
 
 #[derive(Clone, Debug, Node)]
 pub enum OutputDeclaration {
-    Net(OutputDeclarationNet),
-    Variable(OutputDeclarationVariable),
+    Net(Box<OutputDeclarationNet>),
+    Variable(Box<OutputDeclarationVariable>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -80,7 +80,7 @@ pub fn input_declaration_net(s: Span) -> IResult<Span, InputDeclaration> {
     let (s, c) = list_of_port_identifiers(s)?;
     Ok((
         s,
-        InputDeclaration::Net(InputDeclarationNet { nodes: (a, b, c) }),
+        InputDeclaration::Net(Box::new(InputDeclarationNet { nodes: (a, b, c) })),
     ))
 }
 
@@ -91,7 +91,7 @@ pub fn input_declaration_variable(s: Span) -> IResult<Span, InputDeclaration> {
     let (s, c) = list_of_variable_identifiers(s)?;
     Ok((
         s,
-        InputDeclaration::Variable(InputDeclarationVariable { nodes: (a, b, c) }),
+        InputDeclaration::Variable(Box::new(InputDeclarationVariable { nodes: (a, b, c) })),
     ))
 }
 
@@ -107,7 +107,7 @@ pub fn output_declaration_net(s: Span) -> IResult<Span, OutputDeclaration> {
     let (s, c) = list_of_port_identifiers(s)?;
     Ok((
         s,
-        OutputDeclaration::Net(OutputDeclarationNet { nodes: (a, b, c) }),
+        OutputDeclaration::Net(Box::new(OutputDeclarationNet { nodes: (a, b, c) })),
     ))
 }
 
@@ -118,7 +118,7 @@ pub fn output_declaration_variable(s: Span) -> IResult<Span, OutputDeclaration> 
     let (s, c) = list_of_variable_identifiers(s)?;
     Ok((
         s,
-        OutputDeclaration::Variable(OutputDeclarationVariable { nodes: (a, b, c) }),
+        OutputDeclaration::Variable(Box::new(OutputDeclarationVariable { nodes: (a, b, c) })),
     ))
 }
 
@@ -144,14 +144,14 @@ pub fn implicit_var(s: Span) -> IResult<Span, VariablePortType> {
     Ok((
         s,
         VariablePortType {
-            nodes: (VarDataType::Var(VarDataTypeVar {
+            nodes: (VarDataType::Var(Box::new(VarDataTypeVar {
                 nodes: (
                     a,
-                    DataTypeOrImplicit::ImplicitDataType(ImplicitDataType {
+                    DataTypeOrImplicit::ImplicitDataType(Box::new(ImplicitDataType {
                         nodes: (None, vec![]),
-                    }),
+                    })),
                 ),
-            }),),
+            })),),
         },
     ))
 }

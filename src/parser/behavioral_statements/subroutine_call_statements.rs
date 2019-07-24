@@ -9,8 +9,8 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum SubroutineCallStatement {
-    SubroutineCall((SubroutineCall, Symbol)),
-    Function(SubroutineCallStatementFunction),
+    SubroutineCall(Box<(SubroutineCall, Symbol)>),
+    Function(Box<SubroutineCallStatementFunction>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -24,7 +24,7 @@ pub struct SubroutineCallStatementFunction {
 pub fn subroutine_call_statement(s: Span) -> IResult<Span, SubroutineCallStatement> {
     alt((
         map(pair(subroutine_call, symbol(";")), |x| {
-            SubroutineCallStatement::SubroutineCall(x)
+            SubroutineCallStatement::SubroutineCall(Box::new(x))
         }),
         subroutine_call_statement_function,
     ))(s)
@@ -38,9 +38,9 @@ pub fn subroutine_call_statement_function(s: Span) -> IResult<Span, SubroutineCa
     let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        SubroutineCallStatement::Function(SubroutineCallStatementFunction {
+        SubroutineCallStatement::Function(Box::new(SubroutineCallStatementFunction {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 

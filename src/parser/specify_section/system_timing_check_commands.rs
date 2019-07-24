@@ -9,18 +9,18 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum SystemTimingCheck {
-    SetupTimingCheck(SetupTimingCheck),
-    HoldTimingCheck(HoldTimingCheck),
-    SetupholdTimingCheck(SetupholdTimingCheck),
-    RecoveryTimingCheck(RecoveryTimingCheck),
-    RemovalTimingCheck(RemovalTimingCheck),
-    RecremTimingCheck(RecremTimingCheck),
-    SkewTimingCheck(SkewTimingCheck),
-    TimeskewTimingCheck(TimeskewTimingCheck),
-    FullskewTimingCheck(FullskewTimingCheck),
-    PeriodTimingCheck(PeriodTimingCheck),
-    WidthTimingCheck(WidthTimingCheck),
-    NochargeTimingCheck(NochargeTimingCheck),
+    SetupTimingCheck(Box<SetupTimingCheck>),
+    HoldTimingCheck(Box<HoldTimingCheck>),
+    SetupholdTimingCheck(Box<SetupholdTimingCheck>),
+    RecoveryTimingCheck(Box<RecoveryTimingCheck>),
+    RemovalTimingCheck(Box<RemovalTimingCheck>),
+    RecremTimingCheck(Box<RecremTimingCheck>),
+    SkewTimingCheck(Box<SkewTimingCheck>),
+    TimeskewTimingCheck(Box<TimeskewTimingCheck>),
+    FullskewTimingCheck(Box<FullskewTimingCheck>),
+    PeriodTimingCheck(Box<PeriodTimingCheck>),
+    WidthTimingCheck(Box<WidthTimingCheck>),
+    NochargeTimingCheck(Box<NochargeTimingCheck>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -275,36 +275,40 @@ pub struct NochargeTimingCheck {
 pub fn system_timing_check(s: Span) -> IResult<Span, SystemTimingCheck> {
     alt((
         map(setup_timing_check, |x| {
-            SystemTimingCheck::SetupTimingCheck(x)
+            SystemTimingCheck::SetupTimingCheck(Box::new(x))
         }),
-        map(hold_timing_check, |x| SystemTimingCheck::HoldTimingCheck(x)),
+        map(hold_timing_check, |x| {
+            SystemTimingCheck::HoldTimingCheck(Box::new(x))
+        }),
         map(setuphold_timing_check, |x| {
-            SystemTimingCheck::SetupholdTimingCheck(x)
+            SystemTimingCheck::SetupholdTimingCheck(Box::new(x))
         }),
         map(recovery_timing_check, |x| {
-            SystemTimingCheck::RecoveryTimingCheck(x)
+            SystemTimingCheck::RecoveryTimingCheck(Box::new(x))
         }),
         map(removal_timing_check, |x| {
-            SystemTimingCheck::RemovalTimingCheck(x)
+            SystemTimingCheck::RemovalTimingCheck(Box::new(x))
         }),
         map(recrem_timing_check, |x| {
-            SystemTimingCheck::RecremTimingCheck(x)
+            SystemTimingCheck::RecremTimingCheck(Box::new(x))
         }),
-        map(skew_timing_check, |x| SystemTimingCheck::SkewTimingCheck(x)),
+        map(skew_timing_check, |x| {
+            SystemTimingCheck::SkewTimingCheck(Box::new(x))
+        }),
         map(timeskew_timing_check, |x| {
-            SystemTimingCheck::TimeskewTimingCheck(x)
+            SystemTimingCheck::TimeskewTimingCheck(Box::new(x))
         }),
         map(fullskew_timing_check, |x| {
-            SystemTimingCheck::FullskewTimingCheck(x)
+            SystemTimingCheck::FullskewTimingCheck(Box::new(x))
         }),
         map(period_timing_check, |x| {
-            SystemTimingCheck::PeriodTimingCheck(x)
+            SystemTimingCheck::PeriodTimingCheck(Box::new(x))
         }),
         map(width_timing_check, |x| {
-            SystemTimingCheck::WidthTimingCheck(x)
+            SystemTimingCheck::WidthTimingCheck(Box::new(x))
         }),
         map(nocharge_timing_check, |x| {
-            SystemTimingCheck::NochargeTimingCheck(x)
+            SystemTimingCheck::NochargeTimingCheck(Box::new(x))
         }),
     ))(s)
 }

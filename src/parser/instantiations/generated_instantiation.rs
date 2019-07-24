@@ -40,9 +40,9 @@ pub struct Genvar {
 
 #[derive(Clone, Debug, Node)]
 pub enum GenvarIteration {
-    Assignment(GenvarIterationAssignment),
-    Prefix(GenvarIterationPrefix),
-    Suffix(GenvarIterationSuffix),
+    Assignment(Box<GenvarIterationAssignment>),
+    Prefix(Box<GenvarIterationPrefix>),
+    Suffix(Box<GenvarIterationSuffix>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -62,8 +62,8 @@ pub struct GenvarIterationSuffix {
 
 #[derive(Clone, Debug, Node)]
 pub enum ConditionalGenerateConstruct {
-    If(IfGenerateConstruct),
-    Case(CaseGenerateConstruct),
+    If(Box<IfGenerateConstruct>),
+    Case(Box<CaseGenerateConstruct>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -88,8 +88,8 @@ pub struct CaseGenerateConstruct {
 
 #[derive(Clone, Debug, Node)]
 pub enum CaseGenerateItem {
-    Nondefault(CaseGenerateItemNondefault),
-    Default(CaseGenerateItemDefault),
+    Nondefault(Box<CaseGenerateItemNondefault>),
+    Default(Box<CaseGenerateItemDefault>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -104,8 +104,8 @@ pub struct CaseGenerateItemDefault {
 
 #[derive(Clone, Debug, Node)]
 pub enum GenerateBlock {
-    GenerateItem(GenerateItem),
-    Multiple(GenerateBlockMultiple),
+    GenerateItem(Box<GenerateItem>),
+    Multiple(Box<GenerateBlockMultiple>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -122,9 +122,9 @@ pub struct GenerateBlockMultiple {
 
 #[derive(Clone, Debug, Node)]
 pub enum GenerateItem {
-    ModuleOrGenerateItem(ModuleOrGenerateItem),
-    InterfaceOrGenerateItem(InterfaceOrGenerateItem),
-    CheckerOrGenerateItem(CheckerOrGenerateItem),
+    ModuleOrGenerateItem(Box<ModuleOrGenerateItem>),
+    InterfaceOrGenerateItem(Box<InterfaceOrGenerateItem>),
+    CheckerOrGenerateItem(Box<CheckerOrGenerateItem>),
 }
 
 // -----------------------------------------------------------------------------
@@ -181,7 +181,7 @@ pub fn genvar_iteration_assignment(s: Span) -> IResult<Span, GenvarIteration> {
     let (s, c) = genvar_expression(s)?;
     Ok((
         s,
-        GenvarIteration::Assignment(GenvarIterationAssignment { nodes: (a, b, c) }),
+        GenvarIteration::Assignment(Box::new(GenvarIterationAssignment { nodes: (a, b, c) })),
     ))
 }
 
@@ -191,7 +191,7 @@ pub fn genvar_iteration_prefix(s: Span) -> IResult<Span, GenvarIteration> {
     let (s, b) = genvar_identifier(s)?;
     Ok((
         s,
-        GenvarIteration::Prefix(GenvarIterationPrefix { nodes: (a, b) }),
+        GenvarIteration::Prefix(Box::new(GenvarIterationPrefix { nodes: (a, b) })),
     ))
 }
 
@@ -201,7 +201,7 @@ pub fn genvar_iteration_suffix(s: Span) -> IResult<Span, GenvarIteration> {
     let (s, b) = inc_or_dec_operator(s)?;
     Ok((
         s,
-        GenvarIteration::Suffix(GenvarIterationSuffix { nodes: (a, b) }),
+        GenvarIteration::Suffix(Box::new(GenvarIterationSuffix { nodes: (a, b) })),
     ))
 }
 
@@ -209,10 +209,10 @@ pub fn genvar_iteration_suffix(s: Span) -> IResult<Span, GenvarIteration> {
 pub fn conditional_generate_construct(s: Span) -> IResult<Span, ConditionalGenerateConstruct> {
     alt((
         map(if_generate_construct, |x| {
-            ConditionalGenerateConstruct::If(x)
+            ConditionalGenerateConstruct::If(Box::new(x))
         }),
         map(case_generate_construct, |x| {
-            ConditionalGenerateConstruct::Case(x)
+            ConditionalGenerateConstruct::Case(Box::new(x))
         }),
     ))(s)
 }
@@ -257,7 +257,7 @@ pub fn case_generate_item_nondefault(s: Span) -> IResult<Span, CaseGenerateItem>
     let (s, c) = generate_block(s)?;
     Ok((
         s,
-        CaseGenerateItem::Nondefault(CaseGenerateItemNondefault { nodes: (a, b, c) }),
+        CaseGenerateItem::Nondefault(Box::new(CaseGenerateItemNondefault { nodes: (a, b, c) })),
     ))
 }
 
@@ -268,14 +268,14 @@ pub fn case_generate_item_default(s: Span) -> IResult<Span, CaseGenerateItem> {
     let (s, c) = generate_block(s)?;
     Ok((
         s,
-        CaseGenerateItem::Default(CaseGenerateItemDefault { nodes: (a, b, c) }),
+        CaseGenerateItem::Default(Box::new(CaseGenerateItemDefault { nodes: (a, b, c) })),
     ))
 }
 
 #[parser]
 pub fn generate_block(s: Span) -> IResult<Span, GenerateBlock> {
     alt((
-        map(generate_item, |x| GenerateBlock::GenerateItem(x)),
+        map(generate_item, |x| GenerateBlock::GenerateItem(Box::new(x))),
         generate_block_multiple,
     ))(s)
 }
@@ -290,9 +290,9 @@ pub fn generate_block_multiple(s: Span) -> IResult<Span, GenerateBlock> {
     let (s, f) = opt(pair(symbol(":"), generate_block_identifier))(s)?;
     Ok((
         s,
-        GenerateBlock::Multiple(GenerateBlockMultiple {
+        GenerateBlock::Multiple(Box::new(GenerateBlockMultiple {
             nodes: (a, b, c, d, e, f),
-        }),
+        })),
     ))
 }
 
@@ -300,13 +300,13 @@ pub fn generate_block_multiple(s: Span) -> IResult<Span, GenerateBlock> {
 pub fn generate_item(s: Span) -> IResult<Span, GenerateItem> {
     alt((
         map(module_or_generate_item, |x| {
-            GenerateItem::ModuleOrGenerateItem(x)
+            GenerateItem::ModuleOrGenerateItem(Box::new(x))
         }),
         map(interface_or_generate_item, |x| {
-            GenerateItem::InterfaceOrGenerateItem(x)
+            GenerateItem::InterfaceOrGenerateItem(Box::new(x))
         }),
         map(checker_or_generate_item, |x| {
-            GenerateItem::CheckerOrGenerateItem(x)
+            GenerateItem::CheckerOrGenerateItem(Box::new(x))
         }),
     ))(s)
 }

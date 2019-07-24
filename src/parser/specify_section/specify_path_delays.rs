@@ -9,8 +9,8 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum PathDelayValue {
-    ListOfPathDelayExpressions(ListOfPathDelayExpressions),
-    Paren(PathDelayValueParen),
+    ListOfPathDelayExpressions(Box<ListOfPathDelayExpressions>),
+    Paren(Box<PathDelayValueParen>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -34,8 +34,8 @@ pub struct PathDelayExpression {
 
 #[derive(Clone, Debug, Node)]
 pub enum EdgeSensitivePathDeclaration {
-    Parallel(EdgeSensitivePathDeclarationParallel),
-    Full(EdgeSensitivePathDeclarationFull),
+    Parallel(Box<EdgeSensitivePathDeclarationParallel>),
+    Full(Box<EdgeSensitivePathDeclarationFull>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -91,16 +91,16 @@ pub struct DataSourceExpression {
 
 #[derive(Clone, Debug, Node)]
 pub enum EdgeIdentifier {
-    Posedge(Keyword),
-    Negedge(Keyword),
-    Edge(Keyword),
+    Posedge(Box<Keyword>),
+    Negedge(Box<Keyword>),
+    Edge(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum StateDependentPathDeclaration {
-    IfSimple(StateDependentPathDeclarationIfSimple),
-    IfEdgeSensitive(StateDependentPathDeclarationIfEdgeSensitive),
-    IfNone(StateDependentPathDeclarationIfNone),
+    IfSimple(Box<StateDependentPathDeclarationIfSimple>),
+    IfEdgeSensitive(Box<StateDependentPathDeclarationIfEdgeSensitive>),
+    IfNone(Box<StateDependentPathDeclarationIfNone>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -133,7 +133,7 @@ pub struct PolarityOperator {
 pub fn path_delay_value(s: Span) -> IResult<Span, PathDelayValue> {
     alt((
         map(list_of_path_delay_expressions, |x| {
-            PathDelayValue::ListOfPathDelayExpressions(x)
+            PathDelayValue::ListOfPathDelayExpressions(Box::new(x))
         }),
         path_delay_value_paren,
     ))(s)
@@ -144,7 +144,7 @@ pub fn path_delay_value_paren(s: Span) -> IResult<Span, PathDelayValue> {
     let (s, a) = paren(list_of_path_delay_expressions)(s)?;
     Ok((
         s,
-        PathDelayValue::Paren(PathDelayValueParen { nodes: (a,) }),
+        PathDelayValue::Paren(Box::new(PathDelayValueParen { nodes: (a,) })),
     ))
 }
 
@@ -183,9 +183,9 @@ pub fn edge_sensitive_path_declaration_parallel(
     let (s, c) = path_delay_value(s)?;
     Ok((
         s,
-        EdgeSensitivePathDeclaration::Parallel(EdgeSensitivePathDeclarationParallel {
+        EdgeSensitivePathDeclaration::Parallel(Box::new(EdgeSensitivePathDeclarationParallel {
             nodes: (a, b, c),
-        }),
+        })),
     ))
 }
 
@@ -198,7 +198,9 @@ pub fn edge_sensitive_path_declaration_full(
     let (s, c) = path_delay_value(s)?;
     Ok((
         s,
-        EdgeSensitivePathDeclaration::Full(EdgeSensitivePathDeclarationFull { nodes: (a, b, c) }),
+        EdgeSensitivePathDeclaration::Full(Box::new(EdgeSensitivePathDeclarationFull {
+            nodes: (a, b, c),
+        })),
     ))
 }
 
@@ -249,9 +251,9 @@ pub fn data_source_expression(s: Span) -> IResult<Span, DataSourceExpression> {
 #[parser]
 pub fn edge_identifier(s: Span) -> IResult<Span, EdgeIdentifier> {
     alt((
-        map(keyword("posedge"), |x| EdgeIdentifier::Posedge(x)),
-        map(keyword("negedge"), |x| EdgeIdentifier::Negedge(x)),
-        map(keyword("edge"), |x| EdgeIdentifier::Edge(x)),
+        map(keyword("posedge"), |x| EdgeIdentifier::Posedge(Box::new(x))),
+        map(keyword("negedge"), |x| EdgeIdentifier::Negedge(Box::new(x))),
+        map(keyword("edge"), |x| EdgeIdentifier::Edge(Box::new(x))),
     ))(s)
 }
 
@@ -273,9 +275,9 @@ pub fn state_dependent_path_declaration_if_simple(
     let (s, c) = simple_path_declaration(s)?;
     Ok((
         s,
-        StateDependentPathDeclaration::IfSimple(StateDependentPathDeclarationIfSimple {
+        StateDependentPathDeclaration::IfSimple(Box::new(StateDependentPathDeclarationIfSimple {
             nodes: (a, b, c),
-        }),
+        })),
     ))
 }
 
@@ -288,9 +290,9 @@ pub fn state_dependent_path_declaration_if_edge_sensitive(
     let (s, c) = edge_sensitive_path_declaration(s)?;
     Ok((
         s,
-        StateDependentPathDeclaration::IfEdgeSensitive(
+        StateDependentPathDeclaration::IfEdgeSensitive(Box::new(
             StateDependentPathDeclarationIfEdgeSensitive { nodes: (a, b, c) },
-        ),
+        )),
     ))
 }
 
@@ -302,9 +304,9 @@ pub fn state_dependent_path_declaration_if_none(
     let (s, b) = simple_path_declaration(s)?;
     Ok((
         s,
-        StateDependentPathDeclaration::IfNone(StateDependentPathDeclarationIfNone {
+        StateDependentPathDeclaration::IfNone(Box::new(StateDependentPathDeclarationIfNone {
             nodes: (a, b),
-        }),
+        })),
     ))
 }
 

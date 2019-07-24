@@ -28,15 +28,15 @@ pub struct UdpDeclarationPortList {
 
 #[derive(Clone, Debug, Node)]
 pub enum UdpPortDeclaration {
-    UdpOutputDeclaration((UdpOutputDeclaration, Symbol)),
-    UdpInputDeclaration((UdpInputDeclaration, Symbol)),
-    UdpRegDeclaration((UdpRegDeclaration, Symbol)),
+    UdpOutputDeclaration(Box<(UdpOutputDeclaration, Symbol)>),
+    UdpInputDeclaration(Box<(UdpInputDeclaration, Symbol)>),
+    UdpRegDeclaration(Box<(UdpRegDeclaration, Symbol)>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum UdpOutputDeclaration {
-    Nonreg(UdpOutputDeclarationNonreg),
-    Reg(UdpOutputDeclarationReg),
+    Nonreg(Box<UdpOutputDeclarationNonreg>),
+    Reg(Box<UdpOutputDeclarationReg>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -87,13 +87,13 @@ pub fn udp_declaration_port_list(s: Span) -> IResult<Span, UdpDeclarationPortLis
 pub fn udp_port_declaration(s: Span) -> IResult<Span, UdpPortDeclaration> {
     alt((
         map(pair(udp_output_declaration, symbol(";")), |x| {
-            UdpPortDeclaration::UdpOutputDeclaration(x)
+            UdpPortDeclaration::UdpOutputDeclaration(Box::new(x))
         }),
         map(pair(udp_input_declaration, symbol(";")), |x| {
-            UdpPortDeclaration::UdpInputDeclaration(x)
+            UdpPortDeclaration::UdpInputDeclaration(Box::new(x))
         }),
         map(pair(udp_reg_declaration, symbol(";")), |x| {
-            UdpPortDeclaration::UdpRegDeclaration(x)
+            UdpPortDeclaration::UdpRegDeclaration(Box::new(x))
         }),
     ))(s)
 }
@@ -110,7 +110,7 @@ pub fn udp_output_declaration_nonreg(s: Span) -> IResult<Span, UdpOutputDeclarat
     let (s, c) = port_identifier(s)?;
     Ok((
         s,
-        UdpOutputDeclaration::Nonreg(UdpOutputDeclarationNonreg { nodes: (a, b, c) }),
+        UdpOutputDeclaration::Nonreg(Box::new(UdpOutputDeclarationNonreg { nodes: (a, b, c) })),
     ))
 }
 
@@ -123,9 +123,9 @@ pub fn udp_output_declaration_reg(s: Span) -> IResult<Span, UdpOutputDeclaration
     let (s, e) = opt(pair(symbol("="), constant_expression))(s)?;
     Ok((
         s,
-        UdpOutputDeclaration::Reg(UdpOutputDeclarationReg {
+        UdpOutputDeclaration::Reg(Box::new(UdpOutputDeclarationReg {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 

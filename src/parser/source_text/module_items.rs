@@ -10,10 +10,10 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum ElaborationSystemTask {
-    TaskFatal(ElaborationSystemTaskFatal),
-    TaskError(ElaborationSystemTaskError),
-    TaskWarning(ElaborationSystemTaskWarning),
-    TaskInfo(ElaborationSystemTaskInfo),
+    TaskFatal(Box<ElaborationSystemTaskFatal>),
+    TaskError(Box<ElaborationSystemTaskError>),
+    TaskWarning(Box<ElaborationSystemTaskWarning>),
+    TaskInfo(Box<ElaborationSystemTaskInfo>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -42,40 +42,40 @@ pub struct ElaborationSystemTaskInfo {
 
 #[derive(Clone, Debug, Node)]
 pub enum FinishNumber {
-    Zero(Symbol),
-    One(Symbol),
-    Two(Symbol),
+    Zero(Box<Symbol>),
+    One(Box<Symbol>),
+    Two(Box<Symbol>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum ModuleCommonItem {
-    ModuleOrGenerateItemDeclaration(ModuleOrGenerateItemDeclaration),
-    InterfaceInstantiation(InterfaceInstantiation),
-    ProgramInstantiation(ProgramInstantiation),
-    AssertionItem(AssertionItem),
-    BindDirective(BindDirective),
-    ContinuousAssign(ContinuousAssign),
-    NetAlias(NetAlias),
-    InitialConstruct(InitialConstruct),
-    FinalConstruct(FinalConstruct),
-    AlwaysConstruct(AlwaysConstruct),
+    ModuleOrGenerateItemDeclaration(Box<ModuleOrGenerateItemDeclaration>),
+    InterfaceInstantiation(Box<InterfaceInstantiation>),
+    ProgramInstantiation(Box<ProgramInstantiation>),
+    AssertionItem(Box<AssertionItem>),
+    BindDirective(Box<BindDirective>),
+    ContinuousAssign(Box<ContinuousAssign>),
+    NetAlias(Box<NetAlias>),
+    InitialConstruct(Box<InitialConstruct>),
+    FinalConstruct(Box<FinalConstruct>),
+    AlwaysConstruct(Box<AlwaysConstruct>),
     LoopGenerateConstruct(Box<LoopGenerateConstruct>),
     ConditionalGenerateConstruct(Box<ConditionalGenerateConstruct>),
-    ElaborationSystemTask(ElaborationSystemTask),
+    ElaborationSystemTask(Box<ElaborationSystemTask>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum ModuleItem {
-    PortDeclaration((PortDeclaration, Symbol)),
-    NonPortModuleItem(NonPortModuleItem),
+    PortDeclaration(Box<(PortDeclaration, Symbol)>),
+    NonPortModuleItem(Box<NonPortModuleItem>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum ModuleOrGenerateItem {
-    Parameter(ModuleOrGenerateItemParameter),
-    Gate(ModuleOrGenerateItemGate),
-    Udp(ModuleOrGenerateItemUdp),
-    Module(ModuleOrGenerateItemModule),
+    Parameter(Box<ModuleOrGenerateItemParameter>),
+    Gate(Box<ModuleOrGenerateItemGate>),
+    Udp(Box<ModuleOrGenerateItemUdp>),
+    Module(Box<ModuleOrGenerateItemModule>),
     ModuleItem(Box<ModuleOrGenerateItemModuleItem>),
 }
 
@@ -106,11 +106,11 @@ pub struct ModuleOrGenerateItemModuleItem {
 
 #[derive(Clone, Debug, Node)]
 pub enum ModuleOrGenerateItemDeclaration {
-    PackageOrGenerateItemDeclaration(PackageOrGenerateItemDeclaration),
-    GenvarDeclaration(GenvarDeclaration),
-    ClockingDeclaration(ClockingDeclaration),
-    Clocking(ModuleOrGenerateItemDeclarationClocking),
-    Disable(ModuleOrGenerateItemDeclarationDisable),
+    PackageOrGenerateItemDeclaration(Box<PackageOrGenerateItemDeclaration>),
+    GenvarDeclaration(Box<GenvarDeclaration>),
+    ClockingDeclaration(Box<ClockingDeclaration>),
+    Clocking(Box<ModuleOrGenerateItemDeclarationClocking>),
+    Disable(Box<ModuleOrGenerateItemDeclarationDisable>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -125,14 +125,14 @@ pub struct ModuleOrGenerateItemDeclarationDisable {
 
 #[derive(Clone, Debug, Node)]
 pub enum NonPortModuleItem {
-    GenerateRegion(GenerateRegion),
-    ModuleOrGenerateItem(ModuleOrGenerateItem),
-    SpecifyBlock(SpecifyBlock),
-    Specparam(NonPortModuleItemSpecparam),
-    ProgramDeclaration(ProgramDeclaration),
-    ModuleDeclaration(ModuleDeclaration),
-    InterfaceDeclaration(InterfaceDeclaration),
-    TimeunitsDeclaration(TimeunitsDeclaration),
+    GenerateRegion(Box<GenerateRegion>),
+    ModuleOrGenerateItem(Box<ModuleOrGenerateItem>),
+    SpecifyBlock(Box<SpecifyBlock>),
+    Specparam(Box<NonPortModuleItemSpecparam>),
+    ProgramDeclaration(Box<ProgramDeclaration>),
+    ModuleDeclaration(Box<ModuleDeclaration>),
+    InterfaceDeclaration(Box<InterfaceDeclaration>),
+    TimeunitsDeclaration(Box<TimeunitsDeclaration>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -147,8 +147,8 @@ pub struct ParameterOverride {
 
 #[derive(Clone, Debug, Node)]
 pub enum BindDirective {
-    Scope(BindDirectiveScope),
-    Instance(BindDirectiveInstance),
+    Scope(Box<BindDirectiveScope>),
+    Instance(Box<BindDirectiveInstance>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -169,8 +169,8 @@ pub struct BindDirectiveInstance {
 
 #[derive(Clone, Debug, Node)]
 pub enum BindTargetScope {
-    ModuleIdentifier(ModuleIdentifier),
-    InterfaceIdentifier(InterfaceIdentifier),
+    ModuleIdentifier(Box<ModuleIdentifier>),
+    InterfaceIdentifier(Box<InterfaceIdentifier>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -185,10 +185,10 @@ pub struct BindTargetInstanceList {
 
 #[derive(Clone, Debug, Node)]
 pub enum BindInstantiation {
-    ProgramInstantiation(ProgramInstantiation),
-    ModuleInstantiation(ModuleInstantiation),
-    InterfaceInstantiation(InterfaceInstantiation),
-    CheckerInstantiation(CheckerInstantiation),
+    ProgramInstantiation(Box<ProgramInstantiation>),
+    ModuleInstantiation(Box<ModuleInstantiation>),
+    InterfaceInstantiation(Box<InterfaceInstantiation>),
+    CheckerInstantiation(Box<CheckerInstantiation>),
 }
 
 // -----------------------------------------------------------------------------
@@ -213,7 +213,7 @@ pub fn elaboration_system_task_fatal(s: Span) -> IResult<Span, ElaborationSystem
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        ElaborationSystemTask::TaskFatal(ElaborationSystemTaskFatal { nodes: (a, b, c) }),
+        ElaborationSystemTask::TaskFatal(Box::new(ElaborationSystemTaskFatal { nodes: (a, b, c) })),
     ))
 }
 
@@ -224,7 +224,7 @@ pub fn elaboration_system_task_error(s: Span) -> IResult<Span, ElaborationSystem
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        ElaborationSystemTask::TaskError(ElaborationSystemTaskError { nodes: (a, b, c) }),
+        ElaborationSystemTask::TaskError(Box::new(ElaborationSystemTaskError { nodes: (a, b, c) })),
     ))
 }
 
@@ -235,7 +235,9 @@ pub fn elaboration_system_task_warning(s: Span) -> IResult<Span, ElaborationSyst
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        ElaborationSystemTask::TaskWarning(ElaborationSystemTaskWarning { nodes: (a, b, c) }),
+        ElaborationSystemTask::TaskWarning(Box::new(ElaborationSystemTaskWarning {
+            nodes: (a, b, c),
+        })),
     ))
 }
 
@@ -246,16 +248,16 @@ pub fn elaboration_system_task_info(s: Span) -> IResult<Span, ElaborationSystemT
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        ElaborationSystemTask::TaskInfo(ElaborationSystemTaskInfo { nodes: (a, b, c) }),
+        ElaborationSystemTask::TaskInfo(Box::new(ElaborationSystemTaskInfo { nodes: (a, b, c) })),
     ))
 }
 
 #[parser]
 pub fn finish_number(s: Span) -> IResult<Span, FinishNumber> {
     alt((
-        map(symbol("0"), |x| FinishNumber::Zero(x)),
-        map(symbol("1"), |x| FinishNumber::One(x)),
-        map(symbol("2"), |x| FinishNumber::Two(x)),
+        map(symbol("0"), |x| FinishNumber::Zero(Box::new(x))),
+        map(symbol("1"), |x| FinishNumber::One(Box::new(x))),
+        map(symbol("2"), |x| FinishNumber::Two(Box::new(x))),
     ))(s)
 }
 
@@ -263,21 +265,33 @@ pub fn finish_number(s: Span) -> IResult<Span, FinishNumber> {
 pub fn module_common_item(s: Span) -> IResult<Span, ModuleCommonItem> {
     alt((
         map(module_or_generate_item_declaration, |x| {
-            ModuleCommonItem::ModuleOrGenerateItemDeclaration(x)
+            ModuleCommonItem::ModuleOrGenerateItemDeclaration(Box::new(x))
         }),
         map(interface_instantiation, |x| {
-            ModuleCommonItem::InterfaceInstantiation(x)
+            ModuleCommonItem::InterfaceInstantiation(Box::new(x))
         }),
         map(program_instantiation, |x| {
-            ModuleCommonItem::ProgramInstantiation(x)
+            ModuleCommonItem::ProgramInstantiation(Box::new(x))
         }),
-        map(assertion_item, |x| ModuleCommonItem::AssertionItem(x)),
-        map(bind_directive, |x| ModuleCommonItem::BindDirective(x)),
-        map(continuous_assign, |x| ModuleCommonItem::ContinuousAssign(x)),
-        map(net_alias, |x| ModuleCommonItem::NetAlias(x)),
-        map(initial_construct, |x| ModuleCommonItem::InitialConstruct(x)),
-        map(final_construct, |x| ModuleCommonItem::FinalConstruct(x)),
-        map(always_construct, |x| ModuleCommonItem::AlwaysConstruct(x)),
+        map(assertion_item, |x| {
+            ModuleCommonItem::AssertionItem(Box::new(x))
+        }),
+        map(bind_directive, |x| {
+            ModuleCommonItem::BindDirective(Box::new(x))
+        }),
+        map(continuous_assign, |x| {
+            ModuleCommonItem::ContinuousAssign(Box::new(x))
+        }),
+        map(net_alias, |x| ModuleCommonItem::NetAlias(Box::new(x))),
+        map(initial_construct, |x| {
+            ModuleCommonItem::InitialConstruct(Box::new(x))
+        }),
+        map(final_construct, |x| {
+            ModuleCommonItem::FinalConstruct(Box::new(x))
+        }),
+        map(always_construct, |x| {
+            ModuleCommonItem::AlwaysConstruct(Box::new(x))
+        }),
         map(loop_generate_construct, |x| {
             ModuleCommonItem::LoopGenerateConstruct(Box::new(x))
         }),
@@ -285,7 +299,7 @@ pub fn module_common_item(s: Span) -> IResult<Span, ModuleCommonItem> {
             ModuleCommonItem::ConditionalGenerateConstruct(Box::new(x))
         }),
         map(elaboration_system_task, |x| {
-            ModuleCommonItem::ElaborationSystemTask(x)
+            ModuleCommonItem::ElaborationSystemTask(Box::new(x))
         }),
     ))(s)
 }
@@ -294,9 +308,11 @@ pub fn module_common_item(s: Span) -> IResult<Span, ModuleCommonItem> {
 pub fn module_item(s: Span) -> IResult<Span, ModuleItem> {
     alt((
         map(pair(port_declaration, symbol(";")), |x| {
-            ModuleItem::PortDeclaration(x)
+            ModuleItem::PortDeclaration(Box::new(x))
         }),
-        map(non_port_module_item, |x| ModuleItem::NonPortModuleItem(x)),
+        map(non_port_module_item, |x| {
+            ModuleItem::NonPortModuleItem(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -317,7 +333,7 @@ pub fn module_or_generate_item_parameter(s: Span) -> IResult<Span, ModuleOrGener
     let (s, b) = parameter_override(s)?;
     Ok((
         s,
-        ModuleOrGenerateItem::Parameter(ModuleOrGenerateItemParameter { nodes: (a, b) }),
+        ModuleOrGenerateItem::Parameter(Box::new(ModuleOrGenerateItemParameter { nodes: (a, b) })),
     ))
 }
 
@@ -327,7 +343,7 @@ pub fn module_or_generate_item_gate(s: Span) -> IResult<Span, ModuleOrGenerateIt
     let (s, b) = gate_instantiation(s)?;
     Ok((
         s,
-        ModuleOrGenerateItem::Gate(ModuleOrGenerateItemGate { nodes: (a, b) }),
+        ModuleOrGenerateItem::Gate(Box::new(ModuleOrGenerateItemGate { nodes: (a, b) })),
     ))
 }
 
@@ -337,7 +353,7 @@ pub fn module_or_generate_item_udp(s: Span) -> IResult<Span, ModuleOrGenerateIte
     let (s, b) = udp_instantiation(s)?;
     Ok((
         s,
-        ModuleOrGenerateItem::Udp(ModuleOrGenerateItemUdp { nodes: (a, b) }),
+        ModuleOrGenerateItem::Udp(Box::new(ModuleOrGenerateItemUdp { nodes: (a, b) })),
     ))
 }
 
@@ -347,7 +363,7 @@ pub fn module_or_generate_item_module(s: Span) -> IResult<Span, ModuleOrGenerate
     let (s, b) = module_instantiation(s)?;
     Ok((
         s,
-        ModuleOrGenerateItem::Module(ModuleOrGenerateItemModule { nodes: (a, b) }),
+        ModuleOrGenerateItem::Module(Box::new(ModuleOrGenerateItemModule { nodes: (a, b) })),
     ))
 }
 
@@ -369,13 +385,13 @@ pub fn module_or_generate_item_declaration(
 ) -> IResult<Span, ModuleOrGenerateItemDeclaration> {
     alt((
         map(package_or_generate_item_declaration, |x| {
-            ModuleOrGenerateItemDeclaration::PackageOrGenerateItemDeclaration(x)
+            ModuleOrGenerateItemDeclaration::PackageOrGenerateItemDeclaration(Box::new(x))
         }),
         map(genvar_declaration, |x| {
-            ModuleOrGenerateItemDeclaration::GenvarDeclaration(x)
+            ModuleOrGenerateItemDeclaration::GenvarDeclaration(Box::new(x))
         }),
         map(clocking_declaration, |x| {
-            ModuleOrGenerateItemDeclaration::ClockingDeclaration(x)
+            ModuleOrGenerateItemDeclaration::ClockingDeclaration(Box::new(x))
         }),
         module_or_generate_item_declaration_clocking,
         module_or_generate_item_declaration_disable,
@@ -392,9 +408,11 @@ pub fn module_or_generate_item_declaration_clocking(
     let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        ModuleOrGenerateItemDeclaration::Clocking(ModuleOrGenerateItemDeclarationClocking {
-            nodes: (a, b, c, d),
-        }),
+        ModuleOrGenerateItemDeclaration::Clocking(Box::new(
+            ModuleOrGenerateItemDeclarationClocking {
+                nodes: (a, b, c, d),
+            },
+        )),
     ))
 }
 
@@ -409,32 +427,38 @@ pub fn module_or_generate_item_declaration_disable(
     let (s, e) = symbol(";")(s)?;
     Ok((
         s,
-        ModuleOrGenerateItemDeclaration::Disable(ModuleOrGenerateItemDeclarationDisable {
-            nodes: (a, b, c, d, e),
-        }),
+        ModuleOrGenerateItemDeclaration::Disable(Box::new(
+            ModuleOrGenerateItemDeclarationDisable {
+                nodes: (a, b, c, d, e),
+            },
+        )),
     ))
 }
 
 #[parser]
 pub fn non_port_module_item(s: Span) -> IResult<Span, NonPortModuleItem> {
     alt((
-        map(generate_region, |x| NonPortModuleItem::GenerateRegion(x)),
-        map(module_or_generate_item, |x| {
-            NonPortModuleItem::ModuleOrGenerateItem(x)
+        map(generate_region, |x| {
+            NonPortModuleItem::GenerateRegion(Box::new(x))
         }),
-        map(specify_block, |x| NonPortModuleItem::SpecifyBlock(x)),
+        map(module_or_generate_item, |x| {
+            NonPortModuleItem::ModuleOrGenerateItem(Box::new(x))
+        }),
+        map(specify_block, |x| {
+            NonPortModuleItem::SpecifyBlock(Box::new(x))
+        }),
         non_port_module_item_specparam,
         map(program_declaration, |x| {
-            NonPortModuleItem::ProgramDeclaration(x)
+            NonPortModuleItem::ProgramDeclaration(Box::new(x))
         }),
         map(module_declaration, |x| {
-            NonPortModuleItem::ModuleDeclaration(x)
+            NonPortModuleItem::ModuleDeclaration(Box::new(x))
         }),
         map(interface_declaration, |x| {
-            NonPortModuleItem::InterfaceDeclaration(x)
+            NonPortModuleItem::InterfaceDeclaration(Box::new(x))
         }),
         map(timeunits_declaration, |x| {
-            NonPortModuleItem::TimeunitsDeclaration(x)
+            NonPortModuleItem::TimeunitsDeclaration(Box::new(x))
         }),
     ))(s)
 }
@@ -445,7 +469,7 @@ pub fn non_port_module_item_specparam(s: Span) -> IResult<Span, NonPortModuleIte
     let (s, b) = specparam_declaration(s)?;
     Ok((
         s,
-        NonPortModuleItem::Specparam(NonPortModuleItemSpecparam { nodes: (a, b) }),
+        NonPortModuleItem::Specparam(Box::new(NonPortModuleItemSpecparam { nodes: (a, b) })),
     ))
 }
 
@@ -471,9 +495,9 @@ pub fn bind_directive_scope(s: Span) -> IResult<Span, BindDirective> {
     let (s, e) = symbol(";")(s)?;
     Ok((
         s,
-        BindDirective::Scope(BindDirectiveScope {
+        BindDirective::Scope(Box::new(BindDirectiveScope {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
@@ -485,18 +509,20 @@ pub fn bind_directive_instance(s: Span) -> IResult<Span, BindDirective> {
     let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        BindDirective::Instance(BindDirectiveInstance {
+        BindDirective::Instance(Box::new(BindDirectiveInstance {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
 #[parser]
 pub fn bind_target_scope(s: Span) -> IResult<Span, BindTargetScope> {
     alt((
-        map(module_identifier, |x| BindTargetScope::ModuleIdentifier(x)),
+        map(module_identifier, |x| {
+            BindTargetScope::ModuleIdentifier(Box::new(x))
+        }),
         map(interface_identifier, |x| {
-            BindTargetScope::InterfaceIdentifier(x)
+            BindTargetScope::InterfaceIdentifier(Box::new(x))
         }),
     ))(s)
 }
@@ -518,16 +544,16 @@ pub fn bind_target_instance_list(s: Span) -> IResult<Span, BindTargetInstanceLis
 pub fn bind_instantiation(s: Span) -> IResult<Span, BindInstantiation> {
     alt((
         map(program_instantiation, |x| {
-            BindInstantiation::ProgramInstantiation(x)
+            BindInstantiation::ProgramInstantiation(Box::new(x))
         }),
         map(module_instantiation, |x| {
-            BindInstantiation::ModuleInstantiation(x)
+            BindInstantiation::ModuleInstantiation(Box::new(x))
         }),
         map(interface_instantiation, |x| {
-            BindInstantiation::InterfaceInstantiation(x)
+            BindInstantiation::InterfaceInstantiation(Box::new(x))
         }),
         map(checker_instantiation, |x| {
-            BindInstantiation::CheckerInstantiation(x)
+            BindInstantiation::CheckerInstantiation(Box::new(x))
         }),
     ))(s)
 }

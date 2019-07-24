@@ -14,24 +14,24 @@ pub enum CastingType {
     SimpleType(Box<SimpleType>),
     ConstantPrimary(Box<ConstantPrimary>),
     Signing(Box<Signing>),
-    String(Keyword),
-    Const(Keyword),
+    String(Box<Keyword>),
+    Const(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum DataType {
-    Vector(DataTypeVector),
-    Atom(DataTypeAtom),
-    NonIntegerType(NonIntegerType),
+    Vector(Box<DataTypeVector>),
+    Atom(Box<DataTypeAtom>),
+    NonIntegerType(Box<NonIntegerType>),
     StructUnion(Box<DataTypeStructUnion>),
-    Enum(DataTypeEnum),
-    String(Keyword),
-    Chandle(Keyword),
-    Virtual(DataTypeVirtual),
-    Type(DataTypeType),
-    ClassType(ClassType),
-    Event(Keyword),
-    PsCovergroupIdentifier(PsCovergroupIdentifier),
+    Enum(Box<DataTypeEnum>),
+    String(Box<Keyword>),
+    Chandle(Box<Keyword>),
+    Virtual(Box<DataTypeVirtual>),
+    Type(Box<DataTypeType>),
+    ClassType(Box<ClassType>),
+    Event(Box<Keyword>),
+    PsCovergroupIdentifier(Box<PsCovergroupIdentifier>),
     TypeReference(Box<TypeReference>),
 }
 
@@ -97,8 +97,8 @@ pub struct DataTypeType {
 
 #[derive(Clone, Debug, Node)]
 pub enum DataTypeOrImplicit {
-    DataType(DataType),
-    ImplicitDataType(ImplicitDataType),
+    DataType(Box<DataType>),
+    ImplicitDataType(Box<ImplicitDataType>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -108,9 +108,9 @@ pub struct ImplicitDataType {
 
 #[derive(Clone, Debug, Node)]
 pub enum EnumBaseType {
-    Atom(EnumBaseTypeAtom),
-    Vector(EnumBaseTypeVector),
-    Type(EnumBaseTypeType),
+    Atom(Box<EnumBaseTypeAtom>),
+    Vector(Box<EnumBaseTypeVector>),
+    Type(Box<EnumBaseTypeType>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -153,55 +153,55 @@ pub struct ClassType {
 
 #[derive(Clone, Debug, Node)]
 pub enum IntegerType {
-    IntegerVectorType(IntegerVectorType),
-    IntegerAtomType(IntegerAtomType),
+    IntegerVectorType(Box<IntegerVectorType>),
+    IntegerAtomType(Box<IntegerAtomType>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum IntegerAtomType {
-    Byte(Keyword),
-    Shortint(Keyword),
-    Int(Keyword),
-    Longint(Keyword),
-    Integer(Keyword),
-    Time(Keyword),
+    Byte(Box<Keyword>),
+    Shortint(Box<Keyword>),
+    Int(Box<Keyword>),
+    Longint(Box<Keyword>),
+    Integer(Box<Keyword>),
+    Time(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum IntegerVectorType {
-    Bit(Keyword),
-    Logic(Keyword),
-    Reg(Keyword),
+    Bit(Box<Keyword>),
+    Logic(Box<Keyword>),
+    Reg(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum NonIntegerType {
-    Shortreal(Keyword),
-    Real(Keyword),
-    Realtime(Keyword),
+    Shortreal(Box<Keyword>),
+    Real(Box<Keyword>),
+    Realtime(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum NetType {
-    Supply0(Keyword),
-    Supply1(Keyword),
-    Tri(Keyword),
-    Triand(Keyword),
-    Trior(Keyword),
-    Trireg(Keyword),
-    Tri0(Keyword),
-    Tri1(Keyword),
-    Uwire(Keyword),
-    Wire(Keyword),
-    Wand(Keyword),
-    Wor(Keyword),
+    Supply0(Box<Keyword>),
+    Supply1(Box<Keyword>),
+    Tri(Box<Keyword>),
+    Triand(Box<Keyword>),
+    Trior(Box<Keyword>),
+    Trireg(Box<Keyword>),
+    Tri0(Box<Keyword>),
+    Tri1(Box<Keyword>),
+    Uwire(Box<Keyword>),
+    Wire(Box<Keyword>),
+    Wand(Box<Keyword>),
+    Wor(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum NetPortType {
-    DataType(NetPortTypeDataType),
-    NetTypeIdentifier(NetTypeIdentifier),
-    Interconnect(NetPortTypeInterconnect),
+    DataType(Box<NetPortTypeDataType>),
+    NetTypeIdentifier(Box<NetTypeIdentifier>),
+    Interconnect(Box<NetPortTypeInterconnect>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -221,8 +221,8 @@ pub struct VariablePortType {
 
 #[derive(Clone, Debug, Node)]
 pub enum VarDataType {
-    DataType(DataType),
-    Var(VarDataTypeVar),
+    DataType(Box<DataType>),
+    Var(Box<VarDataTypeVar>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -232,16 +232,16 @@ pub struct VarDataTypeVar {
 
 #[derive(Clone, Debug, Node)]
 pub enum Signing {
-    Signed(Keyword),
-    Unsigned(Keyword),
+    Signed(Box<Keyword>),
+    Unsigned(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum SimpleType {
-    IntegerType(IntegerType),
-    NonIntegerType(NonIntegerType),
-    PsTypeIdentifier(PsTypeIdentifier),
-    PsParameterIdentifier(PsParameterIdentifier),
+    IntegerType(Box<IntegerType>),
+    NonIntegerType(Box<NonIntegerType>),
+    PsTypeIdentifier(Box<PsTypeIdentifier>),
+    PsParameterIdentifier(Box<PsParameterIdentifier>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -257,21 +257,21 @@ pub struct StructUnionMember {
 
 #[derive(Clone, Debug, Node)]
 pub enum DataTypeOrVoid {
-    DataType(DataType),
-    Void(Keyword),
+    DataType(Box<DataType>),
+    Void(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum StructUnion {
-    Struct(Keyword),
-    Union(Keyword),
-    UnionTagged((Keyword, Keyword)),
+    Struct(Box<Keyword>),
+    Union(Box<Keyword>),
+    UnionTagged(Box<(Keyword, Keyword)>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum TypeReference {
-    Expression(TypeReferenceExpression),
-    DataType(TypeReferenceDataType),
+    Expression(Box<TypeReferenceExpression>),
+    DataType(Box<TypeReferenceDataType>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -292,8 +292,8 @@ pub fn casting_type(s: Span) -> IResult<Span, CastingType> {
     alt((
         map(simple_type, |x| CastingType::SimpleType(Box::new(x))),
         map(signing, |x| CastingType::Signing(Box::new(x))),
-        map(keyword("string"), |x| CastingType::String(x)),
-        map(keyword("const"), |x| CastingType::Const(x)),
+        map(keyword("string"), |x| CastingType::String(Box::new(x))),
+        map(keyword("const"), |x| CastingType::Const(Box::new(x))),
         map(constant_primary, |x| {
             CastingType::ConstantPrimary(Box::new(x))
         }),
@@ -305,17 +305,17 @@ pub fn data_type(s: Span) -> IResult<Span, DataType> {
     alt((
         data_type_vector,
         data_type_atom,
-        map(non_integer_type, |x| DataType::NonIntegerType(x)),
+        map(non_integer_type, |x| DataType::NonIntegerType(Box::new(x))),
         data_type_struct_union,
         data_type_enum,
-        map(keyword("string"), |x| DataType::String(x)),
-        map(keyword("chandle"), |x| DataType::Chandle(x)),
+        map(keyword("string"), |x| DataType::String(Box::new(x))),
+        map(keyword("chandle"), |x| DataType::Chandle(Box::new(x))),
         data_type_virtual,
         data_type_type,
-        map(class_type, |x| DataType::ClassType(x)),
-        map(keyword("event"), |x| DataType::Chandle(x)),
+        map(class_type, |x| DataType::ClassType(Box::new(x))),
+        map(keyword("event"), |x| DataType::Chandle(Box::new(x))),
         map(ps_covergroup_identifier, |x| {
-            DataType::PsCovergroupIdentifier(x)
+            DataType::PsCovergroupIdentifier(Box::new(x))
         }),
         map(type_reference, |x| DataType::TypeReference(Box::new(x))),
     ))(s)
@@ -326,14 +326,17 @@ pub fn data_type_vector(s: Span) -> IResult<Span, DataType> {
     let (s, a) = integer_vector_type(s)?;
     let (s, b) = opt(signing)(s)?;
     let (s, c) = many0(packed_dimension)(s)?;
-    Ok((s, DataType::Vector(DataTypeVector { nodes: (a, b, c) })))
+    Ok((
+        s,
+        DataType::Vector(Box::new(DataTypeVector { nodes: (a, b, c) })),
+    ))
 }
 
 #[parser]
 pub fn data_type_atom(s: Span) -> IResult<Span, DataType> {
     let (s, a) = integer_atom_type(s)?;
     let (s, b) = opt(signing)(s)?;
-    Ok((s, DataType::Atom(DataTypeAtom { nodes: (a, b) })))
+    Ok((s, DataType::Atom(Box::new(DataTypeAtom { nodes: (a, b) }))))
 }
 
 #[parser]
@@ -364,9 +367,9 @@ pub fn data_type_enum(s: Span) -> IResult<Span, DataType> {
     let (s, d) = many0(packed_dimension)(s)?;
     Ok((
         s,
-        DataType::Enum(DataTypeEnum {
+        DataType::Enum(Box::new(DataTypeEnum {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -379,9 +382,9 @@ pub fn data_type_virtual(s: Span) -> IResult<Span, DataType> {
     let (s, e) = opt(pair(symbol("."), modport_identifier))(s)?;
     Ok((
         s,
-        DataType::Virtual(DataTypeVirtual {
+        DataType::Virtual(Box::new(DataTypeVirtual {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
@@ -396,15 +399,18 @@ pub fn data_type_type(s: Span) -> IResult<Span, DataType> {
     let (s, a) = opt(package_scope_or_class_scope)(s)?;
     let (s, b) = type_identifier(s)?;
     let (s, c) = many0(packed_dimension)(s)?;
-    Ok((s, DataType::Type(DataTypeType { nodes: (a, b, c) })))
+    Ok((
+        s,
+        DataType::Type(Box::new(DataTypeType { nodes: (a, b, c) })),
+    ))
 }
 
 #[parser]
 pub fn data_type_or_implicit(s: Span) -> IResult<Span, DataTypeOrImplicit> {
     alt((
-        map(data_type, |x| DataTypeOrImplicit::DataType(x)),
+        map(data_type, |x| DataTypeOrImplicit::DataType(Box::new(x))),
         map(implicit_data_type, |x| {
-            DataTypeOrImplicit::ImplicitDataType(x)
+            DataTypeOrImplicit::ImplicitDataType(Box::new(x))
         }),
     ))(s)
 }
@@ -429,7 +435,10 @@ pub fn enum_base_type(s: Span) -> IResult<Span, EnumBaseType> {
 pub fn enum_base_type_atom(s: Span) -> IResult<Span, EnumBaseType> {
     let (s, a) = integer_atom_type(s)?;
     let (s, b) = opt(signing)(s)?;
-    Ok((s, EnumBaseType::Atom(EnumBaseTypeAtom { nodes: (a, b) })))
+    Ok((
+        s,
+        EnumBaseType::Atom(Box::new(EnumBaseTypeAtom { nodes: (a, b) })),
+    ))
 }
 
 #[parser]
@@ -439,7 +448,7 @@ pub fn enum_base_type_vector(s: Span) -> IResult<Span, EnumBaseType> {
     let (s, c) = opt(packed_dimension)(s)?;
     Ok((
         s,
-        EnumBaseType::Vector(EnumBaseTypeVector { nodes: (a, b, c) }),
+        EnumBaseType::Vector(Box::new(EnumBaseTypeVector { nodes: (a, b, c) })),
     ))
 }
 
@@ -447,7 +456,10 @@ pub fn enum_base_type_vector(s: Span) -> IResult<Span, EnumBaseType> {
 pub fn enum_base_type_type(s: Span) -> IResult<Span, EnumBaseType> {
     let (s, a) = type_identifier(s)?;
     let (s, b) = opt(packed_dimension)(s)?;
-    Ok((s, EnumBaseType::Type(EnumBaseTypeType { nodes: (a, b) })))
+    Ok((
+        s,
+        EnumBaseType::Type(Box::new(EnumBaseTypeType { nodes: (a, b) })),
+    ))
 }
 
 #[parser]
@@ -484,56 +496,70 @@ pub fn class_type(s: Span) -> IResult<Span, ClassType> {
 #[parser]
 pub fn integer_type(s: Span) -> IResult<Span, IntegerType> {
     alt((
-        map(integer_vector_type, |x| IntegerType::IntegerVectorType(x)),
-        map(integer_atom_type, |x| IntegerType::IntegerAtomType(x)),
+        map(integer_vector_type, |x| {
+            IntegerType::IntegerVectorType(Box::new(x))
+        }),
+        map(integer_atom_type, |x| {
+            IntegerType::IntegerAtomType(Box::new(x))
+        }),
     ))(s)
 }
 
 #[parser]
 pub fn integer_atom_type(s: Span) -> IResult<Span, IntegerAtomType> {
     alt((
-        map(keyword("byte"), |x| IntegerAtomType::Byte(x)),
-        map(keyword("shortint"), |x| IntegerAtomType::Shortint(x)),
-        map(keyword("int"), |x| IntegerAtomType::Int(x)),
-        map(keyword("longint"), |x| IntegerAtomType::Longint(x)),
-        map(keyword("integer"), |x| IntegerAtomType::Integer(x)),
-        map(keyword("time"), |x| IntegerAtomType::Time(x)),
+        map(keyword("byte"), |x| IntegerAtomType::Byte(Box::new(x))),
+        map(keyword("shortint"), |x| {
+            IntegerAtomType::Shortint(Box::new(x))
+        }),
+        map(keyword("int"), |x| IntegerAtomType::Int(Box::new(x))),
+        map(keyword("longint"), |x| {
+            IntegerAtomType::Longint(Box::new(x))
+        }),
+        map(keyword("integer"), |x| {
+            IntegerAtomType::Integer(Box::new(x))
+        }),
+        map(keyword("time"), |x| IntegerAtomType::Time(Box::new(x))),
     ))(s)
 }
 
 #[parser]
 pub fn integer_vector_type(s: Span) -> IResult<Span, IntegerVectorType> {
     alt((
-        map(keyword("bit"), |x| IntegerVectorType::Bit(x)),
-        map(keyword("logic"), |x| IntegerVectorType::Logic(x)),
-        map(keyword("reg"), |x| IntegerVectorType::Reg(x)),
+        map(keyword("bit"), |x| IntegerVectorType::Bit(Box::new(x))),
+        map(keyword("logic"), |x| IntegerVectorType::Logic(Box::new(x))),
+        map(keyword("reg"), |x| IntegerVectorType::Reg(Box::new(x))),
     ))(s)
 }
 
 #[parser]
 pub fn non_integer_type(s: Span) -> IResult<Span, NonIntegerType> {
     alt((
-        map(keyword("shortreal"), |x| NonIntegerType::Shortreal(x)),
-        map(keyword("realtime"), |x| NonIntegerType::Realtime(x)),
-        map(keyword("real"), |x| NonIntegerType::Real(x)),
+        map(keyword("shortreal"), |x| {
+            NonIntegerType::Shortreal(Box::new(x))
+        }),
+        map(keyword("realtime"), |x| {
+            NonIntegerType::Realtime(Box::new(x))
+        }),
+        map(keyword("real"), |x| NonIntegerType::Real(Box::new(x))),
     ))(s)
 }
 
 #[parser]
 pub fn net_type(s: Span) -> IResult<Span, NetType> {
     alt((
-        map(keyword("supply0"), |x| NetType::Supply0(x)),
-        map(keyword("supply1"), |x| NetType::Supply1(x)),
-        map(keyword("triand"), |x| NetType::Triand(x)),
-        map(keyword("trior"), |x| NetType::Trior(x)),
-        map(keyword("trireg"), |x| NetType::Trireg(x)),
-        map(keyword("tri0"), |x| NetType::Tri0(x)),
-        map(keyword("tri1"), |x| NetType::Tri1(x)),
-        map(keyword("tri"), |x| NetType::Tri(x)),
-        map(keyword("uwire"), |x| NetType::Uwire(x)),
-        map(keyword("wire"), |x| NetType::Wire(x)),
-        map(keyword("wand"), |x| NetType::Wand(x)),
-        map(keyword("wor"), |x| NetType::Wor(x)),
+        map(keyword("supply0"), |x| NetType::Supply0(Box::new(x))),
+        map(keyword("supply1"), |x| NetType::Supply1(Box::new(x))),
+        map(keyword("triand"), |x| NetType::Triand(Box::new(x))),
+        map(keyword("trior"), |x| NetType::Trior(Box::new(x))),
+        map(keyword("trireg"), |x| NetType::Trireg(Box::new(x))),
+        map(keyword("tri0"), |x| NetType::Tri0(Box::new(x))),
+        map(keyword("tri1"), |x| NetType::Tri1(Box::new(x))),
+        map(keyword("tri"), |x| NetType::Tri(Box::new(x))),
+        map(keyword("uwire"), |x| NetType::Uwire(Box::new(x))),
+        map(keyword("wire"), |x| NetType::Wire(Box::new(x))),
+        map(keyword("wand"), |x| NetType::Wand(Box::new(x))),
+        map(keyword("wor"), |x| NetType::Wor(Box::new(x))),
     ))(s)
 }
 
@@ -541,7 +567,9 @@ pub fn net_type(s: Span) -> IResult<Span, NetType> {
 pub fn net_port_type(s: Span) -> IResult<Span, NetPortType> {
     alt((
         net_port_type_data_type,
-        map(net_type_identifier, |x| NetPortType::NetTypeIdentifier(x)),
+        map(net_type_identifier, |x| {
+            NetPortType::NetTypeIdentifier(Box::new(x))
+        }),
         net_port_type_interconnect,
     ))(s)
 }
@@ -552,7 +580,7 @@ pub fn net_port_type_data_type(s: Span) -> IResult<Span, NetPortType> {
     let (s, b) = data_type_or_implicit(s)?;
     Ok((
         s,
-        NetPortType::DataType(NetPortTypeDataType { nodes: (a, b) }),
+        NetPortType::DataType(Box::new(NetPortTypeDataType { nodes: (a, b) })),
     ))
 }
 
@@ -562,7 +590,7 @@ pub fn net_port_type_interconnect(s: Span) -> IResult<Span, NetPortType> {
     let (s, b) = implicit_data_type(s)?;
     Ok((
         s,
-        NetPortType::Interconnect(NetPortTypeInterconnect { nodes: (a, b) }),
+        NetPortType::Interconnect(Box::new(NetPortTypeInterconnect { nodes: (a, b) })),
     ))
 }
 
@@ -575,7 +603,7 @@ pub fn variable_port_type(s: Span) -> IResult<Span, VariablePortType> {
 #[parser]
 pub fn var_data_type(s: Span) -> IResult<Span, VarDataType> {
     alt((
-        map(data_type, |x| VarDataType::DataType(x)),
+        map(data_type, |x| VarDataType::DataType(Box::new(x))),
         var_data_type_var,
     ))(s)
 }
@@ -584,14 +612,17 @@ pub fn var_data_type(s: Span) -> IResult<Span, VarDataType> {
 pub fn var_data_type_var(s: Span) -> IResult<Span, VarDataType> {
     let (s, a) = keyword("var")(s)?;
     let (s, b) = data_type_or_implicit(s)?;
-    Ok((s, VarDataType::Var(VarDataTypeVar { nodes: (a, b) })))
+    Ok((
+        s,
+        VarDataType::Var(Box::new(VarDataTypeVar { nodes: (a, b) })),
+    ))
 }
 
 #[parser]
 pub fn signing(s: Span) -> IResult<Span, Signing> {
     alt((
-        map(keyword("signed"), |x| Signing::Signed(x)),
-        map(keyword("unsigned"), |x| Signing::Unsigned(x)),
+        map(keyword("signed"), |x| Signing::Signed(Box::new(x))),
+        map(keyword("unsigned"), |x| Signing::Unsigned(Box::new(x))),
     ))(s)
 }
 
@@ -599,11 +630,15 @@ pub fn signing(s: Span) -> IResult<Span, Signing> {
 #[parser]
 pub fn simple_type(s: Span) -> IResult<Span, SimpleType> {
     alt((
-        map(integer_type, |x| SimpleType::IntegerType(x)),
-        map(non_integer_type, |x| SimpleType::NonIntegerType(x)),
-        map(ps_type_identifier, |x| SimpleType::PsTypeIdentifier(x)),
+        map(integer_type, |x| SimpleType::IntegerType(Box::new(x))),
+        map(non_integer_type, |x| {
+            SimpleType::NonIntegerType(Box::new(x))
+        }),
+        map(ps_type_identifier, |x| {
+            SimpleType::PsTypeIdentifier(Box::new(x))
+        }),
         map(ps_parameter_identifier, |x| {
-            SimpleType::PsParameterIdentifier(x)
+            SimpleType::PsParameterIdentifier(Box::new(x))
         }),
     ))(s)
 }
@@ -626,19 +661,19 @@ pub fn struct_union_member(s: Span) -> IResult<Span, StructUnionMember> {
 #[parser]
 pub fn data_type_or_void(s: Span) -> IResult<Span, DataTypeOrVoid> {
     alt((
-        map(data_type, |x| DataTypeOrVoid::DataType(x)),
-        map(keyword("void"), |x| DataTypeOrVoid::Void(x)),
+        map(data_type, |x| DataTypeOrVoid::DataType(Box::new(x))),
+        map(keyword("void"), |x| DataTypeOrVoid::Void(Box::new(x))),
     ))(s)
 }
 
 #[parser]
 pub fn struct_union(s: Span) -> IResult<Span, StructUnion> {
     alt((
-        map(keyword("struct"), |x| StructUnion::Struct(x)),
+        map(keyword("struct"), |x| StructUnion::Struct(Box::new(x))),
         map(pair(keyword("union"), keyword("tagged")), |x| {
-            StructUnion::UnionTagged(x)
+            StructUnion::UnionTagged(Box::new(x))
         }),
-        map(keyword("union"), |x| StructUnion::Union(x)),
+        map(keyword("union"), |x| StructUnion::Union(Box::new(x))),
     ))(s)
 }
 
@@ -653,7 +688,7 @@ pub fn type_reference_expression(s: Span) -> IResult<Span, TypeReference> {
     let (s, b) = paren(expression)(s)?;
     Ok((
         s,
-        TypeReference::Expression(TypeReferenceExpression { nodes: (a, b) }),
+        TypeReference::Expression(Box::new(TypeReferenceExpression { nodes: (a, b) })),
     ))
 }
 
@@ -663,7 +698,7 @@ pub fn type_reference_data_type(s: Span) -> IResult<Span, TypeReference> {
     let (s, b) = paren(data_type)(s)?;
     Ok((
         s,
-        TypeReference::DataType(TypeReferenceDataType { nodes: (a, b) }),
+        TypeReference::DataType(Box::new(TypeReferenceDataType { nodes: (a, b) })),
     ))
 }
 

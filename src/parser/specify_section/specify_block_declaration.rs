@@ -14,11 +14,11 @@ pub struct SpecifyBlock {
 
 #[derive(Clone, Debug, Node)]
 pub enum SpecifyItem {
-    SpecparamDeclaration(SpecparamDeclaration),
-    PulsestyleDeclaration(PulsestyleDeclaration),
-    ShowcancelledDeclaration(ShowcancelledDeclaration),
-    PathDeclaration(PathDeclaration),
-    SystemTimingCheck(SystemTimingCheck),
+    SpecparamDeclaration(Box<SpecparamDeclaration>),
+    PulsestyleDeclaration(Box<PulsestyleDeclaration>),
+    ShowcancelledDeclaration(Box<ShowcancelledDeclaration>),
+    PathDeclaration(Box<PathDeclaration>),
+    SystemTimingCheck(Box<SystemTimingCheck>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -45,16 +45,20 @@ pub fn specify_block(s: Span) -> IResult<Span, SpecifyBlock> {
 pub fn specify_item(s: Span) -> IResult<Span, SpecifyItem> {
     alt((
         map(specparam_declaration, |x| {
-            SpecifyItem::SpecparamDeclaration(x)
+            SpecifyItem::SpecparamDeclaration(Box::new(x))
         }),
         map(pulsestyle_declaration, |x| {
-            SpecifyItem::PulsestyleDeclaration(x)
+            SpecifyItem::PulsestyleDeclaration(Box::new(x))
         }),
         map(showcancelled_declaration, |x| {
-            SpecifyItem::ShowcancelledDeclaration(x)
+            SpecifyItem::ShowcancelledDeclaration(Box::new(x))
         }),
-        map(path_declaration, |x| SpecifyItem::PathDeclaration(x)),
-        map(system_timing_check, |x| SpecifyItem::SystemTimingCheck(x)),
+        map(path_declaration, |x| {
+            SpecifyItem::PathDeclaration(Box::new(x))
+        }),
+        map(system_timing_check, |x| {
+            SpecifyItem::SystemTimingCheck(Box::new(x))
+        }),
     ))(s)
 }
 

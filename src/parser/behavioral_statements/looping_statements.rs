@@ -9,12 +9,12 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum LoopStatement {
-    Forever(LoopStatementForever),
-    Repeat(LoopStatementRepeat),
-    While(LoopStatementWhile),
-    For(LoopStatementFor),
-    DoWhile(LoopStatementDoWhile),
-    Foreach(LoopStatementForeach),
+    Forever(Box<LoopStatementForever>),
+    Repeat(Box<LoopStatementRepeat>),
+    While(Box<LoopStatementWhile>),
+    For(Box<LoopStatementFor>),
+    DoWhile(Box<LoopStatementDoWhile>),
+    Foreach(Box<LoopStatementForeach>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -63,8 +63,8 @@ pub struct LoopStatementForeach {
 
 #[derive(Clone, Debug, Node)]
 pub enum ForInitialization {
-    ListOfVariableAssignments(ListOfVariableAssignments),
-    Declaration(ForInitializationDeclaration),
+    ListOfVariableAssignments(Box<ListOfVariableAssignments>),
+    Declaration(Box<ForInitializationDeclaration>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -93,9 +93,9 @@ pub struct ForStep {
 
 #[derive(Clone, Debug, Node)]
 pub enum ForStepAssignment {
-    OperatorAssignment(OperatorAssignment),
-    IncOrDecExpression(IncOrDecExpression),
-    FunctionSubroutineCall(FunctionSubroutineCall),
+    OperatorAssignment(Box<OperatorAssignment>),
+    IncOrDecExpression(Box<IncOrDecExpression>),
+    FunctionSubroutineCall(Box<FunctionSubroutineCall>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -123,7 +123,7 @@ pub fn loop_statement_forever(s: Span) -> IResult<Span, LoopStatement> {
     let (s, b) = statement_or_null(s)?;
     Ok((
         s,
-        LoopStatement::Forever(LoopStatementForever { nodes: (a, b) }),
+        LoopStatement::Forever(Box::new(LoopStatementForever { nodes: (a, b) })),
     ))
 }
 
@@ -134,7 +134,7 @@ pub fn loop_statement_repeat(s: Span) -> IResult<Span, LoopStatement> {
     let (s, c) = statement_or_null(s)?;
     Ok((
         s,
-        LoopStatement::Repeat(LoopStatementRepeat { nodes: (a, b, c) }),
+        LoopStatement::Repeat(Box::new(LoopStatementRepeat { nodes: (a, b, c) })),
     ))
 }
 
@@ -145,7 +145,7 @@ pub fn loop_statement_while(s: Span) -> IResult<Span, LoopStatement> {
     let (s, c) = statement_or_null(s)?;
     Ok((
         s,
-        LoopStatement::While(LoopStatementWhile { nodes: (a, b, c) }),
+        LoopStatement::While(Box::new(LoopStatementWhile { nodes: (a, b, c) })),
     ))
 }
 
@@ -160,7 +160,10 @@ pub fn loop_statement_for(s: Span) -> IResult<Span, LoopStatement> {
         opt(for_step),
     )))(s)?;
     let (s, c) = statement_or_null(s)?;
-    Ok((s, LoopStatement::For(LoopStatementFor { nodes: (a, b, c) })))
+    Ok((
+        s,
+        LoopStatement::For(Box::new(LoopStatementFor { nodes: (a, b, c) })),
+    ))
 }
 
 #[parser]
@@ -172,9 +175,9 @@ pub fn loop_statement_do_while(s: Span) -> IResult<Span, LoopStatement> {
     let (s, e) = symbol(";")(s)?;
     Ok((
         s,
-        LoopStatement::DoWhile(LoopStatementDoWhile {
+        LoopStatement::DoWhile(Box::new(LoopStatementDoWhile {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
@@ -188,7 +191,7 @@ pub fn loop_statement_foreach(s: Span) -> IResult<Span, LoopStatement> {
     let (s, c) = statement(s)?;
     Ok((
         s,
-        LoopStatement::Foreach(LoopStatementForeach { nodes: (a, b, c) }),
+        LoopStatement::Foreach(Box::new(LoopStatementForeach { nodes: (a, b, c) })),
     ))
 }
 
@@ -196,7 +199,7 @@ pub fn loop_statement_foreach(s: Span) -> IResult<Span, LoopStatement> {
 pub fn for_initialization(s: Span) -> IResult<Span, ForInitialization> {
     alt((
         map(list_of_variable_assignments, |x| {
-            ForInitialization::ListOfVariableAssignments(x)
+            ForInitialization::ListOfVariableAssignments(Box::new(x))
         }),
         for_initialization_declaration,
     ))(s)
@@ -207,7 +210,7 @@ pub fn for_initialization_declaration(s: Span) -> IResult<Span, ForInitializatio
     let (s, a) = list(symbol(","), for_variable_declaration)(s)?;
     Ok((
         s,
-        ForInitialization::Declaration(ForInitializationDeclaration { nodes: (a,) }),
+        ForInitialization::Declaration(Box::new(ForInitializationDeclaration { nodes: (a,) })),
     ))
 }
 
@@ -238,13 +241,13 @@ pub fn for_step(s: Span) -> IResult<Span, ForStep> {
 pub fn for_step_assignment(s: Span) -> IResult<Span, ForStepAssignment> {
     alt((
         map(operator_assignment, |x| {
-            ForStepAssignment::OperatorAssignment(x)
+            ForStepAssignment::OperatorAssignment(Box::new(x))
         }),
         map(inc_or_dec_expression, |x| {
-            ForStepAssignment::IncOrDecExpression(x)
+            ForStepAssignment::IncOrDecExpression(Box::new(x))
         }),
         map(function_subroutine_call, |x| {
-            ForStepAssignment::FunctionSubroutineCall(x)
+            ForStepAssignment::FunctionSubroutineCall(Box::new(x))
         }),
     ))(s)
 }

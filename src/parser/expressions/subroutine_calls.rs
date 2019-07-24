@@ -25,9 +25,9 @@ pub struct TfCall {
 
 #[derive(Clone, Debug, Node)]
 pub enum SystemTfCall {
-    ArgOptionl(SystemTfCallArgOptional),
-    ArgDataType(SystemTfCallArgDataType),
-    ArgExpression(SystemTfCallArgExpression),
+    ArgOptionl(Box<SystemTfCallArgOptional>),
+    ArgDataType(Box<SystemTfCallArgDataType>),
+    ArgExpression(Box<SystemTfCallArgExpression>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -74,8 +74,8 @@ pub struct FunctionSubroutineCall {
 
 #[derive(Clone, Debug, Node)]
 pub enum ListOfArguments {
-    Ordered(ListOfArgumentsOrdered),
-    Named(ListOfArgumentsNamed),
+    Ordered(Box<ListOfArgumentsOrdered>),
+    Named(Box<ListOfArgumentsNamed>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -103,8 +103,8 @@ pub struct MethodCall {
 
 #[derive(Clone, Debug, Node)]
 pub enum MethodCallBody {
-    User(MethodCallBodyUser),
-    BuiltInMethodCall(BuiltInMethodCall),
+    User(Box<MethodCallBodyUser>),
+    BuiltInMethodCall(Box<BuiltInMethodCall>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -118,8 +118,8 @@ pub struct MethodCallBodyUser {
 
 #[derive(Clone, Debug, Node)]
 pub enum BuiltInMethodCall {
-    ArrayManipulationCall(ArrayManipulationCall),
-    RandomizeCall(RandomizeCall),
+    ArrayManipulationCall(Box<ArrayManipulationCall>),
+    RandomizeCall(Box<RandomizeCall>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -148,23 +148,23 @@ pub struct RandomizeCall {
 
 #[derive(Clone, Debug, Node)]
 pub enum VariableIdentifierListOrNull {
-    VariableIdentifierList(VariableIdentifierList),
-    Null(Keyword),
+    VariableIdentifierList(Box<VariableIdentifierList>),
+    Null(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum MethodCallRoot {
-    Primary(Primary),
-    ImplicitClassHandle(ImplicitClassHandle),
+    Primary(Box<Primary>),
+    ImplicitClassHandle(Box<ImplicitClassHandle>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum ArrayMethodName {
-    MethodIdentifier(MethodIdentifier),
-    Unique(Keyword),
-    And(Keyword),
-    Or(Keyword),
-    Xor(Keyword),
+    MethodIdentifier(Box<MethodIdentifier>),
+    Unique(Box<Keyword>),
+    And(Box<Keyword>),
+    Or(Box<Keyword>),
+    Xor(Box<Keyword>),
 }
 
 // -----------------------------------------------------------------------------
@@ -198,7 +198,7 @@ pub fn system_tf_call_arg_optional(s: Span) -> IResult<Span, SystemTfCall> {
     let (s, b) = opt(paren(list_of_arguments))(s)?;
     Ok((
         s,
-        SystemTfCall::ArgOptionl(SystemTfCallArgOptional { nodes: (a, b) }),
+        SystemTfCall::ArgOptionl(Box::new(SystemTfCallArgOptional { nodes: (a, b) })),
     ))
 }
 
@@ -208,7 +208,7 @@ pub fn system_tf_call_arg_data_type(s: Span) -> IResult<Span, SystemTfCall> {
     let (s, b) = paren(pair(data_type, opt(pair(symbol(","), expression))))(s)?;
     Ok((
         s,
-        SystemTfCall::ArgDataType(SystemTfCallArgDataType { nodes: (a, b) }),
+        SystemTfCall::ArgDataType(Box::new(SystemTfCallArgDataType { nodes: (a, b) })),
     ))
 }
 
@@ -221,7 +221,7 @@ pub fn system_tf_call_arg_expression(s: Span) -> IResult<Span, SystemTfCall> {
     ))(s)?;
     Ok((
         s,
-        SystemTfCall::ArgExpression(SystemTfCallArgExpression { nodes: (a, b) }),
+        SystemTfCall::ArgExpression(Box::new(SystemTfCallArgExpression { nodes: (a, b) })),
     ))
 }
 
@@ -269,7 +269,7 @@ pub fn list_of_arguments_ordered(s: Span) -> IResult<Span, ListOfArguments> {
     )))(s)?;
     Ok((
         s,
-        ListOfArguments::Ordered(ListOfArgumentsOrdered { nodes: (a, b) }),
+        ListOfArguments::Ordered(Box::new(ListOfArgumentsOrdered { nodes: (a, b) })),
     ))
 }
 
@@ -286,9 +286,9 @@ pub fn list_of_arguments_named(s: Span) -> IResult<Span, ListOfArguments> {
     )))(s)?;
     Ok((
         s,
-        ListOfArguments::Named(ListOfArgumentsNamed {
+        ListOfArguments::Named(Box::new(ListOfArgumentsNamed {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -306,7 +306,7 @@ pub fn method_call_body(s: Span) -> IResult<Span, MethodCallBody> {
     alt((
         method_call_body_user,
         map(built_in_method_call, |x| {
-            MethodCallBody::BuiltInMethodCall(x)
+            MethodCallBody::BuiltInMethodCall(Box::new(x))
         }),
     ))(s)
 }
@@ -318,7 +318,7 @@ pub fn method_call_body_user(s: Span) -> IResult<Span, MethodCallBody> {
     let (s, c) = opt(paren(list_of_arguments))(s)?;
     Ok((
         s,
-        MethodCallBody::User(MethodCallBodyUser { nodes: (a, b, c) }),
+        MethodCallBody::User(Box::new(MethodCallBodyUser { nodes: (a, b, c) })),
     ))
 }
 
@@ -326,9 +326,11 @@ pub fn method_call_body_user(s: Span) -> IResult<Span, MethodCallBody> {
 pub fn built_in_method_call(s: Span) -> IResult<Span, BuiltInMethodCall> {
     alt((
         map(array_manipulation_call, |x| {
-            BuiltInMethodCall::ArrayManipulationCall(x)
+            BuiltInMethodCall::ArrayManipulationCall(Box::new(x))
         }),
-        map(randomize_call, |x| BuiltInMethodCall::RandomizeCall(x)),
+        map(randomize_call, |x| {
+            BuiltInMethodCall::RandomizeCall(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -368,18 +370,20 @@ pub fn randomize_call(s: Span) -> IResult<Span, RandomizeCall> {
 pub fn variable_identifier_list_or_null(s: Span) -> IResult<Span, VariableIdentifierListOrNull> {
     alt((
         map(variable_identifier_list, |x| {
-            VariableIdentifierListOrNull::VariableIdentifierList(x)
+            VariableIdentifierListOrNull::VariableIdentifierList(Box::new(x))
         }),
-        map(keyword("null"), |x| VariableIdentifierListOrNull::Null(x)),
+        map(keyword("null"), |x| {
+            VariableIdentifierListOrNull::Null(Box::new(x))
+        }),
     ))(s)
 }
 
 #[parser]
 pub fn method_call_root(s: Span) -> IResult<Span, MethodCallRoot> {
     alt((
-        map(primary, |x| MethodCallRoot::Primary(x)),
+        map(primary, |x| MethodCallRoot::Primary(Box::new(x))),
         map(implicit_class_handle, |x| {
-            MethodCallRoot::ImplicitClassHandle(x)
+            MethodCallRoot::ImplicitClassHandle(Box::new(x))
         }),
     ))(s)
 }
@@ -387,11 +391,13 @@ pub fn method_call_root(s: Span) -> IResult<Span, MethodCallRoot> {
 #[parser]
 pub fn array_method_name(s: Span) -> IResult<Span, ArrayMethodName> {
     alt((
-        map(keyword("unique"), |x| ArrayMethodName::Unique(x)),
-        map(keyword("and"), |x| ArrayMethodName::And(x)),
-        map(keyword("or"), |x| ArrayMethodName::Or(x)),
-        map(keyword("xor"), |x| ArrayMethodName::Xor(x)),
-        map(method_identifier, |x| ArrayMethodName::MethodIdentifier(x)),
+        map(keyword("unique"), |x| ArrayMethodName::Unique(Box::new(x))),
+        map(keyword("and"), |x| ArrayMethodName::And(Box::new(x))),
+        map(keyword("or"), |x| ArrayMethodName::Or(Box::new(x))),
+        map(keyword("xor"), |x| ArrayMethodName::Xor(Box::new(x))),
+        map(method_identifier, |x| {
+            ArrayMethodName::MethodIdentifier(Box::new(x))
+        }),
     ))(s)
 }
 

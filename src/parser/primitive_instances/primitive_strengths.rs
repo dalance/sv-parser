@@ -7,9 +7,9 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum PulldownStrength {
-    Strength01(PulldownStrength01),
-    Strength10(PulldownStrength10),
-    Strength0(PulldownStrength0),
+    Strength01(Box<PulldownStrength01>),
+    Strength10(Box<PulldownStrength10>),
+    Strength0(Box<PulldownStrength0>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -29,9 +29,9 @@ pub struct PulldownStrength0 {
 
 #[derive(Clone, Debug, Node)]
 pub enum PullupStrength {
-    Strength01(PullupStrength01),
-    Strength10(PullupStrength10),
-    Strength1(PullupStrength1),
+    Strength01(Box<PullupStrength01>),
+    Strength10(Box<PullupStrength10>),
+    Strength1(Box<PullupStrength1>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -61,7 +61,7 @@ pub fn pulldown_strength01(s: Span) -> IResult<Span, PulldownStrength> {
     let (s, a) = paren(triple(strength0, symbol(","), strength1))(s)?;
     Ok((
         s,
-        PulldownStrength::Strength01(PulldownStrength01 { nodes: (a,) }),
+        PulldownStrength::Strength01(Box::new(PulldownStrength01 { nodes: (a,) })),
     ))
 }
 
@@ -70,7 +70,7 @@ pub fn pulldown_strength10(s: Span) -> IResult<Span, PulldownStrength> {
     let (s, a) = paren(triple(strength1, symbol(","), strength0))(s)?;
     Ok((
         s,
-        PulldownStrength::Strength10(PulldownStrength10 { nodes: (a,) }),
+        PulldownStrength::Strength10(Box::new(PulldownStrength10 { nodes: (a,) })),
     ))
 }
 
@@ -79,7 +79,7 @@ pub fn pulldown_strength0(s: Span) -> IResult<Span, PulldownStrength> {
     let (s, a) = paren(strength0)(s)?;
     Ok((
         s,
-        PulldownStrength::Strength0(PulldownStrength0 { nodes: (a,) }),
+        PulldownStrength::Strength0(Box::new(PulldownStrength0 { nodes: (a,) })),
     ))
 }
 
@@ -93,7 +93,7 @@ pub fn pullup_strength01(s: Span) -> IResult<Span, PullupStrength> {
     let (s, a) = paren(triple(strength0, symbol(","), strength1))(s)?;
     Ok((
         s,
-        PullupStrength::Strength01(PullupStrength01 { nodes: (a,) }),
+        PullupStrength::Strength01(Box::new(PullupStrength01 { nodes: (a,) })),
     ))
 }
 
@@ -102,7 +102,7 @@ pub fn pullup_strength10(s: Span) -> IResult<Span, PullupStrength> {
     let (s, a) = paren(triple(strength1, symbol(","), strength0))(s)?;
     Ok((
         s,
-        PullupStrength::Strength10(PullupStrength10 { nodes: (a,) }),
+        PullupStrength::Strength10(Box::new(PullupStrength10 { nodes: (a,) })),
     ))
 }
 
@@ -111,7 +111,7 @@ pub fn pullup_strength1(s: Span) -> IResult<Span, PullupStrength> {
     let (s, a) = paren(strength1)(s)?;
     Ok((
         s,
-        PullupStrength::Strength1(PullupStrength1 { nodes: (a,) }),
+        PullupStrength::Strength1(Box::new(PullupStrength1 { nodes: (a,) })),
     ))
 }
 

@@ -18,10 +18,10 @@ pub struct AlwaysConstruct {
 
 #[derive(Clone, Debug, Node)]
 pub enum AlwaysKeyword {
-    Always(Keyword),
-    AlwaysComb(Keyword),
-    AlwaysLatch(Keyword),
-    AlwaysFf(Keyword),
+    Always(Box<Keyword>),
+    AlwaysComb(Box<Keyword>),
+    AlwaysLatch(Box<Keyword>),
+    AlwaysFf(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -31,10 +31,10 @@ pub struct FinalConstruct {
 
 #[derive(Clone, Debug, Node)]
 pub enum BlockingAssignment {
-    Variable(BlockingAssignmentVariable),
-    NonrangeVariable(BlockingAssignmentNonrangeVariable),
-    HierarchicalVariable(BlockingAssignmentHierarchicalVariable),
-    OperatorAssignment(OperatorAssignment),
+    Variable(Box<BlockingAssignmentVariable>),
+    NonrangeVariable(Box<BlockingAssignmentNonrangeVariable>),
+    HierarchicalVariable(Box<BlockingAssignmentHierarchicalVariable>),
+    OperatorAssignment(Box<OperatorAssignment>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -80,12 +80,12 @@ pub struct NonblockingAssignment {
 
 #[derive(Clone, Debug, Node)]
 pub enum ProceduralContinuousAssignment {
-    Assign(ProceduralContinuousAssignmentAssign),
-    Deassign(ProceduralContinuousAssignmentDeassign),
-    ForceVariable(ProceduralContinuousAssignmentForceVariable),
-    ForceNet(ProceduralContinuousAssignmentForceNet),
-    ReleaseVariable(ProceduralContinuousAssignmentReleaseVariable),
-    ReleaseNet(ProceduralContinuousAssignmentReleaseNet),
+    Assign(Box<ProceduralContinuousAssignmentAssign>),
+    Deassign(Box<ProceduralContinuousAssignmentDeassign>),
+    ForceVariable(Box<ProceduralContinuousAssignmentForceVariable>),
+    ForceNet(Box<ProceduralContinuousAssignmentForceNet>),
+    ReleaseVariable(Box<ProceduralContinuousAssignmentReleaseVariable>),
+    ReleaseNet(Box<ProceduralContinuousAssignmentReleaseNet>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -142,10 +142,16 @@ pub fn always_construct(s: Span) -> IResult<Span, AlwaysConstruct> {
 #[parser]
 pub fn always_keyword(s: Span) -> IResult<Span, AlwaysKeyword> {
     alt((
-        map(keyword("always_comb"), |x| AlwaysKeyword::AlwaysComb(x)),
-        map(keyword("always_latch"), |x| AlwaysKeyword::AlwaysLatch(x)),
-        map(keyword("always_ff"), |x| AlwaysKeyword::AlwaysFf(x)),
-        map(keyword("always"), |x| AlwaysKeyword::Always(x)),
+        map(keyword("always_comb"), |x| {
+            AlwaysKeyword::AlwaysComb(Box::new(x))
+        }),
+        map(keyword("always_latch"), |x| {
+            AlwaysKeyword::AlwaysLatch(Box::new(x))
+        }),
+        map(keyword("always_ff"), |x| {
+            AlwaysKeyword::AlwaysFf(Box::new(x))
+        }),
+        map(keyword("always"), |x| AlwaysKeyword::Always(Box::new(x))),
     ))(s)
 }
 
@@ -163,7 +169,7 @@ pub fn blocking_assignment(s: Span) -> IResult<Span, BlockingAssignment> {
         blocking_assignment_nonrange_variable,
         blocking_assignment_hierarchical_variable,
         map(operator_assignment, |x| {
-            BlockingAssignment::OperatorAssignment(x)
+            BlockingAssignment::OperatorAssignment(Box::new(x))
         }),
     ))(s)
 }
@@ -176,9 +182,9 @@ pub fn blocking_assignment_variable(s: Span) -> IResult<Span, BlockingAssignment
     let (s, d) = expression(s)?;
     Ok((
         s,
-        BlockingAssignment::Variable(BlockingAssignmentVariable {
+        BlockingAssignment::Variable(Box::new(BlockingAssignmentVariable {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -189,9 +195,9 @@ pub fn blocking_assignment_nonrange_variable(s: Span) -> IResult<Span, BlockingA
     let (s, c) = dynamic_array_new(s)?;
     Ok((
         s,
-        BlockingAssignment::NonrangeVariable(BlockingAssignmentNonrangeVariable {
+        BlockingAssignment::NonrangeVariable(Box::new(BlockingAssignmentNonrangeVariable {
             nodes: (a, b, c),
-        }),
+        })),
     ))
 }
 
@@ -204,9 +210,11 @@ pub fn blocking_assignment_hierarchical_variable(s: Span) -> IResult<Span, Block
     let (s, e) = class_new(s)?;
     Ok((
         s,
-        BlockingAssignment::HierarchicalVariable(BlockingAssignmentHierarchicalVariable {
-            nodes: (a, b, c, d, e),
-        }),
+        BlockingAssignment::HierarchicalVariable(Box::new(
+            BlockingAssignmentHierarchicalVariable {
+                nodes: (a, b, c, d, e),
+            },
+        )),
     ))
 }
 
@@ -271,9 +279,9 @@ pub fn procedural_continuous_assignment_assign(
     let (s, b) = variable_assignment(s)?;
     Ok((
         s,
-        ProceduralContinuousAssignment::Assign(ProceduralContinuousAssignmentAssign {
+        ProceduralContinuousAssignment::Assign(Box::new(ProceduralContinuousAssignmentAssign {
             nodes: (a, b),
-        }),
+        })),
     ))
 }
 
@@ -285,9 +293,9 @@ pub fn procedural_continuous_assignment_deassign(
     let (s, b) = variable_lvalue(s)?;
     Ok((
         s,
-        ProceduralContinuousAssignment::Deassign(ProceduralContinuousAssignmentDeassign {
-            nodes: (a, b),
-        }),
+        ProceduralContinuousAssignment::Deassign(Box::new(
+            ProceduralContinuousAssignmentDeassign { nodes: (a, b) },
+        )),
     ))
 }
 
@@ -299,9 +307,9 @@ pub fn procedural_continuous_assignment_force_variable(
     let (s, b) = variable_assignment(s)?;
     Ok((
         s,
-        ProceduralContinuousAssignment::ForceVariable(
+        ProceduralContinuousAssignment::ForceVariable(Box::new(
             ProceduralContinuousAssignmentForceVariable { nodes: (a, b) },
-        ),
+        )),
     ))
 }
 
@@ -313,9 +321,9 @@ pub fn procedural_continuous_assignment_force_net(
     let (s, b) = net_assignment(s)?;
     Ok((
         s,
-        ProceduralContinuousAssignment::ForceNet(ProceduralContinuousAssignmentForceNet {
-            nodes: (a, b),
-        }),
+        ProceduralContinuousAssignment::ForceNet(Box::new(
+            ProceduralContinuousAssignmentForceNet { nodes: (a, b) },
+        )),
     ))
 }
 
@@ -327,9 +335,9 @@ pub fn procedural_continuous_assignment_release_variable(
     let (s, b) = variable_lvalue(s)?;
     Ok((
         s,
-        ProceduralContinuousAssignment::ReleaseVariable(
+        ProceduralContinuousAssignment::ReleaseVariable(Box::new(
             ProceduralContinuousAssignmentReleaseVariable { nodes: (a, b) },
-        ),
+        )),
     ))
 }
 
@@ -341,9 +349,9 @@ pub fn procedural_continuous_assignment_release_net(
     let (s, b) = net_lvalue(s)?;
     Ok((
         s,
-        ProceduralContinuousAssignment::ReleaseNet(ProceduralContinuousAssignmentReleaseNet {
-            nodes: (a, b),
-        }),
+        ProceduralContinuousAssignment::ReleaseNet(Box::new(
+            ProceduralContinuousAssignmentReleaseNet { nodes: (a, b) },
+        )),
     ))
 }
 

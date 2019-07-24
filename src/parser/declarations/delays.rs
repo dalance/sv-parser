@@ -9,8 +9,8 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum Delay3 {
-    Single(Delay3Single),
-    Mintypmax(Delay3Mintypmax),
+    Single(Box<Delay3Single>),
+    Mintypmax(Box<Delay3Mintypmax>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -35,8 +35,8 @@ pub struct Delay3Mintypmax {
 
 #[derive(Clone, Debug, Node)]
 pub enum Delay2 {
-    Single(Delay2Single),
-    Mintypmax(Delay2Mintypmax),
+    Single(Box<Delay2Single>),
+    Mintypmax(Box<Delay2Mintypmax>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -54,11 +54,11 @@ pub struct Delay2Mintypmax {
 
 #[derive(Clone, Debug, Node)]
 pub enum DelayValue {
-    UnsignedNumber(UnsignedNumber),
-    RealNumber(RealNumber),
-    PsIdentifier(PsIdentifier),
-    TimeLiteral(TimeLiteral),
-    Step1(Keyword),
+    UnsignedNumber(Box<UnsignedNumber>),
+    RealNumber(Box<RealNumber>),
+    PsIdentifier(Box<PsIdentifier>),
+    TimeLiteral(Box<TimeLiteral>),
+    Step1(Box<Keyword>),
 }
 
 // -----------------------------------------------------------------------------
@@ -72,7 +72,7 @@ pub fn delay3(s: Span) -> IResult<Span, Delay3> {
 pub fn delay3_single(s: Span) -> IResult<Span, Delay3> {
     let (s, a) = symbol("#")(s)?;
     let (s, b) = delay_value(s)?;
-    Ok((s, Delay3::Single(Delay3Single { nodes: (a, b) })))
+    Ok((s, Delay3::Single(Box::new(Delay3Single { nodes: (a, b) }))))
 }
 
 #[parser]
@@ -86,7 +86,10 @@ pub fn delay3_mintypmax(s: Span) -> IResult<Span, Delay3> {
             opt(pair(symbol(","), mintypmax_expression)),
         )),
     ))(s)?;
-    Ok((s, Delay3::Mintypmax(Delay3Mintypmax { nodes: (a, b) })))
+    Ok((
+        s,
+        Delay3::Mintypmax(Box::new(Delay3Mintypmax { nodes: (a, b) })),
+    ))
 }
 
 #[parser]
@@ -98,7 +101,7 @@ pub fn delay2(s: Span) -> IResult<Span, Delay2> {
 pub fn delay2_single(s: Span) -> IResult<Span, Delay2> {
     let (s, a) = symbol("#")(s)?;
     let (s, b) = delay_value(s)?;
-    Ok((s, Delay2::Single(Delay2Single { nodes: (a, b) })))
+    Ok((s, Delay2::Single(Box::new(Delay2Single { nodes: (a, b) }))))
 }
 
 #[parser]
@@ -108,16 +111,19 @@ pub fn delay2_mintypmax(s: Span) -> IResult<Span, Delay2> {
         mintypmax_expression,
         opt(pair(symbol(","), mintypmax_expression)),
     ))(s)?;
-    Ok((s, Delay2::Mintypmax(Delay2Mintypmax { nodes: (a, b) })))
+    Ok((
+        s,
+        Delay2::Mintypmax(Box::new(Delay2Mintypmax { nodes: (a, b) })),
+    ))
 }
 
 #[parser]
 pub fn delay_value(s: Span) -> IResult<Span, DelayValue> {
     alt((
-        map(unsigned_number, |x| DelayValue::UnsignedNumber(x)),
-        map(real_number, |x| DelayValue::RealNumber(x)),
-        map(ps_identifier, |x| DelayValue::PsIdentifier(x)),
-        map(time_literal, |x| DelayValue::TimeLiteral(x)),
-        map(keyword("1step"), |x| DelayValue::Step1(x)),
+        map(unsigned_number, |x| DelayValue::UnsignedNumber(Box::new(x))),
+        map(real_number, |x| DelayValue::RealNumber(Box::new(x))),
+        map(ps_identifier, |x| DelayValue::PsIdentifier(Box::new(x))),
+        map(time_literal, |x| DelayValue::TimeLiteral(Box::new(x))),
+        map(keyword("1step"), |x| DelayValue::Step1(Box::new(x))),
     ))(s)
 }

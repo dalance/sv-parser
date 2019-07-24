@@ -10,8 +10,8 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum StatementOrNull {
-    Statement(Statement),
-    Attribute(StatementOrNullAttribute),
+    Statement(Box<Statement>),
+    Attribute(Box<StatementOrNullAttribute>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -59,8 +59,8 @@ pub struct FunctionStatement {
 
 #[derive(Clone, Debug, Node)]
 pub enum FunctionStatementOrNull {
-    Statement(FunctionStatement),
-    Attribute(FunctionStatementOrNullAttribute),
+    Statement(Box<FunctionStatement>),
+    Attribute(Box<FunctionStatementOrNullAttribute>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -78,7 +78,7 @@ pub struct VariableIdentifierList {
 #[parser]
 pub fn statement_or_null(s: Span) -> IResult<Span, StatementOrNull> {
     alt((
-        map(statement, |x| StatementOrNull::Statement(x)),
+        map(statement, |x| StatementOrNull::Statement(Box::new(x))),
         statement_or_null_attribute,
     ))(s)
 }
@@ -89,7 +89,7 @@ pub fn statement_or_null_attribute(s: Span) -> IResult<Span, StatementOrNull> {
     let (s, b) = symbol(";")(s)?;
     Ok((
         s,
-        StatementOrNull::Attribute(StatementOrNullAttribute { nodes: (a, b) }),
+        StatementOrNull::Attribute(Box::new(StatementOrNullAttribute { nodes: (a, b) })),
     ))
 }
 
@@ -171,7 +171,7 @@ pub fn function_statement(s: Span) -> IResult<Span, FunctionStatement> {
 pub fn function_statement_or_null(s: Span) -> IResult<Span, FunctionStatementOrNull> {
     alt((
         map(function_statement, |x| {
-            FunctionStatementOrNull::Statement(x)
+            FunctionStatementOrNull::Statement(Box::new(x))
         }),
         function_statement_or_null_attribute,
     ))(s)
@@ -183,7 +183,9 @@ pub fn function_statement_or_null_attribute(s: Span) -> IResult<Span, FunctionSt
     let (s, b) = symbol(";")(s)?;
     Ok((
         s,
-        FunctionStatementOrNull::Attribute(FunctionStatementOrNullAttribute { nodes: (a, b) }),
+        FunctionStatementOrNull::Attribute(Box::new(FunctionStatementOrNullAttribute {
+            nodes: (a, b),
+        })),
     ))
 }
 

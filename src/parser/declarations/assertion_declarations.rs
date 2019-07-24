@@ -10,8 +10,8 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum ConcurrentAssertionItem {
-    Statement(ConcurrentAssertionItemStatement),
-    CheckerInstantiation(CheckerInstantiation),
+    Statement(Box<ConcurrentAssertionItemStatement>),
+    CheckerInstantiation(Box<CheckerInstantiation>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -24,11 +24,11 @@ pub struct ConcurrentAssertionItemStatement {
 
 #[derive(Clone, Debug, Node)]
 pub enum ConcurrentAssertionStatement {
-    AssertPropertyStatement(AssertPropertyStatement),
-    AssumePropertyStatement(AssumePropertyStatement),
-    CoverPropertyStatement(CoverPropertyStatement),
-    CoverSequenceStatement(CoverSequenceStatement),
-    RestrictPropertyStatement(RestrictPropertyStatement),
+    AssertPropertyStatement(Box<AssertPropertyStatement>),
+    AssumePropertyStatement(Box<AssumePropertyStatement>),
+    CoverPropertyStatement(Box<CoverPropertyStatement>),
+    CoverSequenceStatement(Box<CoverSequenceStatement>),
+    RestrictPropertyStatement(Box<RestrictPropertyStatement>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -80,8 +80,8 @@ pub struct PropertyInstance {
 
 #[derive(Clone, Debug, Node)]
 pub enum PropertyListOfArguments {
-    Ordered(PropertyListOfArgumentsOrdered),
-    Named(PropertyListOfArgumentsNamed),
+    Ordered(Box<PropertyListOfArgumentsOrdered>),
+    Named(Box<PropertyListOfArgumentsNamed>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -99,15 +99,15 @@ pub struct PropertyListOfArgumentsNamed {
 
 #[derive(Clone, Debug, Node)]
 pub enum PropertyActualArg {
-    PropertyExpr(PropertyExpr),
-    SequenceActualArg(SequenceActualArg),
+    PropertyExpr(Box<PropertyExpr>),
+    SequenceActualArg(Box<SequenceActualArg>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum AssertionItemDeclaration {
-    PropertyDeclaration(PropertyDeclaration),
-    SequenceDeclaration(SequenceDeclaration),
-    LetDeclaration(LetDeclaration),
+    PropertyDeclaration(Box<PropertyDeclaration>),
+    SequenceDeclaration(Box<SequenceDeclaration>),
+    LetDeclaration(Box<LetDeclaration>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -144,13 +144,13 @@ pub struct PropertyPortItem {
 
 #[derive(Clone, Debug, Node)]
 pub enum PropertyLvarPortDirection {
-    Input(Keyword),
+    Input(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum PropertyFormalType {
-    SequenceFormalType(SequenceFormalType),
-    Property(Keyword),
+    SequenceFormalType(Box<SequenceFormalType>),
+    Property(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -164,9 +164,9 @@ pub struct PropertySpec {
 
 #[derive(Clone, Debug, Node)]
 pub enum PropertyExpr {
-    SequenceExpr(SequenceExpr),
-    Strong(PropertyExprStrong),
-    Weak(PropertyExprWeak),
+    SequenceExpr(Box<SequenceExpr>),
+    Strong(Box<PropertyExprStrong>),
+    Weak(Box<PropertyExprWeak>),
     Paren(Box<PropertyExprParen>),
     Not(Box<PropertyExprNot>),
     Or(Box<PropertyExprOr>),
@@ -367,8 +367,8 @@ pub struct PropertyExprClockingEvent {
 
 #[derive(Clone, Debug, Node)]
 pub enum PropertyCaseItem {
-    Nondefault(PropertyCaseItemNondefault),
-    Default(PropertyCaseItemDefault),
+    Nondefault(Box<PropertyCaseItemNondefault>),
+    Default(Box<PropertyCaseItemDefault>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -415,23 +415,23 @@ pub struct SequencePortItem {
 
 #[derive(Clone, Debug, Node)]
 pub enum SequenceLvarPortDirection {
-    Input(Keyword),
-    Inout(Keyword),
-    Output(Keyword),
+    Input(Box<Keyword>),
+    Inout(Box<Keyword>),
+    Output(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum SequenceFormalType {
-    DataTypeOrImplicit(DataTypeOrImplicit),
-    Sequence(Keyword),
-    Untyped(Keyword),
+    DataTypeOrImplicit(Box<DataTypeOrImplicit>),
+    Sequence(Box<Keyword>),
+    Untyped(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum SequenceExpr {
     CycleDelayExpr(Box<SequenceExprCycleDelayExpr>),
     ExprCycleDelayExpr(Box<SequenceExprExprCycleDelayExpr>),
-    Expression(SequenceExprExpression),
+    Expression(Box<SequenceExprExpression>),
     Instance(Box<SequenceExprInstance>),
     Paren(Box<SequenceExprParen>),
     And(Box<SequenceExprAnd>),
@@ -520,10 +520,10 @@ pub struct SequenceExprClockingEvent {
 
 #[derive(Clone, Debug, Node)]
 pub enum CycleDelayRange {
-    Primary(CycleDelayRangePrimary),
-    Expression(CycleDelayRangeExpression),
-    Asterisk(CycleDelayRangeAsterisk),
-    Plus(CycleDelayRangePlus),
+    Primary(Box<CycleDelayRangePrimary>),
+    Expression(Box<CycleDelayRangeExpression>),
+    Asterisk(Box<CycleDelayRangeAsterisk>),
+    Plus(Box<CycleDelayRangePlus>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -553,9 +553,9 @@ pub struct SequenceMethodCall {
 
 #[derive(Clone, Debug, Node)]
 pub enum SequenceMatchItem {
-    OperatorAssignment(OperatorAssignment),
-    IncOrDecExpression(IncOrDecExpression),
-    SubroutineCall(SubroutineCall),
+    OperatorAssignment(Box<OperatorAssignment>),
+    IncOrDecExpression(Box<IncOrDecExpression>),
+    SubroutineCall(Box<SubroutineCall>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -568,8 +568,8 @@ pub struct SequenceInstance {
 
 #[derive(Clone, Debug, Node)]
 pub enum SequenceListOfArguments {
-    Ordered(SequenceListOfArgumentsOrdered),
-    Named(SequenceListOfArgumentsNamed),
+    Ordered(Box<SequenceListOfArgumentsOrdered>),
+    Named(Box<SequenceListOfArgumentsNamed>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -587,15 +587,15 @@ pub struct SequenceListOfArgumentsNamed {
 
 #[derive(Clone, Debug, Node)]
 pub enum SequenceActualArg {
-    EventExpression(EventExpression),
-    SequenceExpr(SequenceExpr),
+    EventExpression(Box<EventExpression>),
+    SequenceExpr(Box<SequenceExpr>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum BooleanAbbrev {
-    ConsecutiveRepetition(ConsecutiveRepetition),
-    NonConsecutiveRepetition(NonConsecutiveRepetition),
-    GotoRepetition(GotoRepetition),
+    ConsecutiveRepetition(Box<ConsecutiveRepetition>),
+    NonConsecutiveRepetition(Box<NonConsecutiveRepetition>),
+    GotoRepetition(Box<GotoRepetition>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -605,9 +605,9 @@ pub struct SequenceAbbrev {
 
 #[derive(Clone, Debug, Node)]
 pub enum ConsecutiveRepetition {
-    Expression(ConsecutiveRepetitionExpression),
-    Asterisk(ConsecutiveRepetitionAsterisk),
-    Plus(ConsecutiveRepetitionPlus),
+    Expression(Box<ConsecutiveRepetitionExpression>),
+    Asterisk(Box<ConsecutiveRepetitionAsterisk>),
+    Plus(Box<ConsecutiveRepetitionPlus>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -637,14 +637,14 @@ pub struct GotoRepetition {
 
 #[derive(Clone, Debug, Node)]
 pub enum ConstOrRangeExpression {
-    ConstantExpression(ConstantExpression),
-    CycleDelayConstRangeExpression(CycleDelayConstRangeExpression),
+    ConstantExpression(Box<ConstantExpression>),
+    CycleDelayConstRangeExpression(Box<CycleDelayConstRangeExpression>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum CycleDelayConstRangeExpression {
-    Binary(CycleDelayConstRangeExpressionBinary),
-    Dollar(CycleDelayConstRangeExpressionDollar),
+    Binary(Box<CycleDelayConstRangeExpressionBinary>),
+    Dollar(Box<CycleDelayConstRangeExpressionDollar>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -674,7 +674,7 @@ pub fn concurrent_assertion_item(s: Span) -> IResult<Span, ConcurrentAssertionIt
     alt((
         concurrent_assertion_item_statement,
         map(checker_instantiation, |x| {
-            ConcurrentAssertionItem::CheckerInstantiation(x)
+            ConcurrentAssertionItem::CheckerInstantiation(Box::new(x))
         }),
     ))(s)
 }
@@ -685,7 +685,9 @@ pub fn concurrent_assertion_item_statement(s: Span) -> IResult<Span, ConcurrentA
     let (s, b) = concurrent_assertion_statement(s)?;
     Ok((
         s,
-        ConcurrentAssertionItem::Statement(ConcurrentAssertionItemStatement { nodes: (a, b) }),
+        ConcurrentAssertionItem::Statement(Box::new(ConcurrentAssertionItemStatement {
+            nodes: (a, b),
+        })),
     ))
 }
 
@@ -693,19 +695,19 @@ pub fn concurrent_assertion_item_statement(s: Span) -> IResult<Span, ConcurrentA
 pub fn concurrent_assertion_statement(s: Span) -> IResult<Span, ConcurrentAssertionStatement> {
     alt((
         map(assert_property_statement, |x| {
-            ConcurrentAssertionStatement::AssertPropertyStatement(x)
+            ConcurrentAssertionStatement::AssertPropertyStatement(Box::new(x))
         }),
         map(assume_property_statement, |x| {
-            ConcurrentAssertionStatement::AssumePropertyStatement(x)
+            ConcurrentAssertionStatement::AssumePropertyStatement(Box::new(x))
         }),
         map(cover_property_statement, |x| {
-            ConcurrentAssertionStatement::CoverPropertyStatement(x)
+            ConcurrentAssertionStatement::CoverPropertyStatement(Box::new(x))
         }),
         map(cover_sequence_statement, |x| {
-            ConcurrentAssertionStatement::CoverSequenceStatement(x)
+            ConcurrentAssertionStatement::CoverSequenceStatement(Box::new(x))
         }),
         map(restrict_property_statement, |x| {
-            ConcurrentAssertionStatement::RestrictPropertyStatement(x)
+            ConcurrentAssertionStatement::RestrictPropertyStatement(Box::new(x))
         }),
     ))(s)
 }
@@ -822,7 +824,9 @@ pub fn property_list_of_arguments_ordered(s: Span) -> IResult<Span, PropertyList
     )))(s)?;
     Ok((
         s,
-        PropertyListOfArguments::Ordered(PropertyListOfArgumentsOrdered { nodes: (a, b) }),
+        PropertyListOfArguments::Ordered(Box::new(PropertyListOfArgumentsOrdered {
+            nodes: (a, b),
+        })),
     ))
 }
 
@@ -834,16 +838,18 @@ pub fn property_list_of_arguments_named(s: Span) -> IResult<Span, PropertyListOf
     )(s)?;
     Ok((
         s,
-        PropertyListOfArguments::Named(PropertyListOfArgumentsNamed { nodes: (a,) }),
+        PropertyListOfArguments::Named(Box::new(PropertyListOfArgumentsNamed { nodes: (a,) })),
     ))
 }
 
 #[parser]
 pub fn property_actual_arg(s: Span) -> IResult<Span, PropertyActualArg> {
     alt((
-        map(property_expr, |x| PropertyActualArg::PropertyExpr(x)),
+        map(property_expr, |x| {
+            PropertyActualArg::PropertyExpr(Box::new(x))
+        }),
         map(sequence_actual_arg, |x| {
-            PropertyActualArg::SequenceActualArg(x)
+            PropertyActualArg::SequenceActualArg(Box::new(x))
         }),
     ))(s)
 }
@@ -852,13 +858,13 @@ pub fn property_actual_arg(s: Span) -> IResult<Span, PropertyActualArg> {
 pub fn assertion_item_declaration(s: Span) -> IResult<Span, AssertionItemDeclaration> {
     alt((
         map(property_declaration, |x| {
-            AssertionItemDeclaration::PropertyDeclaration(x)
+            AssertionItemDeclaration::PropertyDeclaration(Box::new(x))
         }),
         map(sequence_declaration, |x| {
-            AssertionItemDeclaration::SequenceDeclaration(x)
+            AssertionItemDeclaration::SequenceDeclaration(Box::new(x))
         }),
         map(let_declaration, |x| {
-            AssertionItemDeclaration::LetDeclaration(x)
+            AssertionItemDeclaration::LetDeclaration(Box::new(x))
         }),
     ))(s)
 }
@@ -907,16 +913,18 @@ pub fn property_port_item(s: Span) -> IResult<Span, PropertyPortItem> {
 #[parser]
 pub fn property_lvar_port_direction(s: Span) -> IResult<Span, PropertyLvarPortDirection> {
     let (s, a) = keyword("input")(s)?;
-    Ok((s, PropertyLvarPortDirection::Input(a)))
+    Ok((s, PropertyLvarPortDirection::Input(Box::new(a))))
 }
 
 #[parser]
 pub fn property_formal_type(s: Span) -> IResult<Span, PropertyFormalType> {
     alt((
         map(sequence_formal_type, |x| {
-            PropertyFormalType::SequenceFormalType(x)
+            PropertyFormalType::SequenceFormalType(Box::new(x))
         }),
-        map(keyword("property"), |x| PropertyFormalType::Property(x)),
+        map(keyword("property"), |x| {
+            PropertyFormalType::Property(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -936,7 +944,7 @@ pub fn property_spec(s: Span) -> IResult<Span, PropertySpec> {
 pub fn property_expr(s: Span) -> IResult<Span, PropertyExpr> {
     alt((
         alt((
-            map(sequence_expr, |x| PropertyExpr::SequenceExpr(x)),
+            map(sequence_expr, |x| PropertyExpr::SequenceExpr(Box::new(x))),
             property_expr_strong,
             property_expr_weak,
             property_expr_paren,
@@ -981,7 +989,7 @@ pub fn property_expr_strong(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, b) = paren(sequence_expr)(s)?;
     Ok((
         s,
-        PropertyExpr::Strong(PropertyExprStrong { nodes: (a, b) }),
+        PropertyExpr::Strong(Box::new(PropertyExprStrong { nodes: (a, b) })),
     ))
 }
 
@@ -991,7 +999,7 @@ pub fn property_expr_weak(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, b) = paren(sequence_expr)(s)?;
     Ok((
         s,
-        PropertyExpr::Strong(PropertyExprStrong { nodes: (a, b) }),
+        PropertyExpr::Strong(Box::new(PropertyExprStrong { nodes: (a, b) })),
     ))
 }
 
@@ -1316,9 +1324,9 @@ pub fn property_case_item_nondefault(s: Span) -> IResult<Span, PropertyCaseItem>
     let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        PropertyCaseItem::Nondefault(PropertyCaseItemNondefault {
+        PropertyCaseItem::Nondefault(Box::new(PropertyCaseItemNondefault {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -1330,9 +1338,9 @@ pub fn property_case_item_default(s: Span) -> IResult<Span, PropertyCaseItem> {
     let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        PropertyCaseItem::Default(PropertyCaseItemDefault {
+        PropertyCaseItem::Default(Box::new(PropertyCaseItemDefault {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -1380,9 +1388,15 @@ pub fn sequence_port_item(s: Span) -> IResult<Span, SequencePortItem> {
 #[parser]
 pub fn sequence_lvar_port_direction(s: Span) -> IResult<Span, SequenceLvarPortDirection> {
     alt((
-        map(keyword("input"), |x| SequenceLvarPortDirection::Input(x)),
-        map(keyword("inout"), |x| SequenceLvarPortDirection::Inout(x)),
-        map(keyword("output"), |x| SequenceLvarPortDirection::Output(x)),
+        map(keyword("input"), |x| {
+            SequenceLvarPortDirection::Input(Box::new(x))
+        }),
+        map(keyword("inout"), |x| {
+            SequenceLvarPortDirection::Inout(Box::new(x))
+        }),
+        map(keyword("output"), |x| {
+            SequenceLvarPortDirection::Output(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -1390,10 +1404,14 @@ pub fn sequence_lvar_port_direction(s: Span) -> IResult<Span, SequenceLvarPortDi
 pub fn sequence_formal_type(s: Span) -> IResult<Span, SequenceFormalType> {
     alt((
         map(data_type_or_implicit, |x| {
-            SequenceFormalType::DataTypeOrImplicit(x)
+            SequenceFormalType::DataTypeOrImplicit(Box::new(x))
         }),
-        map(keyword("sequence"), |x| SequenceFormalType::Sequence(x)),
-        map(keyword("untyped"), |x| SequenceFormalType::Untyped(x)),
+        map(keyword("sequence"), |x| {
+            SequenceFormalType::Sequence(Box::new(x))
+        }),
+        map(keyword("untyped"), |x| {
+            SequenceFormalType::Untyped(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -1446,7 +1464,7 @@ pub fn sequence_expr_expression(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, b) = opt(boolean_abbrev)(s)?;
     Ok((
         s,
-        SequenceExpr::Expression(SequenceExprExpression { nodes: (a, b) }),
+        SequenceExpr::Expression(Box::new(SequenceExprExpression { nodes: (a, b) })),
     ))
 }
 
@@ -1567,7 +1585,7 @@ pub fn cycle_delay_range_primary(s: Span) -> IResult<Span, CycleDelayRange> {
     let (s, b) = constant_primary(s)?;
     Ok((
         s,
-        CycleDelayRange::Primary(CycleDelayRangePrimary { nodes: (a, b) }),
+        CycleDelayRange::Primary(Box::new(CycleDelayRangePrimary { nodes: (a, b) })),
     ))
 }
 
@@ -1577,7 +1595,7 @@ pub fn cycle_delay_range_expression(s: Span) -> IResult<Span, CycleDelayRange> {
     let (s, b) = bracket(cycle_delay_const_range_expression)(s)?;
     Ok((
         s,
-        CycleDelayRange::Expression(CycleDelayRangeExpression { nodes: (a, b) }),
+        CycleDelayRange::Expression(Box::new(CycleDelayRangeExpression { nodes: (a, b) })),
     ))
 }
 
@@ -1587,7 +1605,7 @@ pub fn cycle_delay_range_asterisk(s: Span) -> IResult<Span, CycleDelayRange> {
     let (s, b) = bracket(symbol("*"))(s)?;
     Ok((
         s,
-        CycleDelayRange::Asterisk(CycleDelayRangeAsterisk { nodes: (a, b) }),
+        CycleDelayRange::Asterisk(Box::new(CycleDelayRangeAsterisk { nodes: (a, b) })),
     ))
 }
 
@@ -1597,7 +1615,7 @@ pub fn cycle_delay_range_plus(s: Span) -> IResult<Span, CycleDelayRange> {
     let (s, b) = bracket(symbol("+"))(s)?;
     Ok((
         s,
-        CycleDelayRange::Plus(CycleDelayRangePlus { nodes: (a, b) }),
+        CycleDelayRange::Plus(Box::new(CycleDelayRangePlus { nodes: (a, b) })),
     ))
 }
 
@@ -1613,12 +1631,14 @@ pub fn sequence_method_call(s: Span) -> IResult<Span, SequenceMethodCall> {
 pub fn sequence_match_item(s: Span) -> IResult<Span, SequenceMatchItem> {
     alt((
         map(operator_assignment, |x| {
-            SequenceMatchItem::OperatorAssignment(x)
+            SequenceMatchItem::OperatorAssignment(Box::new(x))
         }),
         map(inc_or_dec_expression, |x| {
-            SequenceMatchItem::IncOrDecExpression(x)
+            SequenceMatchItem::IncOrDecExpression(Box::new(x))
         }),
-        map(subroutine_call, |x| SequenceMatchItem::SubroutineCall(x)),
+        map(subroutine_call, |x| {
+            SequenceMatchItem::SubroutineCall(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -1648,7 +1668,9 @@ pub fn sequence_list_of_arguments_ordered(s: Span) -> IResult<Span, SequenceList
     )))(s)?;
     Ok((
         s,
-        SequenceListOfArguments::Ordered(SequenceListOfArgumentsOrdered { nodes: (a, b) }),
+        SequenceListOfArguments::Ordered(Box::new(SequenceListOfArgumentsOrdered {
+            nodes: (a, b),
+        })),
     ))
 }
 
@@ -1660,15 +1682,19 @@ pub fn sequence_list_of_arguments_named(s: Span) -> IResult<Span, SequenceListOf
     )(s)?;
     Ok((
         s,
-        SequenceListOfArguments::Named(SequenceListOfArgumentsNamed { nodes: (a,) }),
+        SequenceListOfArguments::Named(Box::new(SequenceListOfArgumentsNamed { nodes: (a,) })),
     ))
 }
 
 #[parser]
 pub fn sequence_actual_arg(s: Span) -> IResult<Span, SequenceActualArg> {
     alt((
-        map(event_expression, |x| SequenceActualArg::EventExpression(x)),
-        map(sequence_expr, |x| SequenceActualArg::SequenceExpr(x)),
+        map(event_expression, |x| {
+            SequenceActualArg::EventExpression(Box::new(x))
+        }),
+        map(sequence_expr, |x| {
+            SequenceActualArg::SequenceExpr(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -1676,12 +1702,14 @@ pub fn sequence_actual_arg(s: Span) -> IResult<Span, SequenceActualArg> {
 pub fn boolean_abbrev(s: Span) -> IResult<Span, BooleanAbbrev> {
     alt((
         map(consecutive_repetition, |x| {
-            BooleanAbbrev::ConsecutiveRepetition(x)
+            BooleanAbbrev::ConsecutiveRepetition(Box::new(x))
         }),
         map(non_consecutive_repetition, |x| {
-            BooleanAbbrev::NonConsecutiveRepetition(x)
+            BooleanAbbrev::NonConsecutiveRepetition(Box::new(x))
         }),
-        map(goto_repetition, |x| BooleanAbbrev::GotoRepetition(x)),
+        map(goto_repetition, |x| {
+            BooleanAbbrev::GotoRepetition(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -1705,7 +1733,9 @@ pub fn consecutive_repetition_expression(s: Span) -> IResult<Span, ConsecutiveRe
     let (s, a) = bracket(pair(symbol("*"), const_or_range_expression))(s)?;
     Ok((
         s,
-        ConsecutiveRepetition::Expression(ConsecutiveRepetitionExpression { nodes: (a,) }),
+        ConsecutiveRepetition::Expression(Box::new(ConsecutiveRepetitionExpression {
+            nodes: (a,),
+        })),
     ))
 }
 
@@ -1714,7 +1744,7 @@ pub fn consecutive_repetition_asterisk(s: Span) -> IResult<Span, ConsecutiveRepe
     let (s, a) = bracket(symbol("*"))(s)?;
     Ok((
         s,
-        ConsecutiveRepetition::Asterisk(ConsecutiveRepetitionAsterisk { nodes: (a,) }),
+        ConsecutiveRepetition::Asterisk(Box::new(ConsecutiveRepetitionAsterisk { nodes: (a,) })),
     ))
 }
 
@@ -1723,7 +1753,7 @@ pub fn consecutive_repetition_plus(s: Span) -> IResult<Span, ConsecutiveRepetiti
     let (s, a) = bracket(symbol("+"))(s)?;
     Ok((
         s,
-        ConsecutiveRepetition::Plus(ConsecutiveRepetitionPlus { nodes: (a,) }),
+        ConsecutiveRepetition::Plus(Box::new(ConsecutiveRepetitionPlus { nodes: (a,) })),
     ))
 }
 
@@ -1743,10 +1773,10 @@ pub fn goto_repetition(s: Span) -> IResult<Span, GotoRepetition> {
 pub fn const_or_range_expression(s: Span) -> IResult<Span, ConstOrRangeExpression> {
     alt((
         map(constant_expression, |x| {
-            ConstOrRangeExpression::ConstantExpression(x)
+            ConstOrRangeExpression::ConstantExpression(Box::new(x))
         }),
         map(cycle_delay_const_range_expression, |x| {
-            ConstOrRangeExpression::CycleDelayConstRangeExpression(x)
+            ConstOrRangeExpression::CycleDelayConstRangeExpression(Box::new(x))
         }),
     ))(s)
 }
@@ -1770,9 +1800,9 @@ pub fn cycle_delay_const_range_expression_binary(
     let (s, c) = constant_expression(s)?;
     Ok((
         s,
-        CycleDelayConstRangeExpression::Binary(CycleDelayConstRangeExpressionBinary {
+        CycleDelayConstRangeExpression::Binary(Box::new(CycleDelayConstRangeExpressionBinary {
             nodes: (a, b, c),
-        }),
+        })),
     ))
 }
 
@@ -1785,9 +1815,9 @@ pub fn cycle_delay_const_range_expression_dollar(
     let (s, c) = symbol("$")(s)?;
     Ok((
         s,
-        CycleDelayConstRangeExpression::Dollar(CycleDelayConstRangeExpressionDollar {
+        CycleDelayConstRangeExpression::Dollar(Box::new(CycleDelayConstRangeExpressionDollar {
             nodes: (a, b, c),
-        }),
+        })),
     ))
 }
 

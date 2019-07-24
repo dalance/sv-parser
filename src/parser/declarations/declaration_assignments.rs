@@ -37,8 +37,8 @@ pub struct ParamAssignment {
 
 #[derive(Clone, Debug, Node)]
 pub enum SpecparamAssignment {
-    Mintypmax(SpecparamAssignmentMintypmax),
-    PulseControlSpecparam(PulseControlSpecparam),
+    Mintypmax(Box<SpecparamAssignmentMintypmax>),
+    PulseControlSpecparam(Box<PulseControlSpecparam>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -53,8 +53,8 @@ pub struct TypeAssignment {
 
 #[derive(Clone, Debug, Node)]
 pub enum PulseControlSpecparam {
-    WithoutDescriptor(PulseControlSpecparamWithoutDescriptor),
-    WithDescriptor(PulseControlSpecparamWithDescriptor),
+    WithoutDescriptor(Box<PulseControlSpecparamWithoutDescriptor>),
+    WithDescriptor(Box<PulseControlSpecparamWithDescriptor>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -95,9 +95,9 @@ pub struct LimitValue {
 
 #[derive(Clone, Debug, Node)]
 pub enum VariableDeclAssignment {
-    Variable(VariableDeclAssignmentVariable),
-    DynamicArray(VariableDeclAssignmentDynamicArray),
-    Class(VariableDeclAssignmentClass),
+    Variable(Box<VariableDeclAssignmentVariable>),
+    DynamicArray(Box<VariableDeclAssignmentDynamicArray>),
+    Class(Box<VariableDeclAssignmentClass>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -126,8 +126,8 @@ pub struct VariableDeclAssignmentClass {
 
 #[derive(Clone, Debug, Node)]
 pub enum ClassNew {
-    Argument(ClassNewArgument),
-    Expression(ClassNewExpression),
+    Argument(Box<ClassNewArgument>),
+    Expression(Box<ClassNewExpression>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -176,7 +176,7 @@ pub fn specparam_assignment(s: Span) -> IResult<Span, SpecparamAssignment> {
     alt((
         specparam_assignment_mintypmax,
         map(pulse_control_specparam, |x| {
-            SpecparamAssignment::PulseControlSpecparam(x)
+            SpecparamAssignment::PulseControlSpecparam(Box::new(x))
         }),
     ))(s)
 }
@@ -188,7 +188,7 @@ pub fn specparam_assignment_mintypmax(s: Span) -> IResult<Span, SpecparamAssignm
     let (s, c) = constant_mintypmax_expression(s)?;
     Ok((
         s,
-        SpecparamAssignment::Mintypmax(SpecparamAssignmentMintypmax { nodes: (a, b, c) }),
+        SpecparamAssignment::Mintypmax(Box::new(SpecparamAssignmentMintypmax { nodes: (a, b, c) })),
     ))
 }
 
@@ -217,9 +217,9 @@ pub fn pulse_control_specparam_without_descriptor(s: Span) -> IResult<Span, Puls
     ))(s)?;
     Ok((
         s,
-        PulseControlSpecparam::WithoutDescriptor(PulseControlSpecparamWithoutDescriptor {
-            nodes: (a, b, c),
-        }),
+        PulseControlSpecparam::WithoutDescriptor(Box::new(
+            PulseControlSpecparamWithoutDescriptor { nodes: (a, b, c) },
+        )),
     ))
 }
 
@@ -236,9 +236,9 @@ pub fn pulse_control_specparam_with_descriptor(s: Span) -> IResult<Span, PulseCo
     ))(s)?;
     Ok((
         s,
-        PulseControlSpecparam::WithDescriptor(PulseControlSpecparamWithDescriptor {
+        PulseControlSpecparam::WithDescriptor(Box::new(PulseControlSpecparamWithDescriptor {
             nodes: (a, b, c, d, e, f),
-        }),
+        })),
     ))
 }
 
@@ -276,7 +276,9 @@ pub fn variable_decl_assignment_variable(s: Span) -> IResult<Span, VariableDeclA
     let (s, c) = opt(pair(symbol("="), expression))(s)?;
     Ok((
         s,
-        VariableDeclAssignment::Variable(VariableDeclAssignmentVariable { nodes: (a, b, c) }),
+        VariableDeclAssignment::Variable(Box::new(VariableDeclAssignmentVariable {
+            nodes: (a, b, c),
+        })),
     ))
 }
 
@@ -288,9 +290,9 @@ pub fn variable_decl_assignment_dynamic_array(s: Span) -> IResult<Span, Variable
     let (s, d) = opt(pair(symbol("="), dynamic_array_new))(s)?;
     Ok((
         s,
-        VariableDeclAssignment::DynamicArray(VariableDeclAssignmentDynamicArray {
+        VariableDeclAssignment::DynamicArray(Box::new(VariableDeclAssignmentDynamicArray {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -300,7 +302,7 @@ pub fn variable_decl_assignment_class(s: Span) -> IResult<Span, VariableDeclAssi
     let (s, b) = opt(pair(symbol("="), class_new))(s)?;
     Ok((
         s,
-        VariableDeclAssignment::Class(VariableDeclAssignmentClass { nodes: (a, b) }),
+        VariableDeclAssignment::Class(Box::new(VariableDeclAssignmentClass { nodes: (a, b) })),
     ))
 }
 
@@ -314,7 +316,10 @@ pub fn class_new_argument(s: Span) -> IResult<Span, ClassNew> {
     let (s, a) = opt(class_scope)(s)?;
     let (s, b) = keyword("new")(s)?;
     let (s, c) = opt(paren(list_of_arguments))(s)?;
-    Ok((s, ClassNew::Argument(ClassNewArgument { nodes: (a, b, c) })))
+    Ok((
+        s,
+        ClassNew::Argument(Box::new(ClassNewArgument { nodes: (a, b, c) })),
+    ))
 }
 
 #[parser]
@@ -323,7 +328,7 @@ pub fn class_new_expression(s: Span) -> IResult<Span, ClassNew> {
     let (s, b) = expression(s)?;
     Ok((
         s,
-        ClassNew::Expression(ClassNewExpression { nodes: (a, b) }),
+        ClassNew::Expression(Box::new(ClassNewExpression { nodes: (a, b) })),
     ))
 }
 

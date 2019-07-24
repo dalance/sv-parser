@@ -9,15 +9,15 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum PathDeclaration {
-    SimplePathDeclaration((SimplePathDeclaration, Symbol)),
-    EdgeSensitivePathDeclaration((EdgeSensitivePathDeclaration, Symbol)),
-    StateDependentPathDeclaration((StateDependentPathDeclaration, Symbol)),
+    SimplePathDeclaration(Box<(SimplePathDeclaration, Symbol)>),
+    EdgeSensitivePathDeclaration(Box<(EdgeSensitivePathDeclaration, Symbol)>),
+    StateDependentPathDeclaration(Box<(StateDependentPathDeclaration, Symbol)>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum SimplePathDeclaration {
-    Parallel(SimplePathDeclarationParallel),
-    Full(SimplePathDeclarationFull),
+    Parallel(Box<SimplePathDeclarationParallel>),
+    Full(Box<SimplePathDeclarationFull>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -70,13 +70,13 @@ pub struct ListOfPathOutputs {
 pub fn path_declaration(s: Span) -> IResult<Span, PathDeclaration> {
     alt((
         map(pair(simple_path_declaration, symbol(";")), |x| {
-            PathDeclaration::SimplePathDeclaration(x)
+            PathDeclaration::SimplePathDeclaration(Box::new(x))
         }),
         map(pair(edge_sensitive_path_declaration, symbol(";")), |x| {
-            PathDeclaration::EdgeSensitivePathDeclaration(x)
+            PathDeclaration::EdgeSensitivePathDeclaration(Box::new(x))
         }),
         map(pair(state_dependent_path_declaration, symbol(";")), |x| {
-            PathDeclaration::StateDependentPathDeclaration(x)
+            PathDeclaration::StateDependentPathDeclaration(Box::new(x))
         }),
     ))(s)
 }
@@ -96,7 +96,9 @@ pub fn simple_path_declaration_parallel(s: Span) -> IResult<Span, SimplePathDecl
     let (s, c) = path_delay_value(s)?;
     Ok((
         s,
-        SimplePathDeclaration::Parallel(SimplePathDeclarationParallel { nodes: (a, b, c) }),
+        SimplePathDeclaration::Parallel(Box::new(SimplePathDeclarationParallel {
+            nodes: (a, b, c),
+        })),
     ))
 }
 
@@ -107,7 +109,7 @@ pub fn simple_path_declaration_full(s: Span) -> IResult<Span, SimplePathDeclarat
     let (s, c) = path_delay_value(s)?;
     Ok((
         s,
-        SimplePathDeclaration::Full(SimplePathDeclarationFull { nodes: (a, b, c) }),
+        SimplePathDeclaration::Full(Box::new(SimplePathDeclarationFull { nodes: (a, b, c) })),
     ))
 }
 

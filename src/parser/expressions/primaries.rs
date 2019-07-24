@@ -10,21 +10,21 @@ use nom_packrat::packrat_parser;
 
 #[derive(Clone, Debug, Node)]
 pub enum ConstantPrimary {
-    PrimaryLiteral(PrimaryLiteral),
-    PsParameter(ConstantPrimaryPsParameter),
-    Specparam(ConstantPrimarySpecparam),
-    GenvarIdentifier(GenvarIdentifier),
-    FormalPort(ConstantPrimaryFormalPort),
-    Enum(ConstantPrimaryEnum),
-    Concatenation(ConstantPrimaryConcatenation),
-    MultipleConcatenation(ConstantPrimaryMultipleConcatenation),
-    ConstantFunctionCall(ConstantFunctionCall),
-    ConstantLetExpression(ConstantLetExpression),
-    MintypmaxExpression(ConstantPrimaryMintypmaxExpression),
-    ConstantCast(ConstantCast),
-    ConstantAssignmentPatternExpression(ConstantAssignmentPatternExpression),
-    TypeReference(TypeReference),
-    Null(Keyword),
+    PrimaryLiteral(Box<PrimaryLiteral>),
+    PsParameter(Box<ConstantPrimaryPsParameter>),
+    Specparam(Box<ConstantPrimarySpecparam>),
+    GenvarIdentifier(Box<GenvarIdentifier>),
+    FormalPort(Box<ConstantPrimaryFormalPort>),
+    Enum(Box<ConstantPrimaryEnum>),
+    Concatenation(Box<ConstantPrimaryConcatenation>),
+    MultipleConcatenation(Box<ConstantPrimaryMultipleConcatenation>),
+    ConstantFunctionCall(Box<ConstantFunctionCall>),
+    ConstantLetExpression(Box<ConstantLetExpression>),
+    MintypmaxExpression(Box<ConstantPrimaryMintypmaxExpression>),
+    ConstantCast(Box<ConstantCast>),
+    ConstantAssignmentPatternExpression(Box<ConstantAssignmentPatternExpression>),
+    TypeReference(Box<TypeReference>),
+    Null(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -73,12 +73,12 @@ pub struct ConstantPrimaryMintypmaxExpression {
 
 #[derive(Clone, Debug, Node)]
 pub enum ModulePathPrimary {
-    Number(Number),
-    Identifier(Identifier),
-    ModulePathConcatenation(ModulePathConcatenation),
-    ModulePathMultipleConcatenation(ModulePathMultipleConcatenation),
-    FunctionSubroutineCall(FunctionSubroutineCall),
-    Mintypmax(ModulePathPrimaryMintypmax),
+    Number(Box<Number>),
+    Identifier(Box<Identifier>),
+    ModulePathConcatenation(Box<ModulePathConcatenation>),
+    ModulePathMultipleConcatenation(Box<ModulePathMultipleConcatenation>),
+    FunctionSubroutineCall(Box<FunctionSubroutineCall>),
+    Mintypmax(Box<ModulePathPrimaryMintypmax>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -88,21 +88,21 @@ pub struct ModulePathPrimaryMintypmax {
 
 #[derive(Clone, Debug, Node)]
 pub enum Primary {
-    PrimaryLiteral(PrimaryLiteral),
-    Hierarchical(PrimaryHierarchical),
-    EmptyUnpackedArrayConcatenation(EmptyUnpackedArrayConcatenation),
-    Concatenation(PrimaryConcatenation),
-    MultipleConcatenation(PrimaryMultipleConcatenation),
-    FunctionSubroutineCall(FunctionSubroutineCall),
-    LetExpression(LetExpression),
-    MintypmaxExpression(PrimaryMintypmaxExpression),
-    Cast(Cast),
-    AssignmentPatternExpression(AssignmentPatternExpression),
-    StreamingConcatenation(StreamingConcatenation),
-    SequenceMethodCall(SequenceMethodCall),
-    This(Keyword),
-    Dollar(Symbol),
-    Null(Keyword),
+    PrimaryLiteral(Box<PrimaryLiteral>),
+    Hierarchical(Box<PrimaryHierarchical>),
+    EmptyUnpackedArrayConcatenation(Box<EmptyUnpackedArrayConcatenation>),
+    Concatenation(Box<PrimaryConcatenation>),
+    MultipleConcatenation(Box<PrimaryMultipleConcatenation>),
+    FunctionSubroutineCall(Box<FunctionSubroutineCall>),
+    LetExpression(Box<LetExpression>),
+    MintypmaxExpression(Box<PrimaryMintypmaxExpression>),
+    Cast(Box<Cast>),
+    AssignmentPatternExpression(Box<AssignmentPatternExpression>),
+    StreamingConcatenation(Box<StreamingConcatenation>),
+    SequenceMethodCall(Box<SequenceMethodCall>),
+    This(Box<Keyword>),
+    Dollar(Box<Symbol>),
+    Null(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -131,8 +131,8 @@ pub struct PrimaryMintypmaxExpression {
 
 #[derive(Clone, Debug, Node)]
 pub enum ClassQualifierOrPackageScope {
-    ClassQualifier(ClassQualifier),
-    PackageScope(PackageScope),
+    ClassQualifier(Box<ClassQualifier>),
+    PackageScope(Box<PackageScope>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -142,22 +142,22 @@ pub struct ClassQualifier {
 
 #[derive(Clone, Debug, Node)]
 pub enum RangeExpression {
-    Expression(Expression),
-    PartSelectRange(PartSelectRange),
+    Expression(Box<Expression>),
+    PartSelectRange(Box<PartSelectRange>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum PrimaryLiteral {
-    Number(Number),
-    TimeLiteral(TimeLiteral),
-    UnbasedUnsizedLiteral(UnbasedUnsizedLiteral),
-    StringLiteral(StringLiteral),
+    Number(Box<Number>),
+    TimeLiteral(Box<TimeLiteral>),
+    UnbasedUnsizedLiteral(Box<UnbasedUnsizedLiteral>),
+    StringLiteral(Box<StringLiteral>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum TimeLiteral {
-    Unsigned(TimeLiteralUnsigned),
-    FixedPoint(TimeLiteralFixedPoint),
+    Unsigned(Box<TimeLiteralUnsigned>),
+    FixedPoint(Box<TimeLiteralFixedPoint>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -172,19 +172,19 @@ pub struct TimeLiteralFixedPoint {
 
 #[derive(Clone, Debug, Node)]
 pub enum TimeUnit {
-    S(Keyword),
-    MS(Keyword),
-    US(Keyword),
-    NS(Keyword),
-    PS(Keyword),
-    FS(Keyword),
+    S(Box<Keyword>),
+    MS(Box<Keyword>),
+    US(Box<Keyword>),
+    NS(Box<Keyword>),
+    PS(Box<Keyword>),
+    FS(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum ImplicitClassHandle {
-    This(Keyword),
-    Super(Keyword),
-    ThisSuper((Keyword, Symbol, Keyword)),
+    This(Box<Keyword>),
+    Super(Box<Keyword>),
+    ThisSuper(Box<(Keyword, Symbol, Keyword)>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -256,27 +256,35 @@ pub struct Cast {
 #[parser]
 pub fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
     alt((
-        map(keyword("null"), |x| ConstantPrimary::Null(x)),
-        map(primary_literal, |x| ConstantPrimary::PrimaryLiteral(x)),
+        map(keyword("null"), |x| ConstantPrimary::Null(Box::new(x))),
+        map(primary_literal, |x| {
+            ConstantPrimary::PrimaryLiteral(Box::new(x))
+        }),
         constant_primary_ps_parameter,
         constant_primary_specparam,
-        map(genvar_identifier, |x| ConstantPrimary::GenvarIdentifier(x)),
+        map(genvar_identifier, |x| {
+            ConstantPrimary::GenvarIdentifier(Box::new(x))
+        }),
         constant_primary_formal_port,
         constant_primary_enum,
         constant_primary_concatenation,
         constant_primary_multiple_concatenation,
         map(constant_function_call, |x| {
-            ConstantPrimary::ConstantFunctionCall(x)
+            ConstantPrimary::ConstantFunctionCall(Box::new(x))
         }),
         map(constant_let_expression, |x| {
-            ConstantPrimary::ConstantLetExpression(x)
+            ConstantPrimary::ConstantLetExpression(Box::new(x))
         }),
         constant_primary_mintypmax_expression,
-        map(constant_cast, |x| ConstantPrimary::ConstantCast(x)),
-        map(constant_assignment_pattern_expression, |x| {
-            ConstantPrimary::ConstantAssignmentPatternExpression(x)
+        map(constant_cast, |x| {
+            ConstantPrimary::ConstantCast(Box::new(x))
         }),
-        map(type_reference, |x| ConstantPrimary::TypeReference(x)),
+        map(constant_assignment_pattern_expression, |x| {
+            ConstantPrimary::ConstantAssignmentPatternExpression(Box::new(x))
+        }),
+        map(type_reference, |x| {
+            ConstantPrimary::TypeReference(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -286,7 +294,7 @@ pub fn constant_primary_ps_parameter(s: Span) -> IResult<Span, ConstantPrimary> 
     let (s, b) = constant_select(s)?;
     Ok((
         s,
-        ConstantPrimary::PsParameter(ConstantPrimaryPsParameter { nodes: (a, b) }),
+        ConstantPrimary::PsParameter(Box::new(ConstantPrimaryPsParameter { nodes: (a, b) })),
     ))
 }
 
@@ -296,7 +304,7 @@ pub fn constant_primary_specparam(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, b) = opt(bracket(constant_range_expression))(s)?;
     Ok((
         s,
-        ConstantPrimary::Specparam(ConstantPrimarySpecparam { nodes: (a, b) }),
+        ConstantPrimary::Specparam(Box::new(ConstantPrimarySpecparam { nodes: (a, b) })),
     ))
 }
 
@@ -306,7 +314,7 @@ pub fn constant_primary_formal_port(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, b) = constant_select(s)?;
     Ok((
         s,
-        ConstantPrimary::FormalPort(ConstantPrimaryFormalPort { nodes: (a, b) }),
+        ConstantPrimary::FormalPort(Box::new(ConstantPrimaryFormalPort { nodes: (a, b) })),
     ))
 }
 
@@ -316,7 +324,7 @@ pub fn constant_primary_enum(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, b) = enum_identifier(s)?;
     Ok((
         s,
-        ConstantPrimary::Enum(ConstantPrimaryEnum { nodes: (a, b) }),
+        ConstantPrimary::Enum(Box::new(ConstantPrimaryEnum { nodes: (a, b) })),
     ))
 }
 
@@ -326,7 +334,7 @@ pub fn constant_primary_concatenation(s: Span) -> IResult<Span, ConstantPrimary>
     let (s, b) = opt(bracket(constant_range_expression))(s)?;
     Ok((
         s,
-        ConstantPrimary::Concatenation(ConstantPrimaryConcatenation { nodes: (a, b) }),
+        ConstantPrimary::Concatenation(Box::new(ConstantPrimaryConcatenation { nodes: (a, b) })),
     ))
 }
 
@@ -336,9 +344,9 @@ pub fn constant_primary_multiple_concatenation(s: Span) -> IResult<Span, Constan
     let (s, b) = opt(bracket(constant_range_expression))(s)?;
     Ok((
         s,
-        ConstantPrimary::MultipleConcatenation(ConstantPrimaryMultipleConcatenation {
+        ConstantPrimary::MultipleConcatenation(Box::new(ConstantPrimaryMultipleConcatenation {
             nodes: (a, b),
-        }),
+        })),
     ))
 }
 
@@ -347,23 +355,25 @@ pub fn constant_primary_mintypmax_expression(s: Span) -> IResult<Span, ConstantP
     let (s, a) = paren(constant_mintypmax_expression)(s)?;
     Ok((
         s,
-        ConstantPrimary::MintypmaxExpression(ConstantPrimaryMintypmaxExpression { nodes: (a,) }),
+        ConstantPrimary::MintypmaxExpression(Box::new(ConstantPrimaryMintypmaxExpression {
+            nodes: (a,),
+        })),
     ))
 }
 
 #[parser]
 pub fn module_path_primary(s: Span) -> IResult<Span, ModulePathPrimary> {
     alt((
-        map(number, |x| ModulePathPrimary::Number(x)),
-        map(identifier, |x| ModulePathPrimary::Identifier(x)),
+        map(number, |x| ModulePathPrimary::Number(Box::new(x))),
+        map(identifier, |x| ModulePathPrimary::Identifier(Box::new(x))),
         map(module_path_concatenation, |x| {
-            ModulePathPrimary::ModulePathConcatenation(x)
+            ModulePathPrimary::ModulePathConcatenation(Box::new(x))
         }),
         map(module_path_multiple_concatenation, |x| {
-            ModulePathPrimary::ModulePathMultipleConcatenation(x)
+            ModulePathPrimary::ModulePathMultipleConcatenation(Box::new(x))
         }),
         map(function_subroutine_call, |x| {
-            ModulePathPrimary::FunctionSubroutineCall(x)
+            ModulePathPrimary::FunctionSubroutineCall(Box::new(x))
         }),
         module_path_primary_mintypmax_expression,
     ))(s)
@@ -374,7 +384,7 @@ pub fn module_path_primary_mintypmax_expression(s: Span) -> IResult<Span, Module
     let (s, a) = paren(module_path_mintypmax_expression)(s)?;
     Ok((
         s,
-        ModulePathPrimary::Mintypmax(ModulePathPrimaryMintypmax { nodes: (a,) }),
+        ModulePathPrimary::Mintypmax(Box::new(ModulePathPrimaryMintypmax { nodes: (a,) })),
     ))
 }
 
@@ -382,28 +392,30 @@ pub fn module_path_primary_mintypmax_expression(s: Span) -> IResult<Span, Module
 #[parser]
 pub fn primary(s: Span) -> IResult<Span, Primary> {
     alt((
-        map(keyword("this"), |x| Primary::This(x)),
-        map(symbol("$"), |x| Primary::Dollar(x)),
-        map(keyword("null"), |x| Primary::Null(x)),
-        map(primary_literal, |x| Primary::PrimaryLiteral(x)),
+        map(keyword("this"), |x| Primary::This(Box::new(x))),
+        map(symbol("$"), |x| Primary::Dollar(Box::new(x))),
+        map(keyword("null"), |x| Primary::Null(Box::new(x))),
+        map(primary_literal, |x| Primary::PrimaryLiteral(Box::new(x))),
         primary_hierarchical,
         map(empty_unpacked_array_concatenation, |x| {
-            Primary::EmptyUnpackedArrayConcatenation(x)
+            Primary::EmptyUnpackedArrayConcatenation(Box::new(x))
         }),
         primary_concatenation,
         map(function_subroutine_call, |x| {
-            Primary::FunctionSubroutineCall(x)
+            Primary::FunctionSubroutineCall(Box::new(x))
         }),
-        map(let_expression, |x| Primary::LetExpression(x)),
+        map(let_expression, |x| Primary::LetExpression(Box::new(x))),
         primary_mintypmax_expression,
-        map(cast, |x| Primary::Cast(x)),
+        map(cast, |x| Primary::Cast(Box::new(x))),
         map(assignment_pattern_expression, |x| {
-            Primary::AssignmentPatternExpression(x)
+            Primary::AssignmentPatternExpression(Box::new(x))
         }),
         map(streaming_concatenation, |x| {
-            Primary::StreamingConcatenation(x)
+            Primary::StreamingConcatenation(Box::new(x))
         }),
-        map(sequence_method_call, |x| Primary::SequenceMethodCall(x)),
+        map(sequence_method_call, |x| {
+            Primary::SequenceMethodCall(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -414,7 +426,7 @@ pub fn primary_hierarchical(s: Span) -> IResult<Span, Primary> {
     let (s, c) = select(s)?;
     Ok((
         s,
-        Primary::Hierarchical(PrimaryHierarchical { nodes: (a, b, c) }),
+        Primary::Hierarchical(Box::new(PrimaryHierarchical { nodes: (a, b, c) })),
     ))
 }
 
@@ -424,7 +436,7 @@ pub fn primary_concatenation(s: Span) -> IResult<Span, Primary> {
     let (s, b) = opt(bracket(range_expression))(s)?;
     Ok((
         s,
-        Primary::Concatenation(PrimaryConcatenation { nodes: (a, b) }),
+        Primary::Concatenation(Box::new(PrimaryConcatenation { nodes: (a, b) })),
     ))
 }
 
@@ -434,7 +446,7 @@ pub fn primary_multiple_concatenation(s: Span) -> IResult<Span, Primary> {
     let (s, b) = opt(bracket(range_expression))(s)?;
     Ok((
         s,
-        Primary::MultipleConcatenation(PrimaryMultipleConcatenation { nodes: (a, b) }),
+        Primary::MultipleConcatenation(Box::new(PrimaryMultipleConcatenation { nodes: (a, b) })),
     ))
 }
 
@@ -443,7 +455,7 @@ pub fn primary_mintypmax_expression(s: Span) -> IResult<Span, Primary> {
     let (s, a) = paren(mintypmax_expression)(s)?;
     Ok((
         s,
-        Primary::MintypmaxExpression(PrimaryMintypmaxExpression { nodes: (a,) }),
+        Primary::MintypmaxExpression(Box::new(PrimaryMintypmaxExpression { nodes: (a,) })),
     ))
 }
 
@@ -451,10 +463,10 @@ pub fn primary_mintypmax_expression(s: Span) -> IResult<Span, Primary> {
 pub fn class_qualifier_or_package_scope(s: Span) -> IResult<Span, ClassQualifierOrPackageScope> {
     alt((
         map(class_qualifier, |x| {
-            ClassQualifierOrPackageScope::ClassQualifier(x)
+            ClassQualifierOrPackageScope::ClassQualifier(Box::new(x))
         }),
         map(package_scope, |x| {
-            ClassQualifierOrPackageScope::PackageScope(x)
+            ClassQualifierOrPackageScope::PackageScope(Box::new(x))
         }),
     ))(s)
 }
@@ -469,8 +481,10 @@ pub fn class_qualifier(s: Span) -> IResult<Span, ClassQualifier> {
 #[parser]
 pub fn range_expression(s: Span) -> IResult<Span, RangeExpression> {
     alt((
-        map(expression, |x| RangeExpression::Expression(x)),
-        map(part_select_range, |x| RangeExpression::PartSelectRange(x)),
+        map(expression, |x| RangeExpression::Expression(Box::new(x))),
+        map(part_select_range, |x| {
+            RangeExpression::PartSelectRange(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -478,12 +492,14 @@ pub fn range_expression(s: Span) -> IResult<Span, RangeExpression> {
 #[parser]
 pub fn primary_literal(s: Span) -> IResult<Span, PrimaryLiteral> {
     alt((
-        map(time_literal, |x| PrimaryLiteral::TimeLiteral(x)),
-        map(number, |x| PrimaryLiteral::Number(x)),
+        map(time_literal, |x| PrimaryLiteral::TimeLiteral(Box::new(x))),
+        map(number, |x| PrimaryLiteral::Number(Box::new(x))),
         map(unbased_unsized_literal, |x| {
-            PrimaryLiteral::UnbasedUnsizedLiteral(x)
+            PrimaryLiteral::UnbasedUnsizedLiteral(Box::new(x))
         }),
-        map(string_literal, |x| PrimaryLiteral::StringLiteral(x)),
+        map(string_literal, |x| {
+            PrimaryLiteral::StringLiteral(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -498,7 +514,7 @@ pub fn time_literal_unsigned(s: Span) -> IResult<Span, TimeLiteral> {
     let (s, b) = time_unit(s)?;
     Ok((
         s,
-        TimeLiteral::Unsigned(TimeLiteralUnsigned { nodes: (a, b) }),
+        TimeLiteral::Unsigned(Box::new(TimeLiteralUnsigned { nodes: (a, b) })),
     ))
 }
 
@@ -508,19 +524,19 @@ pub fn time_literal_fixed_point(s: Span) -> IResult<Span, TimeLiteral> {
     let (s, b) = time_unit(s)?;
     Ok((
         s,
-        TimeLiteral::FixedPoint(TimeLiteralFixedPoint { nodes: (a, b) }),
+        TimeLiteral::FixedPoint(Box::new(TimeLiteralFixedPoint { nodes: (a, b) })),
     ))
 }
 
 #[parser]
 pub fn time_unit(s: Span) -> IResult<Span, TimeUnit> {
     alt((
-        map(keyword("s"), |x| TimeUnit::S(x)),
-        map(keyword("ms"), |x| TimeUnit::MS(x)),
-        map(keyword("us"), |x| TimeUnit::US(x)),
-        map(keyword("ns"), |x| TimeUnit::NS(x)),
-        map(keyword("ps"), |x| TimeUnit::PS(x)),
-        map(keyword("fs"), |x| TimeUnit::FS(x)),
+        map(keyword("s"), |x| TimeUnit::S(Box::new(x))),
+        map(keyword("ms"), |x| TimeUnit::MS(Box::new(x))),
+        map(keyword("us"), |x| TimeUnit::US(Box::new(x))),
+        map(keyword("ns"), |x| TimeUnit::NS(Box::new(x))),
+        map(keyword("ps"), |x| TimeUnit::PS(Box::new(x))),
+        map(keyword("fs"), |x| TimeUnit::FS(Box::new(x))),
     ))(s)
 }
 
@@ -529,10 +545,12 @@ pub fn implicit_class_handle(s: Span) -> IResult<Span, ImplicitClassHandle> {
     alt((
         map(
             triple(keyword("this"), symbol("."), keyword("super")),
-            |(x, y, z)| ImplicitClassHandle::ThisSuper((x, y, z)),
+            |(x, y, z)| ImplicitClassHandle::ThisSuper(Box::new((x, y, z))),
         ),
-        map(keyword("this"), |x| ImplicitClassHandle::This(x)),
-        map(keyword("super"), |x| ImplicitClassHandle::Super(x)),
+        map(keyword("this"), |x| ImplicitClassHandle::This(Box::new(x))),
+        map(keyword("super"), |x| {
+            ImplicitClassHandle::Super(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -613,36 +631,11 @@ mod tests {
 
     #[test]
     fn test_primary() {
-        parser_test!(
-            primary,
-            "2.1ns ",
-            Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::TimeLiteral(_))))
-        );
-        parser_test!(
-            primary,
-            "40 ps ",
-            Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::TimeLiteral(_))))
-        );
-        parser_test!(
-            primary,
-            "'0",
-            Ok(
-                (
-                    _,
-                    Primary::PrimaryLiteral(PrimaryLiteral::UnbasedUnsizedLiteral(_))
-                ),
-            )
-        );
-        parser_test!(
-            primary,
-            "10",
-            Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::Number(_))))
-        );
-        parser_test!(
-            primary,
-            "\"aaa\"",
-            Ok((_, Primary::PrimaryLiteral(PrimaryLiteral::StringLiteral(_))))
-        );
+        parser_test!(primary, "2.1ns ", Ok((_, Primary::PrimaryLiteral(_))));
+        parser_test!(primary, "40 ps ", Ok((_, Primary::PrimaryLiteral(_))));
+        parser_test!(primary, "'0", Ok((_, Primary::PrimaryLiteral(_))));
+        parser_test!(primary, "10", Ok((_, Primary::PrimaryLiteral(_))));
+        parser_test!(primary, "\"aaa\"", Ok((_, Primary::PrimaryLiteral(_))));
         parser_test!(primary, "this ", Ok((_, Primary::This(_))));
         parser_test!(primary, "$", Ok((_, Primary::Dollar(_))));
         parser_test!(primary, "null ", Ok((_, Primary::Null(_))));

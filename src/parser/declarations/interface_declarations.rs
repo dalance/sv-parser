@@ -22,9 +22,9 @@ pub struct ModportItem {
 
 #[derive(Clone, Debug, Node)]
 pub enum ModportPortsDeclaraton {
-    Simple(ModportPortsDeclaratonSimple),
-    Tf(ModportPortsDeclaratonTf),
-    Clocking(ModportPortsDeclaratonClocking),
+    Simple(Box<ModportPortsDeclaratonSimple>),
+    Tf(Box<ModportPortsDeclaratonTf>),
+    Clocking(Box<ModportPortsDeclaratonClocking>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -54,8 +54,8 @@ pub struct ModportSimplePortsDeclaration {
 
 #[derive(Clone, Debug, Node)]
 pub enum ModportSimplePort {
-    Ordered(ModportSimplePortOrdered),
-    Named(ModportSimplePortNamed),
+    Ordered(Box<ModportSimplePortOrdered>),
+    Named(Box<ModportSimplePortNamed>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -75,14 +75,14 @@ pub struct ModportTfPortsDeclaration {
 
 #[derive(Clone, Debug, Node)]
 pub enum ModportTfPort {
-    MethodPrototype(MethodPrototype),
-    TfIdentifier(TfIdentifier),
+    MethodPrototype(Box<MethodPrototype>),
+    TfIdentifier(Box<TfIdentifier>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum ImportExport {
-    Import(Keyword),
-    Export(Keyword),
+    Import(Box<Keyword>),
+    Export(Box<Keyword>),
 }
 
 // -----------------------------------------------------------------------------
@@ -117,7 +117,7 @@ pub fn modport_ports_declaration_simple(s: Span) -> IResult<Span, ModportPortsDe
     let (s, b) = modport_simple_ports_declaration(s)?;
     Ok((
         s,
-        ModportPortsDeclaraton::Simple(ModportPortsDeclaratonSimple { nodes: (a, b) }),
+        ModportPortsDeclaraton::Simple(Box::new(ModportPortsDeclaratonSimple { nodes: (a, b) })),
     ))
 }
 
@@ -127,7 +127,7 @@ pub fn modport_ports_declaration_tf(s: Span) -> IResult<Span, ModportPortsDeclar
     let (s, b) = modport_tf_ports_declaration(s)?;
     Ok((
         s,
-        ModportPortsDeclaraton::Tf(ModportPortsDeclaratonTf { nodes: (a, b) }),
+        ModportPortsDeclaraton::Tf(Box::new(ModportPortsDeclaratonTf { nodes: (a, b) })),
     ))
 }
 
@@ -137,7 +137,9 @@ pub fn modport_ports_declaration_clocking(s: Span) -> IResult<Span, ModportPorts
     let (s, b) = modport_clocking_declaration(s)?;
     Ok((
         s,
-        ModportPortsDeclaraton::Clocking(ModportPortsDeclaratonClocking { nodes: (a, b) }),
+        ModportPortsDeclaraton::Clocking(Box::new(ModportPortsDeclaratonClocking {
+            nodes: (a, b),
+        })),
     ))
 }
 
@@ -165,7 +167,7 @@ pub fn modport_simple_port_ordered(s: Span) -> IResult<Span, ModportSimplePort> 
     let (s, a) = port_identifier(s)?;
     Ok((
         s,
-        ModportSimplePort::Ordered(ModportSimplePortOrdered { nodes: (a,) }),
+        ModportSimplePort::Ordered(Box::new(ModportSimplePortOrdered { nodes: (a,) })),
     ))
 }
 
@@ -176,7 +178,7 @@ pub fn modport_simple_port_named(s: Span) -> IResult<Span, ModportSimplePort> {
     let (s, c) = paren(opt(expression))(s)?;
     Ok((
         s,
-        ModportSimplePort::Named(ModportSimplePortNamed { nodes: (a, b, c) }),
+        ModportSimplePort::Named(Box::new(ModportSimplePortNamed { nodes: (a, b, c) })),
     ))
 }
 
@@ -190,15 +192,17 @@ pub fn modport_tf_ports_declaration(s: Span) -> IResult<Span, ModportTfPortsDecl
 #[parser]
 pub fn modport_tf_port(s: Span) -> IResult<Span, ModportTfPort> {
     alt((
-        map(method_prototype, |x| ModportTfPort::MethodPrototype(x)),
-        map(tf_identifier, |x| ModportTfPort::TfIdentifier(x)),
+        map(method_prototype, |x| {
+            ModportTfPort::MethodPrototype(Box::new(x))
+        }),
+        map(tf_identifier, |x| ModportTfPort::TfIdentifier(Box::new(x))),
     ))(s)
 }
 
 #[parser]
 pub fn import_export(s: Span) -> IResult<Span, ImportExport> {
     alt((
-        map(keyword("import"), |x| ImportExport::Import(x)),
-        map(keyword("export"), |x| ImportExport::Export(x)),
+        map(keyword("import"), |x| ImportExport::Import(Box::new(x))),
+        map(keyword("export"), |x| ImportExport::Export(Box::new(x))),
     ))(s)
 }

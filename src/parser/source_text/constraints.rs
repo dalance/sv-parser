@@ -30,8 +30,8 @@ pub struct ConstraintBlock {
 
 #[derive(Clone, Debug, Node)]
 pub enum ConstraintBlockItem {
-    Solve(ConstraintBlockItemSolve),
-    ConstraintExpression(ConstraintExpression),
+    Solve(Box<ConstraintBlockItemSolve>),
+    ConstraintExpression(Box<ConstraintExpression>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -55,12 +55,12 @@ pub struct ConstraintPrimary {
 
 #[derive(Clone, Debug, Node)]
 pub enum ConstraintExpression {
-    Expression(ConstraintExpressionExpression),
-    UniquenessConstraint((UniquenessConstraint, Symbol)),
-    Arrow(ConstraintExpressionArrow),
-    If(ConstraintExpressionIf),
-    Foreach(ConstraintExpressionForeach),
-    Disable(ConstraintExpressionDisable),
+    Expression(Box<ConstraintExpressionExpression>),
+    UniquenessConstraint(Box<(UniquenessConstraint, Symbol)>),
+    Arrow(Box<ConstraintExpressionArrow>),
+    If(Box<ConstraintExpressionIf>),
+    Foreach(Box<ConstraintExpressionForeach>),
+    Disable(Box<ConstraintExpressionDisable>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -110,7 +110,7 @@ pub struct UniquenessConstraint {
 #[derive(Clone, Debug, Node)]
 pub enum ConstraintSet {
     ConstraintExpression(Box<ConstraintExpression>),
-    Brace(ConstraintSetBrace),
+    Brace(Box<ConstraintSetBrace>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -130,8 +130,8 @@ pub struct DistItem {
 
 #[derive(Clone, Debug, Node)]
 pub enum DistWeight {
-    Equal(DistWeightEqual),
-    Divide(DistWeightDivide),
+    Equal(Box<DistWeightEqual>),
+    Divide(Box<DistWeightDivide>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -157,8 +157,8 @@ pub struct ConstraintPrototype {
 
 #[derive(Clone, Debug, Node)]
 pub enum ConstraintPrototypeQualifier {
-    Extern(Keyword),
-    Pure(Keyword),
+    Extern(Box<Keyword>),
+    Pure(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -210,7 +210,7 @@ pub fn constraint_block_item(s: Span) -> IResult<Span, ConstraintBlockItem> {
     alt((
         constraint_block_item_solve,
         map(constraint_expression, |x| {
-            ConstraintBlockItem::ConstraintExpression(x)
+            ConstraintBlockItem::ConstraintExpression(Box::new(x))
         }),
     ))(s)
 }
@@ -224,9 +224,9 @@ pub fn constraint_block_item_solve(s: Span) -> IResult<Span, ConstraintBlockItem
     let (s, e) = symbol(";")(s)?;
     Ok((
         s,
-        ConstraintBlockItem::Solve(ConstraintBlockItemSolve {
+        ConstraintBlockItem::Solve(Box::new(ConstraintBlockItemSolve {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
@@ -249,7 +249,7 @@ pub fn constraint_expression(s: Span) -> IResult<Span, ConstraintExpression> {
     alt((
         constraint_expression_expression,
         map(pair(uniqueness_constraint, symbol(";")), |x| {
-            ConstraintExpression::UniquenessConstraint(x)
+            ConstraintExpression::UniquenessConstraint(Box::new(x))
         }),
         constraint_expression_arrow,
         constraint_expression_if,
@@ -265,7 +265,9 @@ pub fn constraint_expression_expression(s: Span) -> IResult<Span, ConstraintExpr
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        ConstraintExpression::Expression(ConstraintExpressionExpression { nodes: (a, b, c) }),
+        ConstraintExpression::Expression(Box::new(ConstraintExpressionExpression {
+            nodes: (a, b, c),
+        })),
     ))
 }
 
@@ -282,7 +284,7 @@ pub fn constraint_expression_arrow(s: Span) -> IResult<Span, ConstraintExpressio
     let (s, c) = constraint_set(s)?;
     Ok((
         s,
-        ConstraintExpression::Arrow(ConstraintExpressionArrow { nodes: (a, b, c) }),
+        ConstraintExpression::Arrow(Box::new(ConstraintExpressionArrow { nodes: (a, b, c) })),
     ))
 }
 
@@ -294,9 +296,9 @@ pub fn constraint_expression_if(s: Span) -> IResult<Span, ConstraintExpression> 
     let (s, d) = opt(pair(keyword("else"), constraint_set))(s)?;
     Ok((
         s,
-        ConstraintExpression::If(ConstraintExpressionIf {
+        ConstraintExpression::If(Box::new(ConstraintExpressionIf {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -310,7 +312,7 @@ pub fn constraint_expression_foreach(s: Span) -> IResult<Span, ConstraintExpress
     let (s, c) = constraint_set(s)?;
     Ok((
         s,
-        ConstraintExpression::Foreach(ConstraintExpressionForeach { nodes: (a, b, c) }),
+        ConstraintExpression::Foreach(Box::new(ConstraintExpressionForeach { nodes: (a, b, c) })),
     ))
 }
 
@@ -322,9 +324,9 @@ pub fn constraint_expression_disable(s: Span) -> IResult<Span, ConstraintExpress
     let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        ConstraintExpression::Disable(ConstraintExpressionDisable {
+        ConstraintExpression::Disable(Box::new(ConstraintExpressionDisable {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -348,7 +350,10 @@ pub fn constraint_set(s: Span) -> IResult<Span, ConstraintSet> {
 #[parser]
 pub fn constraint_set_brace(s: Span) -> IResult<Span, ConstraintSet> {
     let (s, a) = brace(many0(constraint_expression))(s)?;
-    Ok((s, ConstraintSet::Brace(ConstraintSetBrace { nodes: (a,) })))
+    Ok((
+        s,
+        ConstraintSet::Brace(Box::new(ConstraintSetBrace { nodes: (a,) })),
+    ))
 }
 
 #[parser(MaybeRecursive)]
@@ -373,14 +378,20 @@ pub fn dist_weight(s: Span) -> IResult<Span, DistWeight> {
 pub fn dist_weight_equal(s: Span) -> IResult<Span, DistWeight> {
     let (s, a) = symbol(":=")(s)?;
     let (s, b) = expression(s)?;
-    Ok((s, DistWeight::Equal(DistWeightEqual { nodes: (a, b) })))
+    Ok((
+        s,
+        DistWeight::Equal(Box::new(DistWeightEqual { nodes: (a, b) })),
+    ))
 }
 
 #[parser]
 pub fn dist_weight_divide(s: Span) -> IResult<Span, DistWeight> {
     let (s, a) = symbol(":/")(s)?;
     let (s, b) = expression(s)?;
-    Ok((s, DistWeight::Divide(DistWeightDivide { nodes: (a, b) })))
+    Ok((
+        s,
+        DistWeight::Divide(Box::new(DistWeightDivide { nodes: (a, b) })),
+    ))
 }
 
 #[parser]
@@ -402,9 +413,11 @@ pub fn constraint_prototype(s: Span) -> IResult<Span, ConstraintPrototype> {
 pub fn constraint_prototype_qualifier(s: Span) -> IResult<Span, ConstraintPrototypeQualifier> {
     alt((
         map(keyword("extern"), |x| {
-            ConstraintPrototypeQualifier::Extern(x)
+            ConstraintPrototypeQualifier::Extern(Box::new(x))
         }),
-        map(keyword("pure"), |x| ConstraintPrototypeQualifier::Pure(x)),
+        map(keyword("pure"), |x| {
+            ConstraintPrototypeQualifier::Pure(Box::new(x))
+        }),
     ))(s)
 }
 

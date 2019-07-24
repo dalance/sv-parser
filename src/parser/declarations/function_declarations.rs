@@ -10,8 +10,8 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum FunctionDataTypeOrImplicit {
-    DataTypeOrVoid(DataTypeOrVoid),
-    ImplicitDataType(ImplicitDataType),
+    DataTypeOrVoid(Box<DataTypeOrVoid>),
+    ImplicitDataType(Box<ImplicitDataType>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -21,8 +21,8 @@ pub struct FunctionDeclaration {
 
 #[derive(Clone, Debug, Node)]
 pub enum FunctionBodyDeclaration {
-    WithoutPort(FunctionBodyDeclarationWithoutPort),
-    WithPort(FunctionBodyDeclarationWithPort),
+    WithoutPort(Box<FunctionBodyDeclarationWithoutPort>),
+    WithPort(Box<FunctionBodyDeclarationWithPort>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -56,8 +56,8 @@ pub struct FunctionBodyDeclarationWithPort {
 
 #[derive(Clone, Debug, Node)]
 pub enum InterfaceIdentifierOrClassScope {
-    InterfaceIdentifier((InterfaceIdentifier, Symbol)),
-    ClassScope(ClassScope),
+    InterfaceIdentifier(Box<(InterfaceIdentifier, Symbol)>),
+    ClassScope(Box<ClassScope>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -72,10 +72,10 @@ pub struct FunctionPrototype {
 
 #[derive(Clone, Debug, Node)]
 pub enum DpiImportExport {
-    ImportFunction(DpiImportExportImportFunction),
-    ImportTask(DpiImportExportImportTask),
-    ExportFunction(DpiImportExportExportFunction),
-    ExportTask(DpiImportExportExportTask),
+    ImportFunction(Box<DpiImportExportImportFunction>),
+    ImportTask(Box<DpiImportExportImportTask>),
+    ExportFunction(Box<DpiImportExportExportFunction>),
+    ExportTask(Box<DpiImportExportExportTask>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -128,19 +128,19 @@ pub struct DpiImportExportExportTask {
 
 #[derive(Clone, Debug, Node)]
 pub enum DpiSpecString {
-    DpiC(Keyword),
-    Dpi(Keyword),
+    DpiC(Box<Keyword>),
+    Dpi(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum DpiFunctionImportProperty {
-    Context(Keyword),
-    Pure(Keyword),
+    Context(Box<Keyword>),
+    Pure(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum DpiTaskImportProperty {
-    Context(Keyword),
+    Context(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -159,10 +159,10 @@ pub struct DpiTaskProto {
 pub fn function_data_type_or_implicit(s: Span) -> IResult<Span, FunctionDataTypeOrImplicit> {
     alt((
         map(data_type_or_void, |x| {
-            FunctionDataTypeOrImplicit::DataTypeOrVoid(x)
+            FunctionDataTypeOrImplicit::DataTypeOrVoid(Box::new(x))
         }),
         map(implicit_data_type, |x| {
-            FunctionDataTypeOrImplicit::ImplicitDataType(x)
+            FunctionDataTypeOrImplicit::ImplicitDataType(Box::new(x))
         }),
     ))(s)
 }
@@ -195,9 +195,9 @@ pub fn function_body_declaration_without_port(s: Span) -> IResult<Span, Function
     let (s, h) = opt(pair(symbol(":"), function_identifier))(s)?;
     Ok((
         s,
-        FunctionBodyDeclaration::WithoutPort(FunctionBodyDeclarationWithoutPort {
+        FunctionBodyDeclaration::WithoutPort(Box::new(FunctionBodyDeclarationWithoutPort {
             nodes: (a, b, c, d, e, f, g, h),
-        }),
+        })),
     ))
 }
 
@@ -214,9 +214,9 @@ pub fn function_body_declaration_with_port(s: Span) -> IResult<Span, FunctionBod
     let (s, i) = opt(pair(symbol(":"), function_identifier))(s)?;
     Ok((
         s,
-        FunctionBodyDeclaration::WithPort(FunctionBodyDeclarationWithPort {
+        FunctionBodyDeclaration::WithPort(Box::new(FunctionBodyDeclarationWithPort {
             nodes: (a, b, c, d, e, f, g, h, i),
-        }),
+        })),
     ))
 }
 
@@ -226,10 +226,10 @@ pub fn interface_identifier_or_class_scope(
 ) -> IResult<Span, InterfaceIdentifierOrClassScope> {
     alt((
         map(pair(interface_identifier, symbol(".")), |x| {
-            InterfaceIdentifierOrClassScope::InterfaceIdentifier(x)
+            InterfaceIdentifierOrClassScope::InterfaceIdentifier(Box::new(x))
         }),
         map(class_scope, |x| {
-            InterfaceIdentifierOrClassScope::ClassScope(x)
+            InterfaceIdentifierOrClassScope::ClassScope(Box::new(x))
         }),
     ))(s)
 }
@@ -268,9 +268,9 @@ pub fn dpi_import_export_import_function(s: Span) -> IResult<Span, DpiImportExpo
     let (s, f) = symbol(";")(s)?;
     Ok((
         s,
-        DpiImportExport::ImportFunction(DpiImportExportImportFunction {
+        DpiImportExport::ImportFunction(Box::new(DpiImportExportImportFunction {
             nodes: (a, b, c, d, e, f),
-        }),
+        })),
     ))
 }
 
@@ -284,9 +284,9 @@ pub fn dpi_import_export_import_task(s: Span) -> IResult<Span, DpiImportExport> 
     let (s, f) = symbol(";")(s)?;
     Ok((
         s,
-        DpiImportExport::ImportTask(DpiImportExportImportTask {
+        DpiImportExport::ImportTask(Box::new(DpiImportExportImportTask {
             nodes: (a, b, c, d, e, f),
-        }),
+        })),
     ))
 }
 
@@ -300,9 +300,9 @@ pub fn dpi_import_export_export_function(s: Span) -> IResult<Span, DpiImportExpo
     let (s, f) = symbol(";")(s)?;
     Ok((
         s,
-        DpiImportExport::ExportFunction(DpiImportExportExportFunction {
+        DpiImportExport::ExportFunction(Box::new(DpiImportExportExportFunction {
             nodes: (a, b, c, d, e, f),
-        }),
+        })),
     ))
 }
 
@@ -316,17 +316,17 @@ pub fn dpi_import_export_export_task(s: Span) -> IResult<Span, DpiImportExport> 
     let (s, f) = symbol(";")(s)?;
     Ok((
         s,
-        DpiImportExport::ExportTask(DpiImportExportExportTask {
+        DpiImportExport::ExportTask(Box::new(DpiImportExportExportTask {
             nodes: (a, b, c, d, e, f),
-        }),
+        })),
     ))
 }
 
 #[parser]
 pub fn dpi_spec_string(s: Span) -> IResult<Span, DpiSpecString> {
     alt((
-        map(keyword("DPI-C"), |x| DpiSpecString::DpiC(x)),
-        map(keyword("DPI"), |x| DpiSpecString::Dpi(x)),
+        map(keyword("DPI-C"), |x| DpiSpecString::DpiC(Box::new(x))),
+        map(keyword("DPI"), |x| DpiSpecString::Dpi(Box::new(x))),
     ))(s)
 }
 
@@ -334,16 +334,18 @@ pub fn dpi_spec_string(s: Span) -> IResult<Span, DpiSpecString> {
 pub fn dpi_function_import_property(s: Span) -> IResult<Span, DpiFunctionImportProperty> {
     alt((
         map(keyword("context"), |x| {
-            DpiFunctionImportProperty::Context(x)
+            DpiFunctionImportProperty::Context(Box::new(x))
         }),
-        map(keyword("pure"), |x| DpiFunctionImportProperty::Pure(x)),
+        map(keyword("pure"), |x| {
+            DpiFunctionImportProperty::Pure(Box::new(x))
+        }),
     ))(s)
 }
 
 #[parser]
 pub fn dpi_task_import_property(s: Span) -> IResult<Span, DpiTaskImportProperty> {
     let (s, a) = keyword("context")(s)?;
-    Ok((s, DpiTaskImportProperty::Context(a)))
+    Ok((s, DpiTaskImportProperty::Context(Box::new(a))))
 }
 
 #[parser]

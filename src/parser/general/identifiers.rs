@@ -201,8 +201,8 @@ pub struct HierarchicalVariableIdentifier {
 
 #[derive(Clone, Debug, Node)]
 pub enum Identifier {
-    SimpleIdentifier(SimpleIdentifier),
-    EscapedIdentifier(EscapedIdentifier),
+    SimpleIdentifier(Box<SimpleIdentifier>),
+    EscapedIdentifier(Box<EscapedIdentifier>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -282,8 +282,8 @@ pub struct PackageIdentifier {
 
 #[derive(Clone, Debug, Node)]
 pub enum PackageScope {
-    Package(PackageScopePackage),
-    Unit(Unit),
+    Package(Box<PackageScopePackage>),
+    Unit(Box<Unit>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -351,8 +351,8 @@ pub struct PsOrHierarchicalArrayIdentifier {
 
 #[derive(Clone, Debug, Node)]
 pub enum PsOrHierarchicalNetIdentifier {
-    PackageScope(PsOrHierarchicalNetIdentifierPackageScope),
-    HierarchicalNetIdentifier(HierarchicalNetIdentifier),
+    PackageScope(Box<PsOrHierarchicalNetIdentifierPackageScope>),
+    HierarchicalNetIdentifier(Box<HierarchicalNetIdentifier>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -367,8 +367,8 @@ pub struct PsOrHierarchicalNetIdentifierHierarchical {
 
 #[derive(Clone, Debug, Node)]
 pub enum PsOrHierarchicalPropertyIdentifier {
-    PackageScope(PsOrHierarchicalPropertyIdentifierPackageScope),
-    HierarchicalPropertyIdentifier(HierarchicalPropertyIdentifier),
+    PackageScope(Box<PsOrHierarchicalPropertyIdentifierPackageScope>),
+    HierarchicalPropertyIdentifier(Box<HierarchicalPropertyIdentifier>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -383,8 +383,8 @@ pub struct PsOrHierarchicalPropertyIdentifierHierarchical {
 
 #[derive(Clone, Debug, Node)]
 pub enum PsOrHierarchicalSequenceIdentifier {
-    PackageScope(PsOrHierarchicalSequenceIdentifierPackageScope),
-    HierarchicalSequenceIdentifier(HierarchicalSequenceIdentifier),
+    PackageScope(Box<PsOrHierarchicalSequenceIdentifierPackageScope>),
+    HierarchicalSequenceIdentifier(Box<HierarchicalSequenceIdentifier>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -399,8 +399,8 @@ pub struct PsOrHierarchicalSequenceIdentifierHierarchical {
 
 #[derive(Clone, Debug, Node)]
 pub enum PsOrHierarchicalTfIdentifier {
-    PackageScope(PsOrHierarchicalTfIdentifierPackageScope),
-    HierarchicalTfIdentifier(HierarchicalTfIdentifier),
+    PackageScope(Box<PsOrHierarchicalTfIdentifierPackageScope>),
+    HierarchicalTfIdentifier(Box<HierarchicalTfIdentifier>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -415,8 +415,8 @@ pub struct PsOrHierarchicalTfIdentifierHierarchical {
 
 #[derive(Clone, Debug, Node)]
 pub enum PsParameterIdentifier {
-    Scope(PsParameterIdentifierScope),
-    Generate(PsParameterIdentifierGenerate),
+    Scope(Box<PsParameterIdentifierScope>),
+    Generate(Box<PsParameterIdentifierGenerate>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -443,9 +443,9 @@ pub struct PsTypeIdentifier {
 
 #[derive(Clone, Debug, Node)]
 pub enum LocalOrPackageScopeOrClassScope {
-    Local(Local),
-    PackageScope(PackageScope),
-    ClassScope(ClassScope),
+    Local(Box<Local>),
+    PackageScope(Box<PackageScope>),
+    ClassScope(Box<ClassScope>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -515,27 +515,27 @@ pub struct VariableIdentifier {
 
 #[derive(Clone, Debug, Node)]
 pub enum ImplicitClassHandleOrClassScopeOrPackageScope {
-    ImplicitClassHandle((ImplicitClassHandle, Symbol)),
-    ClassScope(ClassScope),
-    PackageScope(PackageScope),
+    ImplicitClassHandle(Box<(ImplicitClassHandle, Symbol)>),
+    ClassScope(Box<ClassScope>),
+    PackageScope(Box<PackageScope>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum ImplicitClassHandleOrPackageScope {
-    ImplicitClassHandle((ImplicitClassHandle, Symbol)),
-    PackageScope(PackageScope),
+    ImplicitClassHandle(Box<(ImplicitClassHandle, Symbol)>),
+    PackageScope(Box<PackageScope>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum ImplicitClassHandleOrClassScope {
-    ImplicitClassHandle((ImplicitClassHandle, Symbol)),
-    ClassScope(ClassScope),
+    ImplicitClassHandle(Box<(ImplicitClassHandle, Symbol)>),
+    ClassScope(Box<ClassScope>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum PackageScopeOrClassScope {
-    PackageScope(PackageScope),
-    ClassScope(ClassScope),
+    PackageScope(Box<PackageScope>),
+    ClassScope(Box<ClassScope>),
 }
 
 // -----------------------------------------------------------------------------
@@ -790,8 +790,12 @@ pub fn hierarchical_variable_identifier(s: Span) -> IResult<Span, HierarchicalVa
 #[parser]
 pub fn identifier(s: Span) -> IResult<Span, Identifier> {
     alt((
-        map(escaped_identifier, |x| Identifier::EscapedIdentifier(x)),
-        map(simple_identifier, |x| Identifier::SimpleIdentifier(x)),
+        map(escaped_identifier, |x| {
+            Identifier::EscapedIdentifier(Box::new(x))
+        }),
+        map(simple_identifier, |x| {
+            Identifier::SimpleIdentifier(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -888,7 +892,10 @@ pub fn package_identifier(s: Span) -> IResult<Span, PackageIdentifier> {
 #[packrat_parser]
 #[parser]
 pub fn package_scope(s: Span) -> IResult<Span, PackageScope> {
-    alt((package_scope_package, map(unit, |x| PackageScope::Unit(x))))(s)
+    alt((
+        package_scope_package,
+        map(unit, |x| PackageScope::Unit(Box::new(x))),
+    ))(s)
 }
 
 #[parser]
@@ -897,7 +904,7 @@ pub fn package_scope_package(s: Span) -> IResult<Span, PackageScope> {
     let (s, b) = symbol("::")(s)?;
     Ok((
         s,
-        PackageScope::Package(PackageScopePackage { nodes: (a, b) }),
+        PackageScope::Package(Box::new(PackageScopePackage { nodes: (a, b) })),
     ))
 }
 
@@ -980,7 +987,7 @@ pub fn ps_or_hierarchical_net_identifier(s: Span) -> IResult<Span, PsOrHierarchi
     alt((
         ps_or_hierarchical_net_identifier_package_scope,
         map(hierarchical_net_identifier, |x| {
-            PsOrHierarchicalNetIdentifier::HierarchicalNetIdentifier(x)
+            PsOrHierarchicalNetIdentifier::HierarchicalNetIdentifier(Box::new(x))
         }),
     ))(s)
 }
@@ -993,9 +1000,9 @@ pub fn ps_or_hierarchical_net_identifier_package_scope(
     let (s, b) = net_identifier(s)?;
     Ok((
         s,
-        PsOrHierarchicalNetIdentifier::PackageScope(PsOrHierarchicalNetIdentifierPackageScope {
-            nodes: (a, b),
-        }),
+        PsOrHierarchicalNetIdentifier::PackageScope(Box::new(
+            PsOrHierarchicalNetIdentifierPackageScope { nodes: (a, b) },
+        )),
     ))
 }
 
@@ -1006,7 +1013,7 @@ pub fn ps_or_hierarchical_property_identifier(
     alt((
         ps_or_hierarchical_property_identifier_package_scope,
         map(hierarchical_property_identifier, |x| {
-            PsOrHierarchicalPropertyIdentifier::HierarchicalPropertyIdentifier(x)
+            PsOrHierarchicalPropertyIdentifier::HierarchicalPropertyIdentifier(Box::new(x))
         }),
     ))(s)
 }
@@ -1019,9 +1026,9 @@ pub fn ps_or_hierarchical_property_identifier_package_scope(
     let (s, b) = property_identifier(s)?;
     Ok((
         s,
-        PsOrHierarchicalPropertyIdentifier::PackageScope(
+        PsOrHierarchicalPropertyIdentifier::PackageScope(Box::new(
             PsOrHierarchicalPropertyIdentifierPackageScope { nodes: (a, b) },
-        ),
+        )),
     ))
 }
 
@@ -1032,7 +1039,7 @@ pub fn ps_or_hierarchical_sequence_identifier(
     alt((
         ps_or_hierarchical_sequence_identifier_package_scope,
         map(hierarchical_sequence_identifier, |x| {
-            PsOrHierarchicalSequenceIdentifier::HierarchicalSequenceIdentifier(x)
+            PsOrHierarchicalSequenceIdentifier::HierarchicalSequenceIdentifier(Box::new(x))
         }),
     ))(s)
 }
@@ -1045,9 +1052,9 @@ pub fn ps_or_hierarchical_sequence_identifier_package_scope(
     let (s, b) = sequence_identifier(s)?;
     Ok((
         s,
-        PsOrHierarchicalSequenceIdentifier::PackageScope(
+        PsOrHierarchicalSequenceIdentifier::PackageScope(Box::new(
             PsOrHierarchicalSequenceIdentifierPackageScope { nodes: (a, b) },
-        ),
+        )),
     ))
 }
 
@@ -1056,7 +1063,7 @@ pub fn ps_or_hierarchical_tf_identifier(s: Span) -> IResult<Span, PsOrHierarchic
     alt((
         ps_or_hierarchical_tf_identifier_package_scope,
         map(hierarchical_tf_identifier, |x| {
-            PsOrHierarchicalTfIdentifier::HierarchicalTfIdentifier(x)
+            PsOrHierarchicalTfIdentifier::HierarchicalTfIdentifier(Box::new(x))
         }),
     ))(s)
 }
@@ -1069,9 +1076,9 @@ pub fn ps_or_hierarchical_tf_identifier_package_scope(
     let (s, b) = tf_identifier(s)?;
     Ok((
         s,
-        PsOrHierarchicalTfIdentifier::PackageScope(PsOrHierarchicalTfIdentifierPackageScope {
-            nodes: (a, b),
-        }),
+        PsOrHierarchicalTfIdentifier::PackageScope(Box::new(
+            PsOrHierarchicalTfIdentifierPackageScope { nodes: (a, b) },
+        )),
     ))
 }
 
@@ -1090,7 +1097,7 @@ pub fn ps_parameter_identifier_scope(s: Span) -> IResult<Span, PsParameterIdenti
     let (s, b) = parameter_identifier(s)?;
     Ok((
         s,
-        PsParameterIdentifier::Scope(PsParameterIdentifierScope { nodes: (a, b) }),
+        PsParameterIdentifier::Scope(Box::new(PsParameterIdentifierScope { nodes: (a, b) })),
     ))
 }
 
@@ -1104,7 +1111,7 @@ pub fn ps_parameter_identifier_generate(s: Span) -> IResult<Span, PsParameterIde
     let (s, b) = parameter_identifier(s)?;
     Ok((
         s,
-        PsParameterIdentifier::Generate(PsParameterIdentifierGenerate { nodes: (a, b) }),
+        PsParameterIdentifier::Generate(Box::new(PsParameterIdentifierGenerate { nodes: (a, b) })),
     ))
 }
 
@@ -1219,13 +1226,13 @@ pub fn implicit_class_handle_or_class_scope_or_package_scope(
 ) -> IResult<Span, ImplicitClassHandleOrClassScopeOrPackageScope> {
     alt((
         map(pair(implicit_class_handle, symbol(".")), |x| {
-            ImplicitClassHandleOrClassScopeOrPackageScope::ImplicitClassHandle(x)
+            ImplicitClassHandleOrClassScopeOrPackageScope::ImplicitClassHandle(Box::new(x))
         }),
         map(class_scope, |x| {
-            ImplicitClassHandleOrClassScopeOrPackageScope::ClassScope(x)
+            ImplicitClassHandleOrClassScopeOrPackageScope::ClassScope(Box::new(x))
         }),
         map(package_scope, |x| {
-            ImplicitClassHandleOrClassScopeOrPackageScope::PackageScope(x)
+            ImplicitClassHandleOrClassScopeOrPackageScope::PackageScope(Box::new(x))
         }),
     ))(s)
 }
@@ -1236,10 +1243,10 @@ pub fn implicit_class_handle_or_package_scope(
 ) -> IResult<Span, ImplicitClassHandleOrPackageScope> {
     alt((
         map(pair(implicit_class_handle, symbol(".")), |x| {
-            ImplicitClassHandleOrPackageScope::ImplicitClassHandle(x)
+            ImplicitClassHandleOrPackageScope::ImplicitClassHandle(Box::new(x))
         }),
         map(package_scope, |x| {
-            ImplicitClassHandleOrPackageScope::PackageScope(x)
+            ImplicitClassHandleOrPackageScope::PackageScope(Box::new(x))
         }),
     ))(s)
 }
@@ -1250,10 +1257,10 @@ pub fn implicit_class_handle_or_class_scope(
 ) -> IResult<Span, ImplicitClassHandleOrClassScope> {
     alt((
         map(pair(implicit_class_handle, symbol(".")), |x| {
-            ImplicitClassHandleOrClassScope::ImplicitClassHandle(x)
+            ImplicitClassHandleOrClassScope::ImplicitClassHandle(Box::new(x))
         }),
         map(class_scope, |x| {
-            ImplicitClassHandleOrClassScope::ClassScope(x)
+            ImplicitClassHandleOrClassScope::ClassScope(Box::new(x))
         }),
     ))(s)
 }
@@ -1261,8 +1268,12 @@ pub fn implicit_class_handle_or_class_scope(
 #[parser]
 pub fn package_scope_or_class_scope(s: Span) -> IResult<Span, PackageScopeOrClassScope> {
     alt((
-        map(package_scope, |x| PackageScopeOrClassScope::PackageScope(x)),
-        map(class_scope, |x| PackageScopeOrClassScope::ClassScope(x)),
+        map(package_scope, |x| {
+            PackageScopeOrClassScope::PackageScope(Box::new(x))
+        }),
+        map(class_scope, |x| {
+            PackageScopeOrClassScope::ClassScope(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -1271,12 +1282,14 @@ pub fn local_or_package_scope_or_class_scope(
     s: Span,
 ) -> IResult<Span, LocalOrPackageScopeOrClassScope> {
     alt((
-        map(local, |x| LocalOrPackageScopeOrClassScope::Local(x)),
+        map(local, |x| {
+            LocalOrPackageScopeOrClassScope::Local(Box::new(x))
+        }),
         map(package_scope, |x| {
-            LocalOrPackageScopeOrClassScope::PackageScope(x)
+            LocalOrPackageScopeOrClassScope::PackageScope(Box::new(x))
         }),
         map(class_scope, |x| {
-            LocalOrPackageScopeOrClassScope::ClassScope(x)
+            LocalOrPackageScopeOrClassScope::ClassScope(Box::new(x))
         }),
     ))(s)
 }

@@ -23,8 +23,8 @@ pub struct DataEvent {
 
 #[derive(Clone, Debug, Node)]
 pub enum DelayedData {
-    TerminalIdentifier(TerminalIdentifier),
-    WithMintypmax(DelayedDataWithMintypmax),
+    TerminalIdentifier(Box<TerminalIdentifier>),
+    WithMintypmax(Box<DelayedDataWithMintypmax>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -34,8 +34,8 @@ pub struct DelayedDataWithMintypmax {
 
 #[derive(Clone, Debug, Node)]
 pub enum DelayedReference {
-    TerminalIdentifier(TerminalIdentifier),
-    WithMintypmax(DelayedReferenceWithMintypmax),
+    TerminalIdentifier(Box<TerminalIdentifier>),
+    WithMintypmax(Box<DelayedReferenceWithMintypmax>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -111,7 +111,9 @@ pub fn data_event(s: Span) -> IResult<Span, DataEvent> {
 #[parser]
 pub fn delayed_data(s: Span) -> IResult<Span, DelayedData> {
     alt((
-        map(terminal_identifier, |x| DelayedData::TerminalIdentifier(x)),
+        map(terminal_identifier, |x| {
+            DelayedData::TerminalIdentifier(Box::new(x))
+        }),
         delayed_data_with_mintypmax,
     ))(s)
 }
@@ -122,7 +124,7 @@ pub fn delayed_data_with_mintypmax(s: Span) -> IResult<Span, DelayedData> {
     let (s, b) = bracket(constant_mintypmax_expression)(s)?;
     Ok((
         s,
-        DelayedData::WithMintypmax(DelayedDataWithMintypmax { nodes: (a, b) }),
+        DelayedData::WithMintypmax(Box::new(DelayedDataWithMintypmax { nodes: (a, b) })),
     ))
 }
 
@@ -130,7 +132,7 @@ pub fn delayed_data_with_mintypmax(s: Span) -> IResult<Span, DelayedData> {
 pub fn delayed_reference(s: Span) -> IResult<Span, DelayedReference> {
     alt((
         map(terminal_identifier, |x| {
-            DelayedReference::TerminalIdentifier(x)
+            DelayedReference::TerminalIdentifier(Box::new(x))
         }),
         delayed_reference_with_mintypmax,
     ))(s)
@@ -142,7 +144,7 @@ pub fn delayed_reference_with_mintypmax(s: Span) -> IResult<Span, DelayedReferen
     let (s, b) = bracket(constant_mintypmax_expression)(s)?;
     Ok((
         s,
-        DelayedReference::WithMintypmax(DelayedReferenceWithMintypmax { nodes: (a, b) }),
+        DelayedReference::WithMintypmax(Box::new(DelayedReferenceWithMintypmax { nodes: (a, b) })),
     ))
 }
 

@@ -9,8 +9,8 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum UnpackedDimension {
-    Range(UnpackedDimensionRange),
-    Expression(UnpackedDimensionExpression),
+    Range(Box<UnpackedDimensionRange>),
+    Expression(Box<UnpackedDimensionExpression>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -25,8 +25,8 @@ pub struct UnpackedDimensionExpression {
 
 #[derive(Clone, Debug, Node)]
 pub enum PackedDimension {
-    Range(PackedDimensionRange),
-    UnsizedDimension(UnsizedDimension),
+    Range(Box<PackedDimensionRange>),
+    UnsizedDimension(Box<UnsizedDimension>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -36,8 +36,8 @@ pub struct PackedDimensionRange {
 
 #[derive(Clone, Debug, Node)]
 pub enum AssociativeDimension {
-    DataType(AssociativeDimensionDataType),
-    Asterisk(AssociativeDimensionAsterisk),
+    DataType(Box<AssociativeDimensionDataType>),
+    Asterisk(Box<AssociativeDimensionAsterisk>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -52,10 +52,10 @@ pub struct AssociativeDimensionAsterisk {
 
 #[derive(Clone, Debug, Node)]
 pub enum VariableDimension {
-    UnsizedDimension(UnsizedDimension),
-    UnpackedDimension(UnpackedDimension),
-    AssociativeDimension(AssociativeDimension),
-    QueueDimension(QueueDimension),
+    UnsizedDimension(Box<UnsizedDimension>),
+    UnpackedDimension(Box<UnpackedDimension>),
+    AssociativeDimension(Box<AssociativeDimension>),
+    QueueDimension(Box<QueueDimension>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -80,7 +80,7 @@ pub fn unpacked_dimension_range(s: Span) -> IResult<Span, UnpackedDimension> {
     let (s, a) = bracket(constant_range)(s)?;
     Ok((
         s,
-        UnpackedDimension::Range(UnpackedDimensionRange { nodes: (a,) }),
+        UnpackedDimension::Range(Box::new(UnpackedDimensionRange { nodes: (a,) })),
     ))
 }
 
@@ -89,7 +89,7 @@ pub fn unpacked_dimension_expression(s: Span) -> IResult<Span, UnpackedDimension
     let (s, a) = bracket(constant_expression)(s)?;
     Ok((
         s,
-        UnpackedDimension::Expression(UnpackedDimensionExpression { nodes: (a,) }),
+        UnpackedDimension::Expression(Box::new(UnpackedDimensionExpression { nodes: (a,) })),
     ))
 }
 
@@ -97,7 +97,9 @@ pub fn unpacked_dimension_expression(s: Span) -> IResult<Span, UnpackedDimension
 pub fn packed_dimension(s: Span) -> IResult<Span, PackedDimension> {
     alt((
         packed_dimension_range,
-        map(unsized_dimension, |x| PackedDimension::UnsizedDimension(x)),
+        map(unsized_dimension, |x| {
+            PackedDimension::UnsizedDimension(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -106,7 +108,7 @@ pub fn packed_dimension_range(s: Span) -> IResult<Span, PackedDimension> {
     let (s, a) = bracket(constant_range)(s)?;
     Ok((
         s,
-        PackedDimension::Range(PackedDimensionRange { nodes: (a,) }),
+        PackedDimension::Range(Box::new(PackedDimensionRange { nodes: (a,) })),
     ))
 }
 
@@ -123,7 +125,7 @@ pub fn associative_dimension_data_type(s: Span) -> IResult<Span, AssociativeDime
     let (s, a) = bracket(data_type)(s)?;
     Ok((
         s,
-        AssociativeDimension::DataType(AssociativeDimensionDataType { nodes: (a,) }),
+        AssociativeDimension::DataType(Box::new(AssociativeDimensionDataType { nodes: (a,) })),
     ))
 }
 
@@ -132,7 +134,7 @@ pub fn associative_dimension_asterisk(s: Span) -> IResult<Span, AssociativeDimen
     let (s, a) = bracket(symbol("*"))(s)?;
     Ok((
         s,
-        AssociativeDimension::Asterisk(AssociativeDimensionAsterisk { nodes: (a,) }),
+        AssociativeDimension::Asterisk(Box::new(AssociativeDimensionAsterisk { nodes: (a,) })),
     ))
 }
 
@@ -140,15 +142,17 @@ pub fn associative_dimension_asterisk(s: Span) -> IResult<Span, AssociativeDimen
 pub fn variable_dimension(s: Span) -> IResult<Span, VariableDimension> {
     alt((
         map(unsized_dimension, |x| {
-            VariableDimension::UnsizedDimension(x)
+            VariableDimension::UnsizedDimension(Box::new(x))
         }),
         map(unpacked_dimension, |x| {
-            VariableDimension::UnpackedDimension(x)
+            VariableDimension::UnpackedDimension(Box::new(x))
         }),
         map(associative_dimension, |x| {
-            VariableDimension::AssociativeDimension(x)
+            VariableDimension::AssociativeDimension(Box::new(x))
         }),
-        map(queue_dimension, |x| VariableDimension::QueueDimension(x)),
+        map(queue_dimension, |x| {
+            VariableDimension::QueueDimension(Box::new(x))
+        }),
     ))(s)
 }
 

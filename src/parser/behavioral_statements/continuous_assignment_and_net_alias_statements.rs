@@ -8,8 +8,8 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum ContinuousAssign {
-    Net(ContinuousAssignNet),
-    Variable(ContinuousAssignVariable),
+    Net(Box<ContinuousAssignNet>),
+    Variable(Box<ContinuousAssignVariable>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -70,9 +70,9 @@ pub fn continuous_assign_net(s: Span) -> IResult<Span, ContinuousAssign> {
 
     Ok((
         s,
-        ContinuousAssign::Net(ContinuousAssignNet {
+        ContinuousAssign::Net(Box::new(ContinuousAssignNet {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 
@@ -85,9 +85,9 @@ pub fn continuous_assign_variable(s: Span) -> IResult<Span, ContinuousAssign> {
 
     Ok((
         s,
-        ContinuousAssign::Variable(ContinuousAssignVariable {
+        ContinuousAssign::Variable(Box::new(ContinuousAssignVariable {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 

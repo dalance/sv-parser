@@ -27,33 +27,33 @@ pub struct CheckerPortItem {
 
 #[derive(Clone, Debug, Node)]
 pub enum CheckerPortDirection {
-    Input(Keyword),
-    Output(Keyword),
+    Input(Box<Keyword>),
+    Output(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum CheckerOrGenerateItem {
-    CheckerOrGenerateItemDeclaration(CheckerOrGenerateItemDeclaration),
-    InitialConstruct(InitialConstruct),
-    AlwaysConstruct(AlwaysConstruct),
-    FinalConstruct(FinalConstruct),
-    AssertionItem(AssertionItem),
-    ContinuousAssign(ContinuousAssign),
-    CheckerGenerateItem(CheckerGenerateItem),
+    CheckerOrGenerateItemDeclaration(Box<CheckerOrGenerateItemDeclaration>),
+    InitialConstruct(Box<InitialConstruct>),
+    AlwaysConstruct(Box<AlwaysConstruct>),
+    FinalConstruct(Box<FinalConstruct>),
+    AssertionItem(Box<AssertionItem>),
+    ContinuousAssign(Box<ContinuousAssign>),
+    CheckerGenerateItem(Box<CheckerGenerateItem>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum CheckerOrGenerateItemDeclaration {
-    Data(CheckerOrGenerateItemDeclarationData),
-    FunctionDeclaration(FunctionDeclaration),
-    CheckerDeclaration(CheckerDeclaration),
-    AssertionItemDeclaration(AssertionItemDeclaration),
-    CovergroupDeclaration(CovergroupDeclaration),
-    GenvarDeclaration(GenvarDeclaration),
-    ClockingDeclaration(ClockingDeclaration),
-    Clocking(CheckerOrGenerateItemDeclarationClocking),
-    Disable(CheckerOrGenerateItemDeclarationDisable),
-    Empty(Symbol),
+    Data(Box<CheckerOrGenerateItemDeclarationData>),
+    FunctionDeclaration(Box<FunctionDeclaration>),
+    CheckerDeclaration(Box<CheckerDeclaration>),
+    AssertionItemDeclaration(Box<AssertionItemDeclaration>),
+    CovergroupDeclaration(Box<CovergroupDeclaration>),
+    GenvarDeclaration(Box<GenvarDeclaration>),
+    ClockingDeclaration(Box<ClockingDeclaration>),
+    Clocking(Box<CheckerOrGenerateItemDeclarationClocking>),
+    Disable(Box<CheckerOrGenerateItemDeclarationDisable>),
+    Empty(Box<Symbol>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -80,8 +80,8 @@ pub struct CheckerOrGenerateItemDeclarationDisable {
 pub enum CheckerGenerateItem {
     LoopGenerateConstruct(Box<LoopGenerateConstruct>),
     ConditionalGenerateConstruct(Box<ConditionalGenerateConstruct>),
-    GenerateRegion(GenerateRegion),
-    ElaborationSystemTask(ElaborationSystemTask),
+    GenerateRegion(Box<GenerateRegion>),
+    ElaborationSystemTask(Box<ElaborationSystemTask>),
 }
 
 // -----------------------------------------------------------------------------
@@ -111,8 +111,12 @@ pub fn checker_port_item(s: Span) -> IResult<Span, CheckerPortItem> {
 #[parser]
 pub fn checker_port_direction(s: Span) -> IResult<Span, CheckerPortDirection> {
     alt((
-        map(keyword("input"), |x| CheckerPortDirection::Input(x)),
-        map(keyword("output"), |x| CheckerPortDirection::Output(x)),
+        map(keyword("input"), |x| {
+            CheckerPortDirection::Input(Box::new(x))
+        }),
+        map(keyword("output"), |x| {
+            CheckerPortDirection::Output(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -120,23 +124,25 @@ pub fn checker_port_direction(s: Span) -> IResult<Span, CheckerPortDirection> {
 pub fn checker_or_generate_item(s: Span) -> IResult<Span, CheckerOrGenerateItem> {
     alt((
         map(checker_or_generate_item_declaration, |x| {
-            CheckerOrGenerateItem::CheckerOrGenerateItemDeclaration(x)
+            CheckerOrGenerateItem::CheckerOrGenerateItemDeclaration(Box::new(x))
         }),
         map(initial_construct, |x| {
-            CheckerOrGenerateItem::InitialConstruct(x)
+            CheckerOrGenerateItem::InitialConstruct(Box::new(x))
         }),
         map(always_construct, |x| {
-            CheckerOrGenerateItem::AlwaysConstruct(x)
+            CheckerOrGenerateItem::AlwaysConstruct(Box::new(x))
         }),
         map(final_construct, |x| {
-            CheckerOrGenerateItem::FinalConstruct(x)
+            CheckerOrGenerateItem::FinalConstruct(Box::new(x))
         }),
-        map(assertion_item, |x| CheckerOrGenerateItem::AssertionItem(x)),
+        map(assertion_item, |x| {
+            CheckerOrGenerateItem::AssertionItem(Box::new(x))
+        }),
         map(continuous_assign, |x| {
-            CheckerOrGenerateItem::ContinuousAssign(x)
+            CheckerOrGenerateItem::ContinuousAssign(Box::new(x))
         }),
         map(checker_generate_item, |x| {
-            CheckerOrGenerateItem::CheckerGenerateItem(x)
+            CheckerOrGenerateItem::CheckerGenerateItem(Box::new(x))
         }),
     ))(s)
 }
@@ -148,26 +154,28 @@ pub fn checker_or_generate_item_declaration(
     alt((
         checker_or_generate_item_declaration_data,
         map(function_declaration, |x| {
-            CheckerOrGenerateItemDeclaration::FunctionDeclaration(x)
+            CheckerOrGenerateItemDeclaration::FunctionDeclaration(Box::new(x))
         }),
         map(checker_declaration, |x| {
-            CheckerOrGenerateItemDeclaration::CheckerDeclaration(x)
+            CheckerOrGenerateItemDeclaration::CheckerDeclaration(Box::new(x))
         }),
         map(assertion_item_declaration, |x| {
-            CheckerOrGenerateItemDeclaration::AssertionItemDeclaration(x)
+            CheckerOrGenerateItemDeclaration::AssertionItemDeclaration(Box::new(x))
         }),
         map(covergroup_declaration, |x| {
-            CheckerOrGenerateItemDeclaration::CovergroupDeclaration(x)
+            CheckerOrGenerateItemDeclaration::CovergroupDeclaration(Box::new(x))
         }),
         map(genvar_declaration, |x| {
-            CheckerOrGenerateItemDeclaration::GenvarDeclaration(x)
+            CheckerOrGenerateItemDeclaration::GenvarDeclaration(Box::new(x))
         }),
         map(clocking_declaration, |x| {
-            CheckerOrGenerateItemDeclaration::ClockingDeclaration(x)
+            CheckerOrGenerateItemDeclaration::ClockingDeclaration(Box::new(x))
         }),
         checker_or_generate_item_declaration_clocking,
         checker_or_generate_item_declaration_disable,
-        map(symbol(";"), |x| CheckerOrGenerateItemDeclaration::Empty(x)),
+        map(symbol(";"), |x| {
+            CheckerOrGenerateItemDeclaration::Empty(Box::new(x))
+        }),
     ))(s)
 }
 
@@ -179,9 +187,9 @@ pub fn checker_or_generate_item_declaration_data(
     let (s, b) = data_declaration(s)?;
     Ok((
         s,
-        CheckerOrGenerateItemDeclaration::Data(CheckerOrGenerateItemDeclarationData {
+        CheckerOrGenerateItemDeclaration::Data(Box::new(CheckerOrGenerateItemDeclarationData {
             nodes: (a, b),
-        }),
+        })),
     ))
 }
 
@@ -201,9 +209,11 @@ pub fn checker_or_generate_item_declaration_clocking(
     let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        CheckerOrGenerateItemDeclaration::Clocking(CheckerOrGenerateItemDeclarationClocking {
-            nodes: (a, b, c, d),
-        }),
+        CheckerOrGenerateItemDeclaration::Clocking(Box::new(
+            CheckerOrGenerateItemDeclarationClocking {
+                nodes: (a, b, c, d),
+            },
+        )),
     ))
 }
 
@@ -218,9 +228,11 @@ pub fn checker_or_generate_item_declaration_disable(
     let (s, e) = symbol(";")(s)?;
     Ok((
         s,
-        CheckerOrGenerateItemDeclaration::Disable(CheckerOrGenerateItemDeclarationDisable {
-            nodes: (a, b, c, d, e),
-        }),
+        CheckerOrGenerateItemDeclaration::Disable(Box::new(
+            CheckerOrGenerateItemDeclarationDisable {
+                nodes: (a, b, c, d, e),
+            },
+        )),
     ))
 }
 
@@ -233,9 +245,11 @@ pub fn checker_generate_item(s: Span) -> IResult<Span, CheckerGenerateItem> {
         map(conditional_generate_construct, |x| {
             CheckerGenerateItem::ConditionalGenerateConstruct(Box::new(x))
         }),
-        map(generate_region, |x| CheckerGenerateItem::GenerateRegion(x)),
+        map(generate_region, |x| {
+            CheckerGenerateItem::GenerateRegion(Box::new(x))
+        }),
         map(elaboration_system_task, |x| {
-            CheckerGenerateItem::ElaborationSystemTask(x)
+            CheckerGenerateItem::ElaborationSystemTask(Box::new(x))
         }),
     ))(s)
 }

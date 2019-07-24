@@ -15,8 +15,8 @@ pub struct TaskDeclaration {
 
 #[derive(Clone, Debug, Node)]
 pub enum TaskBodyDeclaration {
-    WithoutPort(TaskBodyDeclarationWithoutPort),
-    WithPort(TaskBodyDeclarationWithPort),
+    WithoutPort(Box<TaskBodyDeclarationWithoutPort>),
+    WithPort(Box<TaskBodyDeclarationWithPort>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -48,8 +48,8 @@ pub struct TaskBodyDeclarationWithPort {
 
 #[derive(Clone, Debug, Node)]
 pub enum TfItemDeclaration {
-    BlockItemDeclaration(BlockItemDeclaration),
-    TfPortDeclaration(TfPortDeclaration),
+    BlockItemDeclaration(Box<BlockItemDeclaration>),
+    TfPortDeclaration(Box<TfPortDeclaration>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -74,8 +74,8 @@ pub struct TfPortItem {
 
 #[derive(Clone, Debug, Node)]
 pub enum TfPortDirection {
-    PortDirection(PortDirection),
-    ConstRef((Keyword, Keyword)),
+    PortDirection(Box<PortDirection>),
+    ConstRef(Box<(Keyword, Keyword)>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -124,9 +124,9 @@ pub fn task_body_declaration_without_port(s: Span) -> IResult<Span, TaskBodyDecl
     let (s, g) = opt(pair(symbol(":"), task_identifier))(s)?;
     Ok((
         s,
-        TaskBodyDeclaration::WithoutPort(TaskBodyDeclarationWithoutPort {
+        TaskBodyDeclaration::WithoutPort(Box::new(TaskBodyDeclarationWithoutPort {
             nodes: (a, b, c, d, e, f, g),
-        }),
+        })),
     ))
 }
 
@@ -142,9 +142,9 @@ pub fn task_body_declaration_with_port(s: Span) -> IResult<Span, TaskBodyDeclara
     let (s, h) = opt(pair(symbol(":"), task_identifier))(s)?;
     Ok((
         s,
-        TaskBodyDeclaration::WithPort(TaskBodyDeclarationWithPort {
+        TaskBodyDeclaration::WithPort(Box::new(TaskBodyDeclarationWithPort {
             nodes: (a, b, c, d, e, f, g, h),
-        }),
+        })),
     ))
 }
 
@@ -152,10 +152,10 @@ pub fn task_body_declaration_with_port(s: Span) -> IResult<Span, TaskBodyDeclara
 pub fn tf_item_declaration(s: Span) -> IResult<Span, TfItemDeclaration> {
     alt((
         map(block_item_declaration, |x| {
-            TfItemDeclaration::BlockItemDeclaration(x)
+            TfItemDeclaration::BlockItemDeclaration(Box::new(x))
         }),
         map(tf_port_declaration, |x| {
-            TfItemDeclaration::TfPortDeclaration(x)
+            TfItemDeclaration::TfPortDeclaration(Box::new(x))
         }),
     ))(s)
 }
@@ -188,9 +188,11 @@ pub fn tf_port_item(s: Span) -> IResult<Span, TfPortItem> {
 #[parser]
 pub fn tf_port_direction(s: Span) -> IResult<Span, TfPortDirection> {
     alt((
-        map(port_direction, |x| TfPortDirection::PortDirection(x)),
+        map(port_direction, |x| {
+            TfPortDirection::PortDirection(Box::new(x))
+        }),
         map(pair(keyword("const"), keyword("ref")), |x| {
-            TfPortDirection::ConstRef(x)
+            TfPortDirection::ConstRef(Box::new(x))
         }),
     ))(s)
 }

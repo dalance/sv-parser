@@ -9,7 +9,7 @@ use nom_packrat::packrat_parser;
 
 #[derive(Clone, Debug, Node)]
 pub enum NetLvalue {
-    Identifier(NetLvalueIdentifier),
+    Identifier(Box<NetLvalueIdentifier>),
     Lvalue(Box<NetLvalueLvalue>),
     Pattern(Box<NetLvaluePattern>),
 }
@@ -34,10 +34,10 @@ pub struct NetLvaluePattern {
 
 #[derive(Clone, Debug, Node)]
 pub enum VariableLvalue {
-    Identifier(VariableLvalueIdentifier),
+    Identifier(Box<VariableLvalueIdentifier>),
     Lvalue(Box<VariableLvalueLvalue>),
     Pattern(Box<VariableLvaluePattern>),
-    StreamingConcatenation(StreamingConcatenation),
+    StreamingConcatenation(Box<StreamingConcatenation>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -85,7 +85,7 @@ pub fn net_lvalue_identifier(s: Span) -> IResult<Span, NetLvalue> {
     let (s, b) = constant_select(s)?;
     Ok((
         s,
-        NetLvalue::Identifier(NetLvalueIdentifier { nodes: (a, b) }),
+        NetLvalue::Identifier(Box::new(NetLvalueIdentifier { nodes: (a, b) })),
     ))
 }
 
@@ -116,7 +116,7 @@ pub fn variable_lvalue(s: Span) -> IResult<Span, VariableLvalue> {
         variable_lvalue_lvalue,
         variable_lvalue_pattern,
         map(streaming_concatenation, |x| {
-            VariableLvalue::StreamingConcatenation(x)
+            VariableLvalue::StreamingConcatenation(Box::new(x))
         }),
     ))(s)
 }
@@ -128,7 +128,7 @@ pub fn variable_lvalue_identifier(s: Span) -> IResult<Span, VariableLvalue> {
     let (s, c) = select(s)?;
     Ok((
         s,
-        VariableLvalue::Identifier(VariableLvalueIdentifier { nodes: (a, b, c) }),
+        VariableLvalue::Identifier(Box::new(VariableLvalueIdentifier { nodes: (a, b, c) })),
     ))
 }
 

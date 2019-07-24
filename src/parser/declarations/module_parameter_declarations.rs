@@ -8,8 +8,8 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum LocalParameterDeclaration {
-    Param(LocalParameterDeclarationParam),
-    Type(LocalParameterDeclarationType),
+    Param(Box<LocalParameterDeclarationParam>),
+    Type(Box<LocalParameterDeclarationType>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -24,8 +24,8 @@ pub struct LocalParameterDeclarationType {
 
 #[derive(Clone, Debug, Node)]
 pub enum ParameterDeclaration {
-    Param(ParameterDeclarationParam),
-    Type(ParameterDeclarationType),
+    Param(Box<ParameterDeclarationParam>),
+    Type(Box<ParameterDeclarationType>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -65,7 +65,9 @@ pub fn local_parameter_declaration_param(s: Span) -> IResult<Span, LocalParamete
     let (s, c) = list_of_param_assignments(s)?;
     Ok((
         s,
-        LocalParameterDeclaration::Param(LocalParameterDeclarationParam { nodes: (a, b, c) }),
+        LocalParameterDeclaration::Param(Box::new(LocalParameterDeclarationParam {
+            nodes: (a, b, c),
+        })),
     ))
 }
 
@@ -76,7 +78,9 @@ pub fn local_parameter_declaration_type(s: Span) -> IResult<Span, LocalParameter
     let (s, c) = list_of_type_assignments(s)?;
     Ok((
         s,
-        LocalParameterDeclaration::Type(LocalParameterDeclarationType { nodes: (a, b, c) }),
+        LocalParameterDeclaration::Type(Box::new(LocalParameterDeclarationType {
+            nodes: (a, b, c),
+        })),
     ))
 }
 
@@ -92,7 +96,7 @@ pub fn parameter_declaration_param(s: Span) -> IResult<Span, ParameterDeclaratio
     let (s, c) = list_of_param_assignments(s)?;
     Ok((
         s,
-        ParameterDeclaration::Param(ParameterDeclarationParam { nodes: (a, b, c) }),
+        ParameterDeclaration::Param(Box::new(ParameterDeclarationParam { nodes: (a, b, c) })),
     ))
 }
 
@@ -103,7 +107,7 @@ pub fn parameter_declaration_type(s: Span) -> IResult<Span, ParameterDeclaration
     let (s, c) = list_of_type_assignments(s)?;
     Ok((
         s,
-        ParameterDeclaration::Type(ParameterDeclarationType { nodes: (a, b, c) }),
+        ParameterDeclaration::Type(Box::new(ParameterDeclarationType { nodes: (a, b, c) })),
     ))
 }
 

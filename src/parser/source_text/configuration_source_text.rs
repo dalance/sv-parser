@@ -33,11 +33,11 @@ pub struct DesignStatement {
 
 #[derive(Clone, Debug, Node)]
 pub enum ConfigRuleStatement {
-    Default(ConfigRuleStatementDefault),
-    InstLib(ConfigRuleStatementInstLib),
-    InstUse(ConfigRuleStatementInstUse),
-    CellLib(ConfigRuleStatementCellLib),
-    CellUse(ConfigRuleStatementCellUse),
+    Default(Box<ConfigRuleStatementDefault>),
+    InstLib(Box<ConfigRuleStatementInstLib>),
+    InstUse(Box<ConfigRuleStatementInstUse>),
+    CellLib(Box<ConfigRuleStatementCellLib>),
+    CellUse(Box<ConfigRuleStatementCellUse>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -92,9 +92,9 @@ pub struct LiblistClause {
 
 #[derive(Clone, Debug, Node)]
 pub enum UseClause {
-    Cell(UseClauseCell),
-    Named(UseClauseNamed),
-    CellNamed(UseClauseCellNamed),
+    Cell(Box<UseClauseCell>),
+    Named(Box<UseClauseNamed>),
+    CellNamed(Box<UseClauseCellNamed>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -181,7 +181,7 @@ pub fn config_rule_statement_default(s: Span) -> IResult<Span, ConfigRuleStateme
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        ConfigRuleStatement::Default(ConfigRuleStatementDefault { nodes: (a, b, c) }),
+        ConfigRuleStatement::Default(Box::new(ConfigRuleStatementDefault { nodes: (a, b, c) })),
     ))
 }
 
@@ -192,7 +192,7 @@ pub fn config_rule_statement_inst_lib(s: Span) -> IResult<Span, ConfigRuleStatem
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        ConfigRuleStatement::InstLib(ConfigRuleStatementInstLib { nodes: (a, b, c) }),
+        ConfigRuleStatement::InstLib(Box::new(ConfigRuleStatementInstLib { nodes: (a, b, c) })),
     ))
 }
 
@@ -203,7 +203,7 @@ pub fn config_rule_statement_inst_use(s: Span) -> IResult<Span, ConfigRuleStatem
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        ConfigRuleStatement::InstUse(ConfigRuleStatementInstUse { nodes: (a, b, c) }),
+        ConfigRuleStatement::InstUse(Box::new(ConfigRuleStatementInstUse { nodes: (a, b, c) })),
     ))
 }
 
@@ -214,7 +214,7 @@ pub fn config_rule_statement_cell_lib(s: Span) -> IResult<Span, ConfigRuleStatem
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        ConfigRuleStatement::CellLib(ConfigRuleStatementCellLib { nodes: (a, b, c) }),
+        ConfigRuleStatement::CellLib(Box::new(ConfigRuleStatementCellLib { nodes: (a, b, c) })),
     ))
 }
 
@@ -225,7 +225,7 @@ pub fn config_rule_statement_cell_use(s: Span) -> IResult<Span, ConfigRuleStatem
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        ConfigRuleStatement::CellUse(ConfigRuleStatementCellUse { nodes: (a, b, c) }),
+        ConfigRuleStatement::CellUse(Box::new(ConfigRuleStatementCellUse { nodes: (a, b, c) })),
     ))
 }
 
@@ -277,9 +277,9 @@ pub fn use_clause_cell(s: Span) -> IResult<Span, UseClause> {
     let (s, d) = opt(pair(symbol(":"), config))(s)?;
     Ok((
         s,
-        UseClause::Cell(UseClauseCell {
+        UseClause::Cell(Box::new(UseClauseCell {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -288,7 +288,10 @@ pub fn use_clause_named(s: Span) -> IResult<Span, UseClause> {
     let (s, a) = keyword("use")(s)?;
     let (s, b) = list(symbol(","), named_parameter_assignment)(s)?;
     let (s, c) = opt(pair(symbol(":"), config))(s)?;
-    Ok((s, UseClause::Named(UseClauseNamed { nodes: (a, b, c) })))
+    Ok((
+        s,
+        UseClause::Named(Box::new(UseClauseNamed { nodes: (a, b, c) })),
+    ))
 }
 
 #[parser]
@@ -300,9 +303,9 @@ pub fn use_clause_cell_named(s: Span) -> IResult<Span, UseClause> {
     let (s, e) = opt(pair(symbol(":"), config))(s)?;
     Ok((
         s,
-        UseClause::CellNamed(UseClauseCellNamed {
+        UseClause::CellNamed(Box::new(UseClauseCellNamed {
             nodes: (a, b, c, d, e),
-        }),
+        })),
     ))
 }
 

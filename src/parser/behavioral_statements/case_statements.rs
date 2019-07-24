@@ -10,9 +10,9 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum CaseStatement {
-    Normal(CaseStatementNormal),
-    Matches(CaseStatementMatches),
-    Inside(CaseStatementInside),
+    Normal(Box<CaseStatementNormal>),
+    Matches(Box<CaseStatementMatches>),
+    Inside(Box<CaseStatementInside>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -55,9 +55,9 @@ pub struct CaseStatementInside {
 
 #[derive(Clone, Debug, Node)]
 pub enum CaseKeyword {
-    Case(Keyword),
-    Casez(Keyword),
-    Casex(Keyword),
+    Case(Box<Keyword>),
+    Casez(Box<Keyword>),
+    Casex(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -67,8 +67,8 @@ pub struct CaseExpression {
 
 #[derive(Clone, Debug, Node)]
 pub enum CaseItem {
-    NonDefault(CaseItemNondefault),
-    Default(CaseItemDefault),
+    NonDefault(Box<CaseItemNondefault>),
+    Default(Box<CaseItemDefault>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -83,8 +83,8 @@ pub struct CaseItemDefault {
 
 #[derive(Clone, Debug, Node)]
 pub enum CasePatternItem {
-    NonDefault(CasePatternItemNondefault),
-    Default(CaseItemDefault),
+    NonDefault(Box<CasePatternItemNondefault>),
+    Default(Box<CaseItemDefault>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -99,8 +99,8 @@ pub struct CasePatternItemNondefault {
 
 #[derive(Clone, Debug, Node)]
 pub enum CaseInsideItem {
-    NonDefault(CaseInsideItemNondefault),
-    Default(CaseItemDefault),
+    NonDefault(Box<CaseInsideItemNondefault>),
+    Default(Box<CaseItemDefault>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -154,9 +154,9 @@ pub fn case_statement_normal(s: Span) -> IResult<Span, CaseStatement> {
     let (s, f) = keyword("endcase")(s)?;
     Ok((
         s,
-        CaseStatement::Normal(CaseStatementNormal {
+        CaseStatement::Normal(Box::new(CaseStatementNormal {
             nodes: (a, b, c, d, e, f),
-        }),
+        })),
     ))
 }
 
@@ -171,9 +171,9 @@ pub fn case_statement_matches(s: Span) -> IResult<Span, CaseStatement> {
     let (s, g) = keyword("endcase")(s)?;
     Ok((
         s,
-        CaseStatement::Matches(CaseStatementMatches {
+        CaseStatement::Matches(Box::new(CaseStatementMatches {
             nodes: (a, b, c, d, e, f, g),
-        }),
+        })),
     ))
 }
 
@@ -188,18 +188,18 @@ pub fn case_statement_inside(s: Span) -> IResult<Span, CaseStatement> {
     let (s, g) = keyword("endcase")(s)?;
     Ok((
         s,
-        CaseStatement::Inside(CaseStatementInside {
+        CaseStatement::Inside(Box::new(CaseStatementInside {
             nodes: (a, b, c, d, e, f, g),
-        }),
+        })),
     ))
 }
 
 #[parser]
 pub fn case_keyword(s: Span) -> IResult<Span, CaseKeyword> {
     alt((
-        map(keyword("casez"), |x| CaseKeyword::Casez(x)),
-        map(keyword("casex"), |x| CaseKeyword::Casex(x)),
-        map(keyword("case"), |x| CaseKeyword::Case(x)),
+        map(keyword("casez"), |x| CaseKeyword::Casez(Box::new(x))),
+        map(keyword("casex"), |x| CaseKeyword::Casex(Box::new(x))),
+        map(keyword("case"), |x| CaseKeyword::Case(Box::new(x))),
     ))(s)
 }
 
@@ -213,7 +213,7 @@ pub fn case_expression(s: Span) -> IResult<Span, CaseExpression> {
 pub fn case_item(s: Span) -> IResult<Span, CaseItem> {
     alt((
         case_item_nondefault,
-        map(case_item_default, |x| CaseItem::Default(x)),
+        map(case_item_default, |x| CaseItem::Default(Box::new(x))),
     ))(s)
 }
 
@@ -224,7 +224,7 @@ pub fn case_item_nondefault(s: Span) -> IResult<Span, CaseItem> {
     let (s, c) = statement_or_null(s)?;
     Ok((
         s,
-        CaseItem::NonDefault(CaseItemNondefault { nodes: (a, b, c) }),
+        CaseItem::NonDefault(Box::new(CaseItemNondefault { nodes: (a, b, c) })),
     ))
 }
 
@@ -240,7 +240,7 @@ pub fn case_item_default(s: Span) -> IResult<Span, CaseItemDefault> {
 pub fn case_pattern_item(s: Span) -> IResult<Span, CasePatternItem> {
     alt((
         case_pattern_item_nondefault,
-        map(case_item_default, |x| CasePatternItem::Default(x)),
+        map(case_item_default, |x| CasePatternItem::Default(Box::new(x))),
     ))(s)
 }
 
@@ -252,9 +252,9 @@ pub fn case_pattern_item_nondefault(s: Span) -> IResult<Span, CasePatternItem> {
     let (s, d) = statement_or_null(s)?;
     Ok((
         s,
-        CasePatternItem::NonDefault(CasePatternItemNondefault {
+        CasePatternItem::NonDefault(Box::new(CasePatternItemNondefault {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -262,7 +262,7 @@ pub fn case_pattern_item_nondefault(s: Span) -> IResult<Span, CasePatternItem> {
 pub fn case_inside_item(s: Span) -> IResult<Span, CaseInsideItem> {
     alt((
         case_inside_item_nondefault,
-        map(case_item_default, |x| CaseInsideItem::Default(x)),
+        map(case_item_default, |x| CaseInsideItem::Default(Box::new(x))),
     ))(s)
 }
 
@@ -273,7 +273,7 @@ pub fn case_inside_item_nondefault(s: Span) -> IResult<Span, CaseInsideItem> {
     let (s, c) = statement_or_null(s)?;
     Ok((
         s,
-        CaseInsideItem::NonDefault(CaseInsideItemNondefault { nodes: (a, b, c) }),
+        CaseInsideItem::NonDefault(Box::new(CaseInsideItemNondefault { nodes: (a, b, c) })),
     ))
 }
 

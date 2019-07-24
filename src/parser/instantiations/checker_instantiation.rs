@@ -19,8 +19,8 @@ pub struct CheckerInstantiation {
 
 #[derive(Clone, Debug, Node)]
 pub enum ListOfCheckerPortConnections {
-    Ordered(ListOfCheckerPortConnectionsOrdered),
-    Named(ListOfCheckerPortConnectionsNamed),
+    Ordered(Box<ListOfCheckerPortConnectionsOrdered>),
+    Named(Box<ListOfCheckerPortConnectionsNamed>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -40,8 +40,8 @@ pub struct OrderedCheckerPortConnection {
 
 #[derive(Clone, Debug, Node)]
 pub enum NamedCheckerPortConnection {
-    Identifier(NamedCheckerPortConnectionIdentifier),
-    Asterisk(NamedCheckerPortConnectionAsterisk),
+    Identifier(Box<NamedCheckerPortConnectionIdentifier>),
+    Asterisk(Box<NamedCheckerPortConnectionAsterisk>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -90,7 +90,9 @@ pub fn list_of_checker_port_connections_ordered(
     let (s, a) = list(symbol(","), ordered_checker_port_connection)(s)?;
     Ok((
         s,
-        ListOfCheckerPortConnections::Ordered(ListOfCheckerPortConnectionsOrdered { nodes: (a,) }),
+        ListOfCheckerPortConnections::Ordered(Box::new(ListOfCheckerPortConnectionsOrdered {
+            nodes: (a,),
+        })),
     ))
 }
 
@@ -101,7 +103,9 @@ pub fn list_of_checker_port_connections_named(
     let (s, a) = list(symbol(","), named_checker_port_connection)(s)?;
     Ok((
         s,
-        ListOfCheckerPortConnections::Named(ListOfCheckerPortConnectionsNamed { nodes: (a,) }),
+        ListOfCheckerPortConnections::Named(Box::new(ListOfCheckerPortConnectionsNamed {
+            nodes: (a,),
+        })),
     ))
 }
 
@@ -130,9 +134,9 @@ pub fn named_checker_port_connection_identifier(
     let (s, d) = opt(paren(opt(property_actual_arg)))(s)?;
     Ok((
         s,
-        NamedCheckerPortConnection::Identifier(NamedCheckerPortConnectionIdentifier {
+        NamedCheckerPortConnection::Identifier(Box::new(NamedCheckerPortConnectionIdentifier {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -144,7 +148,9 @@ pub fn named_checker_port_connection_asterisk(
     let (s, b) = symbol(".*")(s)?;
     Ok((
         s,
-        NamedCheckerPortConnection::Asterisk(NamedCheckerPortConnectionAsterisk { nodes: (a, b) }),
+        NamedCheckerPortConnection::Asterisk(Box::new(NamedCheckerPortConnectionAsterisk {
+            nodes: (a, b),
+        })),
     ))
 }
 

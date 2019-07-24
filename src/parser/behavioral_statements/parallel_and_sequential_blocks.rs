@@ -10,8 +10,8 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum ActionBlock {
-    StatementOrNull(StatementOrNull),
-    Else(ActionBlockElse),
+    StatementOrNull(Box<StatementOrNull>),
+    Else(Box<ActionBlockElse>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -45,9 +45,9 @@ pub struct ParBlock {
 
 #[derive(Clone, Debug, Node)]
 pub enum JoinKeyword {
-    Join(Keyword),
-    JoinAny(Keyword),
-    JoinNone(Keyword),
+    Join(Box<Keyword>),
+    JoinAny(Box<Keyword>),
+    JoinNone(Box<Keyword>),
 }
 
 // -----------------------------------------------------------------------------
@@ -55,7 +55,9 @@ pub enum JoinKeyword {
 #[parser]
 pub fn action_block(s: Span) -> IResult<Span, ActionBlock> {
     alt((
-        map(statement_or_null, |x| ActionBlock::StatementOrNull(x)),
+        map(statement_or_null, |x| {
+            ActionBlock::StatementOrNull(Box::new(x))
+        }),
         action_block_else,
     ))(s)
 }
@@ -65,7 +67,10 @@ pub fn action_block_else(s: Span) -> IResult<Span, ActionBlock> {
     let (s, a) = opt(statement)(s)?;
     let (s, b) = keyword("else")(s)?;
     let (s, c) = statement_or_null(s)?;
-    Ok((s, ActionBlock::Else(ActionBlockElse { nodes: (a, b, c) })))
+    Ok((
+        s,
+        ActionBlock::Else(Box::new(ActionBlockElse { nodes: (a, b, c) })),
+    ))
 }
 
 #[parser]
@@ -103,8 +108,8 @@ pub fn par_block(s: Span) -> IResult<Span, ParBlock> {
 #[parser]
 pub fn join_keyword(s: Span) -> IResult<Span, JoinKeyword> {
     alt((
-        map(keyword("join_any"), |x| JoinKeyword::JoinAny(x)),
-        map(keyword("join_none"), |x| JoinKeyword::JoinNone(x)),
-        map(keyword("join"), |x| JoinKeyword::Join(x)),
+        map(keyword("join_any"), |x| JoinKeyword::JoinAny(Box::new(x))),
+        map(keyword("join_none"), |x| JoinKeyword::JoinNone(Box::new(x))),
+        map(keyword("join"), |x| JoinKeyword::Join(Box::new(x))),
     ))(s)
 }

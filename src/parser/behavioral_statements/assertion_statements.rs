@@ -9,8 +9,8 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum AssertionItem {
-    Concurrent(ConcurrentAssertionItem),
-    Immediate(DeferredImmediateAssetionItem),
+    Concurrent(Box<ConcurrentAssertionItem>),
+    Immediate(Box<DeferredImmediateAssetionItem>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -23,22 +23,22 @@ pub struct DeferredImmediateAssetionItem {
 
 #[derive(Clone, Debug, Node)]
 pub enum ProceduralAssertionStatement {
-    Concurrent(ConcurrentAssertionStatement),
-    Immediate(ImmediateAssetionStatement),
-    Checker(CheckerInstantiation),
+    Concurrent(Box<ConcurrentAssertionStatement>),
+    Immediate(Box<ImmediateAssetionStatement>),
+    Checker(Box<CheckerInstantiation>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum ImmediateAssetionStatement {
-    Simple(SimpleImmediateAssertionStatement),
-    Deferred(DeferredImmediateAssertionStatement),
+    Simple(Box<SimpleImmediateAssertionStatement>),
+    Deferred(Box<DeferredImmediateAssertionStatement>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum SimpleImmediateAssertionStatement {
-    Assert(SimpleImmediateAssertStatement),
-    Assume(SimpleImmediateAssumeStatement),
-    Cover(SimpleImmediateCoverStatement),
+    Assert(Box<SimpleImmediateAssertStatement>),
+    Assume(Box<SimpleImmediateAssumeStatement>),
+    Cover(Box<SimpleImmediateCoverStatement>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -58,9 +58,9 @@ pub struct SimpleImmediateCoverStatement {
 
 #[derive(Clone, Debug, Node)]
 pub enum DeferredImmediateAssertionStatement {
-    Assert(DeferredImmediateAssertStatement),
-    Assume(DeferredImmediateAssumeStatement),
-    Cover(DeferredImmediateCoverStatement),
+    Assert(Box<DeferredImmediateAssertStatement>),
+    Assume(Box<DeferredImmediateAssumeStatement>),
+    Cover(Box<DeferredImmediateCoverStatement>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -80,8 +80,8 @@ pub struct DeferredImmediateCoverStatement {
 
 #[derive(Clone, Debug, Node)]
 pub enum AssertTiming {
-    Zero(Symbol),
-    Final(Keyword),
+    Zero(Box<Symbol>),
+    Final(Box<Keyword>),
 }
 
 // -----------------------------------------------------------------------------
@@ -89,9 +89,11 @@ pub enum AssertTiming {
 #[parser]
 pub fn assertion_item(s: Span) -> IResult<Span, AssertionItem> {
     alt((
-        map(concurrent_assertion_item, |x| AssertionItem::Concurrent(x)),
+        map(concurrent_assertion_item, |x| {
+            AssertionItem::Concurrent(Box::new(x))
+        }),
         map(deferred_immediate_assertion_item, |x| {
-            AssertionItem::Immediate(x)
+            AssertionItem::Immediate(Box::new(x))
         }),
     ))(s)
 }
@@ -107,13 +109,13 @@ pub fn deferred_immediate_assertion_item(s: Span) -> IResult<Span, DeferredImmed
 pub fn procedural_assertion_statement(s: Span) -> IResult<Span, ProceduralAssertionStatement> {
     alt((
         map(concurrent_assertion_statement, |x| {
-            ProceduralAssertionStatement::Concurrent(x)
+            ProceduralAssertionStatement::Concurrent(Box::new(x))
         }),
         map(immediate_assertion_statement, |x| {
-            ProceduralAssertionStatement::Immediate(x)
+            ProceduralAssertionStatement::Immediate(Box::new(x))
         }),
         map(checker_instantiation, |x| {
-            ProceduralAssertionStatement::Checker(x)
+            ProceduralAssertionStatement::Checker(Box::new(x))
         }),
     ))(s)
 }
@@ -122,10 +124,10 @@ pub fn procedural_assertion_statement(s: Span) -> IResult<Span, ProceduralAssert
 pub fn immediate_assertion_statement(s: Span) -> IResult<Span, ImmediateAssetionStatement> {
     alt((
         map(simple_immediate_assertion_statement, |x| {
-            ImmediateAssetionStatement::Simple(x)
+            ImmediateAssetionStatement::Simple(Box::new(x))
         }),
         map(deferred_immediate_assertion_statement, |x| {
-            ImmediateAssetionStatement::Deferred(x)
+            ImmediateAssetionStatement::Deferred(Box::new(x))
         }),
     ))(s)
 }
@@ -136,13 +138,13 @@ pub fn simple_immediate_assertion_statement(
 ) -> IResult<Span, SimpleImmediateAssertionStatement> {
     alt((
         map(simple_immediate_assert_statement, |x| {
-            SimpleImmediateAssertionStatement::Assert(x)
+            SimpleImmediateAssertionStatement::Assert(Box::new(x))
         }),
         map(simple_immediate_assume_statement, |x| {
-            SimpleImmediateAssertionStatement::Assume(x)
+            SimpleImmediateAssertionStatement::Assume(Box::new(x))
         }),
         map(simple_immediate_cover_statement, |x| {
-            SimpleImmediateAssertionStatement::Cover(x)
+            SimpleImmediateAssertionStatement::Cover(Box::new(x))
         }),
     ))(s)
 }
@@ -177,13 +179,13 @@ pub fn deferred_immediate_assertion_statement(
 ) -> IResult<Span, DeferredImmediateAssertionStatement> {
     alt((
         map(deferred_immediate_assert_statement, |x| {
-            DeferredImmediateAssertionStatement::Assert(x)
+            DeferredImmediateAssertionStatement::Assert(Box::new(x))
         }),
         map(deferred_immediate_assume_statement, |x| {
-            DeferredImmediateAssertionStatement::Assume(x)
+            DeferredImmediateAssertionStatement::Assume(Box::new(x))
         }),
         map(deferred_immediate_cover_statement, |x| {
-            DeferredImmediateAssertionStatement::Cover(x)
+            DeferredImmediateAssertionStatement::Cover(Box::new(x))
         }),
     ))(s)
 }
@@ -239,8 +241,8 @@ pub fn deferred_immediate_cover_statement(
 #[parser]
 pub fn assert_timing(s: Span) -> IResult<Span, AssertTiming> {
     alt((
-        map(symbol("#0"), |x| AssertTiming::Zero(x)),
-        map(keyword("final"), |x| AssertTiming::Final(x)),
+        map(symbol("#0"), |x| AssertTiming::Zero(Box::new(x))),
+        map(keyword("final"), |x| AssertTiming::Final(Box::new(x))),
     ))(s)
 }
 

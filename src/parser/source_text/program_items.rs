@@ -10,19 +10,19 @@ use nom::IResult;
 
 #[derive(Clone, Debug, Node)]
 pub enum ProgramItem {
-    PortDeclaration((PortDeclaration, Symbol)),
-    NonPortProgramItem(NonPortProgramItem),
+    PortDeclaration(Box<(PortDeclaration, Symbol)>),
+    NonPortProgramItem(Box<NonPortProgramItem>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub enum NonPortProgramItem {
-    Assign(NonPortProgramItemAssign),
-    Module(NonPortProgramItemModule),
-    Initial(NonPortProgramItemInitial),
-    Final(NonPortProgramItemFinal),
-    Assertion(NonPortProgramItemAssertion),
-    TimeunitsDeclaration(TimeunitsDeclaration),
-    ProgramGenerateItem(ProgramGenerateItem),
+    Assign(Box<NonPortProgramItemAssign>),
+    Module(Box<NonPortProgramItemModule>),
+    Initial(Box<NonPortProgramItemInitial>),
+    Final(Box<NonPortProgramItemFinal>),
+    Assertion(Box<NonPortProgramItemAssertion>),
+    TimeunitsDeclaration(Box<TimeunitsDeclaration>),
+    ProgramGenerateItem(Box<ProgramGenerateItem>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -52,10 +52,10 @@ pub struct NonPortProgramItemAssertion {
 
 #[derive(Clone, Debug, Node)]
 pub enum ProgramGenerateItem {
-    LoopGenerateConstruct(LoopGenerateConstruct),
-    ConditionalGenerateConstruct(ConditionalGenerateConstruct),
-    GenerateRegion(GenerateRegion),
-    ElaborationSystemTask(ElaborationSystemTask),
+    LoopGenerateConstruct(Box<LoopGenerateConstruct>),
+    ConditionalGenerateConstruct(Box<ConditionalGenerateConstruct>),
+    GenerateRegion(Box<GenerateRegion>),
+    ElaborationSystemTask(Box<ElaborationSystemTask>),
 }
 
 // -----------------------------------------------------------------------------
@@ -64,10 +64,10 @@ pub enum ProgramGenerateItem {
 pub fn program_item(s: Span) -> IResult<Span, ProgramItem> {
     alt((
         map(pair(port_declaration, symbol(";")), |x| {
-            ProgramItem::PortDeclaration(x)
+            ProgramItem::PortDeclaration(Box::new(x))
         }),
         map(non_port_program_item, |x| {
-            ProgramItem::NonPortProgramItem(x)
+            ProgramItem::NonPortProgramItem(Box::new(x))
         }),
     ))(s)
 }
@@ -81,10 +81,10 @@ pub fn non_port_program_item(s: Span) -> IResult<Span, NonPortProgramItem> {
         non_port_program_item_final,
         non_port_program_item_assertion,
         map(timeunits_declaration, |x| {
-            NonPortProgramItem::TimeunitsDeclaration(x)
+            NonPortProgramItem::TimeunitsDeclaration(Box::new(x))
         }),
         map(program_generate_item, |x| {
-            NonPortProgramItem::ProgramGenerateItem(x)
+            NonPortProgramItem::ProgramGenerateItem(Box::new(x))
         }),
     ))(s)
 }
@@ -95,7 +95,7 @@ pub fn non_port_program_item_assign(s: Span) -> IResult<Span, NonPortProgramItem
     let (s, b) = continuous_assign(s)?;
     Ok((
         s,
-        NonPortProgramItem::Assign(NonPortProgramItemAssign { nodes: (a, b) }),
+        NonPortProgramItem::Assign(Box::new(NonPortProgramItemAssign { nodes: (a, b) })),
     ))
 }
 
@@ -105,7 +105,7 @@ pub fn non_port_program_item_module(s: Span) -> IResult<Span, NonPortProgramItem
     let (s, b) = module_or_generate_item_declaration(s)?;
     Ok((
         s,
-        NonPortProgramItem::Module(NonPortProgramItemModule { nodes: (a, b) }),
+        NonPortProgramItem::Module(Box::new(NonPortProgramItemModule { nodes: (a, b) })),
     ))
 }
 
@@ -115,7 +115,7 @@ pub fn non_port_program_item_initial(s: Span) -> IResult<Span, NonPortProgramIte
     let (s, b) = initial_construct(s)?;
     Ok((
         s,
-        NonPortProgramItem::Initial(NonPortProgramItemInitial { nodes: (a, b) }),
+        NonPortProgramItem::Initial(Box::new(NonPortProgramItemInitial { nodes: (a, b) })),
     ))
 }
 
@@ -125,7 +125,7 @@ pub fn non_port_program_item_final(s: Span) -> IResult<Span, NonPortProgramItem>
     let (s, b) = final_construct(s)?;
     Ok((
         s,
-        NonPortProgramItem::Final(NonPortProgramItemFinal { nodes: (a, b) }),
+        NonPortProgramItem::Final(Box::new(NonPortProgramItemFinal { nodes: (a, b) })),
     ))
 }
 
@@ -135,7 +135,7 @@ pub fn non_port_program_item_assertion(s: Span) -> IResult<Span, NonPortProgramI
     let (s, b) = concurrent_assertion_item(s)?;
     Ok((
         s,
-        NonPortProgramItem::Assertion(NonPortProgramItemAssertion { nodes: (a, b) }),
+        NonPortProgramItem::Assertion(Box::new(NonPortProgramItemAssertion { nodes: (a, b) })),
     ))
 }
 
@@ -143,14 +143,16 @@ pub fn non_port_program_item_assertion(s: Span) -> IResult<Span, NonPortProgramI
 pub fn program_generate_item(s: Span) -> IResult<Span, ProgramGenerateItem> {
     alt((
         map(loop_generate_construct, |x| {
-            ProgramGenerateItem::LoopGenerateConstruct(x)
+            ProgramGenerateItem::LoopGenerateConstruct(Box::new(x))
         }),
         map(conditional_generate_construct, |x| {
-            ProgramGenerateItem::ConditionalGenerateConstruct(x)
+            ProgramGenerateItem::ConditionalGenerateConstruct(Box::new(x))
         }),
-        map(generate_region, |x| ProgramGenerateItem::GenerateRegion(x)),
+        map(generate_region, |x| {
+            ProgramGenerateItem::GenerateRegion(Box::new(x))
+        }),
         map(elaboration_system_task, |x| {
-            ProgramGenerateItem::ElaborationSystemTask(x)
+            ProgramGenerateItem::ElaborationSystemTask(Box::new(x))
         }),
     ))(s)
 }

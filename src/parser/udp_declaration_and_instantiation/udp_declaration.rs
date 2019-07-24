@@ -32,11 +32,11 @@ pub struct UdpAnsiDeclaration {
 
 #[derive(Clone, Debug, Node)]
 pub enum UdpDeclaration {
-    Nonansi(UdpDeclarationNonansi),
-    Ansi(UdpDeclarationAnsi),
-    ExternNonansi(UdpDeclarationExternNonansi),
-    ExternAnsi(UdpDeclarationExternAnsi),
-    Wildcard(UdpDeclarationWildcard),
+    Nonansi(Box<UdpDeclarationNonansi>),
+    Ansi(Box<UdpDeclarationAnsi>),
+    ExternNonansi(Box<UdpDeclarationExternNonansi>),
+    ExternAnsi(Box<UdpDeclarationExternAnsi>),
+    Wildcard(Box<UdpDeclarationWildcard>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -139,9 +139,9 @@ pub fn udp_declaration_nonansi(s: Span) -> IResult<Span, UdpDeclaration> {
     let (s, f) = opt(pair(symbol(":"), udp_identifier))(s)?;
     Ok((
         s,
-        UdpDeclaration::Nonansi(UdpDeclarationNonansi {
+        UdpDeclaration::Nonansi(Box::new(UdpDeclarationNonansi {
             nodes: (a, b, c, d, e, f),
-        }),
+        })),
     ))
 }
 
@@ -153,9 +153,9 @@ pub fn udp_declaration_ansi(s: Span) -> IResult<Span, UdpDeclaration> {
     let (s, d) = opt(pair(symbol(":"), udp_identifier))(s)?;
     Ok((
         s,
-        UdpDeclaration::Ansi(UdpDeclarationAnsi {
+        UdpDeclaration::Ansi(Box::new(UdpDeclarationAnsi {
             nodes: (a, b, c, d),
-        }),
+        })),
     ))
 }
 
@@ -165,7 +165,7 @@ pub fn udp_declaration_extern_nonansi(s: Span) -> IResult<Span, UdpDeclaration> 
     let (s, b) = udp_nonansi_declaration(s)?;
     Ok((
         s,
-        UdpDeclaration::ExternNonansi(UdpDeclarationExternNonansi { nodes: (a, b) }),
+        UdpDeclaration::ExternNonansi(Box::new(UdpDeclarationExternNonansi { nodes: (a, b) })),
     ))
 }
 
@@ -175,7 +175,7 @@ pub fn udp_declaration_extern_ansi(s: Span) -> IResult<Span, UdpDeclaration> {
     let (s, b) = udp_ansi_declaration(s)?;
     Ok((
         s,
-        UdpDeclaration::ExternAnsi(UdpDeclarationExternAnsi { nodes: (a, b) }),
+        UdpDeclaration::ExternAnsi(Box::new(UdpDeclarationExternAnsi { nodes: (a, b) })),
     ))
 }
 
@@ -192,8 +192,8 @@ pub fn udp_declaration_wildcard(s: Span) -> IResult<Span, UdpDeclaration> {
     let (s, i) = opt(pair(symbol(":"), udp_identifier))(s)?;
     Ok((
         s,
-        UdpDeclaration::Wildcard(UdpDeclarationWildcard {
+        UdpDeclaration::Wildcard(Box::new(UdpDeclarationWildcard {
             nodes: (a, b, c, d, e, f, g, h, i),
-        }),
+        })),
     ))
 }

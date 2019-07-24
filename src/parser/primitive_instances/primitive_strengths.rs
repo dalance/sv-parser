@@ -14,17 +14,17 @@ pub enum PulldownStrength {
 
 #[derive(Clone, Debug, Node)]
 pub struct PulldownStrength01 {
-    pub nodes: (Paren< (Strength0, Symbol, Strength1)>,),
+    pub nodes: (Paren<(Strength0, Symbol, Strength1)>,),
 }
 
 #[derive(Clone, Debug, Node)]
 pub struct PulldownStrength10 {
-    pub nodes: (Paren< (Strength1, Symbol, Strength0)>,),
+    pub nodes: (Paren<(Strength1, Symbol, Strength0)>,),
 }
 
 #[derive(Clone, Debug, Node)]
 pub struct PulldownStrength0 {
-    pub nodes: (Paren< Strength0>,),
+    pub nodes: (Paren<Strength0>,),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -36,17 +36,17 @@ pub enum PullupStrength {
 
 #[derive(Clone, Debug, Node)]
 pub struct PullupStrength01 {
-    pub nodes: (Paren< (Strength0, Symbol, Strength1)>,),
+    pub nodes: (Paren<(Strength0, Symbol, Strength1)>,),
 }
 
 #[derive(Clone, Debug, Node)]
 pub struct PullupStrength10 {
-    pub nodes: (Paren< (Strength1, Symbol, Strength0)>,),
+    pub nodes: (Paren<(Strength1, Symbol, Strength0)>,),
 }
 
 #[derive(Clone, Debug, Node)]
 pub struct PullupStrength1 {
-    pub nodes: (Paren< Strength1>,),
+    pub nodes: (Paren<Strength1>,),
 }
 
 // -----------------------------------------------------------------------------

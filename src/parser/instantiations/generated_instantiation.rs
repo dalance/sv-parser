@@ -17,28 +17,20 @@ pub struct GenerateRegion {
 pub struct LoopGenerateConstruct {
     pub nodes: (
         Keyword,
-        Paren<
-            
-            (
-                GenvarInitialization,
-                Symbol,
-                GenvarExpression,
-                Symbol,
-                GenvarIteration,
-            ),
-        >,
+        Paren<(
+            GenvarInitialization,
+            Symbol,
+            GenvarExpression,
+            Symbol,
+            GenvarIteration,
+        )>,
         GenerateBlock,
     ),
 }
 
 #[derive(Clone, Debug, Node)]
 pub struct GenvarInitialization {
-    pub nodes: (
-        Option<Genvar>,
-        GenvarIdentifier,
-        Symbol,
-        ConstantExpression,
-    ),
+    pub nodes: (Option<Genvar>, GenvarIdentifier, Symbol, ConstantExpression),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -55,11 +47,7 @@ pub enum GenvarIteration {
 
 #[derive(Clone, Debug, Node)]
 pub struct GenvarIterationAssignment {
-    pub nodes: (
-        GenvarIdentifier,
-        AssignmentOperator,
-        GenvarExpression,
-    ),
+    pub nodes: (GenvarIdentifier, AssignmentOperator, GenvarExpression),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -82,7 +70,7 @@ pub enum ConditionalGenerateConstruct {
 pub struct IfGenerateConstruct {
     pub nodes: (
         Keyword,
-        Paren< ConstantExpression>,
+        Paren<ConstantExpression>,
         GenerateBlock,
         Option<(Keyword, GenerateBlock)>,
     ),
@@ -92,7 +80,7 @@ pub struct IfGenerateConstruct {
 pub struct CaseGenerateConstruct {
     pub nodes: (
         Keyword,
-        Paren< ConstantExpression>,
+        Paren<ConstantExpression>,
         Vec<CaseGenerateItem>,
         Keyword,
     ),
@@ -106,11 +94,7 @@ pub enum CaseGenerateItem {
 
 #[derive(Clone, Debug, Node)]
 pub struct CaseGenerateItemNondefault {
-    pub nodes: (
-        List<Symbol, ConstantExpression>,
-        Symbol,
-        GenerateBlock,
-    ),
+    pub nodes: (List<Symbol, ConstantExpression>, Symbol, GenerateBlock),
 }
 
 #[derive(Clone, Debug, Node)]

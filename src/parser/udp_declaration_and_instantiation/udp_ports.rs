@@ -57,20 +57,12 @@ pub struct UdpOutputDeclarationReg {
 
 #[derive(Clone, Debug, Node)]
 pub struct UdpInputDeclaration {
-    pub nodes: (
-        Vec<AttributeInstance>,
-        Keyword,
-        ListOfUdpPortIdentifiers,
-    ),
+    pub nodes: (Vec<AttributeInstance>, Keyword, ListOfUdpPortIdentifiers),
 }
 
 #[derive(Clone, Debug, Node)]
 pub struct UdpRegDeclaration {
-    pub nodes: (
-        Vec<AttributeInstance>,
-        Keyword,
-        VariableIdentifier,
-    ),
+    pub nodes: (Vec<AttributeInstance>, Keyword, VariableIdentifier),
 }
 
 // -----------------------------------------------------------------------------

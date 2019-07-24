@@ -21,20 +21,12 @@ pub struct BlockItemDeclarationData {
 
 #[derive(Clone, Debug, Node)]
 pub struct BlockItemDeclarationLocalParameter {
-    pub nodes: (
-        Vec<AttributeInstance>,
-        LocalParameterDeclaration,
-        Symbol,
-    ),
+    pub nodes: (Vec<AttributeInstance>, LocalParameterDeclaration, Symbol),
 }
 
 #[derive(Clone, Debug, Node)]
 pub struct BlockItemDeclarationParameter {
-    pub nodes: (
-        Vec<AttributeInstance>,
-        ParameterDeclaration,
-        Symbol,
-    ),
+    pub nodes: (Vec<AttributeInstance>, ParameterDeclaration, Symbol),
 }
 
 #[derive(Clone, Debug, Node)]

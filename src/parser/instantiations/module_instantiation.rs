@@ -19,10 +19,7 @@ pub struct ModuleInstantiation {
 
 #[derive(Clone, Debug, Node)]
 pub struct ParameterValueAssignment {
-    pub nodes: (
-        Symbol,
-        Paren< Option<ListOfParameterAssignments>>,
-    ),
+    pub nodes: (Symbol, Paren<Option<ListOfParameterAssignments>>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -48,19 +45,12 @@ pub struct OrderedParameterAssignment {
 
 #[derive(Clone, Debug, Node)]
 pub struct NamedParameterAssignment {
-    pub nodes: (
-        Symbol,
-        ParameterIdentifier,
-        Paren< Option<ParamExpression>>,
-    ),
+    pub nodes: (Symbol, ParameterIdentifier, Paren<Option<ParamExpression>>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub struct HierarchicalInstance {
-    pub nodes: (
-        NameOfInstance,
-        Paren< Option<ListOfPortConnections>>,
-    ),
+    pub nodes: (NameOfInstance, Paren<Option<ListOfPortConnections>>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -101,7 +91,7 @@ pub struct NamedPortConnectionIdentifier {
         Vec<AttributeInstance>,
         Symbol,
         PortIdentifier,
-        Option<Paren< Option<Expression>>>,
+        Option<Paren<Option<Expression>>>,
     ),
 }
 

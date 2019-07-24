@@ -36,12 +36,7 @@ pub enum PackageOrGenerateItemDeclaration {
 
 #[derive(Clone, Debug, Node)]
 pub struct AnonymousProgram {
-    pub nodes: (
-        Keyword,
-        Symbol,
-        Vec<AnonymousProgramItem>,
-        Keyword,
-    ),
+    pub nodes: (Keyword, Symbol, Vec<AnonymousProgramItem>, Keyword),
 }
 
 #[derive(Clone, Debug, Node)]

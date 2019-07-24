@@ -85,11 +85,7 @@ pub struct GateInstantiationPassEn {
 
 #[derive(Clone, Debug, Node)]
 pub struct GateInstantiationPass {
-    pub nodes: (
-        PassSwitchtype,
-        List<Symbol, PassSwitchInstance>,
-        Symbol,
-    ),
+    pub nodes: (PassSwitchtype, List<Symbol, PassSwitchInstance>, Symbol),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -116,18 +112,15 @@ pub struct GateInstantiationPullup {
 pub struct CmosSwitchInstance {
     pub nodes: (
         Option<NameOfInstance>,
-        Paren<
-            
-            (
-                OutputTerminal,
-                Symbol,
-                InputTerminal,
-                Symbol,
-                NcontrolTerminal,
-                Symbol,
-                PcontrolTerminal,
-            ),
-        >,
+        Paren<(
+            OutputTerminal,
+            Symbol,
+            InputTerminal,
+            Symbol,
+            NcontrolTerminal,
+            Symbol,
+            PcontrolTerminal,
+        )>,
     ),
 }
 
@@ -135,16 +128,13 @@ pub struct CmosSwitchInstance {
 pub struct EnableGateInstance {
     pub nodes: (
         Option<NameOfInstance>,
-        Paren<
-            
-            (
-                OutputTerminal,
-                Symbol,
-                InputTerminal,
-                Symbol,
-                EnableTerminal,
-            ),
-        >,
+        Paren<(
+            OutputTerminal,
+            Symbol,
+            InputTerminal,
+            Symbol,
+            EnableTerminal,
+        )>,
     ),
 }
 
@@ -152,16 +142,13 @@ pub struct EnableGateInstance {
 pub struct MosSwitchInstance {
     pub nodes: (
         Option<NameOfInstance>,
-        Paren<
-            
-            (
-                OutputTerminal,
-                Symbol,
-                InputTerminal,
-                Symbol,
-                EnableTerminal,
-            ),
-        >,
+        Paren<(
+            OutputTerminal,
+            Symbol,
+            InputTerminal,
+            Symbol,
+            EnableTerminal,
+        )>,
     ),
 }
 
@@ -169,14 +156,7 @@ pub struct MosSwitchInstance {
 pub struct NInputGateInstance {
     pub nodes: (
         Option<NameOfInstance>,
-        Paren<
-            
-            (
-                OutputTerminal,
-                Symbol,
-                List<Symbol, InputTerminal>,
-            ),
-        >,
+        Paren<(OutputTerminal, Symbol, List<Symbol, InputTerminal>)>,
     ),
 }
 
@@ -184,14 +164,7 @@ pub struct NInputGateInstance {
 pub struct NOutputGateInstance {
     pub nodes: (
         Option<NameOfInstance>,
-        Paren<
-            
-            (
-                List<Symbol, OutputTerminal>,
-                Symbol,
-                InputTerminal,
-            ),
-        >,
+        Paren<(List<Symbol, OutputTerminal>, Symbol, InputTerminal)>,
     ),
 }
 
@@ -199,7 +172,7 @@ pub struct NOutputGateInstance {
 pub struct PassSwitchInstance {
     pub nodes: (
         Option<NameOfInstance>,
-        Paren< (InoutTerminal, Symbol, InoutTerminal)>,
+        Paren<(InoutTerminal, Symbol, InoutTerminal)>,
     ),
 }
 
@@ -207,22 +180,13 @@ pub struct PassSwitchInstance {
 pub struct PassEnableSwitchInstance {
     pub nodes: (
         Option<NameOfInstance>,
-        Paren<
-            
-            (
-                InoutTerminal,
-                Symbol,
-                InoutTerminal,
-                Symbol,
-                EnableTerminal,
-            ),
-        >,
+        Paren<(InoutTerminal, Symbol, InoutTerminal, Symbol, EnableTerminal)>,
     ),
 }
 
 #[derive(Clone, Debug, Node)]
 pub struct PullGateInstance {
-    pub nodes: (Option<NameOfInstance>, Paren< OutputTerminal>),
+    pub nodes: (Option<NameOfInstance>, Paren<OutputTerminal>),
 }
 
 // -----------------------------------------------------------------------------

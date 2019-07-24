@@ -73,13 +73,7 @@ pub struct CheckerOrGenerateItemDeclarationClocking {
 
 #[derive(Clone, Debug, Node)]
 pub struct CheckerOrGenerateItemDeclarationDisable {
-    pub nodes: (
-        Keyword,
-        Keyword,
-        Keyword,
-        ExpressionOrDist,
-        Symbol,
-    ),
+    pub nodes: (Keyword, Keyword, Keyword, ExpressionOrDist, Symbol),
 }
 
 #[derive(Clone, Debug, Node)]

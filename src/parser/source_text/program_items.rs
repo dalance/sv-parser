@@ -32,10 +32,7 @@ pub struct NonPortProgramItemAssign {
 
 #[derive(Clone, Debug, Node)]
 pub struct NonPortProgramItemModule {
-    pub nodes: (
-        Vec<AttributeInstance>,
-        ModuleOrGenerateItemDeclaration,
-    ),
+    pub nodes: (Vec<AttributeInstance>, ModuleOrGenerateItemDeclaration),
 }
 
 #[derive(Clone, Debug, Node)]

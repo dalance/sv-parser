@@ -25,7 +25,7 @@ pub struct Static {
 
 #[derive(Clone, Debug, Node)]
 pub struct ConstraintBlock {
-    pub nodes: (Brace< Vec<ConstraintBlockItem>>,),
+    pub nodes: (Brace<Vec<ConstraintBlockItem>>,),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -36,13 +36,7 @@ pub enum ConstraintBlockItem {
 
 #[derive(Clone, Debug, Node)]
 pub struct ConstraintBlockItemSolve {
-    pub nodes: (
-        Keyword,
-        SolveBeforeList,
-        Keyword,
-        SolveBeforeList,
-        Symbol,
-    ),
+    pub nodes: (Keyword, SolveBeforeList, Keyword, SolveBeforeList, Symbol),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -88,7 +82,7 @@ pub struct ConstraintExpressionArrow {
 pub struct ConstraintExpressionIf {
     pub nodes: (
         Keyword,
-        Paren< Expression>,
+        Paren<Expression>,
         ConstraintSet,
         Option<(Keyword, ConstraintSet)>,
     ),
@@ -98,13 +92,7 @@ pub struct ConstraintExpressionIf {
 pub struct ConstraintExpressionForeach {
     pub nodes: (
         Keyword,
-        Paren<
-            
-            (
-                PsOrHierarchicalArrayIdentifier,
-                Bracket< LoopVariables>,
-            ),
-        >,
+        Paren<(PsOrHierarchicalArrayIdentifier, Bracket<LoopVariables>)>,
         ConstraintSet,
     ),
 }
@@ -116,7 +104,7 @@ pub struct ConstraintExpressionDisable {
 
 #[derive(Clone, Debug, Node)]
 pub struct UniquenessConstraint {
-    pub nodes: (Keyword, Brace< OpenRangeList>),
+    pub nodes: (Keyword, Brace<OpenRangeList>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -127,7 +115,7 @@ pub enum ConstraintSet {
 
 #[derive(Clone, Debug, Node)]
 pub struct ConstraintSetBrace {
-    pub nodes: (Brace< Vec<ConstraintExpression>>,),
+    pub nodes: (Brace<Vec<ConstraintExpression>>,),
 }
 
 #[derive(Clone, Debug, Node)]

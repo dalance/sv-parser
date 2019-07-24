@@ -19,22 +19,16 @@ pub enum ParameterPortList {
 pub struct ParameterPortListAssignment {
     pub nodes: (
         Symbol,
-        Paren<
-            
-            (
-                ListOfParamAssignments,
-                Vec<(Symbol, ParameterPortDeclaration)>,
-            ),
-        >,
+        Paren<(
+            ListOfParamAssignments,
+            Vec<(Symbol, ParameterPortDeclaration)>,
+        )>,
     ),
 }
 
 #[derive(Clone, Debug, Node)]
 pub struct ParameterPortListDeclaration {
-    pub nodes: (
-        Symbol,
-        Paren< List<Symbol, ParameterPortDeclaration>>,
-    ),
+    pub nodes: (Symbol, Paren<List<Symbol, ParameterPortDeclaration>>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -57,14 +51,12 @@ pub struct ParameterPortDeclarationTypeList {
 
 #[derive(Clone, Debug, Node)]
 pub struct ListOfPorts {
-    pub nodes: (Paren< List<Symbol, Port>>,),
+    pub nodes: (Paren<List<Symbol, Port>>,),
 }
 
 #[derive(Clone, Debug, Node)]
 pub struct ListOfPortDeclarations {
-    pub nodes: (
-        Paren< Option<List<Symbol, (Vec<AttributeInstance>, AnsiPortDeclaration)>>>,
-    ),
+    pub nodes: (Paren<Option<List<Symbol, (Vec<AttributeInstance>, AnsiPortDeclaration)>>>,),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -114,11 +106,7 @@ pub struct PortNonNamed {
 
 #[derive(Clone, Debug, Node)]
 pub struct PortNamed {
-    pub nodes: (
-        Symbol,
-        PortIdentifier,
-        Paren< Option<PortExpression>>,
-    ),
+    pub nodes: (Symbol, PortIdentifier, Paren<Option<PortExpression>>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -129,7 +117,7 @@ pub enum PortExpression {
 
 #[derive(Clone, Debug, Node)]
 pub struct PortExpressionBrace {
-    pub nodes: (Brace< List<Symbol, PortReference>>,),
+    pub nodes: (Brace<List<Symbol, PortReference>>,),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -163,10 +151,7 @@ pub enum InterfacePortHeader {
 
 #[derive(Clone, Debug, Node)]
 pub struct InterfacePortHeaderIdentifier {
-    pub nodes: (
-        InterfaceIdentifier,
-        Option<(Symbol, ModportIdentifier)>,
-    ),
+    pub nodes: (InterfaceIdentifier, Option<(Symbol, ModportIdentifier)>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -212,7 +197,7 @@ pub struct AnsiPortDeclarationParen {
         Option<PortDirection>,
         Symbol,
         PortIdentifier,
-        Paren< Option<Expression>>,
+        Paren<Option<Expression>>,
     ),
 }
 

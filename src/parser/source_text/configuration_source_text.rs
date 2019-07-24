@@ -26,10 +26,7 @@ pub struct ConfigDeclaration {
 pub struct DesignStatement {
     pub nodes: (
         Keyword,
-        Vec<(
-            Option<(LibraryIdentifier, Symbol)>,
-            CellIdentifier,
-        )>,
+        Vec<(Option<(LibraryIdentifier, Symbol)>, CellIdentifier)>,
         Symbol,
     ),
 }
@@ -80,19 +77,12 @@ pub struct InstClause {
 
 #[derive(Clone, Debug, Node)]
 pub struct InstName {
-    pub nodes: (
-        TopmoduleIdentifier,
-        Vec<(Symbol, InstanceIdentifier)>,
-    ),
+    pub nodes: (TopmoduleIdentifier, Vec<(Symbol, InstanceIdentifier)>),
 }
 
 #[derive(Clone, Debug, Node)]
 pub struct CellClause {
-    pub nodes: (
-        Keyword,
-        Option<(LibraryIdentifier, Symbol)>,
-        CellIdentifier,
-    ),
+    pub nodes: (Keyword, Option<(LibraryIdentifier, Symbol)>, CellIdentifier),
 }
 
 #[derive(Clone, Debug, Node)]

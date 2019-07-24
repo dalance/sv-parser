@@ -35,11 +35,7 @@ pub struct Const {
 
 #[derive(Clone, Debug, Node)]
 pub struct PackageImportDeclaration {
-    pub nodes: (
-        Keyword,
-        List<Symbol, PackageImportItem>,
-        Symbol,
-    ),
+    pub nodes: (Keyword, List<Symbol, PackageImportItem>, Symbol),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -71,11 +67,7 @@ pub struct PackageExportDeclarationAsterisk {
 
 #[derive(Clone, Debug, Node)]
 pub struct PackageExportDeclarationItem {
-    pub nodes: (
-        Keyword,
-        List<Symbol, PackageImportItem>,
-        Symbol,
-    ),
+    pub nodes: (Keyword, List<Symbol, PackageImportItem>, Symbol),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -200,11 +192,7 @@ pub struct NetTypeDeclarationDataType {
         Keyword,
         DataType,
         NetTypeIdentifier,
-        Option<(
-            Keyword,
-            Option<PackageScopeOrClassScope>,
-            TfIdentifier,
-        )>,
+        Option<(Keyword, Option<PackageScopeOrClassScope>, TfIdentifier)>,
         Symbol,
     ),
 }

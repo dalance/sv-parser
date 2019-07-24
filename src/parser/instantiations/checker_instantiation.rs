@@ -12,7 +12,7 @@ pub struct CheckerInstantiation {
     pub nodes: (
         PsCheckerIdentifier,
         NameOfInstance,
-        Paren< Option<ListOfCheckerPortConnections>>,
+        Paren<Option<ListOfCheckerPortConnections>>,
         Symbol,
     ),
 }
@@ -50,7 +50,7 @@ pub struct NamedCheckerPortConnectionIdentifier {
         Vec<AttributeInstance>,
         Symbol,
         FormalPortIdentifier,
-        Option<Paren< Option<PropertyActualArg>>>,
+        Option<Paren<Option<PropertyActualArg>>>,
     ),
 }
 

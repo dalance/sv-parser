@@ -39,12 +39,7 @@ pub enum BlockingAssignment {
 
 #[derive(Clone, Debug, Node)]
 pub struct BlockingAssignmentVariable {
-    pub nodes: (
-        VariableLvalue,
-        Symbol,
-        DelayOrEventControl,
-        Expression,
-    ),
+    pub nodes: (VariableLvalue, Symbol, DelayOrEventControl, Expression),
 }
 
 #[derive(Clone, Debug, Node)]

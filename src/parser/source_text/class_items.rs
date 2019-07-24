@@ -101,12 +101,7 @@ pub struct ClassMethodPureVirtual {
 
 #[derive(Clone, Debug, Node)]
 pub struct ClassMethodExternMethod {
-    pub nodes: (
-        Keyword,
-        Vec<MethodQualifier>,
-        MethodPrototype,
-        Symbol,
-    ),
+    pub nodes: (Keyword, Vec<MethodQualifier>, MethodPrototype, Symbol),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -116,21 +111,12 @@ pub struct ClassMethodConstructor {
 
 #[derive(Clone, Debug, Node)]
 pub struct ClassMethodExternConstructor {
-    pub nodes: (
-        Keyword,
-        Vec<MethodQualifier>,
-        ClassConstructorPrototype,
-    ),
+    pub nodes: (Keyword, Vec<MethodQualifier>, ClassConstructorPrototype),
 }
 
 #[derive(Clone, Debug, Node)]
 pub struct ClassConstructorPrototype {
-    pub nodes: (
-        Keyword,
-        Keyword,
-        Option<Paren< Option<TfPortList>>>,
-        Symbol,
-    ),
+    pub nodes: (Keyword, Keyword, Option<Paren<Option<TfPortList>>>, Symbol),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -177,14 +163,14 @@ pub struct ClassConstructorDeclaration {
         Keyword,
         Option<ClassScope>,
         Keyword,
-        Option<Paren< Option<TfPortList>>>,
+        Option<Paren<Option<TfPortList>>>,
         Symbol,
         Vec<BlockItemDeclaration>,
         Option<(
             Keyword,
             Symbol,
             Keyword,
-            Option<Paren< ListOfArguments>>,
+            Option<Paren<ListOfArguments>>,
             Symbol,
         )>,
         Vec<FunctionStatementOrNull>,

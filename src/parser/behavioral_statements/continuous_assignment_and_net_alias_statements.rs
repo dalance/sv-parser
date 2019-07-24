@@ -45,13 +45,7 @@ pub struct ListOfVariableAssignments {
 
 #[derive(Clone, Debug, Node)]
 pub struct NetAlias {
-    pub nodes: (
-        Keyword,
-        NetLvalue,
-        Symbol,
-        List<Symbol, NetLvalue>,
-        Symbol,
-    ),
+    pub nodes: (Keyword, NetLvalue, Symbol, List<Symbol, NetLvalue>, Symbol),
 }
 
 #[derive(Clone, Debug, Node)]

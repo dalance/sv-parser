@@ -101,7 +101,7 @@ pub struct ModuleDeclarationWildcard {
         ModuleKeyword,
         Option<Lifetime>,
         ModuleIdentifier,
-        Paren< Symbol>,
+        Paren<Symbol>,
         Symbol,
         Option<TimeunitsDeclaration>,
         Vec<ModuleItem>,
@@ -164,7 +164,7 @@ pub struct InterfaceDeclarationWildcard {
         Keyword,
         Option<Lifetime>,
         InterfaceIdentifier,
-        Paren< Symbol>,
+        Paren<Symbol>,
         Symbol,
         Option<TimeunitsDeclaration>,
         Vec<InterfaceItem>,
@@ -248,7 +248,7 @@ pub struct ProgramDeclarationWildcard {
         Vec<AttributeInstance>,
         Keyword,
         ProgramIdentifier,
-        Paren< Symbol>,
+        Paren<Symbol>,
         Symbol,
         Option<TimeunitsDeclaration>,
         Vec<ProgramItem>,
@@ -300,7 +300,7 @@ pub struct CheckerDeclaration {
     pub nodes: (
         Keyword,
         CheckerIdentifier,
-        Option<Paren< Option<CheckerPortList>>>,
+        Option<Paren<Option<CheckerPortList>>>,
         Symbol,
         Vec<(Vec<AttributeInstance>, CheckerOrGenerateItem)>,
         Keyword,
@@ -316,11 +316,7 @@ pub struct ClassDeclaration {
         Option<Lifetime>,
         ClassIdentifier,
         Option<ParameterPortList>,
-        Option<(
-            Keyword,
-            ClassType,
-            Option<Paren< ListOfArguments>>,
-        )>,
+        Option<(Keyword, ClassType, Option<Paren<ListOfArguments>>)>,
         Option<(Keyword, List<Symbol, InterfaceClassType>)>,
         Symbol,
         Vec<ClassItem>,
@@ -398,12 +394,7 @@ pub enum TimeunitsDeclaration {
 
 #[derive(Clone, Debug, Node)]
 pub struct TimeunitsDeclarationTimeunit {
-    pub nodes: (
-        Keyword,
-        TimeLiteral,
-        Option<(Symbol, TimeLiteral)>,
-        Symbol,
-    ),
+    pub nodes: (Keyword, TimeLiteral, Option<(Symbol, TimeLiteral)>, Symbol),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -413,26 +404,12 @@ pub struct TimeunitsDeclarationTimeprecision {
 
 #[derive(Clone, Debug, Node)]
 pub struct TimeunitsDeclarationTimeunitTimeprecision {
-    pub nodes: (
-        Keyword,
-        TimeLiteral,
-        Symbol,
-        Keyword,
-        TimeLiteral,
-        Symbol,
-    ),
+    pub nodes: (Keyword, TimeLiteral, Symbol, Keyword, TimeLiteral, Symbol),
 }
 
 #[derive(Clone, Debug, Node)]
 pub struct TimeunitsDeclarationTimeprecisionTimeunit {
-    pub nodes: (
-        Keyword,
-        TimeLiteral,
-        Symbol,
-        Keyword,
-        TimeLiteral,
-        Symbol,
-    ),
+    pub nodes: (Keyword, TimeLiteral, Symbol, Keyword, TimeLiteral, Symbol),
 }
 
 // -----------------------------------------------------------------------------

@@ -5,6 +5,7 @@ use nom::combinator::*;
 use nom::multi::*;
 use nom::sequence::*;
 use nom::IResult;
+use nom_packrat::packrat_parser;
 
 // -----------------------------------------------------------------------------
 
@@ -285,6 +286,7 @@ pub struct TypeReferenceDataType {
 
 // -----------------------------------------------------------------------------
 
+#[packrat_parser]
 #[parser]
 pub fn casting_type(s: Span) -> IResult<Span, CastingType> {
     alt((
@@ -459,6 +461,7 @@ pub fn enum_name_declaration(s: Span) -> IResult<Span, EnumNameDeclaration> {
     Ok((s, EnumNameDeclaration { nodes: (a, b, c) }))
 }
 
+#[packrat_parser]
 #[parser]
 pub fn class_scope(s: Span) -> IResult<Span, ClassScope> {
     let (s, a) = class_type(s)?;
@@ -592,6 +595,7 @@ pub fn signing(s: Span) -> IResult<Span, Signing> {
     ))(s)
 }
 
+#[packrat_parser]
 #[parser]
 pub fn simple_type(s: Span) -> IResult<Span, SimpleType> {
     alt((

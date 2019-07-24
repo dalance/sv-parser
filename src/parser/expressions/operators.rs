@@ -2,6 +2,7 @@ use crate::ast::*;
 use crate::parser::*;
 use nom::branch::*;
 use nom::IResult;
+use nom_packrat::packrat_parser;
 
 // -----------------------------------------------------------------------------
 
@@ -32,6 +33,7 @@ pub struct BinaryModulePathOperator {
 
 // -----------------------------------------------------------------------------
 
+#[packrat_parser]
 #[parser]
 pub fn unary_operator(s: Span) -> IResult<Span, UnaryOperator> {
     let (s, a) = alt((

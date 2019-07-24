@@ -885,6 +885,7 @@ pub fn package_identifier(s: Span) -> IResult<Span, PackageIdentifier> {
     Ok((s, PackageIdentifier { nodes: (a,) }))
 }
 
+#[packrat_parser]
 #[parser]
 pub fn package_scope(s: Span) -> IResult<Span, PackageScope> {
     alt((package_scope_package, map(unit, |x| PackageScope::Unit(x))))(s)
@@ -1074,6 +1075,7 @@ pub fn ps_or_hierarchical_tf_identifier_package_scope(
     ))
 }
 
+#[packrat_parser]
 #[parser]
 pub fn ps_parameter_identifier(s: Span) -> IResult<Span, PsParameterIdentifier> {
     alt((
@@ -1106,6 +1108,7 @@ pub fn ps_parameter_identifier_generate(s: Span) -> IResult<Span, PsParameterIde
     ))
 }
 
+#[packrat_parser]
 #[parser]
 pub fn ps_type_identifier(s: Span) -> IResult<Span, PsTypeIdentifier> {
     let (s, a) = opt(local_or_package_scope_or_class_scope)(s)?;

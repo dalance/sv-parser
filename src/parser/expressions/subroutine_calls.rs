@@ -5,6 +5,7 @@ use nom::combinator::*;
 use nom::multi::*;
 use nom::sequence::*;
 use nom::IResult;
+use nom_packrat::packrat_parser;
 
 // -----------------------------------------------------------------------------
 
@@ -224,6 +225,7 @@ pub fn system_tf_call_arg_expression(s: Span) -> IResult<Span, SystemTfCall> {
     ))
 }
 
+#[packrat_parser]
 #[parser]
 pub fn subroutine_call(s: Span) -> IResult<Span, SubroutineCall> {
     alt((

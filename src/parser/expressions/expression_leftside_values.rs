@@ -3,6 +3,7 @@ use crate::parser::*;
 use nom::branch::*;
 use nom::combinator::*;
 use nom::IResult;
+use nom_packrat::packrat_parser;
 
 // -----------------------------------------------------------------------------
 
@@ -72,6 +73,7 @@ pub struct NonrangeVariableLvalue {
 
 // -----------------------------------------------------------------------------
 
+#[packrat_parser]
 #[parser]
 pub fn net_lvalue(s: Span) -> IResult<Span, NetLvalue> {
     alt((net_lvalue_identifier, net_lvalue_lvalue, net_lvalue_pattern))(s)
@@ -106,6 +108,7 @@ pub fn net_lvalue_lvalue(s: Span) -> IResult<Span, NetLvalue> {
     ))
 }
 
+#[packrat_parser]
 #[parser]
 pub fn variable_lvalue(s: Span) -> IResult<Span, VariableLvalue> {
     alt((

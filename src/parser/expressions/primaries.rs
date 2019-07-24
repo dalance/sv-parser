@@ -474,6 +474,7 @@ pub fn range_expression(s: Span) -> IResult<Span, RangeExpression> {
     ))(s)
 }
 
+#[packrat_parser]
 #[parser]
 pub fn primary_literal(s: Span) -> IResult<Span, PrimaryLiteral> {
     alt((

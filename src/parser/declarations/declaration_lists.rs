@@ -7,47 +7,47 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfDefparamAssignments {
     pub nodes: (List<Symbol, DefparamAssignment>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfGenvarIdentifiers {
     pub nodes: (List<Symbol, GenvarIdentifier>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfInterfaceIdentifiers {
     pub nodes: (List<Symbol, (InterfaceIdentifier, Vec<UnpackedDimension>)>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfNetDeclAssignments {
     pub nodes: (List<Symbol, NetDeclAssignment>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfParamAssignments {
     pub nodes: (List<Symbol, ParamAssignment>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfPortIdentifiers {
     pub nodes: (List<Symbol, (PortIdentifier, Vec<UnpackedDimension>)>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfUdpPortIdentifiers {
     pub nodes: (List<Symbol, PortIdentifier>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfSpecparamAssignments {
     pub nodes: (List<Symbol, SpecparamAssignment>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfTfVariableIdentifiers {
     pub nodes: (
         List<
@@ -61,22 +61,22 @@ pub struct ListOfTfVariableIdentifiers {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfTypeAssignments {
     pub nodes: (List<Symbol, TypeAssignment>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfVariableDeclAssignments {
     pub nodes: (List<Symbol, VariableDeclAssignment>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfVariableIdentifiers {
     pub nodes: (List<Symbol, (VariableIdentifier, Vec<VariableDimension>)>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfVariablePortIdentifiers {
     pub nodes: (
         List<

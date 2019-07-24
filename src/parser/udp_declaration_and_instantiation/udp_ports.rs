@@ -8,7 +8,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UdpPortList {
     pub nodes: (
         OutputPortIdentifier,
@@ -17,7 +17,7 @@ pub struct UdpPortList {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UdpDeclarationPortList {
     pub nodes: (
         UdpOutputDeclaration,
@@ -26,25 +26,25 @@ pub struct UdpDeclarationPortList {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum UdpPortDeclaration {
     UdpOutputDeclaration((UdpOutputDeclaration, Symbol)),
     UdpInputDeclaration((UdpInputDeclaration, Symbol)),
     UdpRegDeclaration((UdpRegDeclaration, Symbol)),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum UdpOutputDeclaration {
     Nonreg(UdpOutputDeclarationNonreg),
     Reg(UdpOutputDeclarationReg),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UdpOutputDeclarationNonreg {
     pub nodes: (Vec<AttributeInstance>, Keyword, PortIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UdpOutputDeclarationReg {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -55,7 +55,7 @@ pub struct UdpOutputDeclarationReg {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UdpInputDeclaration {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -64,7 +64,7 @@ pub struct UdpInputDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UdpRegDeclaration {
     pub nodes: (
         Vec<AttributeInstance>,

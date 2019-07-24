@@ -8,7 +8,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ClassItem {
     Property(ClassItemProperty),
     Method(ClassItemMethod),
@@ -20,43 +20,43 @@ pub enum ClassItem {
     Empty(Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassItemProperty {
     pub nodes: (Vec<AttributeInstance>, ClassProperty),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassItemMethod {
     pub nodes: (Vec<AttributeInstance>, ClassMethod),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassItemConstraint {
     pub nodes: (Vec<AttributeInstance>, ClassConstraint),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassItemDeclaration {
     pub nodes: (Vec<AttributeInstance>, ClassDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassItemCovergroup {
     pub nodes: (Vec<AttributeInstance>, CovergroupDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ClassProperty {
     NonConst(ClassPropertyNonConst),
     Const(ClassPropertyConst),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassPropertyNonConst {
     pub nodes: (Vec<PropertyQualifier>, DataDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassPropertyConst {
     pub nodes: (
         Keyword,
@@ -68,7 +68,7 @@ pub struct ClassPropertyConst {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ClassMethod {
     Task(ClassMethodTask),
     Function(ClassMethodFunction),
@@ -78,17 +78,17 @@ pub enum ClassMethod {
     ExternConstructor(ClassMethodExternConstructor),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassMethodTask {
     pub nodes: (Vec<MethodQualifier>, TaskDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassMethodFunction {
     pub nodes: (Vec<MethodQualifier>, FunctionDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassMethodPureVirtual {
     pub nodes: (
         Keyword,
@@ -99,7 +99,7 @@ pub struct ClassMethodPureVirtual {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassMethodExternMethod {
     pub nodes: (
         Keyword,
@@ -109,12 +109,12 @@ pub struct ClassMethodExternMethod {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassMethodConstructor {
     pub nodes: (Vec<MethodQualifier>, ClassConstructorDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassMethodExternConstructor {
     pub nodes: (
         Keyword,
@@ -123,7 +123,7 @@ pub struct ClassMethodExternConstructor {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassConstructorPrototype {
     pub nodes: (
         Keyword,
@@ -133,45 +133,45 @@ pub struct ClassConstructorPrototype {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ClassConstraint {
     ConstraintPrototype(ConstraintPrototype),
     ConstraintDeclaration(ConstraintDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ClassItemQualifier {
     Static(Keyword),
     Protected(Keyword),
     Local(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PropertyQualifier {
     RandomQualifier(RandomQualifier),
     ClassItemQualifier(ClassItemQualifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum RandomQualifier {
     Rand(Keyword),
     Randc(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum MethodQualifier {
     Virtual(Keyword),
     PureVirtual((Keyword, Keyword)),
     ClassItemQualifier(ClassItemQualifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum MethodPrototype {
     TaskPrototype(TaskPrototype),
     FunctionPrototype(FunctionPrototype),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassConstructorDeclaration {
     pub nodes: (
         Keyword,
@@ -193,7 +193,7 @@ pub struct ClassConstructorDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct New {
     pub nodes: (Keyword,),
 }

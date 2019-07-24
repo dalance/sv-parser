@@ -6,12 +6,12 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct AttributeInstance {
     pub nodes: (Symbol, List<Symbol, AttrSpec>, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct AttrSpec {
     pub nodes: (Identifier, Option<(Symbol, ConstantExpression)>),
 }

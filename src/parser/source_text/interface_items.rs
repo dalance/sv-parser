@@ -8,45 +8,45 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum InterfaceOrGenerateItem {
     Module(InterfaceOrGenerateItemModule),
     Extern(InterfaceOrGenerateItemExtern),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InterfaceOrGenerateItemModule {
     pub nodes: (Vec<AttributeInstance>, ModuleCommonItem),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InterfaceOrGenerateItemExtern {
     pub nodes: (Vec<AttributeInstance>, ExternTfDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ExternTfDeclaration {
     Method(ExternTfDeclarationMethod),
     Task(ExternTfDeclarationTask),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ExternTfDeclarationMethod {
     pub nodes: (Keyword, MethodPrototype, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ExternTfDeclarationTask {
     pub nodes: (Keyword, Keyword, TaskPrototype, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum InterfaceItem {
     PortDeclaration((PortDeclaration, Symbol)),
     NonPortInterfaceItem(NonPortInterfaceItem),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum NonPortInterfaceItem {
     GenerateRegion(GenerateRegion),
     InterfaceOrGenerateItem(InterfaceOrGenerateItem),

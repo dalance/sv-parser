@@ -8,12 +8,12 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct LibraryText {
     pub nodes: (Vec<LibraryDescription>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum LibraryDescription {
     LibraryDeclaration(LibraryDeclaration),
     IncludeStatement(IncludeStatement),
@@ -21,7 +21,7 @@ pub enum LibraryDescription {
     Null(Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct LibraryDeclaration {
     pub nodes: (
         Keyword,
@@ -32,12 +32,12 @@ pub struct LibraryDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct IncludeStatement {
     pub nodes: (Keyword, FilePathSpec, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct FilePathSpec {
     pub nodes: (StringLiteral,),
 }

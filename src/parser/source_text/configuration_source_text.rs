@@ -8,7 +8,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConfigDeclaration {
     pub nodes: (
         Keyword,
@@ -22,7 +22,7 @@ pub struct ConfigDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DesignStatement {
     pub nodes: (
         Keyword,
@@ -34,7 +34,7 @@ pub struct DesignStatement {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ConfigRuleStatement {
     Default(ConfigRuleStatementDefault),
     InstLib(ConfigRuleStatementInstLib),
@@ -43,42 +43,42 @@ pub enum ConfigRuleStatement {
     CellUse(ConfigRuleStatementCellUse),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConfigRuleStatementDefault {
     pub nodes: (DefaultClause, LiblistClause, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConfigRuleStatementInstLib {
     pub nodes: (InstClause, LiblistClause, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConfigRuleStatementInstUse {
     pub nodes: (InstClause, UseClause, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConfigRuleStatementCellLib {
     pub nodes: (CellClause, LiblistClause, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConfigRuleStatementCellUse {
     pub nodes: (CellClause, UseClause, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DefaultClause {
     pub nodes: (Keyword,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InstClause {
     pub nodes: (Keyword, InstName),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InstName {
     pub nodes: (
         TopmoduleIdentifier,
@@ -86,7 +86,7 @@ pub struct InstName {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CellClause {
     pub nodes: (
         Keyword,
@@ -95,19 +95,19 @@ pub struct CellClause {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct LiblistClause {
     pub nodes: (Keyword, Vec<LibraryIdentifier>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum UseClause {
     Cell(UseClauseCell),
     Named(UseClauseNamed),
     CellNamed(UseClauseCellNamed),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UseClauseCell {
     pub nodes: (
         Keyword,
@@ -117,7 +117,7 @@ pub struct UseClauseCell {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UseClauseNamed {
     pub nodes: (
         Keyword,
@@ -126,7 +126,7 @@ pub struct UseClauseNamed {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UseClauseCellNamed {
     pub nodes: (
         Keyword,
@@ -137,7 +137,7 @@ pub struct UseClauseCellNamed {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct Config {
     pub nodes: (Keyword,),
 }

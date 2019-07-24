@@ -8,58 +8,46 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ElaborationSystemTask {
-    Fatal(ElaborationSystemTaskFatal),
-    Error(ElaborationSystemTaskError),
-    Warning(ElaborationSystemTaskWarning),
-    Info(ElaborationSystemTaskInfo),
+    TaskFatal(ElaborationSystemTaskFatal),
+    TaskError(ElaborationSystemTaskError),
+    TaskWarning(ElaborationSystemTaskWarning),
+    TaskInfo(ElaborationSystemTaskInfo),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ElaborationSystemTaskFatal {
     pub nodes: (
         Keyword,
-        Option<Paren< (FinishNumber, Option<(Symbol, ListOfArguments)>)>>,
+        Option<Paren<(FinishNumber, Option<(Symbol, ListOfArguments)>)>>,
         Symbol,
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ElaborationSystemTaskError {
-    pub nodes: (
-        Keyword,
-        Option<Paren< Option<ListOfArguments>>>,
-        Symbol,
-    ),
+    pub nodes: (Keyword, Option<Paren<Option<ListOfArguments>>>, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ElaborationSystemTaskWarning {
-    pub nodes: (
-        Keyword,
-        Option<Paren< Option<ListOfArguments>>>,
-        Symbol,
-    ),
+    pub nodes: (Keyword, Option<Paren<Option<ListOfArguments>>>, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ElaborationSystemTaskInfo {
-    pub nodes: (
-        Keyword,
-        Option<Paren< Option<ListOfArguments>>>,
-        Symbol,
-    ),
+    pub nodes: (Keyword, Option<Paren<Option<ListOfArguments>>>, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum FinishNumber {
     Zero(Symbol),
     One(Symbol),
     Two(Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ModuleCommonItem {
     ModuleOrGenerateItemDeclaration(ModuleOrGenerateItemDeclaration),
     InterfaceInstantiation(InterfaceInstantiation),
@@ -76,13 +64,13 @@ pub enum ModuleCommonItem {
     ElaborationSystemTask(ElaborationSystemTask),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ModuleItem {
     PortDeclaration((PortDeclaration, Symbol)),
     NonPortModuleItem(NonPortModuleItem),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ModuleOrGenerateItem {
     Parameter(ModuleOrGenerateItemParameter),
     Gate(ModuleOrGenerateItemGate),
@@ -91,32 +79,32 @@ pub enum ModuleOrGenerateItem {
     ModuleItem(Box<ModuleOrGenerateItemModuleItem>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModuleOrGenerateItemParameter {
     pub nodes: (Vec<AttributeInstance>, ParameterOverride),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModuleOrGenerateItemGate {
     pub nodes: (Vec<AttributeInstance>, GateInstantiation),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModuleOrGenerateItemUdp {
     pub nodes: (Vec<AttributeInstance>, UdpInstantiation),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModuleOrGenerateItemModule {
     pub nodes: (Vec<AttributeInstance>, ModuleInstantiation),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModuleOrGenerateItemModuleItem {
     pub nodes: (Vec<AttributeInstance>, ModuleCommonItem),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ModuleOrGenerateItemDeclaration {
     PackageOrGenerateItemDeclaration(PackageOrGenerateItemDeclaration),
     GenvarDeclaration(GenvarDeclaration),
@@ -125,23 +113,17 @@ pub enum ModuleOrGenerateItemDeclaration {
     Disable(ModuleOrGenerateItemDeclarationDisable),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModuleOrGenerateItemDeclarationClocking {
     pub nodes: (Keyword, Keyword, ClockingIdentifier, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModuleOrGenerateItemDeclarationDisable {
-    pub nodes: (
-        Keyword,
-        Keyword,
-        Keyword,
-        ExpressionOrDist,
-        Symbol,
-    ),
+    pub nodes: (Keyword, Keyword, Keyword, ExpressionOrDist, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum NonPortModuleItem {
     GenerateRegion(GenerateRegion),
     ModuleOrGenerateItem(ModuleOrGenerateItem),
@@ -153,23 +135,23 @@ pub enum NonPortModuleItem {
     TimeunitsDeclaration(TimeunitsDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NonPortModuleItemSpecparam {
     pub nodes: (Vec<AttributeInstance>, SpecparamDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ParameterOverride {
     pub nodes: (Keyword, ListOfDefparamAssignments, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum BindDirective {
     Scope(BindDirectiveScope),
     Instance(BindDirectiveInstance),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct BindDirectiveScope {
     pub nodes: (
         Keyword,
@@ -180,33 +162,28 @@ pub struct BindDirectiveScope {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct BindDirectiveInstance {
-    pub nodes: (
-        Keyword,
-        BindTargetInstance,
-        BindInstantiation,
-        Symbol,
-    ),
+    pub nodes: (Keyword, BindTargetInstance, BindInstantiation, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum BindTargetScope {
     ModuleIdentifier(ModuleIdentifier),
     InterfaceIdentifier(InterfaceIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct BindTargetInstance {
     pub nodes: (HierarchicalIdentifier, ConstantBitSelect),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct BindTargetInstanceList {
     pub nodes: (List<Symbol, BindTargetInstance>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum BindInstantiation {
     ProgramInstantiation(ProgramInstantiation),
     ModuleInstantiation(ModuleInstantiation),
@@ -236,7 +213,7 @@ pub fn elaboration_system_task_fatal(s: Span) -> IResult<Span, ElaborationSystem
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        ElaborationSystemTask::Fatal(ElaborationSystemTaskFatal { nodes: (a, b, c) }),
+        ElaborationSystemTask::TaskFatal(ElaborationSystemTaskFatal { nodes: (a, b, c) }),
     ))
 }
 
@@ -247,7 +224,7 @@ pub fn elaboration_system_task_error(s: Span) -> IResult<Span, ElaborationSystem
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        ElaborationSystemTask::Error(ElaborationSystemTaskError { nodes: (a, b, c) }),
+        ElaborationSystemTask::TaskError(ElaborationSystemTaskError { nodes: (a, b, c) }),
     ))
 }
 
@@ -258,7 +235,7 @@ pub fn elaboration_system_task_warning(s: Span) -> IResult<Span, ElaborationSyst
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        ElaborationSystemTask::Warning(ElaborationSystemTaskWarning { nodes: (a, b, c) }),
+        ElaborationSystemTask::TaskWarning(ElaborationSystemTaskWarning { nodes: (a, b, c) }),
     ))
 }
 
@@ -269,7 +246,7 @@ pub fn elaboration_system_task_info(s: Span) -> IResult<Span, ElaborationSystemT
     let (s, c) = symbol(";")(s)?;
     Ok((
         s,
-        ElaborationSystemTask::Info(ElaborationSystemTaskInfo { nodes: (a, b, c) }),
+        ElaborationSystemTask::TaskInfo(ElaborationSystemTaskInfo { nodes: (a, b, c) }),
     ))
 }
 

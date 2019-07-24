@@ -5,7 +5,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ProgramInstantiation {
     pub nodes: (
         ProgramIdentifier,

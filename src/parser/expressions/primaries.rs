@@ -4,10 +4,11 @@ use nom::branch::*;
 use nom::combinator::*;
 use nom::multi::*;
 use nom::IResult;
+use nom_packrat::packrat_parser;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ConstantPrimary {
     PrimaryLiteral(PrimaryLiteral),
     PsParameter(ConstantPrimaryPsParameter),
@@ -26,51 +27,51 @@ pub enum ConstantPrimary {
     Null(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantPrimaryPsParameter {
     pub nodes: (PsParameterIdentifier, ConstantSelect),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantPrimarySpecparam {
     pub nodes: (
         SpecparamIdentifier,
-        Option<Bracket< ConstantRangeExpression>>,
+        Option<Bracket<ConstantRangeExpression>>,
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantPrimaryFormalPort {
     pub nodes: (FormalPortIdentifier, ConstantSelect),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantPrimaryEnum {
     pub nodes: (PackageScopeOrClassScope, EnumIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantPrimaryConcatenation {
     pub nodes: (
         ConstantConcatenation,
-        Option<Bracket< ConstantRangeExpression>>,
+        Option<Bracket<ConstantRangeExpression>>,
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantPrimaryMultipleConcatenation {
     pub nodes: (
         ConstantMultipleConcatenation,
-        Option<Bracket< ConstantRangeExpression>>,
+        Option<Bracket<ConstantRangeExpression>>,
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantPrimaryMintypmaxExpression {
-    pub nodes: (Paren< ConstantMintypmaxExpression>,),
+    pub nodes: (Paren<ConstantMintypmaxExpression>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ModulePathPrimary {
     Number(Number),
     Identifier(Identifier),
@@ -80,12 +81,12 @@ pub enum ModulePathPrimary {
     Mintypmax(ModulePathPrimaryMintypmax),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModulePathPrimaryMintypmax {
-    pub nodes: (Paren< ModulePathMintypmaxExpression>,),
+    pub nodes: (Paren<ModulePathMintypmaxExpression>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum Primary {
     PrimaryLiteral(PrimaryLiteral),
     Hierarchical(PrimaryHierarchical),
@@ -104,7 +105,7 @@ pub enum Primary {
     Null(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PrimaryHierarchical {
     pub nodes: (
         Option<ClassQualifierOrPackageScope>,
@@ -113,45 +114,39 @@ pub struct PrimaryHierarchical {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PrimaryConcatenation {
-    pub nodes: (Concatenation, Option<Bracket< RangeExpression>>),
+    pub nodes: (Concatenation, Option<Bracket<RangeExpression>>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PrimaryMultipleConcatenation {
-    pub nodes: (
-        MultipleConcatenation,
-        Option<Bracket< RangeExpression>>,
-    ),
+    pub nodes: (MultipleConcatenation, Option<Bracket<RangeExpression>>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PrimaryMintypmaxExpression {
-    pub nodes: (Paren< MintypmaxExpression>,),
+    pub nodes: (Paren<MintypmaxExpression>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ClassQualifierOrPackageScope {
     ClassQualifier(ClassQualifier),
     PackageScope(PackageScope),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassQualifier {
-    pub nodes: (
-        Option<Local>,
-        Option<ImplicitClassHandleOrClassScope>,
-    ),
+    pub nodes: (Option<Local>, Option<ImplicitClassHandleOrClassScope>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum RangeExpression {
     Expression(Expression),
     PartSelectRange(PartSelectRange),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PrimaryLiteral {
     Number(Number),
     TimeLiteral(TimeLiteral),
@@ -159,23 +154,23 @@ pub enum PrimaryLiteral {
     StringLiteral(StringLiteral),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum TimeLiteral {
     Unsigned(TimeLiteralUnsigned),
     FixedPoint(TimeLiteralFixedPoint),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TimeLiteralUnsigned {
     pub nodes: (UnsignedNumber, TimeUnit),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TimeLiteralFixedPoint {
     pub nodes: (FixedPointNumber, TimeUnit),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum TimeUnit {
     S(Keyword),
     MS(Keyword),
@@ -185,19 +180,19 @@ pub enum TimeUnit {
     FS(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ImplicitClassHandle {
     This(Keyword),
     Super(Keyword),
     ThisSuper((Keyword, Symbol, Keyword)),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct BitSelect {
-    nodes: (Vec<Bracket< Expression>>,),
+    nodes: (Vec<Bracket<Expression>>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct Select {
     pub nodes: (
         Option<(
@@ -206,11 +201,11 @@ pub struct Select {
             MemberIdentifier,
         )>,
         BitSelect,
-        Option<Bracket< PartSelectRange>>,
+        Option<Bracket<PartSelectRange>>,
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NonrangeSelect {
     pub nodes: (
         Option<(
@@ -222,12 +217,12 @@ pub struct NonrangeSelect {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantBitSelect {
-    nodes: (Vec<Bracket< ConstantExpression>>,),
+    nodes: (Vec<Bracket<ConstantExpression>>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantSelect {
     pub nodes: (
         Option<(
@@ -236,32 +231,29 @@ pub struct ConstantSelect {
             MemberIdentifier,
         )>,
         ConstantBitSelect,
-        Option<Bracket< ConstantPartSelectRange>>,
+        Option<Bracket<ConstantPartSelectRange>>,
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantCast {
-    pub nodes: (
-        CastingType,
-        Symbol,
-        Paren< ConstantExpression>,
-    ),
+    pub nodes: (CastingType, Symbol, Paren<ConstantExpression>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantLetExpression {
     pub nodes: (LetExpression,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct Cast {
-    pub nodes: (CastingType, Symbol, Paren< Expression>),
+    pub nodes: (CastingType, Symbol, Paren<Expression>),
 }
 
 // -----------------------------------------------------------------------------
 
-#[parser(Memoize)]
+#[packrat_parser]
+#[parser]
 pub fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
     alt((
         map(keyword("null"), |x| ConstantPrimary::Null(x)),
@@ -288,7 +280,7 @@ pub fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
     ))(s)
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn constant_primary_ps_parameter(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = ps_parameter_identifier(s)?;
     let (s, b) = constant_select(s)?;
@@ -298,7 +290,7 @@ pub fn constant_primary_ps_parameter(s: Span) -> IResult<Span, ConstantPrimary> 
     ))
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn constant_primary_specparam(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = specparam_identifier(s)?;
     let (s, b) = opt(bracket(constant_range_expression))(s)?;
@@ -308,7 +300,7 @@ pub fn constant_primary_specparam(s: Span) -> IResult<Span, ConstantPrimary> {
     ))
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn constant_primary_formal_port(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = formal_port_identifier(s)?;
     let (s, b) = constant_select(s)?;
@@ -318,7 +310,7 @@ pub fn constant_primary_formal_port(s: Span) -> IResult<Span, ConstantPrimary> {
     ))
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn constant_primary_enum(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = package_scope_or_class_scope(s)?;
     let (s, b) = enum_identifier(s)?;
@@ -328,7 +320,7 @@ pub fn constant_primary_enum(s: Span) -> IResult<Span, ConstantPrimary> {
     ))
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn constant_primary_concatenation(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = constant_concatenation(s)?;
     let (s, b) = opt(bracket(constant_range_expression))(s)?;
@@ -338,7 +330,7 @@ pub fn constant_primary_concatenation(s: Span) -> IResult<Span, ConstantPrimary>
     ))
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn constant_primary_multiple_concatenation(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = constant_multiple_concatenation(s)?;
     let (s, b) = opt(bracket(constant_range_expression))(s)?;
@@ -350,7 +342,7 @@ pub fn constant_primary_multiple_concatenation(s: Span) -> IResult<Span, Constan
     ))
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn constant_primary_mintypmax_expression(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = paren(constant_mintypmax_expression)(s)?;
     Ok((
@@ -386,7 +378,8 @@ pub fn module_path_primary_mintypmax_expression(s: Span) -> IResult<Span, Module
     ))
 }
 
-#[parser(Memoize)]
+#[packrat_parser]
+#[parser]
 pub fn primary(s: Span) -> IResult<Span, Primary> {
     alt((
         map(keyword("this"), |x| Primary::This(x)),
@@ -414,7 +407,7 @@ pub fn primary(s: Span) -> IResult<Span, Primary> {
     ))(s)
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn primary_hierarchical(s: Span) -> IResult<Span, Primary> {
     let (s, a) = opt(class_qualifier_or_package_scope)(s)?;
     let (s, b) = hierarchical_identifier(s)?;
@@ -425,7 +418,7 @@ pub fn primary_hierarchical(s: Span) -> IResult<Span, Primary> {
     ))
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn primary_concatenation(s: Span) -> IResult<Span, Primary> {
     let (s, a) = concatenation(s)?;
     let (s, b) = opt(bracket(range_expression))(s)?;
@@ -445,7 +438,7 @@ pub fn primary_multiple_concatenation(s: Span) -> IResult<Span, Primary> {
     ))
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn primary_mintypmax_expression(s: Span) -> IResult<Span, Primary> {
     let (s, a) = paren(mintypmax_expression)(s)?;
     Ok((
@@ -481,7 +474,7 @@ pub fn range_expression(s: Span) -> IResult<Span, RangeExpression> {
     ))(s)
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn primary_literal(s: Span) -> IResult<Span, PrimaryLiteral> {
     alt((
         map(time_literal, |x| PrimaryLiteral::TimeLiteral(x)),
@@ -589,7 +582,7 @@ pub fn constant_select(s: Span) -> IResult<Span, ConstantSelect> {
     Ok((s, ConstantSelect { nodes: (a, b, c) }))
 }
 
-#[parser(MaybeRecursive, Memoize)]
+#[parser(MaybeRecursive)]
 pub fn constant_cast(s: Span) -> IResult<Span, ConstantCast> {
     let (s, a) = casting_type(s)?;
     let (s, b) = symbol("'")(s)?;
@@ -597,13 +590,13 @@ pub fn constant_cast(s: Span) -> IResult<Span, ConstantCast> {
     Ok((s, ConstantCast { nodes: (a, b, c) }))
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn constant_let_expression(s: Span) -> IResult<Span, ConstantLetExpression> {
     let (s, a) = let_expression(s)?;
     Ok((s, ConstantLetExpression { nodes: (a,) }))
 }
 
-#[parser(MaybeRecursive, Memoize)]
+#[parser(MaybeRecursive)]
 pub fn cast(s: Span) -> IResult<Span, Cast> {
     let (s, a) = casting_type(s)?;
     let (s, b) = symbol("'")(s)?;

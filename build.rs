@@ -10,9 +10,15 @@ fn main() {
     let dest = Path::new(&out_dir).join("any_node.rs");
     let mut out = File::create(&dest).unwrap();
 
-    let _ = write!(out, "#[derive(Debug, Clone, AnyNode)]\n");
-    let _ = write!(out, "pub enum AnyNode<'a> {{\n");
-    let _ = write!(out, "    Locate(&'a Locate),\n");
+    let mut ref_node = String::new();
+    ref_node = format!("{}#[derive(Debug, Clone, RefNode)]\n", ref_node);
+    ref_node = format!("{}pub enum RefNode<'a> {{\n", ref_node);
+    ref_node = format!("{}    Locate(&'a Locate),\n", ref_node);
+
+    let mut any_node = String::new();
+    any_node = format!("{}#[derive(Debug, Clone, AnyNode)]\n", any_node);
+    any_node = format!("{}pub enum AnyNode {{\n", any_node);
+    any_node = format!("{}    Locate(Locate),\n", any_node);
 
     let re_node = Regex::new(r"#\[derive.*Node.*\]").unwrap();
 
@@ -26,7 +32,8 @@ fn main() {
                 let line = line.unwrap();
                 if hit_node {
                     let name = line.split_whitespace().nth(2).unwrap().replace("<'a>", "");
-                    let _ = write!(out, "    {}(&'a {}),\n", name, name);
+                    ref_node = format!("{}    {}(&'a {}),\n", ref_node, name, name);
+                    any_node = format!("{}    {}({}),\n", any_node, name, name);
                     hit_node = false;
                 }
                 if re_node.is_match(&line) {
@@ -36,5 +43,8 @@ fn main() {
         }
     }
 
-    let _ = write!(out, "}}\n");
+    ref_node = format!("{}}}\n", ref_node);
+    any_node = format!("{}}}\n", any_node);
+    let _ = write!(out, "{}", ref_node);
+    let _ = write!(out, "{}", any_node);
 }

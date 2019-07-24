@@ -7,7 +7,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModuleInstantiation {
     pub nodes: (
         ModuleIdentifier,
@@ -17,7 +17,7 @@ pub struct ModuleInstantiation {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ParameterValueAssignment {
     pub nodes: (
         Symbol,
@@ -25,28 +25,28 @@ pub struct ParameterValueAssignment {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ListOfParameterAssignments {
     Ordered(ListOfParameterAssignmentsOrdered),
     Named(ListOfParameterAssignmentsNamed),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfParameterAssignmentsOrdered {
     pub nodes: (List<Symbol, OrderedParameterAssignment>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfParameterAssignmentsNamed {
     pub nodes: (List<Symbol, NamedParameterAssignment>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct OrderedParameterAssignment {
     pub nodes: (ParamExpression,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NamedParameterAssignment {
     pub nodes: (
         Symbol,
@@ -55,7 +55,7 @@ pub struct NamedParameterAssignment {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct HierarchicalInstance {
     pub nodes: (
         NameOfInstance,
@@ -63,39 +63,39 @@ pub struct HierarchicalInstance {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NameOfInstance {
     pub nodes: (InstanceIdentifier, Vec<UnpackedDimension>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ListOfPortConnections {
     Ordered(ListOfPortConnectionsOrdered),
     Named(ListOfPortConnectionsNamed),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfPortConnectionsOrdered {
     pub nodes: (List<Symbol, OrderedPortConnection>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfPortConnectionsNamed {
     pub nodes: (List<Symbol, NamedPortConnection>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct OrderedPortConnection {
     pub nodes: (Vec<AttributeInstance>, Option<Expression>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum NamedPortConnection {
     Identifier(NamedPortConnectionIdentifier),
     Asterisk(NamedPortConnectionAsterisk),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NamedPortConnectionIdentifier {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -105,7 +105,7 @@ pub struct NamedPortConnectionIdentifier {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NamedPortConnectionAsterisk {
     pub nodes: (Vec<AttributeInstance>, Symbol),
 }

@@ -8,7 +8,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DefparamAssignment {
     pub nodes: (
         HierarchicalParameterIdentifier,
@@ -17,7 +17,7 @@ pub struct DefparamAssignment {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NetDeclAssignment {
     pub nodes: (
         NetIdentifier,
@@ -26,7 +26,7 @@ pub struct NetDeclAssignment {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ParamAssignment {
     pub nodes: (
         ParameterIdentifier,
@@ -35,29 +35,29 @@ pub struct ParamAssignment {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum SpecparamAssignment {
     Mintypmax(SpecparamAssignmentMintypmax),
     PulseControlSpecparam(PulseControlSpecparam),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SpecparamAssignmentMintypmax {
     pub nodes: (SpecparamIdentifier, Symbol, ConstantMintypmaxExpression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TypeAssignment {
     pub nodes: (TypeIdentifier, Option<(Symbol, DataType)>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PulseControlSpecparam {
     WithoutDescriptor(PulseControlSpecparamWithoutDescriptor),
     WithDescriptor(PulseControlSpecparamWithDescriptor),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PulseControlSpecparamWithoutDescriptor {
     pub nodes: (
         Symbol,
@@ -66,7 +66,7 @@ pub struct PulseControlSpecparamWithoutDescriptor {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PulseControlSpecparamWithDescriptor {
     pub nodes: (
         Symbol,
@@ -78,29 +78,29 @@ pub struct PulseControlSpecparamWithDescriptor {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ErrorLimitValue {
     pub nodes: (LimitValue,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct RejectLimitValue {
     pub nodes: (LimitValue,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct LimitValue {
     pub nodes: (ConstantMintypmaxExpression,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum VariableDeclAssignment {
     Variable(VariableDeclAssignmentVariable),
     DynamicArray(VariableDeclAssignmentDynamicArray),
     Class(VariableDeclAssignmentClass),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct VariableDeclAssignmentVariable {
     pub nodes: (
         VariableIdentifier,
@@ -109,7 +109,7 @@ pub struct VariableDeclAssignmentVariable {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct VariableDeclAssignmentDynamicArray {
     pub nodes: (
         DynamicArrayVariableIdentifier,
@@ -119,28 +119,28 @@ pub struct VariableDeclAssignmentDynamicArray {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct VariableDeclAssignmentClass {
     pub nodes: (ClassVariableIdentifier, Option<(Symbol, ClassNew)>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ClassNew {
     Argument(ClassNewArgument),
     Expression(ClassNewExpression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassNewArgument {
     pub nodes: (Option<ClassScope>, Keyword, Option<Paren<ListOfArguments>>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassNewExpression {
     pub nodes: (Keyword, Expression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DynamicArrayNew {
     pub nodes: (Keyword, Bracket<Expression>, Option<Paren<Expression>>),
 }

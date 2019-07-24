@@ -2,11 +2,11 @@ use crate::ast::*;
 use crate::parser::*;
 
 pub trait Node<'a> {
-    fn next(&'a self) -> AnyNodes<'a>;
+    fn next(&'a self) -> RefNodes<'a>;
 }
 
 impl<'a> Node<'a> for Locate {
-    fn next(&'a self) -> AnyNodes<'a> {
+    fn next(&'a self) -> RefNodes<'a> {
         vec![].into()
     }
 }

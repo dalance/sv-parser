@@ -7,7 +7,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CheckerInstantiation {
     pub nodes: (
         PsCheckerIdentifier,
@@ -17,34 +17,34 @@ pub struct CheckerInstantiation {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ListOfCheckerPortConnections {
     Ordered(ListOfCheckerPortConnectionsOrdered),
     Named(ListOfCheckerPortConnectionsNamed),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfCheckerPortConnectionsOrdered {
     pub nodes: (List<Symbol, OrderedCheckerPortConnection>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfCheckerPortConnectionsNamed {
     pub nodes: (List<Symbol, NamedCheckerPortConnection>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct OrderedCheckerPortConnection {
     pub nodes: (Vec<AttributeInstance>, Option<PropertyActualArg>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum NamedCheckerPortConnection {
     Identifier(NamedCheckerPortConnectionIdentifier),
     Asterisk(NamedCheckerPortConnectionAsterisk),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NamedCheckerPortConnectionIdentifier {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -54,7 +54,7 @@ pub struct NamedCheckerPortConnectionIdentifier {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NamedCheckerPortConnectionAsterisk {
     pub nodes: (Vec<AttributeInstance>, Symbol),
 }

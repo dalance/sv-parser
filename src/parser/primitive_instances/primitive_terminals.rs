@@ -4,32 +4,32 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EnableTerminal {
     pub nodes: (Expression,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InoutTerminal {
     pub nodes: (NetLvalue,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InputTerminal {
     pub nodes: (Expression,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NcontrolTerminal {
     pub nodes: (Expression,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct OutputTerminal {
     pub nodes: (NetLvalue,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PcontrolTerminal {
     pub nodes: (Expression,),
 }

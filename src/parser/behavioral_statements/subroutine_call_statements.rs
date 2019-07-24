@@ -7,13 +7,13 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum SubroutineCallStatement {
     SubroutineCall((SubroutineCall, Symbol)),
     Function(SubroutineCallStatementFunction),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SubroutineCallStatementFunction {
     pub nodes: (Keyword, Symbol, Paren<FunctionSubroutineCall>, Symbol),
 }

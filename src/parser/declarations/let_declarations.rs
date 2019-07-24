@@ -8,7 +8,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct LetDeclaration {
     pub nodes: (
         Keyword,
@@ -20,17 +20,17 @@ pub struct LetDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct LetIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct LetPortList {
     pub nodes: (List<Symbol, LetPortItem>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct LetPortItem {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -41,13 +41,13 @@ pub struct LetPortItem {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum LetFormalType {
     DataTypeOrImplicit(DataTypeOrImplicit),
     Untyped(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct LetExpression {
     pub nodes: (
         Option<PackageScope>,
@@ -56,13 +56,13 @@ pub struct LetExpression {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum LetListOfArguments {
     Ordered(LetListOfArgumentsOrdered),
     Named(LetListOfArgumentsNamed),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct LetListOfArgumentsOrdered {
     pub nodes: (
         List<Symbol, Option<LetActualArg>>,
@@ -70,12 +70,12 @@ pub struct LetListOfArgumentsOrdered {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct LetListOfArgumentsNamed {
     pub nodes: (List<Symbol, (Symbol, Identifier, Paren<Option<LetActualArg>>)>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct LetActualArg {
     pub nodes: (Expression,),
 }
@@ -135,7 +135,7 @@ pub fn let_formal_type(s: Span) -> IResult<Span, LetFormalType> {
     ))(s)
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn let_expression(s: Span) -> IResult<Span, LetExpression> {
     let (s, a) = opt(package_scope)(s)?;
     let (s, b) = let_identifier(s)?;

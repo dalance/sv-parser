@@ -8,18 +8,18 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum StatementOrNull {
     Statement(Statement),
     Attribute(StatementOrNullAttribute),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct StatementOrNullAttribute {
     pub nodes: (Vec<AttributeInstance>, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct Statement {
     pub nodes: (
         Option<(BlockIdentifier, Symbol)>,
@@ -28,7 +28,7 @@ pub struct Statement {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum StatementItem {
     BlockingAssignment(Box<(BlockingAssignment, Symbol)>),
     NonblockingAssignment(Box<(NonblockingAssignment, Symbol)>),
@@ -52,23 +52,23 @@ pub enum StatementItem {
     ExpectPropertyStatement(Box<ExpectPropertyStatement>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct FunctionStatement {
     pub nodes: (Statement,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum FunctionStatementOrNull {
     Statement(FunctionStatement),
     Attribute(FunctionStatementOrNullAttribute),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct FunctionStatementOrNullAttribute {
     pub nodes: (Vec<AttributeInstance>, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct VariableIdentifierList {
     pub nodes: (List<Symbol, VariableIdentifier>,),
 }

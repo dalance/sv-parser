@@ -7,7 +7,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InoutDeclaration {
     pub nodes: (
         Keyword,
@@ -16,13 +16,13 @@ pub struct InoutDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum InputDeclaration {
     Net(InputDeclarationNet),
     Variable(InputDeclarationVariable),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InputDeclarationNet {
     pub nodes: (
         Keyword,
@@ -31,7 +31,7 @@ pub struct InputDeclarationNet {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InputDeclarationVariable {
     pub nodes: (
         Keyword,
@@ -40,13 +40,13 @@ pub struct InputDeclarationVariable {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum OutputDeclaration {
     Net(OutputDeclarationNet),
     Variable(OutputDeclarationVariable),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct OutputDeclarationNet {
     pub nodes: (
         Keyword,
@@ -55,7 +55,7 @@ pub struct OutputDeclarationNet {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct OutputDeclarationVariable {
     pub nodes: (
         Keyword,
@@ -64,7 +64,7 @@ pub struct OutputDeclarationVariable {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InterfacePortDeclaration {
     pub nodes: (
         InterfaceIdentifier,
@@ -73,7 +73,7 @@ pub struct InterfacePortDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct RefDeclaration {
     pub nodes: (
         Keyword,

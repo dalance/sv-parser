@@ -6,36 +6,36 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SpecifyInputTerminalDescriptor {
     pub nodes: (InputIdentifier, Option<Bracket<ConstantRangeExpression>>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SpecifyOutputTerminalDescriptor {
     pub nodes: (OutputIdentifier, Option<Bracket<ConstantRangeExpression>>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum InputIdentifier {
     InputPortIdentifier(InputPortIdentifier),
     InoutPortIdentifier(InoutPortIdentifier),
     Interface(InputIdentifierInterface),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InputIdentifierInterface {
     pub nodes: (InterfaceIdentifier, Symbol, PortIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum OutputIdentifier {
     OutputPortIdentifier(OutputPortIdentifier),
     InoutPortIdentifier(InoutPortIdentifier),
     Interface(OutputIdentifierInterface),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct OutputIdentifierInterface {
     pub nodes: (InterfaceIdentifier, Symbol, PortIdentifier),
 }

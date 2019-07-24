@@ -7,50 +7,50 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum UnpackedDimension {
     Range(UnpackedDimensionRange),
     Expression(UnpackedDimensionExpression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UnpackedDimensionRange {
     pub nodes: (Bracket<ConstantRange>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UnpackedDimensionExpression {
     pub nodes: (Bracket<ConstantExpression>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PackedDimension {
     Range(PackedDimensionRange),
     UnsizedDimension(UnsizedDimension),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PackedDimensionRange {
     pub nodes: (Bracket<ConstantRange>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum AssociativeDimension {
     DataType(AssociativeDimensionDataType),
     Asterisk(AssociativeDimensionAsterisk),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct AssociativeDimensionDataType {
     pub nodes: (Bracket<DataType>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct AssociativeDimensionAsterisk {
     pub nodes: (Bracket<Symbol>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum VariableDimension {
     UnsizedDimension(UnsizedDimension),
     UnpackedDimension(UnpackedDimension),
@@ -58,12 +58,12 @@ pub enum VariableDimension {
     QueueDimension(QueueDimension),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct QueueDimension {
     pub nodes: (Bracket<(Symbol, Option<(Symbol, ConstantExpression)>)>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UnsizedDimension {
     pub nodes: (Symbol, Symbol),
 }

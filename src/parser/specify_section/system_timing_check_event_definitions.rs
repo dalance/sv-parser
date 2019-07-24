@@ -7,7 +7,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TimingCheckEvent {
     pub nodes: (
         Option<TimingCheckEventControl>,
@@ -16,7 +16,7 @@ pub struct TimingCheckEvent {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ControlledTimingCheckEvent {
     pub nodes: (
         TimingCheckEventControl,
@@ -25,7 +25,7 @@ pub struct ControlledTimingCheckEvent {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum TimingCheckEventControl {
     Posedge(Keyword),
     Negedge(Keyword),
@@ -33,51 +33,51 @@ pub enum TimingCheckEventControl {
     EdgeControlSpecifier(EdgeControlSpecifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum SpecifyTerminalDescriptor {
     SpecifyInputTerminalDescriptor(SpecifyInputTerminalDescriptor),
     SpecifyOutputTerminalDescriptor(SpecifyOutputTerminalDescriptor),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EdgeControlSpecifier {
     pub nodes: (Keyword, Bracket<List<Symbol, EdgeDescriptor>>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EdgeDescriptor {
     pub nodes: (Keyword,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum TimingCheckCondition {
     ScalarTimingCheckCondition(ScalarTimingCheckCondition),
     Paren(TimingCheckConditionParen),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TimingCheckConditionParen {
     pub nodes: (Paren<ScalarTimingCheckCondition>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ScalarTimingCheckCondition {
     Expression(Expression),
     Unary(ScalarTimingCheckConditionUnary),
     Binary(ScalarTimingCheckConditionBinary),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ScalarTimingCheckConditionUnary {
     pub nodes: (Symbol, Expression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ScalarTimingCheckConditionBinary {
     pub nodes: (Expression, Symbol, ScalarConstant),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ScalarConstant {
     pub nodes: (Keyword,),
 }

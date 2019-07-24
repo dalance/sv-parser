@@ -8,24 +8,24 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum FunctionDataTypeOrImplicit {
     DataTypeOrVoid(DataTypeOrVoid),
     ImplicitDataType(ImplicitDataType),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct FunctionDeclaration {
     pub nodes: (Keyword, Option<Lifetime>, FunctionBodyDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum FunctionBodyDeclaration {
     WithoutPort(FunctionBodyDeclarationWithoutPort),
     WithPort(FunctionBodyDeclarationWithPort),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct FunctionBodyDeclarationWithoutPort {
     pub nodes: (
         Option<FunctionDataTypeOrImplicit>,
@@ -39,7 +39,7 @@ pub struct FunctionBodyDeclarationWithoutPort {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct FunctionBodyDeclarationWithPort {
     pub nodes: (
         Option<FunctionDataTypeOrImplicit>,
@@ -54,13 +54,13 @@ pub struct FunctionBodyDeclarationWithPort {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum InterfaceIdentifierOrClassScope {
     InterfaceIdentifier((InterfaceIdentifier, Symbol)),
     ClassScope(ClassScope),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct FunctionPrototype {
     pub nodes: (
         Keyword,
@@ -70,7 +70,7 @@ pub struct FunctionPrototype {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum DpiImportExport {
     ImportFunction(DpiImportExportImportFunction),
     ImportTask(DpiImportExportImportTask),
@@ -78,7 +78,7 @@ pub enum DpiImportExport {
     ExportTask(DpiImportExportExportTask),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DpiImportExportImportFunction {
     pub nodes: (
         Keyword,
@@ -90,7 +90,7 @@ pub struct DpiImportExportImportFunction {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DpiImportExportImportTask {
     pub nodes: (
         Keyword,
@@ -102,7 +102,7 @@ pub struct DpiImportExportImportTask {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DpiImportExportExportFunction {
     pub nodes: (
         Keyword,
@@ -114,7 +114,7 @@ pub struct DpiImportExportExportFunction {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DpiImportExportExportTask {
     pub nodes: (
         Keyword,
@@ -126,29 +126,29 @@ pub struct DpiImportExportExportTask {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum DpiSpecString {
     DpiC(Keyword),
     Dpi(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum DpiFunctionImportProperty {
     Context(Keyword),
     Pure(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum DpiTaskImportProperty {
     Context(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DpiFunctionProto {
     pub nodes: (FunctionPrototype,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DpiTaskProto {
     pub nodes: (TaskPrototype,),
 }

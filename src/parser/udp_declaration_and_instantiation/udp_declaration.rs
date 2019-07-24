@@ -8,7 +8,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UdpNonansiDeclaration {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -19,7 +19,7 @@ pub struct UdpNonansiDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UdpAnsiDeclaration {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -30,7 +30,7 @@ pub struct UdpAnsiDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum UdpDeclaration {
     Nonansi(UdpDeclarationNonansi),
     Ansi(UdpDeclarationAnsi),
@@ -39,7 +39,7 @@ pub enum UdpDeclaration {
     Wildcard(UdpDeclarationWildcard),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UdpDeclarationNonansi {
     pub nodes: (
         UdpNonansiDeclaration,
@@ -51,7 +51,7 @@ pub struct UdpDeclarationNonansi {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UdpDeclarationAnsi {
     pub nodes: (
         UdpAnsiDeclaration,
@@ -61,17 +61,17 @@ pub struct UdpDeclarationAnsi {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UdpDeclarationExternNonansi {
     pub nodes: (Keyword, UdpNonansiDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UdpDeclarationExternAnsi {
     pub nodes: (Keyword, UdpAnsiDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UdpDeclarationWildcard {
     pub nodes: (
         Vec<AttributeInstance>,

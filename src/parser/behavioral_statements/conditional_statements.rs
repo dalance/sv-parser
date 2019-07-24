@@ -8,7 +8,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConditionalStatement {
     pub nodes: (
         Option<UniquePriority>,
@@ -20,25 +20,25 @@ pub struct ConditionalStatement {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum UniquePriority {
     Unique(Keyword),
     Unique0(Keyword),
     Priority(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CondPredicate {
     pub nodes: (List<Symbol, ExpressionOrCondPattern>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ExpressionOrCondPattern {
     Expression(Expression),
     CondPattern(CondPattern),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CondPattern {
     pub nodes: (Expression, Keyword, Pattern),
 }

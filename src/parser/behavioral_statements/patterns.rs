@@ -7,7 +7,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum Pattern {
     Variable(Box<PatternVariable>),
     Asterisk(Symbol),
@@ -17,27 +17,27 @@ pub enum Pattern {
     IdentifierList(Box<PatternIdentifierList>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PatternVariable {
     pub nodes: (Symbol, VariableIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PatternTagged {
     pub nodes: (Keyword, MemberIdentifier, Option<Pattern>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PatternList {
     pub nodes: (ApostropheBrace<List<Symbol, Pattern>>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PatternIdentifierList {
     pub nodes: (ApostropheBrace<List<Symbol, (MemberIdentifier, Symbol, Pattern)>>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum AssignmentPattern {
     List(AssignmentPatternList),
     Structure(AssignmentPatternStructure),
@@ -45,50 +45,50 @@ pub enum AssignmentPattern {
     Repeat(AssignmentPatternRepeat),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct AssignmentPatternList {
     pub nodes: (ApostropheBrace<List<Symbol, Expression>>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct AssignmentPatternStructure {
     pub nodes: (ApostropheBrace<List<Symbol, (StructurePatternKey, Symbol, Expression)>>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct AssignmentPatternArray {
     pub nodes: (ApostropheBrace<List<Symbol, (ArrayPatternKey, Symbol, Expression)>>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct AssignmentPatternRepeat {
     pub nodes: (ApostropheBrace<(ConstantExpression, Brace<List<Symbol, Expression>>)>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum StructurePatternKey {
     MemberIdentifier(MemberIdentifier),
     AssignmentPatternKey(AssignmentPatternKey),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ArrayPatternKey {
     ConstantExpression(ConstantExpression),
     AssignmentPatternKey(AssignmentPatternKey),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum AssignmentPatternKey {
     SimpleType(SimpleType),
     Default(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct AssignmentPatternExpression {
     pub nodes: (Option<AssignmentPatternExpressionType>, AssignmentPattern),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum AssignmentPatternExpressionType {
     PsTypeIdentifier(PsTypeIdentifier),
     PsParameterIdentifier(PsParameterIdentifier),
@@ -96,17 +96,17 @@ pub enum AssignmentPatternExpressionType {
     TypeReference(TypeReference),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantAssignmentPatternExpression {
     pub nodes: (AssignmentPatternExpression,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct AssignmentPatternNetLvalue {
     pub nodes: (ApostropheBrace<List<Symbol, NetLvalue>>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct AssignmentPatternVariableLvalue {
     pub nodes: (ApostropheBrace<List<Symbol, VariableLvalue>>,),
 }
@@ -253,7 +253,7 @@ pub fn assignment_pattern_key(s: Span) -> IResult<Span, AssignmentPatternKey> {
     ))(s)
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn assignment_pattern_expression(s: Span) -> IResult<Span, AssignmentPatternExpression> {
     let (s, a) = opt(assignment_pattern_expression_type)(s)?;
     let (s, b) = assignment_pattern(s)?;
@@ -280,7 +280,7 @@ pub fn assignment_pattern_expression_type(
     ))(s)
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn constant_assignment_pattern_expression(
     s: Span,
 ) -> IResult<Span, ConstantAssignmentPatternExpression> {

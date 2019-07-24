@@ -6,84 +6,84 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TimecheckCondition {
     pub nodes: (MintypmaxExpression,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ControlledReferenceEvent {
     pub nodes: (ControlledTimingCheckEvent,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DataEvent {
     pub nodes: (TimingCheckEvent,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum DelayedData {
     TerminalIdentifier(TerminalIdentifier),
     WithMintypmax(DelayedDataWithMintypmax),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DelayedDataWithMintypmax {
     pub nodes: (TerminalIdentifier, Bracket<ConstantMintypmaxExpression>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum DelayedReference {
     TerminalIdentifier(TerminalIdentifier),
     WithMintypmax(DelayedReferenceWithMintypmax),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DelayedReferenceWithMintypmax {
     pub nodes: (TerminalIdentifier, Bracket<ConstantMintypmaxExpression>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EndEdgeOffset {
     pub nodes: (MintypmaxExpression,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EventBasedFlag {
     pub nodes: (ConstantExpression,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct Notifier {
     pub nodes: (VariableIdentifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ReferenceEvent {
     pub nodes: (TimingCheckEvent,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct RemainActiveFlag {
     pub nodes: (ConstantMintypmaxExpression,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TimestampCondition {
     pub nodes: (MintypmaxExpression,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct StartEdgeOffset {
     pub nodes: (MintypmaxExpression,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct Threshold {
     pub nodes: (ConstantExpression,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TimingCheckLimit {
     pub nodes: (Expression,),
 }

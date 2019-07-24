@@ -8,58 +8,52 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantFunctionCall {
     pub nodes: (FunctionSubroutineCall,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TfCall {
     pub nodes: (
         PsOrHierarchicalTfIdentifier,
         Vec<AttributeInstance>,
-        Option<Paren< ListOfArguments>>,
+        Option<Paren<ListOfArguments>>,
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum SystemTfCall {
     ArgOptionl(SystemTfCallArgOptional),
     ArgDataType(SystemTfCallArgDataType),
     ArgExpression(SystemTfCallArgExpression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SystemTfCallArgOptional {
-    pub nodes: (
-        SystemTfIdentifier,
-        Option<Paren< ListOfArguments>>,
-    ),
+    pub nodes: (SystemTfIdentifier, Option<Paren<ListOfArguments>>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SystemTfCallArgDataType {
     pub nodes: (
         SystemTfIdentifier,
-        Paren< (DataType, Option<(Symbol, Expression)>)>,
+        Paren<(DataType, Option<(Symbol, Expression)>)>,
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SystemTfCallArgExpression {
     pub nodes: (
         SystemTfIdentifier,
-        Paren<
-            
-            (
-                List<Symbol, Option<Expression>>,
-                Option<(Symbol, Option<ClockingEvent>)>,
-            ),
-        >,
+        Paren<(
+            List<Symbol, Option<Expression>>,
+            Option<(Symbol, Option<ClockingEvent>)>,
+        )>,
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum SubroutineCall {
     TfCall(Box<TfCall>),
     SystemTfCall(Box<SystemTfCall>),
@@ -67,113 +61,103 @@ pub enum SubroutineCall {
     Randomize(Box<SubroutineCallRandomize>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SubroutineCallRandomize {
     pub nodes: (Option<(Keyword, Symbol)>, RandomizeCall),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct FunctionSubroutineCall {
     pub nodes: (SubroutineCall,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ListOfArguments {
     Ordered(ListOfArgumentsOrdered),
     Named(ListOfArgumentsNamed),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfArgumentsOrdered {
     pub nodes: (
         List<Symbol, Option<Expression>>,
-        Vec<(
-            Symbol,
-            Symbol,
-            Identifier,
-            Paren< Option<Expression>>,
-        )>,
+        Vec<(Symbol, Symbol, Identifier, Paren<Option<Expression>>)>,
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfArgumentsNamed {
     pub nodes: (
         Symbol,
         Identifier,
-        Paren< Option<Expression>>,
-        Vec<(
-            Symbol,
-            Symbol,
-            Identifier,
-            Paren< Option<Expression>>,
-        )>,
+        Paren<Option<Expression>>,
+        Vec<(Symbol, Symbol, Identifier, Paren<Option<Expression>>)>,
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct MethodCall {
     pub nodes: (MethodCallRoot, Symbol, MethodCallBody),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum MethodCallBody {
     User(MethodCallBodyUser),
     BuiltInMethodCall(BuiltInMethodCall),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct MethodCallBodyUser {
     pub nodes: (
         MethodIdentifier,
         Vec<AttributeInstance>,
-        Option<Paren< ListOfArguments>>,
+        Option<Paren<ListOfArguments>>,
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum BuiltInMethodCall {
     ArrayManipulationCall(ArrayManipulationCall),
     RandomizeCall(RandomizeCall),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ArrayManipulationCall {
     pub nodes: (
         ArrayMethodName,
         Vec<AttributeInstance>,
-        Option<Paren< ListOfArguments>>,
-        Option<(Keyword, Paren< Expression>)>,
+        Option<Paren<ListOfArguments>>,
+        Option<(Keyword, Paren<Expression>)>,
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct RandomizeCall {
     pub nodes: (
         Keyword,
         Vec<AttributeInstance>,
-        Option<Paren< Option<VariableIdentifierListOrNull>>>,
+        Option<Paren<Option<VariableIdentifierListOrNull>>>,
         Option<(
             Keyword,
-            Option<Paren< Option<IdentifierList>>>,
+            Option<Paren<Option<IdentifierList>>>,
             ConstraintBlock,
         )>,
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum VariableIdentifierListOrNull {
     VariableIdentifierList(VariableIdentifierList),
     Null(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum MethodCallRoot {
     Primary(Primary),
     ImplicitClassHandle(ImplicitClassHandle),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ArrayMethodName {
     MethodIdentifier(MethodIdentifier),
     Unique(Keyword),
@@ -262,7 +246,7 @@ pub fn subroutine_call_randomize(s: Span) -> IResult<Span, SubroutineCall> {
     ))
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn function_subroutine_call(s: Span) -> IResult<Span, FunctionSubroutineCall> {
     map(subroutine_call, |x| FunctionSubroutineCall { nodes: (x,) })(s)
 }

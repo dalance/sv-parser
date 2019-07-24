@@ -7,7 +7,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum SystemTimingCheck {
     SetupTimingCheck(SetupTimingCheck),
     HoldTimingCheck(HoldTimingCheck),
@@ -23,7 +23,7 @@ pub enum SystemTimingCheck {
     NochargeTimingCheck(NochargeTimingCheck),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SetupTimingCheck {
     pub nodes: (
         Keyword,
@@ -39,7 +39,7 @@ pub struct SetupTimingCheck {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct HoldTimingCheck {
     pub nodes: (
         Keyword,
@@ -55,7 +55,7 @@ pub struct HoldTimingCheck {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SetupholdTimingCheck {
     pub nodes: (
         Keyword,
@@ -89,7 +89,7 @@ pub struct SetupholdTimingCheck {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct RecoveryTimingCheck {
     pub nodes: (
         Keyword,
@@ -105,7 +105,7 @@ pub struct RecoveryTimingCheck {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct RemovalTimingCheck {
     pub nodes: (
         Keyword,
@@ -121,7 +121,7 @@ pub struct RemovalTimingCheck {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct RecremTimingCheck {
     pub nodes: (
         Keyword,
@@ -155,7 +155,7 @@ pub struct RecremTimingCheck {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SkewTimingCheck {
     pub nodes: (
         Keyword,
@@ -171,7 +171,7 @@ pub struct SkewTimingCheck {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TimeskewTimingCheck {
     pub nodes: (
         Keyword,
@@ -195,7 +195,7 @@ pub struct TimeskewTimingCheck {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct FullskewTimingCheck {
     pub nodes: (
         Keyword,
@@ -221,7 +221,7 @@ pub struct FullskewTimingCheck {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PeriodTimingCheck {
     pub nodes: (
         Keyword,
@@ -235,7 +235,7 @@ pub struct PeriodTimingCheck {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct WidthTimingCheck {
     pub nodes: (
         Keyword,
@@ -251,7 +251,7 @@ pub struct WidthTimingCheck {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NochargeTimingCheck {
     pub nodes: (
         Keyword,

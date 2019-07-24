@@ -8,13 +8,13 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ProgramItem {
     PortDeclaration((PortDeclaration, Symbol)),
     NonPortProgramItem(NonPortProgramItem),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum NonPortProgramItem {
     Assign(NonPortProgramItemAssign),
     Module(NonPortProgramItemModule),
@@ -25,12 +25,12 @@ pub enum NonPortProgramItem {
     ProgramGenerateItem(ProgramGenerateItem),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NonPortProgramItemAssign {
     pub nodes: (Vec<AttributeInstance>, ContinuousAssign),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NonPortProgramItemModule {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -38,22 +38,22 @@ pub struct NonPortProgramItemModule {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NonPortProgramItemInitial {
     pub nodes: (Vec<AttributeInstance>, InitialConstruct),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NonPortProgramItemFinal {
     pub nodes: (Vec<AttributeInstance>, FinalConstruct),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NonPortProgramItemAssertion {
     pub nodes: (Vec<AttributeInstance>, ConcurrentAssertionItem),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ProgramGenerateItem {
     LoopGenerateConstruct(LoopGenerateConstruct),
     ConditionalGenerateConstruct(ConditionalGenerateConstruct),

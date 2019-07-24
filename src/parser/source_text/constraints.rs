@@ -8,7 +8,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstraintDeclaration {
     pub nodes: (
         Option<Static>,
@@ -18,23 +18,23 @@ pub struct ConstraintDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct Static {
     pub nodes: (Keyword,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstraintBlock {
     pub nodes: (Brace< Vec<ConstraintBlockItem>>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ConstraintBlockItem {
     Solve(ConstraintBlockItemSolve),
     ConstraintExpression(ConstraintExpression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstraintBlockItemSolve {
     pub nodes: (
         Keyword,
@@ -45,12 +45,12 @@ pub struct ConstraintBlockItemSolve {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SolveBeforeList {
     pub nodes: (List<Symbol, ConstraintPrimary>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstraintPrimary {
     pub nodes: (
         Option<ImplicitClassHandleOrClassScope>,
@@ -59,7 +59,7 @@ pub struct ConstraintPrimary {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ConstraintExpression {
     Expression(ConstraintExpressionExpression),
     UniquenessConstraint((UniquenessConstraint, Symbol)),
@@ -69,22 +69,22 @@ pub enum ConstraintExpression {
     Disable(ConstraintExpressionDisable),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstraintExpressionExpression {
     pub nodes: (Option<Soft>, ExpressionOrDist, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct Soft {
     pub nodes: (Keyword,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstraintExpressionArrow {
     pub nodes: (Expression, Symbol, ConstraintSet),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstraintExpressionIf {
     pub nodes: (
         Keyword,
@@ -94,7 +94,7 @@ pub struct ConstraintExpressionIf {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstraintExpressionForeach {
     pub nodes: (
         Keyword,
@@ -109,54 +109,54 @@ pub struct ConstraintExpressionForeach {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstraintExpressionDisable {
     pub nodes: (Keyword, Keyword, ConstraintPrimary, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UniquenessConstraint {
     pub nodes: (Keyword, Brace< OpenRangeList>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ConstraintSet {
     ConstraintExpression(Box<ConstraintExpression>),
     Brace(ConstraintSetBrace),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstraintSetBrace {
     pub nodes: (Brace< Vec<ConstraintExpression>>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DistList {
     pub nodes: (List<Symbol, DistItem>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DistItem {
     pub nodes: (ValueRange, Option<DistWeight>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum DistWeight {
     Equal(DistWeightEqual),
     Divide(DistWeightDivide),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DistWeightEqual {
     pub nodes: (Symbol, Expression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DistWeightDivide {
     pub nodes: (Symbol, Expression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstraintPrototype {
     pub nodes: (
         Option<ConstraintPrototypeQualifier>,
@@ -167,13 +167,13 @@ pub struct ConstraintPrototype {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ConstraintPrototypeQualifier {
     Extern(Keyword),
     Pure(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ExternConstraintDeclaration {
     pub nodes: (
         Option<Static>,
@@ -184,7 +184,7 @@ pub struct ExternConstraintDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct IdentifierList {
     pub nodes: (List<Symbol, Identifier>,),
 }

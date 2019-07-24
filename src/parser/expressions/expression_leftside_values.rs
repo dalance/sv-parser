@@ -6,24 +6,24 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum NetLvalue {
     Identifier(NetLvalueIdentifier),
     Lvalue(Box<NetLvalueLvalue>),
     Pattern(Box<NetLvaluePattern>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NetLvalueIdentifier {
     pub nodes: (PsOrHierarchicalNetIdentifier, ConstantSelect),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NetLvalueLvalue {
     pub nodes: (Brace<List<Symbol, NetLvalue>>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NetLvaluePattern {
     pub nodes: (
         Option<AssignmentPatternExpressionType>,
@@ -31,7 +31,7 @@ pub struct NetLvaluePattern {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum VariableLvalue {
     Identifier(VariableLvalueIdentifier),
     Lvalue(Box<VariableLvalueLvalue>),
@@ -39,7 +39,7 @@ pub enum VariableLvalue {
     StreamingConcatenation(StreamingConcatenation),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct VariableLvalueIdentifier {
     pub nodes: (
         Option<ImplicitClassHandleOrPackageScope>,
@@ -48,12 +48,12 @@ pub struct VariableLvalueIdentifier {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct VariableLvalueLvalue {
     pub nodes: (Brace<List<Symbol, VariableLvalue>>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct VariableLvaluePattern {
     pub nodes: (
         Option<AssignmentPatternExpressionType>,
@@ -61,7 +61,7 @@ pub struct VariableLvaluePattern {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NonrangeVariableLvalue {
     pub nodes: (
         Option<ImplicitClassHandleOrPackageScope>,

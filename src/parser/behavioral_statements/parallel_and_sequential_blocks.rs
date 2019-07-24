@@ -8,18 +8,18 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ActionBlock {
     StatementOrNull(StatementOrNull),
     Else(ActionBlockElse),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ActionBlockElse {
     pub nodes: (Option<Statement>, Keyword, StatementOrNull),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SeqBlock {
     pub nodes: (
         Keyword,
@@ -31,7 +31,7 @@ pub struct SeqBlock {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ParBlock {
     pub nodes: (
         Keyword,
@@ -43,7 +43,7 @@ pub struct ParBlock {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum JoinKeyword {
     Join(Keyword),
     JoinAny(Keyword),

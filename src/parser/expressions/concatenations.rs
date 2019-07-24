@@ -7,75 +7,63 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct Concatenation {
-    pub nodes: (Brace< List<Symbol, Expression>>,),
+    pub nodes: (Brace<List<Symbol, Expression>>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantConcatenation {
-    pub nodes: (Brace< List<Symbol, ConstantExpression>>,),
+    pub nodes: (Brace<List<Symbol, ConstantExpression>>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantMultipleConcatenation {
-    pub nodes: (Brace< (ConstantExpression, ConstantConcatenation)>,),
+    pub nodes: (Brace<(ConstantExpression, ConstantConcatenation)>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModulePathConcatenation {
-    pub nodes: (Brace< List<Symbol, ModulePathExpression>>,),
+    pub nodes: (Brace<List<Symbol, ModulePathExpression>>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModulePathMultipleConcatenation {
-    pub nodes: (Brace< (ConstantExpression, ModulePathConcatenation)>,),
+    pub nodes: (Brace<(ConstantExpression, ModulePathConcatenation)>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct MultipleConcatenation {
-    pub nodes: (Brace< (Expression, Concatenation)>,),
+    pub nodes: (Brace<(Expression, Concatenation)>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct StreamingConcatenation {
-    pub nodes: (
-        Brace<
-            
-            (
-                StreamOperator,
-                Option<SliceSize>,
-                StreamConcatenation,
-            ),
-        >,
-    ),
+    pub nodes: (Brace<(StreamOperator, Option<SliceSize>, StreamConcatenation)>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct StreamOperator {
     pub nodes: (Symbol,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum SliceSize {
     SimpleType(SimpleType),
     ConstantExpression(ConstantExpression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct StreamConcatenation {
-    pub nodes: (Brace< List<Symbol, StreamExpression>>,),
+    pub nodes: (Brace<List<Symbol, StreamExpression>>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct StreamExpression {
-    pub nodes: (
-        Expression,
-        Option<(Keyword, Bracket< ArrayRangeExpression>)>,
-    ),
+    pub nodes: (Expression, Option<(Keyword, Bracket<ArrayRangeExpression>)>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ArrayRangeExpression {
     Expression(Expression),
     Colon(ArrayRangeExpressionColon),
@@ -83,22 +71,22 @@ pub enum ArrayRangeExpression {
     MinusColon(ArrayRangeExpressionMinusColon),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ArrayRangeExpressionColon {
     pub nodes: (Expression, Symbol, Expression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ArrayRangeExpressionPlusColon {
     pub nodes: (Expression, Symbol, Expression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ArrayRangeExpressionMinusColon {
     pub nodes: (Expression, Symbol, Expression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EmptyUnpackedArrayConcatenation {
     pub nodes: (Symbol, Symbol),
 }
@@ -143,7 +131,7 @@ pub fn multiple_concatenation(s: Span) -> IResult<Span, MultipleConcatenation> {
     Ok((s, MultipleConcatenation { nodes: (a,) }))
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn streaming_concatenation(s: Span) -> IResult<Span, StreamingConcatenation> {
     let (s, a) = brace(triple(
         stream_operator,

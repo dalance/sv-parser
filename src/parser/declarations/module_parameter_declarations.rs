@@ -6,13 +6,13 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum LocalParameterDeclaration {
     Param(LocalParameterDeclarationParam),
     Type(LocalParameterDeclarationType),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct LocalParameterDeclarationParam {
     pub nodes: (
         Keyword,
@@ -21,18 +21,18 @@ pub struct LocalParameterDeclarationParam {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct LocalParameterDeclarationType {
     pub nodes: (Keyword, Keyword, ListOfTypeAssignments),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ParameterDeclaration {
     Param(ParameterDeclarationParam),
     Type(ParameterDeclarationType),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ParameterDeclarationParam {
     pub nodes: (
         Keyword,
@@ -41,12 +41,12 @@ pub struct ParameterDeclarationParam {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ParameterDeclarationType {
     pub nodes: (Keyword, Keyword, ListOfTypeAssignments),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SpecparamDeclaration {
     pub nodes: (
         Keyword,

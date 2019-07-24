@@ -7,13 +7,13 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum AssertionItem {
     Concurrent(ConcurrentAssertionItem),
     Immediate(DeferredImmediateAssetionItem),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DeferredImmediateAssetionItem {
     pub nodes: (
         Option<(BlockIdentifier, Symbol)>,
@@ -21,64 +21,64 @@ pub struct DeferredImmediateAssetionItem {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ProceduralAssertionStatement {
     Concurrent(ConcurrentAssertionStatement),
     Immediate(ImmediateAssetionStatement),
     Checker(CheckerInstantiation),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ImmediateAssetionStatement {
     Simple(SimpleImmediateAssertionStatement),
     Deferred(DeferredImmediateAssertionStatement),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum SimpleImmediateAssertionStatement {
     Assert(SimpleImmediateAssertStatement),
     Assume(SimpleImmediateAssumeStatement),
     Cover(SimpleImmediateCoverStatement),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SimpleImmediateAssertStatement {
     pub nodes: (Keyword, Paren<Expression>, ActionBlock),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SimpleImmediateAssumeStatement {
     pub nodes: (Keyword, Paren<Expression>, ActionBlock),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SimpleImmediateCoverStatement {
     pub nodes: (Keyword, Paren<Expression>, StatementOrNull),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum DeferredImmediateAssertionStatement {
     Assert(DeferredImmediateAssertStatement),
     Assume(DeferredImmediateAssumeStatement),
     Cover(DeferredImmediateCoverStatement),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DeferredImmediateAssertStatement {
     pub nodes: (Keyword, AssertTiming, Paren<Expression>, ActionBlock),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DeferredImmediateAssumeStatement {
     pub nodes: (Keyword, AssertTiming, Paren<Expression>, ActionBlock),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DeferredImmediateCoverStatement {
     pub nodes: (Keyword, AssertTiming, Paren<Expression>, StatementOrNull),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum AssertTiming {
     Zero(Symbol),
     Final(Keyword),

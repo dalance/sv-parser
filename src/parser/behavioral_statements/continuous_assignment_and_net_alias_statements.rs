@@ -6,13 +6,13 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ContinuousAssign {
     Net(ContinuousAssignNet),
     Variable(ContinuousAssignVariable),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ContinuousAssignNet {
     pub nodes: (
         Keyword,
@@ -23,7 +23,7 @@ pub struct ContinuousAssignNet {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ContinuousAssignVariable {
     pub nodes: (
         Keyword,
@@ -33,17 +33,17 @@ pub struct ContinuousAssignVariable {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfNetAssignments {
     pub nodes: (List<Symbol, NetAssignment>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfVariableAssignments {
     pub nodes: (List<Symbol, VariableAssignment>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NetAlias {
     pub nodes: (
         Keyword,
@@ -54,7 +54,7 @@ pub struct NetAlias {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NetAssignment {
     pub nodes: (NetLvalue, Symbol, Expression),
 }

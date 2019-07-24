@@ -8,18 +8,18 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TaskDeclaration {
     pub nodes: (Keyword, Option<Lifetime>, TaskBodyDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum TaskBodyDeclaration {
     WithoutPort(TaskBodyDeclarationWithoutPort),
     WithPort(TaskBodyDeclarationWithPort),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TaskBodyDeclarationWithoutPort {
     pub nodes: (
         Option<InterfaceIdentifierOrClassScope>,
@@ -32,7 +32,7 @@ pub struct TaskBodyDeclarationWithoutPort {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TaskBodyDeclarationWithPort {
     pub nodes: (
         Option<InterfaceIdentifierOrClassScope>,
@@ -46,18 +46,18 @@ pub struct TaskBodyDeclarationWithPort {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum TfItemDeclaration {
     BlockItemDeclaration(BlockItemDeclaration),
     TfPortDeclaration(TfPortDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TfPortList {
     pub nodes: (List<Symbol, TfPortItem>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TfPortItem {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -72,13 +72,13 @@ pub struct TfPortItem {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum TfPortDirection {
     PortDirection(PortDirection),
     ConstRef((Keyword, Keyword)),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TfPortDeclaration {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -90,7 +90,7 @@ pub struct TfPortDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TaskPrototype {
     pub nodes: (Keyword, TaskIdentifier, Option<Paren<Option<TfPortList>>>),
 }

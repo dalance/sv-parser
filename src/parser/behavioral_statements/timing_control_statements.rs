@@ -7,40 +7,40 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ProceduralTimingControlStatement {
     pub nodes: (ProceduralTimingControl, StatementOrNull),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum DelayOrEventControl {
     Delay(DelayControl),
     Event(EventControl),
     Repeat(DelayOrEventControlRepeat),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DelayOrEventControlRepeat {
     pub nodes: (Keyword, Paren<Expression>, EventControl),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum DelayControl {
     Delay(DelayControlDelay),
     Mintypmax(DelayControlMintypmax),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DelayControlDelay {
     pub nodes: (Symbol, DelayValue),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DelayControlMintypmax {
     pub nodes: (Symbol, Paren<MintypmaxExpression>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum EventControl {
     EventIdentifier(EventControlEventIdentifier),
     EventExpression(EventControlEventExpression),
@@ -49,32 +49,32 @@ pub enum EventControl {
     SequenceIdentifier(EventControlSequenceIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EventControlEventIdentifier {
     pub nodes: (Symbol, HierarchicalEventIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EventControlEventExpression {
     pub nodes: (Symbol, Paren<EventExpression>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EventControlAsterisk {
     pub nodes: (Symbol,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EventControlParenAsterisk {
     pub nodes: (Symbol, Paren<Symbol>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EventControlSequenceIdentifier {
     pub nodes: (Symbol, PsOrHierarchicalSequenceIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum EventExpression {
     Expression(Box<EventExpressionExpression>),
     Sequence(Box<EventExpressionSequence>),
@@ -83,7 +83,7 @@ pub enum EventExpression {
     Paren(Box<EventExpressionParen>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EventExpressionExpression {
     pub nodes: (
         Option<EdgeIdentifier>,
@@ -92,73 +92,73 @@ pub struct EventExpressionExpression {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EventExpressionSequence {
     pub nodes: (SequenceInstance, Option<(Keyword, Expression)>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EventExpressionOr {
     pub nodes: (EventExpression, Keyword, EventExpression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EventExpressionComma {
     pub nodes: (EventExpression, Symbol, EventExpression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EventExpressionParen {
     pub nodes: (Paren<EventExpression>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ProceduralTimingControl {
     DelayControl(DelayControl),
     EventControl(EventControl),
     CycleDelay(CycleDelay),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum JumpStatement {
     Return(JumpStatementReturn),
     Break(JumpStatementBreak),
     Continue(JumpStatementContinue),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct JumpStatementReturn {
     pub nodes: (Keyword, Option<Expression>, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct JumpStatementBreak {
     pub nodes: (Keyword, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct JumpStatementContinue {
     pub nodes: (Keyword, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum WaitStatement {
     Wait(WaitStatementWait),
     Fork(WaitStatementFork),
     Order(WaitStatementOrder),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct WaitStatementWait {
     pub nodes: (Keyword, Paren<Expression>, StatementOrNull),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct WaitStatementFork {
     pub nodes: (Keyword, Keyword, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct WaitStatementOrder {
     pub nodes: (
         Keyword,
@@ -167,18 +167,18 @@ pub struct WaitStatementOrder {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum EventTrigger {
     Named(EventTriggerNamed),
     Nonblocking(EventTriggerNonblocking),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EventTriggerNamed {
     pub nodes: (Symbol, HierarchicalEventIdentifier, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EventTriggerNonblocking {
     pub nodes: (
         Symbol,
@@ -188,24 +188,24 @@ pub struct EventTriggerNonblocking {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum DisableStatement {
     Task(DisableStatementTask),
     Block(DisableStatementBlock),
     Fork(DisableStatementFork),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DisableStatementTask {
     pub nodes: (Keyword, HierarchicalTaskIdentifier, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DisableStatementBlock {
     pub nodes: (Keyword, HierarchicalBlockIdentifier, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DisableStatementFork {
     pub nodes: (Keyword, Keyword, Symbol),
 }

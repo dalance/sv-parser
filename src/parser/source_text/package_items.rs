@@ -8,7 +8,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PackageItem {
     PackageOrGenerateItemDeclaration(PackageOrGenerateItemDeclaration),
     AnonymousProgram(AnonymousProgram),
@@ -16,7 +16,7 @@ pub enum PackageItem {
     TimeunitsDeclaration(TimeunitsDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PackageOrGenerateItemDeclaration {
     NetDeclaration(NetDeclaration),
     DataDeclaration(DataDeclaration),
@@ -34,7 +34,7 @@ pub enum PackageOrGenerateItemDeclaration {
     Empty(Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct AnonymousProgram {
     pub nodes: (
         Keyword,
@@ -44,7 +44,7 @@ pub struct AnonymousProgram {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum AnonymousProgramItem {
     TaskDeclaration(TaskDeclaration),
     FunctionDeclaration(FunctionDeclaration),

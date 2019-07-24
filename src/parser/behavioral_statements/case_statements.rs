@@ -8,14 +8,14 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum CaseStatement {
     Normal(CaseStatementNormal),
     Matches(CaseStatementMatches),
     Inside(CaseStatementInside),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CaseStatementNormal {
     pub nodes: (
         Option<UniquePriority>,
@@ -27,7 +27,7 @@ pub struct CaseStatementNormal {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CaseStatementMatches {
     pub nodes: (
         Option<UniquePriority>,
@@ -40,7 +40,7 @@ pub struct CaseStatementMatches {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CaseStatementInside {
     pub nodes: (
         Option<UniquePriority>,
@@ -53,41 +53,41 @@ pub struct CaseStatementInside {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum CaseKeyword {
     Case(Keyword),
     Casez(Keyword),
     Casex(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CaseExpression {
     pub nodes: (Expression,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum CaseItem {
     NonDefault(CaseItemNondefault),
     Default(CaseItemDefault),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CaseItemNondefault {
     pub nodes: (List<Symbol, CaseItemExpression>, Symbol, StatementOrNull),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CaseItemDefault {
     pub nodes: (Keyword, Option<Symbol>, StatementOrNull),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum CasePatternItem {
     NonDefault(CasePatternItemNondefault),
     Default(CaseItemDefault),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CasePatternItemNondefault {
     pub nodes: (
         Pattern,
@@ -97,38 +97,38 @@ pub struct CasePatternItemNondefault {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum CaseInsideItem {
     NonDefault(CaseInsideItemNondefault),
     Default(CaseItemDefault),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CaseInsideItemNondefault {
     pub nodes: (OpenRangeList, Symbol, StatementOrNull),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CaseItemExpression {
     pub nodes: (Expression,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct RandcaseStatement {
     pub nodes: (Keyword, RandcaseItem, Vec<RandcaseItem>, Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct RandcaseItem {
     pub nodes: (Expression, Symbol, StatementOrNull),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct OpenRangeList {
     pub nodes: (List<Symbol, OpenValueRange>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct OpenValueRange {
     pub nodes: (ValueRange,),
 }

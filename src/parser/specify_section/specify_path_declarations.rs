@@ -7,30 +7,30 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PathDeclaration {
     SimplePathDeclaration((SimplePathDeclaration, Symbol)),
     EdgeSensitivePathDeclaration((EdgeSensitivePathDeclaration, Symbol)),
     StateDependentPathDeclaration((StateDependentPathDeclaration, Symbol)),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum SimplePathDeclaration {
     Parallel(SimplePathDeclarationParallel),
     Full(SimplePathDeclarationFull),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SimplePathDeclarationParallel {
     pub nodes: (ParallelPathDescription, Symbol, PathDelayValue),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SimplePathDeclarationFull {
     pub nodes: (FullPathDescription, Symbol, PathDelayValue),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ParallelPathDescription {
     pub nodes: (
         Paren<(
@@ -42,7 +42,7 @@ pub struct ParallelPathDescription {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct FullPathDescription {
     pub nodes: (
         Paren<(
@@ -54,12 +54,12 @@ pub struct FullPathDescription {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfPathInputs {
     pub nodes: (List<Symbol, SpecifyInputTerminalDescriptor>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfPathOutputs {
     pub nodes: (List<Symbol, SpecifyOutputTerminalDescriptor>,),
 }

@@ -7,12 +7,12 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SpecifyBlock {
     pub nodes: (Keyword, Vec<SpecifyItem>, Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum SpecifyItem {
     SpecparamDeclaration(SpecparamDeclaration),
     PulsestyleDeclaration(PulsestyleDeclaration),
@@ -21,12 +21,12 @@ pub enum SpecifyItem {
     SystemTimingCheck(SystemTimingCheck),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PulsestyleDeclaration {
     pub nodes: (Keyword, ListOfPathOutputs, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ShowcancelledDeclaration {
     pub nodes: (Keyword, ListOfPathOutputs, Symbol),
 }

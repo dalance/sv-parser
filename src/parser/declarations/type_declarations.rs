@@ -8,7 +8,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum DataDeclaration {
     Variable(DataDeclarationVariable),
     TypeDeclaration(TypeDeclaration),
@@ -16,7 +16,7 @@ pub enum DataDeclaration {
     NetTypeDeclaration(NetTypeDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DataDeclarationVariable {
     pub nodes: (
         Option<Const>,
@@ -28,12 +28,12 @@ pub struct DataDeclarationVariable {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct Const {
     pub nodes: (Keyword,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PackageImportDeclaration {
     pub nodes: (
         Keyword,
@@ -42,34 +42,34 @@ pub struct PackageImportDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PackageImportItem {
     Identifier(PackageImportItemIdentifier),
     Asterisk(PackageImportItemAsterisk),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PackageImportItemIdentifier {
     pub nodes: (PackageIdentifier, Symbol, Identifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PackageImportItemAsterisk {
     pub nodes: (PackageIdentifier, Symbol, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PackageExportDeclaration {
     Asterisk(PackageExportDeclarationAsterisk),
     Item(PackageExportDeclarationItem),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PackageExportDeclarationAsterisk {
     pub nodes: (Keyword, Symbol, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PackageExportDeclarationItem {
     pub nodes: (
         Keyword,
@@ -78,19 +78,19 @@ pub struct PackageExportDeclarationItem {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GenvarDeclaration {
     pub nodes: (Keyword, ListOfGenvarIdentifiers, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum NetDeclaration {
     NetType(NetDeclarationNetType),
     NetTypeIdentifier(NetDeclarationNetTypeIdentifier),
     Interconnect(NetDeclarationInterconnect),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NetDeclarationNetType {
     pub nodes: (
         NetType,
@@ -103,19 +103,19 @@ pub struct NetDeclarationNetType {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum Strength {
     Drive(DriveStrength),
     Charge(ChargeStrength),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum VectorScalar {
     Vectored(Keyword),
     Scalared(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NetDeclarationNetTypeIdentifier {
     pub nodes: (
         NetTypeIdentifier,
@@ -125,7 +125,7 @@ pub struct NetDeclarationNetTypeIdentifier {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NetDeclarationInterconnect {
     pub nodes: (
         Keyword,
@@ -138,14 +138,14 @@ pub struct NetDeclarationInterconnect {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum TypeDeclaration {
     DataType(TypeDeclarationDataType),
     Interface(TypeDeclarationInterface),
     Reserved(TypeDeclarationReserved),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TypeDeclarationDataType {
     pub nodes: (
         Keyword,
@@ -156,7 +156,7 @@ pub struct TypeDeclarationDataType {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TypeDeclarationInterface {
     pub nodes: (
         Keyword,
@@ -169,7 +169,7 @@ pub struct TypeDeclarationInterface {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TypeDeclarationReserved {
     pub nodes: (
         Keyword,
@@ -179,7 +179,7 @@ pub struct TypeDeclarationReserved {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum TypeDeclarationKeyword {
     Enum(Keyword),
     Struct(Keyword),
@@ -188,13 +188,13 @@ pub enum TypeDeclarationKeyword {
     InterfaceClass((Keyword, Keyword)),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum NetTypeDeclaration {
     DataType(NetTypeDeclarationDataType),
     NetType(NetTypeDeclarationNetType),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NetTypeDeclarationDataType {
     pub nodes: (
         Keyword,
@@ -209,7 +209,7 @@ pub struct NetTypeDeclarationDataType {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NetTypeDeclarationNetType {
     pub nodes: (
         Keyword,
@@ -220,7 +220,7 @@ pub struct NetTypeDeclarationNetType {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum Lifetime {
     Static(Keyword),
     Automatic(Keyword),

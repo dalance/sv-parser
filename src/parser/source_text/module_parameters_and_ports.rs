@@ -8,14 +8,14 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ParameterPortList {
     Assignment(ParameterPortListAssignment),
     Declaration(ParameterPortListDeclaration),
     Empty((Symbol, Symbol, Symbol)),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ParameterPortListAssignment {
     pub nodes: (
         Symbol,
@@ -29,7 +29,7 @@ pub struct ParameterPortListAssignment {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ParameterPortListDeclaration {
     pub nodes: (
         Symbol,
@@ -37,7 +37,7 @@ pub struct ParameterPortListDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ParameterPortDeclaration {
     ParameterDeclaration(ParameterDeclaration),
     LocalParameterDeclaration(LocalParameterDeclaration),
@@ -45,29 +45,29 @@ pub enum ParameterPortDeclaration {
     TypeList(ParameterPortDeclarationTypeList),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ParameterPortDeclarationParamList {
     pub nodes: (DataType, ListOfParamAssignments),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ParameterPortDeclarationTypeList {
     pub nodes: (Keyword, ListOfTypeAssignments),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfPorts {
     pub nodes: (Paren< List<Symbol, Port>>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ListOfPortDeclarations {
     pub nodes: (
         Paren< Option<List<Symbol, (Vec<AttributeInstance>, AnsiPortDeclaration)>>>,
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PortDeclaration {
     Inout(PortDeclarationInout),
     Input(PortDeclarationInput),
@@ -76,43 +76,43 @@ pub enum PortDeclaration {
     Interface(PortDeclarationInterface),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PortDeclarationInout {
     pub nodes: (Vec<AttributeInstance>, InoutDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PortDeclarationInput {
     pub nodes: (Vec<AttributeInstance>, InputDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PortDeclarationOutput {
     pub nodes: (Vec<AttributeInstance>, OutputDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PortDeclarationRef {
     pub nodes: (Vec<AttributeInstance>, RefDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PortDeclarationInterface {
     pub nodes: (Vec<AttributeInstance>, InterfacePortDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum Port {
     NonNamed(PortNonNamed),
     Named(PortNamed),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PortNonNamed {
     pub nodes: (Option<PortExpression>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PortNamed {
     pub nodes: (
         Symbol,
@@ -121,23 +121,23 @@ pub struct PortNamed {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PortExpression {
     PortReference(PortReference),
     Brace(PortExpressionBrace),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PortExpressionBrace {
     pub nodes: (Brace< List<Symbol, PortReference>>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PortReference {
     pub nodes: (PortIdentifier, ConstantSelect),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PortDirection {
     Input(Keyword),
     Output(Keyword),
@@ -145,23 +145,23 @@ pub enum PortDirection {
     Ref(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NetPortHeader {
     pub nodes: (Option<PortDirection>, NetPortType),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct VariablePortHeader {
     pub nodes: (Option<PortDirection>, VariablePortType),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum InterfacePortHeader {
     Identifier(InterfacePortHeaderIdentifier),
     Interface(InterfacePortHeaderInterface),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InterfacePortHeaderIdentifier {
     pub nodes: (
         InterfaceIdentifier,
@@ -169,24 +169,24 @@ pub struct InterfacePortHeaderIdentifier {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InterfacePortHeaderInterface {
     pub nodes: (Keyword, Option<(Symbol, ModportIdentifier)>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum NetPortHeaderOrInterfacePortHeader {
     NetPortHeader(NetPortHeader),
     InterfacePortHeader(InterfacePortHeader),
 }
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum AnsiPortDeclaration {
     Net(AnsiPortDeclarationNet),
     Variable(AnsiPortDeclarationVariable),
     Paren(AnsiPortDeclarationParen),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct AnsiPortDeclarationNet {
     pub nodes: (
         Option<NetPortHeaderOrInterfacePortHeader>,
@@ -196,7 +196,7 @@ pub struct AnsiPortDeclarationNet {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct AnsiPortDeclarationVariable {
     pub nodes: (
         Option<VariablePortHeader>,
@@ -206,7 +206,7 @@ pub struct AnsiPortDeclarationVariable {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct AnsiPortDeclarationParen {
     pub nodes: (
         Option<PortDirection>,

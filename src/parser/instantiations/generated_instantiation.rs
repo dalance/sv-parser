@@ -8,12 +8,12 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GenerateRegion {
     pub nodes: (Keyword, Vec<GenerateItem>, Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct LoopGenerateConstruct {
     pub nodes: (
         Keyword,
@@ -31,7 +31,7 @@ pub struct LoopGenerateConstruct {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GenvarInitialization {
     pub nodes: (
         Option<Genvar>,
@@ -41,19 +41,19 @@ pub struct GenvarInitialization {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct Genvar {
     pub nodes: (Keyword,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum GenvarIteration {
     Assignment(GenvarIterationAssignment),
     Prefix(GenvarIterationPrefix),
     Suffix(GenvarIterationSuffix),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GenvarIterationAssignment {
     pub nodes: (
         GenvarIdentifier,
@@ -62,23 +62,23 @@ pub struct GenvarIterationAssignment {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GenvarIterationPrefix {
     pub nodes: (IncOrDecOperator, GenvarIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GenvarIterationSuffix {
     pub nodes: (GenvarIdentifier, IncOrDecOperator),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ConditionalGenerateConstruct {
     If(IfGenerateConstruct),
     Case(CaseGenerateConstruct),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct IfGenerateConstruct {
     pub nodes: (
         Keyword,
@@ -88,7 +88,7 @@ pub struct IfGenerateConstruct {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CaseGenerateConstruct {
     pub nodes: (
         Keyword,
@@ -98,13 +98,13 @@ pub struct CaseGenerateConstruct {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum CaseGenerateItem {
     Nondefault(CaseGenerateItemNondefault),
     Default(CaseGenerateItemDefault),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CaseGenerateItemNondefault {
     pub nodes: (
         List<Symbol, ConstantExpression>,
@@ -113,18 +113,18 @@ pub struct CaseGenerateItemNondefault {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CaseGenerateItemDefault {
     pub nodes: (Keyword, Option<Symbol>, GenerateBlock),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum GenerateBlock {
     GenerateItem(GenerateItem),
     Multiple(GenerateBlockMultiple),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GenerateBlockMultiple {
     pub nodes: (
         Option<(GenerateBlockIdentifier, Symbol)>,
@@ -136,7 +136,7 @@ pub struct GenerateBlockMultiple {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum GenerateItem {
     ModuleOrGenerateItem(ModuleOrGenerateItem),
     InterfaceOrGenerateItem(InterfaceOrGenerateItem),

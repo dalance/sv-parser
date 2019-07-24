@@ -4,34 +4,27 @@ use nom::branch::*;
 use nom::combinator::*;
 use nom::multi::*;
 use nom::IResult;
+use nom_packrat::packrat_parser;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum IncOrDecExpression {
     Prefix(IncOrDecExpressionPrefix),
     Suffix(IncOrDecExpressionSuffix),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct IncOrDecExpressionPrefix {
-    pub nodes: (
-        IncOrDecOperator,
-        Vec<AttributeInstance>,
-        VariableLvalue,
-    ),
+    pub nodes: (IncOrDecOperator, Vec<AttributeInstance>, VariableLvalue),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct IncOrDecExpressionSuffix {
-    pub nodes: (
-        VariableLvalue,
-        Vec<AttributeInstance>,
-        IncOrDecOperator,
-    ),
+    pub nodes: (VariableLvalue, Vec<AttributeInstance>, IncOrDecOperator),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConditionalExpression {
     pub nodes: (
         CondPredicate,
@@ -43,7 +36,7 @@ pub struct ConditionalExpression {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ConstantExpression {
     ConstantPrimary(Box<ConstantPrimary>),
     Unary(Box<ConstantExpressionUnary>),
@@ -51,16 +44,12 @@ pub enum ConstantExpression {
     Ternary(Box<ConstantExpressionTernary>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantExpressionUnary {
-    pub nodes: (
-        UnaryOperator,
-        Vec<AttributeInstance>,
-        ConstantPrimary,
-    ),
+    pub nodes: (UnaryOperator, Vec<AttributeInstance>, ConstantPrimary),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantExpressionBinary {
     pub nodes: (
         ConstantExpression,
@@ -70,7 +59,7 @@ pub struct ConstantExpressionBinary {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantExpressionTernary {
     pub nodes: (
         ConstantExpression,
@@ -82,13 +71,13 @@ pub struct ConstantExpressionTernary {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ConstantMintypmaxExpression {
     Unary(ConstantExpression),
     Ternary(ConstantMintypmaxExpressionTernary),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantMintypmaxExpressionTernary {
     pub nodes: (
         ConstantExpression,
@@ -99,43 +88,43 @@ pub struct ConstantMintypmaxExpressionTernary {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ConstantParamExpression {
     ConstantMintypmaxExpression(ConstantMintypmaxExpression),
     DataType(DataType),
     Dollar(Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ParamExpression {
     MintypmaxExpression(MintypmaxExpression),
     DataType(Box<DataType>),
     Dollar(Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ConstantRangeExpression {
     ConstantExpression(ConstantExpression),
     ConstantPartSelectRange(ConstantPartSelectRange),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ConstantPartSelectRange {
     ConstantRange(ConstantRange),
     ConstantIndexedRange(ConstantIndexedRange),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantRange {
     pub nodes: (ConstantExpression, Symbol, ConstantExpression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstantIndexedRange {
     pub nodes: (ConstantExpression, Symbol, ConstantExpression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum Expression {
     Primary(Box<Primary>),
     Unary(Box<ExpressionUnary>),
@@ -147,17 +136,17 @@ pub enum Expression {
     TaggedUnionExpression(Box<TaggedUnionExpression>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ExpressionUnary {
     pub nodes: (UnaryOperator, Vec<AttributeInstance>, Primary),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ExpressionOperatorAssignment {
-    pub nodes: (Paren< OperatorAssignment>,),
+    pub nodes: (Paren<OperatorAssignment>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ExpressionBinary {
     pub nodes: (
         Expression,
@@ -167,45 +156,39 @@ pub struct ExpressionBinary {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TaggedUnionExpression {
     pub nodes: (Keyword, MemberIdentifier, Option<Expression>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InsideExpression {
-    pub nodes: (Expression, Keyword, Brace< OpenRangeList>),
+    pub nodes: (Expression, Keyword, Brace<OpenRangeList>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ValueRange {
     Expression(Expression),
     Binary(ValueRangeBinary),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ValueRangeBinary {
-    pub nodes: (Bracket< (Expression, Symbol, Expression)>,),
+    pub nodes: (Bracket<(Expression, Symbol, Expression)>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum MintypmaxExpression {
     Expression(Expression),
     Ternary(MintypmaxExpressionTernary),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct MintypmaxExpressionTernary {
-    pub nodes: (
-        Expression,
-        Symbol,
-        Expression,
-        Symbol,
-        Expression,
-    ),
+    pub nodes: (Expression, Symbol, Expression, Symbol, Expression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModulePathConditionalExpression {
     pub nodes: (
         ModulePathExpression,
@@ -217,7 +200,7 @@ pub struct ModulePathConditionalExpression {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ModulePathExpression {
     ModulePathPrimary(Box<ModulePathPrimary>),
     Unary(Box<ModulePathExpressionUnary>),
@@ -225,7 +208,7 @@ pub enum ModulePathExpression {
     ModulePathConditionalExpression(Box<ModulePathConditionalExpression>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModulePathExpressionUnary {
     pub nodes: (
         UnaryModulePathOperator,
@@ -234,7 +217,7 @@ pub struct ModulePathExpressionUnary {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModulePathExpressionBinary {
     pub nodes: (
         ModulePathExpression,
@@ -244,13 +227,13 @@ pub struct ModulePathExpressionBinary {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ModulePathMintypmaxExpression {
     ModulePathExpression(ModulePathExpression),
     Ternary(ModulePathMintypmaxExpressionTernary),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModulePathMintypmaxExpressionTernary {
     pub nodes: (
         ModulePathExpression,
@@ -261,25 +244,25 @@ pub struct ModulePathMintypmaxExpressionTernary {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PartSelectRange {
     ConstantRange(ConstantRange),
     IndexedRange(IndexedRange),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct IndexedRange {
     pub nodes: (Expression, Symbol, ConstantExpression),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GenvarExpression {
     pub nodes: (ConstantExpression,),
 }
 
 // -----------------------------------------------------------------------------
 
-#[parser(Memoize)]
+#[parser]
 pub fn inc_or_dec_expression(s: Span) -> IResult<Span, IncOrDecExpression> {
     alt((inc_or_dec_expression_prefix, inc_or_dec_expression_suffix))(s)
 }
@@ -306,7 +289,7 @@ pub fn inc_or_dec_expression_suffix(s: Span) -> IResult<Span, IncOrDecExpression
     ))
 }
 
-#[parser(MaybeRecursive, Memoize)]
+#[parser(MaybeRecursive)]
 pub fn conditional_expression(s: Span) -> IResult<Span, ConditionalExpression> {
     let (s, a) = cond_predicate(s)?;
     let (s, b) = symbol("?")(s)?;
@@ -322,7 +305,8 @@ pub fn conditional_expression(s: Span) -> IResult<Span, ConditionalExpression> {
     ))
 }
 
-#[parser(Memoize)]
+#[packrat_parser]
+#[parser]
 pub fn constant_expression(s: Span) -> IResult<Span, ConstantExpression> {
     alt((
         constant_expression_unary,
@@ -334,7 +318,7 @@ pub fn constant_expression(s: Span) -> IResult<Span, ConstantExpression> {
     ))(s)
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn constant_expression_unary(s: Span) -> IResult<Span, ConstantExpression> {
     let (s, a) = unary_operator(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
@@ -345,7 +329,7 @@ pub fn constant_expression_unary(s: Span) -> IResult<Span, ConstantExpression> {
     ))
 }
 
-#[parser(MaybeRecursive, Memoize)]
+#[parser(MaybeRecursive)]
 pub fn constant_expression_binary(s: Span) -> IResult<Span, ConstantExpression> {
     let (s, a) = constant_expression(s)?;
     let (s, b) = binary_operator(s)?;
@@ -359,7 +343,7 @@ pub fn constant_expression_binary(s: Span) -> IResult<Span, ConstantExpression> 
     ))
 }
 
-#[parser(MaybeRecursive, Memoize)]
+#[parser(MaybeRecursive)]
 pub fn constant_expression_ternary(s: Span) -> IResult<Span, ConstantExpression> {
     let (s, a) = constant_expression(s)?;
     let (s, b) = symbol("?")(s)?;
@@ -464,7 +448,8 @@ pub fn constant_indexed_range(s: Span) -> IResult<Span, ConstantIndexedRange> {
     Ok((s, ConstantIndexedRange { nodes: (a, b, c) }))
 }
 
-#[parser(Memoize)]
+#[packrat_parser]
+#[parser]
 pub fn expression(s: Span) -> IResult<Span, Expression> {
     alt((
         expression_unary,
@@ -486,7 +471,7 @@ pub fn expression(s: Span) -> IResult<Span, Expression> {
     ))(s)
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn expression_unary(s: Span) -> IResult<Span, Expression> {
     let (s, x) = unary_operator(s)?;
     let (s, y) = many0(attribute_instance)(s)?;
@@ -497,7 +482,7 @@ pub fn expression_unary(s: Span) -> IResult<Span, Expression> {
     ))
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn expression_operator_assignment(s: Span) -> IResult<Span, Expression> {
     let (s, a) = paren(operator_assignment)(s)?;
     Ok((
@@ -506,7 +491,7 @@ pub fn expression_operator_assignment(s: Span) -> IResult<Span, Expression> {
     ))
 }
 
-#[parser(MaybeRecursive, Memoize)]
+#[parser(MaybeRecursive)]
 pub fn expression_binary(s: Span) -> IResult<Span, Expression> {
     let (s, a) = expression(s)?;
     let (s, b) = binary_operator(s)?;
@@ -520,7 +505,7 @@ pub fn expression_binary(s: Span) -> IResult<Span, Expression> {
     ))
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn tagged_union_expression(s: Span) -> IResult<Span, TaggedUnionExpression> {
     let (s, a) = keyword("tagged")(s)?;
     let (s, b) = member_identifier(s)?;
@@ -528,7 +513,7 @@ pub fn tagged_union_expression(s: Span) -> IResult<Span, TaggedUnionExpression> 
     Ok((s, TaggedUnionExpression { nodes: (a, b, c) }))
 }
 
-#[parser(MaybeRecursive, Memoize)]
+#[parser(MaybeRecursive)]
 pub fn inside_expression(s: Span) -> IResult<Span, InsideExpression> {
     let (s, a) = expression(s)?;
     let (s, b) = keyword("inside")(s)?;

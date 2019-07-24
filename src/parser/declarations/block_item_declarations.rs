@@ -6,7 +6,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum BlockItemDeclaration {
     Data(BlockItemDeclarationData),
     LocalParameter(BlockItemDeclarationLocalParameter),
@@ -14,12 +14,12 @@ pub enum BlockItemDeclaration {
     Let(BlockItemDeclarationLet),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct BlockItemDeclarationData {
     pub nodes: (Vec<AttributeInstance>, DataDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct BlockItemDeclarationLocalParameter {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -28,7 +28,7 @@ pub struct BlockItemDeclarationLocalParameter {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct BlockItemDeclarationParameter {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -37,7 +37,7 @@ pub struct BlockItemDeclarationParameter {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct BlockItemDeclarationLet {
     pub nodes: (Vec<AttributeInstance>, LetDeclaration),
 }

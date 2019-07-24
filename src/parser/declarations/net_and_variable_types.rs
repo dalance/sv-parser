@@ -8,7 +8,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum CastingType {
     SimpleType(Box<SimpleType>),
     ConstantPrimary(Box<ConstantPrimary>),
@@ -17,7 +17,7 @@ pub enum CastingType {
     Const(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum DataType {
     Vector(DataTypeVector),
     Atom(DataTypeAtom),
@@ -34,17 +34,17 @@ pub enum DataType {
     TypeReference(Box<TypeReference>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DataTypeVector {
     pub nodes: (IntegerVectorType, Option<Signing>, Vec<PackedDimension>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DataTypeAtom {
     pub nodes: (IntegerAtomType, Option<Signing>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DataTypeStructUnion {
     pub nodes: (
         StructUnion,
@@ -54,12 +54,12 @@ pub struct DataTypeStructUnion {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct Packed {
     pub nodes: (Keyword,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DataTypeEnum {
     pub nodes: (
         Keyword,
@@ -69,7 +69,7 @@ pub struct DataTypeEnum {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DataTypeVirtual {
     pub nodes: (
         Keyword,
@@ -80,12 +80,12 @@ pub struct DataTypeVirtual {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct Interface {
     pub nodes: (Keyword,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DataTypeType {
     pub nodes: (
         Option<PackageScopeOrClassScope>,
@@ -94,40 +94,40 @@ pub struct DataTypeType {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum DataTypeOrImplicit {
     DataType(DataType),
     ImplicitDataType(ImplicitDataType),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ImplicitDataType {
     pub nodes: (Option<Signing>, Vec<PackedDimension>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum EnumBaseType {
     Atom(EnumBaseTypeAtom),
     Vector(EnumBaseTypeVector),
     Type(EnumBaseTypeType),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EnumBaseTypeAtom {
     pub nodes: (IntegerAtomType, Option<Signing>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EnumBaseTypeVector {
     pub nodes: (IntegerVectorType, Option<Signing>, Option<PackedDimension>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EnumBaseTypeType {
     pub nodes: (TypeIdentifier, Option<PackedDimension>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EnumNameDeclaration {
     pub nodes: (
         EnumIdentifier,
@@ -136,12 +136,12 @@ pub struct EnumNameDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassScope {
     pub nodes: (ClassType, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassType {
     pub nodes: (
         PsClassIdentifier,
@@ -150,13 +150,13 @@ pub struct ClassType {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum IntegerType {
     IntegerVectorType(IntegerVectorType),
     IntegerAtomType(IntegerAtomType),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum IntegerAtomType {
     Byte(Keyword),
     Shortint(Keyword),
@@ -166,21 +166,21 @@ pub enum IntegerAtomType {
     Time(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum IntegerVectorType {
     Bit(Keyword),
     Logic(Keyword),
     Reg(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum NonIntegerType {
     Shortreal(Keyword),
     Real(Keyword),
     Realtime(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum NetType {
     Supply0(Keyword),
     Supply1(Keyword),
@@ -196,46 +196,46 @@ pub enum NetType {
     Wor(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum NetPortType {
     DataType(NetPortTypeDataType),
     NetTypeIdentifier(NetTypeIdentifier),
     Interconnect(NetPortTypeInterconnect),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NetPortTypeDataType {
     pub nodes: (Option<NetType>, DataTypeOrImplicit),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NetPortTypeInterconnect {
     pub nodes: (Keyword, ImplicitDataType),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct VariablePortType {
     pub nodes: (VarDataType,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum VarDataType {
     DataType(DataType),
     Var(VarDataTypeVar),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct VarDataTypeVar {
     pub nodes: (Keyword, DataTypeOrImplicit),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum Signing {
     Signed(Keyword),
     Unsigned(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum SimpleType {
     IntegerType(IntegerType),
     NonIntegerType(NonIntegerType),
@@ -243,7 +243,7 @@ pub enum SimpleType {
     PsParameterIdentifier(PsParameterIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct StructUnionMember {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -254,31 +254,31 @@ pub struct StructUnionMember {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum DataTypeOrVoid {
     DataType(DataType),
     Void(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum StructUnion {
     Struct(Keyword),
     Union(Keyword),
     UnionTagged((Keyword, Keyword)),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum TypeReference {
     Expression(TypeReferenceExpression),
     DataType(TypeReferenceDataType),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TypeReferenceExpression {
     pub nodes: (Keyword, Paren<Expression>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TypeReferenceDataType {
     pub nodes: (Keyword, Paren<DataType>),
 }
@@ -638,7 +638,7 @@ pub fn struct_union(s: Span) -> IResult<Span, StructUnion> {
     ))(s)
 }
 
-#[parser(Memoize)]
+#[parser]
 pub fn type_reference(s: Span) -> IResult<Span, TypeReference> {
     alt((type_reference_expression, type_reference_data_type))(s)
 }

@@ -17,9 +17,11 @@ trace = []
 
 [dependencies]
 nom = "5.0.0"
-nom_locate = { git = "https://github.com/fflorent/nom_locate" }
+#nom_locate = { git = "https://github.com/fflorent/nom_locate" }
+nom_locate = { path = "../nom_locate" }
 str-concat = "*"
 sv-parser-macro = { path = "./sv-parser-macro" }
+nom-packrat = { path = "../nom-packrat/nom-packrat" }
 
 [build-dependencies]
 walkdir = "2"

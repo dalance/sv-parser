@@ -7,6 +7,7 @@ use nom::error::*;
 use nom::multi::*;
 use nom::sequence::*;
 use nom::{Err, IResult};
+use nom_packrat::packrat_parser;
 
 // -----------------------------------------------------------------------------
 
@@ -14,142 +15,142 @@ pub const AZ_: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
 pub const AZ09_: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
 pub const AZ09_DOLLAR: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$";
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ArrayIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct BlockIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct BinIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CIdentifier {
     pub nodes: (Locate, Vec<WhiteSpace>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CellIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CheckerIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassVariableIdentifier {
     pub nodes: (VariableIdentifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClockingIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConfigIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ConstraintIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CovergroupIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CovergroupVariableIdentifier {
     pub nodes: (VariableIdentifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CoverPointIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CrossIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DynamicArrayVariableIdentifier {
     pub nodes: (VariableIdentifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EnumIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EscapedIdentifier {
     pub nodes: (Locate, Vec<WhiteSpace>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct FormalIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct FormalPortIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct FunctionIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GenerateBlockIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GenvarIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct HierarchicalArrayIdentifier {
     pub nodes: (HierarchicalIdentifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct HierarchicalBlockIdentifier {
     pub nodes: (HierarchicalIdentifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct HierarchicalEventIdentifier {
     pub nodes: (HierarchicalIdentifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct HierarchicalIdentifier {
     pub nodes: (
         Option<Root>,
@@ -158,189 +159,189 @@ pub struct HierarchicalIdentifier {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct Root {
     pub nodes: (Keyword, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct HierarchicalNetIdentifier {
     pub nodes: (HierarchicalIdentifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct HierarchicalParameterIdentifier {
     pub nodes: (HierarchicalIdentifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct HierarchicalPropertyIdentifier {
     pub nodes: (HierarchicalIdentifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct HierarchicalSequenceIdentifier {
     pub nodes: (HierarchicalIdentifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct HierarchicalTaskIdentifier {
     pub nodes: (HierarchicalIdentifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct HierarchicalTfIdentifier {
     pub nodes: (HierarchicalIdentifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct HierarchicalVariableIdentifier {
     pub nodes: (HierarchicalIdentifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum Identifier {
     SimpleIdentifier(SimpleIdentifier),
     EscapedIdentifier(EscapedIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct IndexVariableIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InterfaceIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InterfaceInstanceIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InoutPortIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InputPortIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InstanceIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct LibraryIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct MemberIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct MethodIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModportIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModuleIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NetIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NetTypeIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct OutputPortIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PackageIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PackageScope {
     Package(PackageScopePackage),
     Unit(Unit),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PackageScopePackage {
     pub nodes: (PackageIdentifier, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct Unit {
     pub nodes: (Keyword, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ParameterIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PortIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ProductionIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ProgramIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PropertyIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PsClassIdentifier {
     pub nodes: (Option<PackageScope>, ClassIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PsCovergroupIdentifier {
     pub nodes: (Option<PackageScope>, CovergroupIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PsCheckerIdentifier {
     pub nodes: (Option<PackageScope>, CheckerIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PsIdentifier {
     pub nodes: (Option<PackageScope>, Identifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PsOrHierarchicalArrayIdentifier {
     pub nodes: (
         Option<ImplicitClassHandleOrClassScopeOrPackageScope>,
@@ -348,82 +349,82 @@ pub struct PsOrHierarchicalArrayIdentifier {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PsOrHierarchicalNetIdentifier {
     PackageScope(PsOrHierarchicalNetIdentifierPackageScope),
     HierarchicalNetIdentifier(HierarchicalNetIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PsOrHierarchicalNetIdentifierPackageScope {
     pub nodes: (Option<PackageScope>, NetIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PsOrHierarchicalNetIdentifierHierarchical {
     pub nodes: (HierarchicalNetIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PsOrHierarchicalPropertyIdentifier {
     PackageScope(PsOrHierarchicalPropertyIdentifierPackageScope),
     HierarchicalPropertyIdentifier(HierarchicalPropertyIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PsOrHierarchicalPropertyIdentifierPackageScope {
     pub nodes: (Option<PackageScope>, PropertyIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PsOrHierarchicalPropertyIdentifierHierarchical {
     pub nodes: (HierarchicalPropertyIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PsOrHierarchicalSequenceIdentifier {
     PackageScope(PsOrHierarchicalSequenceIdentifierPackageScope),
     HierarchicalSequenceIdentifier(HierarchicalSequenceIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PsOrHierarchicalSequenceIdentifierPackageScope {
     pub nodes: (Option<PackageScope>, SequenceIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PsOrHierarchicalSequenceIdentifierHierarchical {
     pub nodes: (HierarchicalSequenceIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PsOrHierarchicalTfIdentifier {
     PackageScope(PsOrHierarchicalTfIdentifierPackageScope),
     HierarchicalTfIdentifier(HierarchicalTfIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PsOrHierarchicalTfIdentifierPackageScope {
     pub nodes: (Option<PackageScope>, TfIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PsOrHierarchicalTfIdentifierHierarchical {
     pub nodes: (HierarchicalTfIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PsParameterIdentifier {
     Scope(PsParameterIdentifierScope),
     Generate(PsParameterIdentifierGenerate),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PsParameterIdentifierScope {
     pub nodes: (Option<PackageScopeOrClassScope>, ParameterIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PsParameterIdentifierGenerate {
     pub nodes: (
         Vec<(
@@ -435,103 +436,103 @@ pub struct PsParameterIdentifierGenerate {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PsTypeIdentifier {
     pub nodes: (Option<LocalOrPackageScopeOrClassScope>, TypeIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum LocalOrPackageScopeOrClassScope {
     Local(Local),
     PackageScope(PackageScope),
     ClassScope(ClassScope),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct Local {
     pub nodes: (Keyword, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SequenceIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SignalIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SimpleIdentifier {
     pub nodes: (Locate, Vec<WhiteSpace>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SpecparamIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SystemTfIdentifier {
     pub nodes: (Locate, Vec<WhiteSpace>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TaskIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TfIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TerminalIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TopmoduleIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TypeIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UdpIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct VariableIdentifier {
     pub nodes: (Identifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ImplicitClassHandleOrClassScopeOrPackageScope {
     ImplicitClassHandle((ImplicitClassHandle, Symbol)),
     ClassScope(ClassScope),
     PackageScope(PackageScope),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ImplicitClassHandleOrPackageScope {
     ImplicitClassHandle((ImplicitClassHandle, Symbol)),
     PackageScope(PackageScope),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ImplicitClassHandleOrClassScope {
     ImplicitClassHandle((ImplicitClassHandle, Symbol)),
     ClassScope(ClassScope),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum PackageScopeOrClassScope {
     PackageScope(PackageScope),
     ClassScope(ClassScope),
@@ -725,6 +726,7 @@ pub fn hierarchical_event_identifier(s: Span) -> IResult<Span, HierarchicalEvent
     Ok((s, HierarchicalEventIdentifier { nodes: (a,) }))
 }
 
+#[packrat_parser]
 #[parser]
 pub fn hierarchical_identifier(s: Span) -> IResult<Span, HierarchicalIdentifier> {
     let (s, a) = opt(root)(s)?;
@@ -784,6 +786,7 @@ pub fn hierarchical_variable_identifier(s: Span) -> IResult<Span, HierarchicalVa
     Ok((s, HierarchicalVariableIdentifier { nodes: (a,) }))
 }
 
+#[packrat_parser]
 #[parser]
 pub fn identifier(s: Span) -> IResult<Span, Identifier> {
     alt((
@@ -1200,6 +1203,7 @@ pub fn udp_identifier(s: Span) -> IResult<Span, UdpIdentifier> {
     Ok((s, UdpIdentifier { nodes: (a,) }))
 }
 
+#[packrat_parser]
 #[parser]
 pub fn variable_identifier(s: Span) -> IResult<Span, VariableIdentifier> {
     let (s, a) = identifier(s)?;

@@ -7,12 +7,12 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModportDeclaration {
     pub nodes: (Keyword, List<Symbol, ModportItem>, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModportItem {
     pub nodes: (
         ModportIdentifier,
@@ -20,66 +20,66 @@ pub struct ModportItem {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ModportPortsDeclaraton {
     Simple(ModportPortsDeclaratonSimple),
     Tf(ModportPortsDeclaratonTf),
     Clocking(ModportPortsDeclaratonClocking),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModportPortsDeclaratonSimple {
     pub nodes: (Vec<AttributeInstance>, ModportSimplePortsDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModportPortsDeclaratonTf {
     pub nodes: (Vec<AttributeInstance>, ModportTfPortsDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModportPortsDeclaratonClocking {
     pub nodes: (Vec<AttributeInstance>, ModportClockingDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModportClockingDeclaration {
     pub nodes: (Keyword, ClockingIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModportSimplePortsDeclaration {
     pub nodes: (PortDirection, List<Symbol, ModportSimplePort>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ModportSimplePort {
     Ordered(ModportSimplePortOrdered),
     Named(ModportSimplePortNamed),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModportSimplePortOrdered {
     pub nodes: (PortIdentifier,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModportSimplePortNamed {
     pub nodes: (Symbol, PortIdentifier, Paren<Option<Expression>>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModportTfPortsDeclaration {
     pub nodes: (ImportExport, List<Symbol, ModportTfPort>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ModportTfPort {
     MethodPrototype(MethodPrototype),
     TfIdentifier(TfIdentifier),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ImportExport {
     Import(Keyword),
     Export(Keyword),

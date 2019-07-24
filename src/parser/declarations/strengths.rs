@@ -6,7 +6,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum DriveStrength {
     Strength01(DriveStrength01),
     Strength10(DriveStrength10),
@@ -16,37 +16,37 @@ pub enum DriveStrength {
     Strengthz1(DriveStrengthz1),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DriveStrength01 {
     pub nodes: (Paren<(Strength0, Symbol, Strength1)>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DriveStrength10 {
     pub nodes: (Paren<(Strength1, Symbol, Strength0)>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DriveStrength0z {
     pub nodes: (Paren<(Strength0, Symbol, Keyword)>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DriveStrength1z {
     pub nodes: (Paren<(Strength1, Symbol, Keyword)>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DriveStrengthz1 {
     pub nodes: (Paren<(Keyword, Symbol, Strength1)>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DriveStrengthz0 {
     pub nodes: (Paren<(Keyword, Symbol, Strength0)>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum Strength0 {
     Supply0(Keyword),
     Strong0(Keyword),
@@ -54,7 +54,7 @@ pub enum Strength0 {
     Weak0(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum Strength1 {
     Supply1(Keyword),
     Strong1(Keyword),
@@ -62,24 +62,24 @@ pub enum Strength1 {
     Weak1(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ChargeStrength {
     Small(ChargeStrengthSmall),
     Medium(ChargeStrengthMedium),
     Large(ChargeStrengthLarge),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ChargeStrengthSmall {
     pub nodes: (Paren<Keyword>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ChargeStrengthMedium {
     pub nodes: (Paren<Keyword>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ChargeStrengthLarge {
     pub nodes: (Paren<Keyword>,),
 }

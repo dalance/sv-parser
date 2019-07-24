@@ -7,7 +7,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum GateInstantiation {
     Cmos(GateInstantiationCmos),
     Enable(GateInstantiationEnable),
@@ -20,7 +20,7 @@ pub enum GateInstantiation {
     Pullup(GateInstantiationPullup),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GateInstantiationCmos {
     pub nodes: (
         CmosSwitchtype,
@@ -30,7 +30,7 @@ pub struct GateInstantiationCmos {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GateInstantiationEnable {
     pub nodes: (
         EnableGatetype,
@@ -41,7 +41,7 @@ pub struct GateInstantiationEnable {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GateInstantiationMos {
     pub nodes: (
         MosSwitchtype,
@@ -51,7 +51,7 @@ pub struct GateInstantiationMos {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GateInstantiationNInput {
     pub nodes: (
         NInputGatetype,
@@ -62,7 +62,7 @@ pub struct GateInstantiationNInput {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GateInstantiationNOutput {
     pub nodes: (
         NOutputGatetype,
@@ -73,7 +73,7 @@ pub struct GateInstantiationNOutput {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GateInstantiationPassEn {
     pub nodes: (
         PassEnSwitchtype,
@@ -83,7 +83,7 @@ pub struct GateInstantiationPassEn {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GateInstantiationPass {
     pub nodes: (
         PassSwitchtype,
@@ -92,7 +92,7 @@ pub struct GateInstantiationPass {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GateInstantiationPulldown {
     pub nodes: (
         Keyword,
@@ -102,7 +102,7 @@ pub struct GateInstantiationPulldown {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct GateInstantiationPullup {
     pub nodes: (
         Keyword,
@@ -112,7 +112,7 @@ pub struct GateInstantiationPullup {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CmosSwitchInstance {
     pub nodes: (
         Option<NameOfInstance>,
@@ -131,7 +131,7 @@ pub struct CmosSwitchInstance {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EnableGateInstance {
     pub nodes: (
         Option<NameOfInstance>,
@@ -148,7 +148,7 @@ pub struct EnableGateInstance {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct MosSwitchInstance {
     pub nodes: (
         Option<NameOfInstance>,
@@ -165,7 +165,7 @@ pub struct MosSwitchInstance {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NInputGateInstance {
     pub nodes: (
         Option<NameOfInstance>,
@@ -180,7 +180,7 @@ pub struct NInputGateInstance {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct NOutputGateInstance {
     pub nodes: (
         Option<NameOfInstance>,
@@ -195,7 +195,7 @@ pub struct NOutputGateInstance {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PassSwitchInstance {
     pub nodes: (
         Option<NameOfInstance>,
@@ -203,7 +203,7 @@ pub struct PassSwitchInstance {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PassEnableSwitchInstance {
     pub nodes: (
         Option<NameOfInstance>,
@@ -220,7 +220,7 @@ pub struct PassEnableSwitchInstance {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PullGateInstance {
     pub nodes: (Option<NameOfInstance>, Paren< OutputTerminal>),
 }

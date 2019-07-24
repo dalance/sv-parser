@@ -53,23 +53,29 @@ fn impl_node(ast: &DeriveInput) -> TokenStream {
 
     let gen = quote! {
         impl<'a> Node<'a> for #name {
-            fn next(&'a self) -> AnyNodes<'a> {
+            fn next(&'a self) -> RefNodes<'a> {
                 #next
             }
         }
 
-        impl<'a> From<&'a #name> for AnyNodes<'a>  {
+        impl<'a> From<&'a #name> for RefNodes<'a>  {
             fn from(x: &'a #name) -> Self {
-                vec![AnyNode::#name(x)].into()
+                vec![RefNode::#name(x)].into()
+            }
+        }
+
+        impl From<#name> for AnyNode  {
+            fn from(x: #name) -> Self {
+                AnyNode::#name(x)
             }
         }
 
         impl<'a> IntoIterator for &'a #name {
-            type Item = AnyNode<'a>;
+            type Item = RefNode<'a>;
             type IntoIter = Iter<'a>;
 
             fn into_iter(self) -> Self::IntoIter {
-                let nodes: AnyNodes = self.into();
+                let nodes: RefNodes = self.into();
                 Iter { next: nodes }
             }
         }
@@ -93,7 +99,45 @@ fn impl_any_node(ast: &DeriveInput) -> TokenStream {
     for v in &data.variants {
         let ident = &v.ident;
         let item = quote! {
-            AnyNode::#ident(x) => x.next(),
+            impl TryFrom<AnyNode> for #ident  {
+                type Error = ();
+                fn try_from(x: AnyNode) -> Result<Self, Self::Error> {
+                    match x {
+                        AnyNode::#ident(x) => Ok(x),
+                        _ => Err(()),
+                    }
+                }
+            }
+        };
+        items = quote! {
+            #items
+            #item
+        };
+    }
+
+    let gen = quote! {
+        #items
+    };
+    gen.into()
+}
+
+#[proc_macro_derive(RefNode)]
+pub fn ref_node_derive(input: TokenStream) -> TokenStream {
+    let ast = syn::parse(input).unwrap();
+    impl_ref_node(&ast)
+}
+
+fn impl_ref_node(ast: &DeriveInput) -> TokenStream {
+    let ref data = match ast.data {
+        Enum(ref data) => data,
+        _ => unreachable!(),
+    };
+
+    let mut items = quote! {};
+    for v in &data.variants {
+        let ident = &v.ident;
+        let item = quote! {
+            RefNode::#ident(x) => x.next(),
         };
         items = quote! {
             #items
@@ -104,7 +148,7 @@ fn impl_any_node(ast: &DeriveInput) -> TokenStream {
     let name = &ast.ident;
     let gen = quote! {
         impl<'a> #name<'a> {
-            fn next(&self) -> AnyNodes<'a> {
+            fn next(&self) -> RefNodes<'a> {
                 match self {
                     #items
                 }
@@ -122,7 +166,7 @@ pub fn parser(attr: TokenStream, item: TokenStream) -> TokenStream {
 }
 
 fn impl_parser(attr: &AttributeArgs, item: &ItemFn) -> TokenStream {
-    let (maybe_recursive, ambiguous, memoize) = impl_parser_attribute(attr);
+    let (maybe_recursive, ambiguous) = impl_parser_attribute(attr);
 
     let trace = impl_parser_trace(&item);
     let trace = parse_macro_input!(trace as Stmt);
@@ -147,27 +191,15 @@ fn impl_parser(attr: &AttributeArgs, item: &ItemFn) -> TokenStream {
     let clear_recursive_flags = parse_macro_input!(clear_recursive_flags as Expr);
     let clear_recursive_flags = Stmt::Expr(clear_recursive_flags);
 
-    let check_failed_memo = impl_parser_check_failed_memo(&item);
-    let check_failed_memo = parse_macro_input!(check_failed_memo as Stmt);
-
-    let set_failed_memo = impl_parser_set_failed_memo(&item);
-    let set_failed_memo = parse_macro_input!(set_failed_memo as Stmt);
-
     let mut item = item.clone();
 
     item.block.stmts.clear();
     item.block.stmts.push(trace);
-    if memoize {
-        item.block.stmts.push(check_failed_memo);
-    }
     if maybe_recursive {
         item.block.stmts.push(check_recursive_flag);
         item.block.stmts.push(set_recursive_flag);
     }
     item.block.stmts.push(body);
-    if memoize {
-        item.block.stmts.push(set_failed_memo);
-    }
     item.block.stmts.push(body_unwrap);
     item.block.stmts.push(clear_recursive_flags);
 
@@ -177,21 +209,19 @@ fn impl_parser(attr: &AttributeArgs, item: &ItemFn) -> TokenStream {
     gen.into()
 }
 
-fn impl_parser_attribute(attr: &AttributeArgs) -> (bool, bool, bool) {
+fn impl_parser_attribute(attr: &AttributeArgs) -> (bool, bool) {
     let mut maybe_recursive = false;
     let mut ambiguous = false;
-    let mut memoize = false;
 
     for a in attr {
         match a {
             NestedMeta::Meta(Meta::Word(x)) if x == "MaybeRecursive" => maybe_recursive = true,
             NestedMeta::Meta(Meta::Word(x)) if x == "Ambiguous" => ambiguous = true,
-            NestedMeta::Meta(Meta::Word(x)) if x == "Memoize" => memoize = true,
             _ => panic!(),
         }
     }
 
-    (maybe_recursive, ambiguous, memoize)
+    (maybe_recursive, ambiguous)
 }
 
 fn impl_parser_trace(item: &ItemFn) -> TokenStream {
@@ -322,54 +352,6 @@ fn impl_parser_body_unwrap(_item: &ItemFn) -> TokenStream {
 fn impl_parser_clear_recursive_flags(_item: &ItemFn) -> TokenStream {
     let gen = quote! {
         Ok((clear_recursive_flags(s), ret))
-    };
-    gen.into()
-}
-
-fn impl_parser_check_failed_memo(item: &ItemFn) -> TokenStream {
-    let ident = &item.ident;
-
-    let gen = quote! {
-        let offset = {
-            //if thread_context::FAILED_MEMO.with(|m| { m.borrow().get(&(stringify!(#ident), s.offset)).is_some() }) {
-            //    #[cfg(feature = "trace")]
-            //    println!("{:<128} : memoized failure", format!("{}{}", " ".repeat(s.extra.depth), stringify!(#ident)));
-            //    return Err(nom::Err::Error(nom::error::make_error(s, nom::error::ErrorKind::Fix)));
-            //}
-            if let Some(x) = thread_context::FAILED_MEMO.with(|m| { if let Some(x) = m.borrow().get(&(stringify!(#ident), s.offset)) { Some(*x) } else { None } }) {
-                if x {
-                    #[cfg(feature = "trace")]
-                    println!("{:<128} : memoized failure", format!("{}{}", " ".repeat(s.extra.depth), stringify!(#ident)));
-                    return Err(nom::Err::Error(nom::error::make_error(s, nom::error::ErrorKind::Fix)));
-                } else {
-                    #[cfg(feature = "trace")]
-                    println!("{:<128} : memoized success", format!("{}{}", " ".repeat(s.extra.depth), stringify!(#ident)));
-                }
-            }
-            s.offset
-        };
-    };
-    gen.into()
-}
-
-fn impl_parser_set_failed_memo(item: &ItemFn) -> TokenStream {
-    let ident = &item.ident;
-
-    let gen = quote! {
-        //if body_ret.is_err() {
-        //    thread_context::FAILED_MEMO.with(|m| {
-        //        m.borrow_mut().insert((stringify!(#ident), offset), ());
-        //    })
-        //}
-        if body_ret.is_err() {
-            thread_context::FAILED_MEMO.with(|m| {
-                m.borrow_mut().insert((stringify!(#ident), offset), true);
-            })
-        } else {
-            thread_context::FAILED_MEMO.with(|m| {
-                m.borrow_mut().insert((stringify!(#ident), offset), false);
-            })
-        }
     };
     gen.into()
 }

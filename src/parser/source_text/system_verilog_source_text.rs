@@ -8,12 +8,12 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SourceText {
     pub nodes: (Option<TimeunitsDeclaration>, Vec<Description>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum Description {
     ModuleDeclaration(ModuleDeclaration),
     UdpDeclaration(UdpDeclaration),
@@ -25,17 +25,17 @@ pub enum Description {
     ConfigDeclaration(ConfigDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DescriptionPackageItem {
     pub nodes: (Vec<AttributeInstance>, PackageItem),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct DescriptionBindDirective {
     pub nodes: (Vec<AttributeInstance>, BindDirective),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModuleNonansiHeader {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -49,7 +49,7 @@ pub struct ModuleNonansiHeader {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModuleAnsiHeader {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -63,7 +63,7 @@ pub struct ModuleAnsiHeader {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ModuleDeclaration {
     Nonansi(ModuleDeclarationNonansi),
     Ansi(ModuleDeclarationAnsi),
@@ -72,7 +72,7 @@ pub enum ModuleDeclaration {
     ExternAnsi(ModuleDeclarationExternAnsi),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModuleDeclarationNonansi {
     pub nodes: (
         ModuleNonansiHeader,
@@ -83,7 +83,7 @@ pub struct ModuleDeclarationNonansi {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModuleDeclarationAnsi {
     pub nodes: (
         ModuleAnsiHeader,
@@ -94,7 +94,7 @@ pub struct ModuleDeclarationAnsi {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModuleDeclarationWildcard {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -110,23 +110,23 @@ pub struct ModuleDeclarationWildcard {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModuleDeclarationExternNonansi {
     pub nodes: (Keyword, ModuleNonansiHeader),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ModuleDeclarationExternAnsi {
     pub nodes: (Keyword, ModuleAnsiHeader),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ModuleKeyword {
     Module(Keyword),
     Macromodule(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum InterfaceDeclaration {
     Nonansi(InterfaceDeclarationNonansi),
     Ansi(InterfaceDeclarationAnsi),
@@ -135,7 +135,7 @@ pub enum InterfaceDeclaration {
     ExternAnsi(InterfaceDeclarationExternAnsi),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InterfaceDeclarationNonansi {
     pub nodes: (
         InterfaceNonansiHeader,
@@ -146,7 +146,7 @@ pub struct InterfaceDeclarationNonansi {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InterfaceDeclarationAnsi {
     pub nodes: (
         InterfaceAnsiHeader,
@@ -157,7 +157,7 @@ pub struct InterfaceDeclarationAnsi {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InterfaceDeclarationWildcard {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -173,17 +173,17 @@ pub struct InterfaceDeclarationWildcard {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InterfaceDeclarationExternNonansi {
     pub nodes: (Keyword, InterfaceNonansiHeader),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InterfaceDeclarationExternAnsi {
     pub nodes: (Keyword, InterfaceAnsiHeader),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InterfaceNonansiHeader {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -197,7 +197,7 @@ pub struct InterfaceNonansiHeader {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InterfaceAnsiHeader {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -211,7 +211,7 @@ pub struct InterfaceAnsiHeader {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum ProgramDeclaration {
     Nonansi(ProgramDeclarationNonansi),
     Ansi(ProgramDeclarationAnsi),
@@ -220,7 +220,7 @@ pub enum ProgramDeclaration {
     ExternAnsi(ProgramDeclarationExternAnsi),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ProgramDeclarationNonansi {
     pub nodes: (
         ProgramNonansiHeader,
@@ -231,7 +231,7 @@ pub struct ProgramDeclarationNonansi {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ProgramDeclarationAnsi {
     pub nodes: (
         ProgramAnsiHeader,
@@ -242,7 +242,7 @@ pub struct ProgramDeclarationAnsi {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ProgramDeclarationWildcard {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -257,17 +257,17 @@ pub struct ProgramDeclarationWildcard {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ProgramDeclarationExternNonansi {
     pub nodes: (Keyword, ProgramNonansiHeader),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ProgramDeclarationExternAnsi {
     pub nodes: (Keyword, ProgramAnsiHeader),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ProgramNonansiHeader {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -281,7 +281,7 @@ pub struct ProgramNonansiHeader {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ProgramAnsiHeader {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -295,7 +295,7 @@ pub struct ProgramAnsiHeader {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CheckerDeclaration {
     pub nodes: (
         Keyword,
@@ -308,7 +308,7 @@ pub struct CheckerDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct ClassDeclaration {
     pub nodes: (
         Option<Virtual>,
@@ -329,17 +329,17 @@ pub struct ClassDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct Virtual {
     pub nodes: (Keyword,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InterfaceClassType {
     pub nodes: (PsClassIdentifier, Option<ParameterValueAssignment>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InterfaceClassDeclaration {
     pub nodes: (
         Keyword,
@@ -354,7 +354,7 @@ pub struct InterfaceClassDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum InterfaceClassItem {
     TypeDeclaration(TypeDeclaration),
     Method(InterfaceClassItemMethod),
@@ -363,17 +363,17 @@ pub enum InterfaceClassItem {
     Null(Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InterfaceClassItemMethod {
     pub nodes: (Vec<AttributeInstance>, InterfaceClassMethod),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InterfaceClassMethod {
     pub nodes: (Keyword, Keyword, MethodPrototype, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct PackageDeclaration {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -388,7 +388,7 @@ pub struct PackageDeclaration {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum TimeunitsDeclaration {
     Timeunit(TimeunitsDeclarationTimeunit),
     Timeprecision(TimeunitsDeclarationTimeprecision),
@@ -396,7 +396,7 @@ pub enum TimeunitsDeclaration {
     TimeprecisionTimeunit(TimeunitsDeclarationTimeprecisionTimeunit),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TimeunitsDeclarationTimeunit {
     pub nodes: (
         Keyword,
@@ -406,12 +406,12 @@ pub struct TimeunitsDeclarationTimeunit {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TimeunitsDeclarationTimeprecision {
     pub nodes: (Keyword, TimeLiteral, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TimeunitsDeclarationTimeunitTimeprecision {
     pub nodes: (
         Keyword,
@@ -423,7 +423,7 @@ pub struct TimeunitsDeclarationTimeunitTimeprecision {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct TimeunitsDeclarationTimeprecisionTimeunit {
     pub nodes: (
         Keyword,

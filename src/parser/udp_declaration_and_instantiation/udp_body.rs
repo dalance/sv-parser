@@ -8,13 +8,13 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum UdpBody {
     CombinationalBody(CombinationalBody),
     SequentialBody(SequentialBody),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CombinationalBody {
     pub nodes: (
         Keyword,
@@ -24,12 +24,12 @@ pub struct CombinationalBody {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CombinationalEntry {
     pub nodes: (LevelInputList, Symbol, OutputSymbol, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SequentialBody {
     pub nodes: (
         Option<UdpInitialStatement>,
@@ -40,17 +40,17 @@ pub struct SequentialBody {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UdpInitialStatement {
     pub nodes: (Keyword, OutputPortIdentifier, Symbol, InitVal, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct InitVal {
     pub nodes: (Keyword,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct SequentialEntry {
     pub nodes: (
         SeqInputList,
@@ -62,55 +62,55 @@ pub struct SequentialEntry {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum SeqInputList {
     LevelInputList(LevelInputList),
     EdgeInputList(EdgeInputList),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct LevelInputList {
     pub nodes: (LevelSymbol, Vec<LevelSymbol>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EdgeInputList {
     pub nodes: (Vec<LevelSymbol>, EdgeIndicator, Vec<LevelSymbol>),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum EdgeIndicator {
     Paren(EdgeIndicatorParen),
     EdgeSymbol(EdgeSymbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EdgeIndicatorParen {
     pub nodes: (Paren<(LevelSymbol, LevelSymbol)>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CurrentState {
     pub nodes: (LevelSymbol,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum NextState {
     OutputSymbol(OutputSymbol),
     Minus(Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct OutputSymbol {
     pub nodes: (Keyword,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct LevelSymbol {
     pub nodes: (Keyword,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct EdgeSymbol {
     pub nodes: (Keyword,),
 }

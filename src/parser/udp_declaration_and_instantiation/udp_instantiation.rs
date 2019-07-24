@@ -7,7 +7,7 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UdpInstantiation {
     pub nodes: (
         UdpIdentifier,
@@ -18,7 +18,7 @@ pub struct UdpInstantiation {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct UdpInstance {
     pub nodes: (
         Option<NameOfInstance>,

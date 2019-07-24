@@ -8,12 +8,12 @@ use nom::IResult;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CheckerPortList {
     pub nodes: (List<Symbol, CheckerPortItem>,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CheckerPortItem {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -25,13 +25,13 @@ pub struct CheckerPortItem {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum CheckerPortDirection {
     Input(Keyword),
     Output(Keyword),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum CheckerOrGenerateItem {
     CheckerOrGenerateItemDeclaration(CheckerOrGenerateItemDeclaration),
     InitialConstruct(InitialConstruct),
@@ -42,7 +42,7 @@ pub enum CheckerOrGenerateItem {
     CheckerGenerateItem(CheckerGenerateItem),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum CheckerOrGenerateItemDeclaration {
     Data(CheckerOrGenerateItemDeclarationData),
     FunctionDeclaration(FunctionDeclaration),
@@ -56,22 +56,22 @@ pub enum CheckerOrGenerateItemDeclaration {
     Empty(Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CheckerOrGenerateItemDeclarationData {
     pub nodes: (Option<Rand>, DataDeclaration),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct Rand {
     pub nodes: (Keyword,),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CheckerOrGenerateItemDeclarationClocking {
     pub nodes: (Keyword, Keyword, ClockingIdentifier, Symbol),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub struct CheckerOrGenerateItemDeclarationDisable {
     pub nodes: (
         Keyword,
@@ -82,7 +82,7 @@ pub struct CheckerOrGenerateItemDeclarationDisable {
     ),
 }
 
-#[derive(Debug, Node)]
+#[derive(Clone, Debug, Node)]
 pub enum CheckerGenerateItem {
     LoopGenerateConstruct(Box<LoopGenerateConstruct>),
     ConditionalGenerateConstruct(Box<ConditionalGenerateConstruct>),

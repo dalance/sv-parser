@@ -21,6 +21,8 @@ pub use source_text::*;
 pub use specify_section::*;
 pub use udp_declaration_and_instantiation::*;
 
+// -----------------------------------------------------------------------------
+
 pub(crate) const RECURSIVE_FLAG_WORDS: usize = 1;
 
 #[derive(Copy, Clone, Default, Debug, PartialEq)]
@@ -32,22 +34,7 @@ pub(crate) struct Extra {
 
 pub(crate) type Span<'a> = nom_locate::LocatedSpanEx<&'a str, Extra>;
 
-#[derive(Copy, Clone, Default, Debug, PartialEq)]
-pub struct Locate {
-    offset: usize,
-    line: u32,
-    len: usize,
-}
-
-impl<'a> From<Span<'a>> for Locate {
-    fn from(x: Span<'a>) -> Self {
-        Locate {
-            offset: x.offset,
-            line: x.line,
-            len: x.fragment.len(),
-        }
-    }
-}
+// -----------------------------------------------------------------------------
 
 mod thread_context {
 

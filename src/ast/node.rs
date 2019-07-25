@@ -1,5 +1,4 @@
 use crate::ast::*;
-use crate::parser::*;
 
 pub(crate) trait Node<'a> {
     fn next(&'a self) -> RefNodes<'a>;

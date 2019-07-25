@@ -1,28 +1,6 @@
-[package]
-name = "sv-parser"
-version = "0.1.0"
-authors = ["dalance@gmail.com"]
-repository = "https://github.com/dalance/sv-parser"
-keywords = []
-categories = []
-license = "MIT"
-readme = "README.md"
-description = ""
-edition = "2018"
-build = "build.rs"
+[workspace]
+members = [
+    "sv-parser",
+    "sv-parser-macros",
+]
 
-[features]
-default = []
-trace = []
-
-[dependencies]
-nom = "5.0.0"
-#nom_locate = { git = "https://github.com/fflorent/nom_locate" }
-nom_locate = { path = "../nom_locate" }
-str-concat = "*"
-sv-parser-macro = { path = "./sv-parser-macro" }
-nom-packrat = "0.1.17"
-
-[build-dependencies]
-walkdir = "2"
-regex = "1"

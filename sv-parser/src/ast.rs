@@ -4,4 +4,3 @@ pub mod node;
 pub(crate) use any_node::*;
 pub(crate) use locate::*;
 pub(crate) use node::*;
-pub(crate) use sv_parser_macro::*;

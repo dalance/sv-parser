@@ -21,6 +21,8 @@ pub use source_text::*;
 pub use specify_section::*;
 pub use udp_declaration_and_instantiation::*;
 
+pub(crate) use sv_parser_macros::*;
+
 // -----------------------------------------------------------------------------
 
 pub(crate) const RECURSIVE_FLAG_WORDS: usize = 1;

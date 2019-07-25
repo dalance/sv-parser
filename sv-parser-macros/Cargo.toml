@@ -1,5 +1,5 @@
 [package]
-name = "sv-parser-macro"
+name = "sv-parser-macros"
 version = "0.1.0"
 authors = ["dalance <dalance@gmail.com>"]
 edition = "2018"

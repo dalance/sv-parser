@@ -1,4 +1,3 @@
 /target
-/sv-parser-macro/target
 **/*.rs.bk
 Cargo.lock

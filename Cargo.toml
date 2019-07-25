@@ -21,7 +21,7 @@ nom = "5.0.0"
 nom_locate = { path = "../nom_locate" }
 str-concat = "*"
 sv-parser-macro = { path = "./sv-parser-macro" }
-nom-packrat = { path = "../nom-packrat/nom-packrat" }
+nom-packrat = "0.1.17"
 
 [build-dependencies]
 walkdir = "2"

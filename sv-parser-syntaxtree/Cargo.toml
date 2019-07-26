@@ -1,0 +1,14 @@
+[package]
+name = "sv-parser-syntaxtree"
+version = "0.1.0"
+authors = ["dalance <dalance@gmail.com>"]
+edition = "2018"
+build = "build.rs"
+
+[dependencies]
+sv-parser-macros = { path = "../sv-parser-macros" }
+nom_locate = { path = "../../nom_locate" }
+
+[build-dependencies]
+walkdir = "2"
+regex = "1"

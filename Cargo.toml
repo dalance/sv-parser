@@ -1,6 +1,8 @@
 [workspace]
 members = [
     "sv-parser",
+    "sv-parser-syntaxtree",
+    "sv-parser-parser",
     "sv-parser-macros",
 ]
 

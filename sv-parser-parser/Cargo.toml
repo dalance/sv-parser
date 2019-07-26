@@ -1,0 +1,16 @@
+[package]
+name = "sv-parser-parser"
+version = "0.1.0"
+authors = ["dalance <dalance@gmail.com>"]
+edition = "2018"
+
+[features]
+default = []
+trace = []
+
+[dependencies]
+nom                  = "5.0.0"
+nom-packrat          = "0.1.17"
+str-concat           = "*"
+sv-parser-syntaxtree = { path = "../sv-parser-syntaxtree" }
+sv-parser-macros     = { path = "../sv-parser-macros" }

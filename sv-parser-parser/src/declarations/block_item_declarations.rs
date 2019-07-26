@@ -12,7 +12,8 @@ pub(crate) fn block_item_declaration(s: Span) -> IResult<Span, BlockItemDeclarat
     ))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn block_item_declaration_data(s: Span) -> IResult<Span, BlockItemDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = data_declaration(s)?;

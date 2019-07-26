@@ -4,7 +4,7 @@ use crate::*;
 
 macro_rules! test {
     ( $x:expr, $y:expr, $z:pat ) => {
-        let ret = all_consuming($x)(Span::new_extra($y, Extra::default()));
+        let ret = all_consuming($x)(Span::new_extra($y, SpanInfo::default()));
         if let $z = ret {
         } else {
             assert!(false, "{:?}", ret)

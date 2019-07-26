@@ -10,6 +10,10 @@ readme = "../README.md"
 description = ""
 edition = "2018"
 
+[features]
+default = []
+trace = ["sv-parser-parser/trace"]
+
 [dependencies]
 sv-parser-syntaxtree = { path = "../sv-parser-syntaxtree" }
 sv-parser-parser     = { path = "../sv-parser-parser" }

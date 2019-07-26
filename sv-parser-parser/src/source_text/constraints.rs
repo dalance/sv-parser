@@ -81,7 +81,8 @@ pub(crate) fn constraint_expression(s: Span) -> IResult<Span, ConstraintExpressi
     ))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn constraint_expression_expression(s: Span) -> IResult<Span, ConstraintExpression> {
     let (s, a) = opt(soft)(s)?;
     let (s, b) = expression_or_dist(s)?;
@@ -100,7 +101,8 @@ pub(crate) fn soft(s: Span) -> IResult<Span, Soft> {
     Ok((s, Soft { nodes: (a,) }))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn constraint_expression_arrow(s: Span) -> IResult<Span, ConstraintExpression> {
     let (s, a) = expression(s)?;
     let (s, b) = symbol("->")(s)?;
@@ -179,13 +181,15 @@ pub(crate) fn constraint_set_brace(s: Span) -> IResult<Span, ConstraintSet> {
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn dist_list(s: Span) -> IResult<Span, DistList> {
     let (s, a) = list(symbol(","), dist_item)(s)?;
     Ok((s, DistList { nodes: (a,) }))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn dist_item(s: Span) -> IResult<Span, DistItem> {
     let (s, a) = value_range(s)?;
     let (s, b) = opt(dist_weight)(s)?;

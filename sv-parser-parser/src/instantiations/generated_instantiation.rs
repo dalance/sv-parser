@@ -125,7 +125,8 @@ pub(crate) fn case_generate_item(s: Span) -> IResult<Span, CaseGenerateItem> {
     alt((case_generate_item_nondefault, case_generate_item_default))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn case_generate_item_nondefault(s: Span) -> IResult<Span, CaseGenerateItem> {
     let (s, a) = list(symbol(","), constant_expression)(s)?;
     let (s, b) = symbol(":")(s)?;

@@ -273,7 +273,7 @@ pub(crate) fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, S
         let (s, x) = map(ws(map(tag(t.clone()), |x: Span| x.into())), |x| Symbol {
             nodes: x,
         })(s)?;
-        Ok((clear_recursive_flags(s), x))
+        Ok((s, x))
     }
 }
 
@@ -288,7 +288,7 @@ pub(crate) fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, 
             )),
             |x| Keyword { nodes: x },
         )(s)?;
-        Ok((clear_recursive_flags(s), x))
+        Ok((s, x))
     }
 }
 
@@ -448,31 +448,6 @@ pub(crate) fn concat<'a>(a: Span<'a>, b: Span<'a>) -> Option<Span<'a>> {
     }
 }
 
-pub(crate) fn check_recursive_flag(s: Span, id: usize) -> bool {
-    let upper = id / 128;
-    let lower = id % 128;
-
-    ((s.extra.recursive_flag[upper] >> lower) & 1) == 1
-}
-
-pub(crate) fn set_recursive_flag(mut s: Span, id: usize, bit: bool) -> Span {
-    let upper = id / 128;
-    let lower = id % 128;
-
-    let val = if bit { 1u128 << lower } else { 0u128 };
-    let mask = !(1u128 << lower);
-
-    let mut recursive_flag = s.extra.recursive_flag;
-    recursive_flag[upper] = (recursive_flag[upper] & mask) | val;
-    s.extra.recursive_flag = recursive_flag;
-    s
-}
-
-pub(crate) fn clear_recursive_flags(mut s: Span) -> Span {
-    s.extra.recursive_flag = [0; RECURSIVE_FLAG_WORDS];
-    s
-}
-
 pub(crate) fn is_keyword(s: &Span) -> bool {
     for k in KEYWORDS {
         if &s.fragment == k {
@@ -485,10 +460,11 @@ pub(crate) fn is_keyword(s: &Span) -> bool {
 #[cfg(feature = "trace")]
 pub(crate) fn trace<'a>(mut s: Span<'a>, name: &str) -> Span<'a> {
     println!(
-        "{:<128} : {:<4},{:>032x} : {}",
+        //"{:<128} : {:<4},{:>032x} : {}",
+        "{:<128} : {:<4} : {}",
         format!("{}{}", " ".repeat(s.extra.depth), name),
         s.offset,
-        s.extra.recursive_flag[0],
+        //s.extra.recursive_flag[0],
         s.fragment
     );
     s.extra.depth += 1;

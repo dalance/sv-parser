@@ -68,7 +68,8 @@ pub(crate) fn let_list_of_arguments(s: Span) -> IResult<Span, LetListOfArguments
     alt((let_list_of_arguments_ordered, let_list_of_arguments_named))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn let_list_of_arguments_ordered(s: Span) -> IResult<Span, LetListOfArguments> {
     let (s, a) = list(symbol(","), opt(let_actual_arg))(s)?;
     let (s, b) = many0(tuple((

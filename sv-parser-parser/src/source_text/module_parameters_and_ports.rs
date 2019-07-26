@@ -165,7 +165,8 @@ pub(crate) fn port(s: Span) -> IResult<Span, Port> {
     alt((port_non_named, port_named))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn port_non_named(s: Span) -> IResult<Span, Port> {
     let (s, a) = opt(port_expression)(s)?;
     Ok((s, Port::NonNamed(Box::new(PortNonNamed { nodes: (a,) }))))

@@ -6,9 +6,7 @@ use crate::proc_macro::TokenStream;
 use quote::quote;
 use std::str::FromStr;
 use syn::Data::{Enum, Struct};
-use syn::{
-    self, parse_macro_input, AttributeArgs, DeriveInput, Expr, ItemFn, Meta, NestedMeta, Stmt,
-};
+use syn::{self, parse_macro_input, AttributeArgs, DeriveInput, ItemFn, Meta, NestedMeta, Stmt};
 
 #[proc_macro_derive(Node)]
 pub fn node_derive(input: TokenStream) -> TokenStream {
@@ -166,16 +164,10 @@ pub fn parser(attr: TokenStream, item: TokenStream) -> TokenStream {
 }
 
 fn impl_parser(attr: &AttributeArgs, item: &ItemFn) -> TokenStream {
-    let (maybe_recursive, ambiguous) = impl_parser_attribute(attr);
+    let ambiguous = impl_parser_attribute(attr);
 
     let trace = impl_parser_trace(&item);
     let trace = parse_macro_input!(trace as Stmt);
-
-    let check_recursive_flag = impl_parser_check_recursive_flag(&item);
-    let check_recursive_flag = parse_macro_input!(check_recursive_flag as Stmt);
-
-    let set_recursive_flag = impl_parser_set_recursive_flag(&item);
-    let set_recursive_flag = parse_macro_input!(set_recursive_flag as Stmt);
 
     let body = if ambiguous {
         impl_parser_body_ambiguous(&item)
@@ -184,24 +176,11 @@ fn impl_parser(attr: &AttributeArgs, item: &ItemFn) -> TokenStream {
     };
     let body = parse_macro_input!(body as Stmt);
 
-    let body_unwrap = impl_parser_body_unwrap(&item);
-    let body_unwrap = parse_macro_input!(body_unwrap as Stmt);
-
-    let clear_recursive_flags = impl_parser_clear_recursive_flags(&item);
-    let clear_recursive_flags = parse_macro_input!(clear_recursive_flags as Expr);
-    let clear_recursive_flags = Stmt::Expr(clear_recursive_flags);
-
     let mut item = item.clone();
 
     item.block.stmts.clear();
     item.block.stmts.push(trace);
-    if maybe_recursive {
-        item.block.stmts.push(check_recursive_flag);
-        item.block.stmts.push(set_recursive_flag);
-    }
     item.block.stmts.push(body);
-    item.block.stmts.push(body_unwrap);
-    item.block.stmts.push(clear_recursive_flags);
 
     let gen = quote! {
         #item
@@ -209,19 +188,17 @@ fn impl_parser(attr: &AttributeArgs, item: &ItemFn) -> TokenStream {
     gen.into()
 }
 
-fn impl_parser_attribute(attr: &AttributeArgs) -> (bool, bool) {
-    let mut maybe_recursive = false;
+fn impl_parser_attribute(attr: &AttributeArgs) -> bool {
     let mut ambiguous = false;
 
     for a in attr {
         match a {
-            NestedMeta::Meta(Meta::Word(x)) if x == "MaybeRecursive" => maybe_recursive = true,
             NestedMeta::Meta(Meta::Word(x)) if x == "Ambiguous" => ambiguous = true,
             _ => panic!(),
         }
     }
 
-    (maybe_recursive, ambiguous)
+    ambiguous
 }
 
 fn impl_parser_trace(item: &ItemFn) -> TokenStream {
@@ -230,42 +207,6 @@ fn impl_parser_trace(item: &ItemFn) -> TokenStream {
     let gen = quote! {
         #[cfg(feature = "trace")]
         let s = trace(s, stringify!(#ident));
-    };
-    gen.into()
-}
-
-fn impl_parser_check_recursive_flag(item: &ItemFn) -> TokenStream {
-    let ident = &item.ident;
-
-    let gen = quote! {
-        if thread_context::PARSER_INDEX.with(|p| {
-            if let Some(i) = p.borrow_mut().get(stringify!(#ident)) {
-                return check_recursive_flag(s, i);
-            } else {
-                return false
-            }
-        }) {
-            #[cfg(feature = "trace")]
-            println!("{:<128} : loop detect", format!("{}{}", " ".repeat(s.extra.depth), stringify!(#ident)));
-            return Err(nom::Err::Error(nom::error::make_error(s, nom::error::ErrorKind::Fix)));
-        }
-    };
-    gen.into()
-}
-
-fn impl_parser_set_recursive_flag(item: &ItemFn) -> TokenStream {
-    let ident = &item.ident;
-
-    let gen = quote! {
-        let s = thread_context::PARSER_INDEX.with(|p| {
-            if let Some(i) = p.borrow_mut().get(stringify!(#ident)) {
-                set_recursive_flag(s, i, true)
-            } else {
-                #[cfg(feature = "trace")]
-                println!("{:<128} : allocate failed", format!("{}{}", " ".repeat(s.extra.depth), stringify!(#ident)));
-                s
-            }
-        });
     };
     gen.into()
 }
@@ -279,7 +220,9 @@ fn impl_parser_body(item: &ItemFn) -> TokenStream {
         };
     }
     let gen = quote! {
-        let body_ret = { #gen };
+        {
+            #gen
+        }
     };
     gen.into()
 }
@@ -336,22 +279,10 @@ fn impl_parser_body_ambiguous(item: &ItemFn) -> TokenStream {
     };
 
     let gen = quote! {
-        let body_ret = { #gen };
+        {
+            #gen
+        }
     };
 
-    gen.into()
-}
-
-fn impl_parser_body_unwrap(_item: &ItemFn) -> TokenStream {
-    let gen = quote! {
-        let (s, ret) = body_ret?;
-    };
-    gen.into()
-}
-
-fn impl_parser_clear_recursive_flags(_item: &ItemFn) -> TokenStream {
-    let gen = quote! {
-        Ok((clear_recursive_flags(s), ret))
-    };
     gen.into()
 }

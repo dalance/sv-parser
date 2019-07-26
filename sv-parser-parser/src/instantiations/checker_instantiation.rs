@@ -26,7 +26,8 @@ pub(crate) fn list_of_checker_port_connections(
     ))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn list_of_checker_port_connections_ordered(
     s: Span,
 ) -> IResult<Span, ListOfCheckerPortConnections> {
@@ -52,7 +53,8 @@ pub(crate) fn list_of_checker_port_connections_named(
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn ordered_checker_port_connection(
     s: Span,
 ) -> IResult<Span, OrderedCheckerPortConnection> {

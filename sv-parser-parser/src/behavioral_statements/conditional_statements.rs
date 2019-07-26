@@ -35,7 +35,8 @@ pub(crate) fn unique_priority(s: Span) -> IResult<Span, UniquePriority> {
     ))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn cond_predicate(s: Span) -> IResult<Span, CondPredicate> {
     let (s, a) = list(symbol("&&&"), expression_or_cond_pattern)(s)?;
     Ok((s, CondPredicate { nodes: (a,) }))
@@ -53,7 +54,8 @@ pub(crate) fn expression_or_cond_pattern(s: Span) -> IResult<Span, ExpressionOrC
     ))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn cond_pattern(s: Span) -> IResult<Span, CondPattern> {
     let (s, a) = expression(s)?;
     let (s, b) = keyword("matches")(s)?;

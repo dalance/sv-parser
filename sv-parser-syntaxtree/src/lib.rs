@@ -23,20 +23,30 @@ pub use special_node::*;
 pub use specify_section::*;
 pub use udp_declaration_and_instantiation::*;
 
+pub(crate) use nom_recursive::{RecursiveInfo, RecursiveTracer};
 pub(crate) use sv_parser_macros::*;
 
 // -----------------------------------------------------------------------------
 
-pub const RECURSIVE_FLAG_WORDS: usize = 1;
-
-#[derive(Copy, Clone, Default, Debug, PartialEq)]
-pub struct Extra {
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct SpanInfo {
     #[cfg(feature = "trace")]
     pub depth: usize,
-    pub recursive_flag: [u128; RECURSIVE_FLAG_WORDS],
+    pub recursive_info: RecursiveInfo,
 }
 
-pub type Span<'a> = nom_locate::LocatedSpanEx<&'a str, Extra>;
+pub type Span<'a> = nom_locate::LocatedSpanEx<&'a str, SpanInfo>;
+
+impl RecursiveTracer for SpanInfo {
+    fn get_info(&self) -> RecursiveInfo {
+        self.recursive_info
+    }
+
+    fn set_info(mut self, info: RecursiveInfo) -> Self {
+        self.recursive_info = info;
+        self
+    }
+}
 
 // -----------------------------------------------------------------------------
 

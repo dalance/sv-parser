@@ -163,7 +163,8 @@ pub(crate) fn rs_case_item(s: Span) -> IResult<Span, RsCaseItem> {
     alt((rs_case_item_nondefault, rs_case_item_default))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn rs_case_item_nondefault(s: Span) -> IResult<Span, RsCaseItem> {
     let (s, a) = list(symbol(","), case_item_expression)(s)?;
     let (s, b) = symbol(":")(s)?;

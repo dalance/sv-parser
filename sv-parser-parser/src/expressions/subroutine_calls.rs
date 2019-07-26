@@ -91,7 +91,8 @@ pub(crate) fn list_of_arguments(s: Span) -> IResult<Span, ListOfArguments> {
     alt((list_of_arguments_ordered, list_of_arguments_named))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn list_of_arguments_ordered(s: Span) -> IResult<Span, ListOfArguments> {
     let (s, a) = list(symbol(","), opt(expression))(s)?;
     let (s, b) = many0(tuple((
@@ -125,7 +126,8 @@ pub(crate) fn list_of_arguments_named(s: Span) -> IResult<Span, ListOfArguments>
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn method_call(s: Span) -> IResult<Span, MethodCall> {
     let (s, a) = method_call_root(s)?;
     let (s, b) = symbol(".")(s)?;

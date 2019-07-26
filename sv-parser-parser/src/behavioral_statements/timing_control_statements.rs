@@ -129,7 +129,8 @@ pub(crate) fn event_expression(s: Span) -> IResult<Span, EventExpression> {
     ))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn event_expression_expression(s: Span) -> IResult<Span, EventExpression> {
     let (s, a) = opt(edge_identifier)(s)?;
     let (s, b) = expression(s)?;
@@ -150,7 +151,8 @@ pub(crate) fn event_expression_sequence(s: Span) -> IResult<Span, EventExpressio
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn event_expression_or(s: Span) -> IResult<Span, EventExpression> {
     let (s, a) = event_expression(s)?;
     let (s, b) = keyword("or")(s)?;
@@ -161,7 +163,8 @@ pub(crate) fn event_expression_or(s: Span) -> IResult<Span, EventExpression> {
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn event_expression_comma(s: Span) -> IResult<Span, EventExpression> {
     let (s, a) = event_expression(s)?;
     let (s, b) = symbol(",")(s)?;

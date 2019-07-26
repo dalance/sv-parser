@@ -76,7 +76,8 @@ pub(crate) fn stream_concatenation(s: Span) -> IResult<Span, StreamConcatenation
     Ok((s, StreamConcatenation { nodes: (a,) }))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn stream_expression(s: Span) -> IResult<Span, StreamExpression> {
     let (s, a) = expression(s)?;
     let (s, b) = opt(pair(keyword("with"), bracket(array_range_expression)))(s)?;
@@ -95,7 +96,8 @@ pub(crate) fn array_range_expression(s: Span) -> IResult<Span, ArrayRangeExpress
     ))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn array_range_expression_colon(s: Span) -> IResult<Span, ArrayRangeExpression> {
     let (s, a) = expression(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -106,7 +108,8 @@ pub(crate) fn array_range_expression_colon(s: Span) -> IResult<Span, ArrayRangeE
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn array_range_expression_plus_colon(s: Span) -> IResult<Span, ArrayRangeExpression> {
     let (s, a) = expression(s)?;
     let (s, b) = symbol("+:")(s)?;
@@ -119,7 +122,8 @@ pub(crate) fn array_range_expression_plus_colon(s: Span) -> IResult<Span, ArrayR
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn array_range_expression_minus_colon(s: Span) -> IResult<Span, ArrayRangeExpression> {
     let (s, a) = expression(s)?;
     let (s, b) = symbol("-:")(s)?;

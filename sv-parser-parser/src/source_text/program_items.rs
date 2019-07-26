@@ -41,7 +41,8 @@ pub(crate) fn non_port_program_item_assign(s: Span) -> IResult<Span, NonPortProg
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn non_port_program_item_module(s: Span) -> IResult<Span, NonPortProgramItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = module_or_generate_item_declaration(s)?;

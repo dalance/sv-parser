@@ -226,7 +226,8 @@ pub(crate) fn class_qualifier_or_package_scope(
     ))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn class_qualifier(s: Span) -> IResult<Span, ClassQualifier> {
     let (s, a) = opt(local)(s)?;
     let (s, b) = opt(implicit_class_handle_or_class_scope)(s)?;
@@ -356,7 +357,8 @@ pub(crate) fn constant_select(s: Span) -> IResult<Span, ConstantSelect> {
     Ok((s, ConstantSelect { nodes: (a, b, c) }))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn constant_cast(s: Span) -> IResult<Span, ConstantCast> {
     let (s, a) = casting_type(s)?;
     let (s, b) = symbol("'")(s)?;
@@ -370,7 +372,8 @@ pub(crate) fn constant_let_expression(s: Span) -> IResult<Span, ConstantLetExpre
     Ok((s, ConstantLetExpression { nodes: (a,) }))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn cast(s: Span) -> IResult<Span, Cast> {
     let (s, a) = casting_type(s)?;
     let (s, b) = symbol("'")(s)?;

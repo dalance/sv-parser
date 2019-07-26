@@ -18,7 +18,8 @@ pub(crate) fn inc_or_dec_expression_prefix(s: Span) -> IResult<Span, IncOrDecExp
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn inc_or_dec_expression_suffix(s: Span) -> IResult<Span, IncOrDecExpression> {
     let (s, a) = variable_lvalue(s)?;
     let (s, b) = many0(attribute_instance)(s)?;
@@ -29,7 +30,8 @@ pub(crate) fn inc_or_dec_expression_suffix(s: Span) -> IResult<Span, IncOrDecExp
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn conditional_expression(s: Span) -> IResult<Span, ConditionalExpression> {
     let (s, a) = cond_predicate(s)?;
     let (s, b) = symbol("?")(s)?;
@@ -69,7 +71,8 @@ pub(crate) fn constant_expression_unary(s: Span) -> IResult<Span, ConstantExpres
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn constant_expression_binary(s: Span) -> IResult<Span, ConstantExpression> {
     let (s, a) = constant_expression(s)?;
     let (s, b) = binary_operator(s)?;
@@ -83,7 +86,8 @@ pub(crate) fn constant_expression_binary(s: Span) -> IResult<Span, ConstantExpre
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn constant_expression_ternary(s: Span) -> IResult<Span, ConstantExpression> {
     let (s, a) = constant_expression(s)?;
     let (s, b) = symbol("?")(s)?;
@@ -109,7 +113,8 @@ pub(crate) fn constant_mintypmax_expression(s: Span) -> IResult<Span, ConstantMi
     ))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn constant_mintypmax_expression_ternary(
     s: Span,
 ) -> IResult<Span, ConstantMintypmaxExpression> {
@@ -176,7 +181,8 @@ pub(crate) fn constant_part_select_range(s: Span) -> IResult<Span, ConstantPartS
     ))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn constant_range(s: Span) -> IResult<Span, ConstantRange> {
     let (s, a) = constant_expression(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -184,7 +190,8 @@ pub(crate) fn constant_range(s: Span) -> IResult<Span, ConstantRange> {
     Ok((s, ConstantRange { nodes: (a, b, c) }))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn constant_indexed_range(s: Span) -> IResult<Span, ConstantIndexedRange> {
     let (s, a) = constant_expression(s)?;
     let (s, b) = alt((symbol("+:"), symbol("-:")))(s)?;
@@ -235,7 +242,8 @@ pub(crate) fn expression_operator_assignment(s: Span) -> IResult<Span, Expressio
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn expression_binary(s: Span) -> IResult<Span, Expression> {
     let (s, a) = expression(s)?;
     let (s, b) = binary_operator(s)?;
@@ -257,7 +265,8 @@ pub(crate) fn tagged_union_expression(s: Span) -> IResult<Span, TaggedUnionExpre
     Ok((s, TaggedUnionExpression { nodes: (a, b, c) }))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn inside_expression(s: Span) -> IResult<Span, InsideExpression> {
     let (s, a) = expression(s)?;
     let (s, b) = keyword("inside")(s)?;
@@ -290,7 +299,8 @@ pub(crate) fn mintypmax_expression(s: Span) -> IResult<Span, MintypmaxExpression
     ))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn mintypmax_expression_ternary(s: Span) -> IResult<Span, MintypmaxExpression> {
     let (s, a) = expression(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -305,7 +315,8 @@ pub(crate) fn mintypmax_expression_ternary(s: Span) -> IResult<Span, MintypmaxEx
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn module_path_conditional_expression(
     s: Span,
 ) -> IResult<Span, ModulePathConditionalExpression> {
@@ -348,7 +359,8 @@ pub(crate) fn module_path_expression_unary(s: Span) -> IResult<Span, ModulePathE
     ))
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn module_path_expression_binary(s: Span) -> IResult<Span, ModulePathExpression> {
     let (s, a) = module_path_expression(s)?;
     let (s, b) = binary_module_path_operator(s)?;
@@ -374,7 +386,8 @@ pub(crate) fn module_path_mintypmax_expression(
     ))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn module_path_mintypmax_expression_ternary(
     s: Span,
 ) -> IResult<Span, ModulePathMintypmaxExpression> {
@@ -403,7 +416,8 @@ pub(crate) fn part_select_range(s: Span) -> IResult<Span, PartSelectRange> {
     ))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn indexed_range(s: Span) -> IResult<Span, IndexedRange> {
     let (s, a) = expression(s)?;
     let (s, b) = alt((symbol("+:"), symbol("-:")))(s)?;

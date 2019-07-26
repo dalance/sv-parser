@@ -5,9 +5,14 @@ authors = ["dalance <dalance@gmail.com>"]
 edition = "2018"
 build = "build.rs"
 
+[features]
+default = []
+trace = []
+
 [dependencies]
 sv-parser-macros = { path = "../sv-parser-macros" }
-nom_locate = { path = "../../nom_locate" }
+nom_locate       = { path = "../../nom_locate" }
+nom-recursive    = { path = "../../nom-recursive/nom-recursive" }
 
 [build-dependencies]
 walkdir = "2"

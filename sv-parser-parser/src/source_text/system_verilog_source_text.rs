@@ -38,7 +38,8 @@ pub(crate) fn description(s: Span) -> IResult<Span, Description> {
     ))(s)
 }
 
-#[parser(MaybeRecursive)]
+#[recursive_parser]
+#[parser]
 pub(crate) fn description_package_item(s: Span) -> IResult<Span, Description> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = package_item(s)?;

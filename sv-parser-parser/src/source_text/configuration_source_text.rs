@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn config_declaration(s: Span) -> IResult<Span, ConfigDeclaration> {
     let (s, a) = keyword("config")(s)?;
     let (s, b) = config_identifier(s)?;
@@ -20,7 +20,7 @@ pub(crate) fn config_declaration(s: Span) -> IResult<Span, ConfigDeclaration> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn design_statement(s: Span) -> IResult<Span, DesignStatement> {
     let (s, a) = keyword("design")(s)?;
     let (s, b) = many0(pair(
@@ -31,7 +31,7 @@ pub(crate) fn design_statement(s: Span) -> IResult<Span, DesignStatement> {
     Ok((s, DesignStatement { nodes: (a, b, c) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn config_rule_statement(s: Span) -> IResult<Span, ConfigRuleStatement> {
     alt((
         config_rule_statement_default,
@@ -42,7 +42,7 @@ pub(crate) fn config_rule_statement(s: Span) -> IResult<Span, ConfigRuleStatemen
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn config_rule_statement_default(s: Span) -> IResult<Span, ConfigRuleStatement> {
     let (s, a) = default_clause(s)?;
     let (s, b) = liblist_clause(s)?;
@@ -53,7 +53,7 @@ pub(crate) fn config_rule_statement_default(s: Span) -> IResult<Span, ConfigRule
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn config_rule_statement_inst_lib(s: Span) -> IResult<Span, ConfigRuleStatement> {
     let (s, a) = inst_clause(s)?;
     let (s, b) = liblist_clause(s)?;
@@ -64,7 +64,7 @@ pub(crate) fn config_rule_statement_inst_lib(s: Span) -> IResult<Span, ConfigRul
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn config_rule_statement_inst_use(s: Span) -> IResult<Span, ConfigRuleStatement> {
     let (s, a) = inst_clause(s)?;
     let (s, b) = use_clause(s)?;
@@ -75,7 +75,7 @@ pub(crate) fn config_rule_statement_inst_use(s: Span) -> IResult<Span, ConfigRul
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn config_rule_statement_cell_lib(s: Span) -> IResult<Span, ConfigRuleStatement> {
     let (s, a) = cell_clause(s)?;
     let (s, b) = liblist_clause(s)?;
@@ -86,7 +86,7 @@ pub(crate) fn config_rule_statement_cell_lib(s: Span) -> IResult<Span, ConfigRul
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn config_rule_statement_cell_use(s: Span) -> IResult<Span, ConfigRuleStatement> {
     let (s, a) = cell_clause(s)?;
     let (s, b) = use_clause(s)?;
@@ -97,27 +97,27 @@ pub(crate) fn config_rule_statement_cell_use(s: Span) -> IResult<Span, ConfigRul
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn default_clause(s: Span) -> IResult<Span, DefaultClause> {
     let (s, a) = keyword("default")(s)?;
     Ok((s, DefaultClause { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn inst_clause(s: Span) -> IResult<Span, InstClause> {
     let (s, a) = keyword("instance")(s)?;
     let (s, b) = inst_name(s)?;
     Ok((s, InstClause { nodes: (a, b) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn inst_name(s: Span) -> IResult<Span, InstName> {
     let (s, a) = topmodule_identifier(s)?;
     let (s, b) = many0(pair(symbol("."), instance_identifier))(s)?;
     Ok((s, InstName { nodes: (a, b) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn cell_clause(s: Span) -> IResult<Span, CellClause> {
     let (s, a) = keyword("cell")(s)?;
     let (s, b) = opt(pair(library_identifier, symbol(".")))(s)?;
@@ -125,19 +125,19 @@ pub(crate) fn cell_clause(s: Span) -> IResult<Span, CellClause> {
     Ok((s, CellClause { nodes: (a, b, c) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn liblist_clause(s: Span) -> IResult<Span, LiblistClause> {
     let (s, a) = keyword("liblist")(s)?;
     let (s, b) = many0(library_identifier)(s)?;
     Ok((s, LiblistClause { nodes: (a, b) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn use_clause(s: Span) -> IResult<Span, UseClause> {
     alt((use_clause_cell, use_clause_named, use_clause_cell_named))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn use_clause_cell(s: Span) -> IResult<Span, UseClause> {
     let (s, a) = keyword("use")(s)?;
     let (s, b) = opt(pair(library_identifier, symbol(".")))(s)?;
@@ -151,7 +151,7 @@ pub(crate) fn use_clause_cell(s: Span) -> IResult<Span, UseClause> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn use_clause_named(s: Span) -> IResult<Span, UseClause> {
     let (s, a) = keyword("use")(s)?;
     let (s, b) = list(symbol(","), named_parameter_assignment)(s)?;
@@ -162,7 +162,7 @@ pub(crate) fn use_clause_named(s: Span) -> IResult<Span, UseClause> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn use_clause_cell_named(s: Span) -> IResult<Span, UseClause> {
     let (s, a) = keyword("use")(s)?;
     let (s, b) = opt(pair(library_identifier, symbol(".")))(s)?;
@@ -177,7 +177,7 @@ pub(crate) fn use_clause_cell_named(s: Span) -> IResult<Span, UseClause> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn config(s: Span) -> IResult<Span, Config> {
     let (s, a) = keyword("config")(s)?;
     Ok((s, Config { nodes: (a,) }))

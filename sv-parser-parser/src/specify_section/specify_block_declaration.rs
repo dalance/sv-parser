@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn specify_block(s: Span) -> IResult<Span, SpecifyBlock> {
     let (s, a) = keyword("specify")(s)?;
     let (s, b) = many0(specify_item)(s)?;
@@ -10,7 +10,7 @@ pub(crate) fn specify_block(s: Span) -> IResult<Span, SpecifyBlock> {
     Ok((s, SpecifyBlock { nodes: (a, b, c) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn specify_item(s: Span) -> IResult<Span, SpecifyItem> {
     alt((
         map(specparam_declaration, |x| {
@@ -31,7 +31,7 @@ pub(crate) fn specify_item(s: Span) -> IResult<Span, SpecifyItem> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn pulsestyle_declaration(s: Span) -> IResult<Span, PulsestyleDeclaration> {
     let (s, a) = alt((
         keyword("pulsestyle_onevent"),
@@ -42,7 +42,7 @@ pub(crate) fn pulsestyle_declaration(s: Span) -> IResult<Span, PulsestyleDeclara
     Ok((s, PulsestyleDeclaration { nodes: (a, b, c) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn showcancelled_declaration(s: Span) -> IResult<Span, ShowcancelledDeclaration> {
     let (s, a) = alt((keyword("showcalcelled"), keyword("noshowcancelled")))(s)?;
     let (s, b) = list_of_path_outputs(s)?;

@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn randsequence_statement(s: Span) -> IResult<Span, RandsequenceStatement> {
     let (s, a) = keyword("randsequence")(s)?;
     let (s, b) = paren(opt(production_identifier))(s)?;
@@ -17,7 +17,7 @@ pub(crate) fn randsequence_statement(s: Span) -> IResult<Span, RandsequenceState
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn production(s: Span) -> IResult<Span, Production> {
     let (s, a) = opt(data_type_or_void)(s)?;
     let (s, b) = production_identifier(s)?;
@@ -33,7 +33,7 @@ pub(crate) fn production(s: Span) -> IResult<Span, Production> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn rs_rule(s: Span) -> IResult<Span, RsRule> {
     let (s, a) = rs_production_list(s)?;
     let (s, b) = opt(triple(
@@ -44,12 +44,12 @@ pub(crate) fn rs_rule(s: Span) -> IResult<Span, RsRule> {
     Ok((s, RsRule { nodes: (a, b) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn rs_production_list(s: Span) -> IResult<Span, RsProductionList> {
     alt((rs_production_list_prod, rs_production_list_join))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn rs_production_list_prod(s: Span) -> IResult<Span, RsProductionList> {
     let (s, a) = rs_prod(s)?;
     let (s, b) = many0(rs_prod)(s)?;
@@ -59,7 +59,7 @@ pub(crate) fn rs_production_list_prod(s: Span) -> IResult<Span, RsProductionList
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn rs_production_list_join(s: Span) -> IResult<Span, RsProductionList> {
     let (s, a) = keyword("rand")(s)?;
     let (s, b) = keyword("join")(s)?;
@@ -75,7 +75,7 @@ pub(crate) fn rs_production_list_join(s: Span) -> IResult<Span, RsProductionList
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn weight_specification(s: Span) -> IResult<Span, WeightSpecification> {
     alt((
         map(integral_number, |x| {
@@ -88,7 +88,7 @@ pub(crate) fn weight_specification(s: Span) -> IResult<Span, WeightSpecification
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn weight_specification_expression(s: Span) -> IResult<Span, WeightSpecification> {
     let (s, a) = paren(expression)(s)?;
     Ok((
@@ -97,13 +97,13 @@ pub(crate) fn weight_specification_expression(s: Span) -> IResult<Span, WeightSp
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn rs_code_block(s: Span) -> IResult<Span, RsCodeBlock> {
     let (s, a) = brace(pair(many0(data_declaration), many0(statement_or_null)))(s)?;
     Ok((s, RsCodeBlock { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn rs_prod(s: Span) -> IResult<Span, RsProd> {
     alt((
         map(production_item, |x| RsProd::ProductionItem(Box::new(x))),
@@ -114,14 +114,14 @@ pub(crate) fn rs_prod(s: Span) -> IResult<Span, RsProd> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn production_item(s: Span) -> IResult<Span, ProductionItem> {
     let (s, a) = production_identifier(s)?;
     let (s, b) = opt(paren(list_of_arguments))(s)?;
     Ok((s, ProductionItem { nodes: (a, b) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn rs_if_else(s: Span) -> IResult<Span, RsIfElse> {
     let (s, a) = keyword("if")(s)?;
     let (s, b) = paren(expression)(s)?;
@@ -135,7 +135,7 @@ pub(crate) fn rs_if_else(s: Span) -> IResult<Span, RsIfElse> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn rs_repeat(s: Span) -> IResult<Span, RsRepeat> {
     let (s, a) = keyword("repeat")(s)?;
     let (s, b) = paren(expression)(s)?;
@@ -143,7 +143,7 @@ pub(crate) fn rs_repeat(s: Span) -> IResult<Span, RsRepeat> {
     Ok((s, RsRepeat { nodes: (a, b, c) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn rs_case(s: Span) -> IResult<Span, RsCase> {
     let (s, a) = keyword("case")(s)?;
     let (s, b) = paren(case_expression)(s)?;
@@ -158,13 +158,13 @@ pub(crate) fn rs_case(s: Span) -> IResult<Span, RsCase> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn rs_case_item(s: Span) -> IResult<Span, RsCaseItem> {
     alt((rs_case_item_nondefault, rs_case_item_default))(s)
 }
 
 #[recursive_parser]
-#[parser]
+#[tracable_parser]
 pub(crate) fn rs_case_item_nondefault(s: Span) -> IResult<Span, RsCaseItem> {
     let (s, a) = list(symbol(","), case_item_expression)(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -178,7 +178,7 @@ pub(crate) fn rs_case_item_nondefault(s: Span) -> IResult<Span, RsCaseItem> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn rs_case_item_default(s: Span) -> IResult<Span, RsCaseItem> {
     let (s, a) = keyword("default")(s)?;
     let (s, b) = opt(symbol(":"))(s)?;

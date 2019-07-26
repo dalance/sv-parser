@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn action_block(s: Span) -> IResult<Span, ActionBlock> {
     alt((
         map(statement_or_null, |x| {
@@ -12,7 +12,7 @@ pub(crate) fn action_block(s: Span) -> IResult<Span, ActionBlock> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn action_block_else(s: Span) -> IResult<Span, ActionBlock> {
     let (s, a) = opt(statement)(s)?;
     let (s, b) = keyword("else")(s)?;
@@ -23,7 +23,7 @@ pub(crate) fn action_block_else(s: Span) -> IResult<Span, ActionBlock> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn seq_block(s: Span) -> IResult<Span, SeqBlock> {
     let (s, a) = keyword("begin")(s)?;
     let (s, b) = opt(pair(symbol(":"), block_identifier))(s)?;
@@ -39,7 +39,7 @@ pub(crate) fn seq_block(s: Span) -> IResult<Span, SeqBlock> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn par_block(s: Span) -> IResult<Span, ParBlock> {
     let (s, a) = keyword("fork")(s)?;
     let (s, b) = opt(pair(symbol(":"), block_identifier))(s)?;
@@ -55,7 +55,7 @@ pub(crate) fn par_block(s: Span) -> IResult<Span, ParBlock> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn join_keyword(s: Span) -> IResult<Span, JoinKeyword> {
     alt((
         map(keyword("join_any"), |x| JoinKeyword::JoinAny(Box::new(x))),

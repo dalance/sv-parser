@@ -9,5 +9,5 @@ build = "build.rs"
 sv-parser-macros = { path = "../sv-parser-macros" }
 
 [build-dependencies]
+regex   = "1"
 walkdir = "2"
-regex = "1"

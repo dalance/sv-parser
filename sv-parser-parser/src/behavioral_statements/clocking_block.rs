@@ -2,12 +2,12 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_declaration(s: Span) -> IResult<Span, ClockingDeclaration> {
     alt((clocking_declaration_local, clocking_declaration_global))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_declaration_local(s: Span) -> IResult<Span, ClockingDeclaration> {
     let (s, a) = opt(default)(s)?;
     let (s, b) = keyword("clocking")(s)?;
@@ -25,13 +25,13 @@ pub(crate) fn clocking_declaration_local(s: Span) -> IResult<Span, ClockingDecla
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn default(s: Span) -> IResult<Span, Default> {
     let (s, a) = keyword("default")(s)?;
     Ok((s, Default { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_declaration_global(s: Span) -> IResult<Span, ClockingDeclaration> {
     let (s, a) = keyword("global")(s)?;
     let (s, b) = keyword("clocking")(s)?;
@@ -48,12 +48,12 @@ pub(crate) fn clocking_declaration_global(s: Span) -> IResult<Span, ClockingDecl
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_event(s: Span) -> IResult<Span, ClockingEvent> {
     alt((clocking_event_identifier, clocking_event_expression))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_event_identifier(s: Span) -> IResult<Span, ClockingEvent> {
     let (s, a) = symbol("@")(s)?;
     let (s, b) = identifier(s)?;
@@ -63,7 +63,7 @@ pub(crate) fn clocking_event_identifier(s: Span) -> IResult<Span, ClockingEvent>
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_event_expression(s: Span) -> IResult<Span, ClockingEvent> {
     let (s, a) = symbol("@")(s)?;
     let (s, b) = paren(event_expression)(s)?;
@@ -73,7 +73,7 @@ pub(crate) fn clocking_event_expression(s: Span) -> IResult<Span, ClockingEvent>
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_item(s: Span) -> IResult<Span, ClockingItem> {
     alt((
         clocking_item_default,
@@ -82,7 +82,7 @@ pub(crate) fn clocking_item(s: Span) -> IResult<Span, ClockingItem> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_item_default(s: Span) -> IResult<Span, ClockingItem> {
     let (s, a) = keyword("default")(s)?;
     let (s, b) = default_skew(s)?;
@@ -93,7 +93,7 @@ pub(crate) fn clocking_item_default(s: Span) -> IResult<Span, ClockingItem> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_item_direction(s: Span) -> IResult<Span, ClockingItem> {
     let (s, a) = clocking_direction(s)?;
     let (s, b) = list_of_clocking_decl_assign(s)?;
@@ -104,7 +104,7 @@ pub(crate) fn clocking_item_direction(s: Span) -> IResult<Span, ClockingItem> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_item_assertion(s: Span) -> IResult<Span, ClockingItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = assertion_item_declaration(s)?;
@@ -114,7 +114,7 @@ pub(crate) fn clocking_item_assertion(s: Span) -> IResult<Span, ClockingItem> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn default_skew(s: Span) -> IResult<Span, DefaultSkew> {
     alt((
         default_skew_input,
@@ -123,7 +123,7 @@ pub(crate) fn default_skew(s: Span) -> IResult<Span, DefaultSkew> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn default_skew_input(s: Span) -> IResult<Span, DefaultSkew> {
     let (s, a) = keyword("input")(s)?;
     let (s, b) = clocking_skew(s)?;
@@ -133,7 +133,7 @@ pub(crate) fn default_skew_input(s: Span) -> IResult<Span, DefaultSkew> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn default_skew_output(s: Span) -> IResult<Span, DefaultSkew> {
     let (s, a) = keyword("output")(s)?;
     let (s, b) = clocking_skew(s)?;
@@ -143,7 +143,7 @@ pub(crate) fn default_skew_output(s: Span) -> IResult<Span, DefaultSkew> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn default_skew_input_output(s: Span) -> IResult<Span, DefaultSkew> {
     let (s, a) = keyword("input")(s)?;
     let (s, b) = clocking_skew(s)?;
@@ -157,7 +157,7 @@ pub(crate) fn default_skew_input_output(s: Span) -> IResult<Span, DefaultSkew> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_direction(s: Span) -> IResult<Span, ClockingDirection> {
     alt((
         clocking_direction_input,
@@ -167,7 +167,7 @@ pub(crate) fn clocking_direction(s: Span) -> IResult<Span, ClockingDirection> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_direction_input(s: Span) -> IResult<Span, ClockingDirection> {
     let (s, a) = keyword("input")(s)?;
     let (s, b) = opt(clocking_skew)(s)?;
@@ -177,7 +177,7 @@ pub(crate) fn clocking_direction_input(s: Span) -> IResult<Span, ClockingDirecti
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_direction_output(s: Span) -> IResult<Span, ClockingDirection> {
     let (s, a) = keyword("output")(s)?;
     let (s, b) = opt(clocking_skew)(s)?;
@@ -187,7 +187,7 @@ pub(crate) fn clocking_direction_output(s: Span) -> IResult<Span, ClockingDirect
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_direction_input_output(s: Span) -> IResult<Span, ClockingDirection> {
     let (s, a) = keyword("input")(s)?;
     let (s, b) = opt(clocking_skew)(s)?;
@@ -201,26 +201,26 @@ pub(crate) fn clocking_direction_input_output(s: Span) -> IResult<Span, Clocking
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_direction_inout(s: Span) -> IResult<Span, ClockingDirection> {
     let (s, a) = keyword("inout")(s)?;
     Ok((s, ClockingDirection::Inout(Box::new(a))))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn list_of_clocking_decl_assign(s: Span) -> IResult<Span, ListOfClockingDeclAssign> {
     let (s, a) = list(symbol(","), clocking_decl_assign)(s)?;
     Ok((s, ListOfClockingDeclAssign { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_decl_assign(s: Span) -> IResult<Span, ClockingDeclAssign> {
     let (s, a) = signal_identifier(s)?;
     let (s, b) = opt(pair(symbol("="), expression))(s)?;
     Ok((s, ClockingDeclAssign { nodes: (a, b) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_skew(s: Span) -> IResult<Span, ClockingSkew> {
     alt((
         clocking_skew_edge,
@@ -228,7 +228,7 @@ pub(crate) fn clocking_skew(s: Span) -> IResult<Span, ClockingSkew> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_skew_edge(s: Span) -> IResult<Span, ClockingSkew> {
     let (s, a) = edge_identifier(s)?;
     let (s, b) = opt(delay_control)(s)?;
@@ -238,7 +238,7 @@ pub(crate) fn clocking_skew_edge(s: Span) -> IResult<Span, ClockingSkew> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clocking_drive(s: Span) -> IResult<Span, ClockingDrive> {
     let (s, a) = clockvar_expression(s)?;
     let (s, b) = symbol("<=")(s)?;
@@ -252,7 +252,7 @@ pub(crate) fn clocking_drive(s: Span) -> IResult<Span, ClockingDrive> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn cycle_delay(s: Span) -> IResult<Span, CycleDelay> {
     alt((
         cycle_delay_integral,
@@ -261,7 +261,7 @@ pub(crate) fn cycle_delay(s: Span) -> IResult<Span, CycleDelay> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn cycle_delay_integral(s: Span) -> IResult<Span, CycleDelay> {
     let (s, a) = symbol("##")(s)?;
     let (s, b) = integral_number(s)?;
@@ -271,7 +271,7 @@ pub(crate) fn cycle_delay_integral(s: Span) -> IResult<Span, CycleDelay> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn cycle_delay_identifier(s: Span) -> IResult<Span, CycleDelay> {
     let (s, a) = symbol("##")(s)?;
     let (s, b) = identifier(s)?;
@@ -281,7 +281,7 @@ pub(crate) fn cycle_delay_identifier(s: Span) -> IResult<Span, CycleDelay> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn cycle_delay_expression(s: Span) -> IResult<Span, CycleDelay> {
     let (s, a) = symbol("##")(s)?;
     let (s, b) = paren(expression)(s)?;
@@ -291,13 +291,13 @@ pub(crate) fn cycle_delay_expression(s: Span) -> IResult<Span, CycleDelay> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clockvar(s: Span) -> IResult<Span, Clockvar> {
     let (s, a) = hierarchical_identifier(s)?;
     Ok((s, Clockvar { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn clockvar_expression(s: Span) -> IResult<Span, ClockvarExpression> {
     let (s, a) = clockvar(s)?;
     let (s, b) = select(s)?;

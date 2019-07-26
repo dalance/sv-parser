@@ -2,12 +2,12 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn comment(s: Span) -> IResult<Span, Comment> {
     alt((one_line_comment, block_comment))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn one_line_comment(s: Span) -> IResult<Span, Comment> {
     let (s, a) = tag("//")(s)?;
     let (s, b) = is_not("\n")(s)?;
@@ -20,7 +20,7 @@ pub(crate) fn one_line_comment(s: Span) -> IResult<Span, Comment> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn block_comment(s: Span) -> IResult<Span, Comment> {
     let (s, a) = tag("/*")(s)?;
     let (s, b) = is_not("*/")(s)?;

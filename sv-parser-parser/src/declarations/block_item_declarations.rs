@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn block_item_declaration(s: Span) -> IResult<Span, BlockItemDeclaration> {
     alt((
         block_item_declaration_data,
@@ -13,7 +13,7 @@ pub(crate) fn block_item_declaration(s: Span) -> IResult<Span, BlockItemDeclarat
 }
 
 #[recursive_parser]
-#[parser]
+#[tracable_parser]
 pub(crate) fn block_item_declaration_data(s: Span) -> IResult<Span, BlockItemDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = data_declaration(s)?;
@@ -23,7 +23,7 @@ pub(crate) fn block_item_declaration_data(s: Span) -> IResult<Span, BlockItemDec
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn block_item_declaration_local_parameter(
     s: Span,
 ) -> IResult<Span, BlockItemDeclaration> {
@@ -38,7 +38,7 @@ pub(crate) fn block_item_declaration_local_parameter(
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn block_item_declaration_parameter(s: Span) -> IResult<Span, BlockItemDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = parameter_declaration(s)?;
@@ -51,7 +51,7 @@ pub(crate) fn block_item_declaration_parameter(s: Span) -> IResult<Span, BlockIt
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn block_item_declaration_let(s: Span) -> IResult<Span, BlockItemDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = let_declaration(s)?;

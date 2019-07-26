@@ -2,13 +2,13 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn string_literal(s: Span) -> IResult<Span, StringLiteral> {
     let (s, a) = ws(string_literal_impl)(s)?;
     Ok((s, StringLiteral { nodes: a }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn string_literal_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = tag("\"")(s)?;
     let (s, b) = many1(pair(is_not("\\\""), opt(pair(tag("\\"), take(1usize)))))(s)?;

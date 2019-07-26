@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn udp_instantiation(s: Span) -> IResult<Span, UdpInstantiation> {
     let (s, a) = udp_identifier(s)?;
     let (s, b) = opt(drive_strength)(s)?;
@@ -17,7 +17,7 @@ pub(crate) fn udp_instantiation(s: Span) -> IResult<Span, UdpInstantiation> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn udp_instance(s: Span) -> IResult<Span, UdpInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(tuple((

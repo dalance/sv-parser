@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn subroutine_call_statement(s: Span) -> IResult<Span, SubroutineCallStatement> {
     alt((
         map(pair(subroutine_call, symbol(";")), |x| {
@@ -12,7 +12,7 @@ pub(crate) fn subroutine_call_statement(s: Span) -> IResult<Span, SubroutineCall
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn subroutine_call_statement_function(
     s: Span,
 ) -> IResult<Span, SubroutineCallStatement> {

@@ -3,7 +3,7 @@ use crate::*;
 // -----------------------------------------------------------------------------
 
 #[packrat_parser]
-#[parser]
+#[tracable_parser]
 pub(crate) fn casting_type(s: Span) -> IResult<Span, CastingType> {
     alt((
         map(simple_type, |x| CastingType::SimpleType(Box::new(x))),
@@ -16,7 +16,7 @@ pub(crate) fn casting_type(s: Span) -> IResult<Span, CastingType> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn data_type(s: Span) -> IResult<Span, DataType> {
     alt((
         data_type_vector,
@@ -37,7 +37,7 @@ pub(crate) fn data_type(s: Span) -> IResult<Span, DataType> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn data_type_vector(s: Span) -> IResult<Span, DataType> {
     let (s, a) = integer_vector_type(s)?;
     let (s, b) = opt(signing)(s)?;
@@ -48,14 +48,14 @@ pub(crate) fn data_type_vector(s: Span) -> IResult<Span, DataType> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn data_type_atom(s: Span) -> IResult<Span, DataType> {
     let (s, a) = integer_atom_type(s)?;
     let (s, b) = opt(signing)(s)?;
     Ok((s, DataType::Atom(Box::new(DataTypeAtom { nodes: (a, b) }))))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn data_type_struct_union(s: Span) -> IResult<Span, DataType> {
     let (s, a) = struct_union(s)?;
     let (s, b) = opt(pair(packed, opt(signing)))(s)?;
@@ -69,13 +69,13 @@ pub(crate) fn data_type_struct_union(s: Span) -> IResult<Span, DataType> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn packed(s: Span) -> IResult<Span, Packed> {
     let (s, a) = keyword("packed")(s)?;
     Ok((s, Packed { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn data_type_enum(s: Span) -> IResult<Span, DataType> {
     let (s, a) = keyword("enum")(s)?;
     let (s, b) = opt(enum_base_type)(s)?;
@@ -89,7 +89,7 @@ pub(crate) fn data_type_enum(s: Span) -> IResult<Span, DataType> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn data_type_virtual(s: Span) -> IResult<Span, DataType> {
     let (s, a) = keyword("virtual")(s)?;
     let (s, b) = opt(interface)(s)?;
@@ -104,13 +104,13 @@ pub(crate) fn data_type_virtual(s: Span) -> IResult<Span, DataType> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn interface(s: Span) -> IResult<Span, Interface> {
     let (s, a) = keyword("interface")(s)?;
     Ok((s, Interface { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn data_type_type(s: Span) -> IResult<Span, DataType> {
     let (s, a) = opt(package_scope_or_class_scope)(s)?;
     let (s, b) = type_identifier(s)?;
@@ -121,7 +121,7 @@ pub(crate) fn data_type_type(s: Span) -> IResult<Span, DataType> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn data_type_or_implicit(s: Span) -> IResult<Span, DataTypeOrImplicit> {
     alt((
         map(data_type, |x| DataTypeOrImplicit::DataType(Box::new(x))),
@@ -131,14 +131,14 @@ pub(crate) fn data_type_or_implicit(s: Span) -> IResult<Span, DataTypeOrImplicit
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn implicit_data_type(s: Span) -> IResult<Span, ImplicitDataType> {
     let (s, a) = opt(signing)(s)?;
     let (s, b) = many0(packed_dimension)(s)?;
     Ok((s, ImplicitDataType { nodes: (a, b) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn enum_base_type(s: Span) -> IResult<Span, EnumBaseType> {
     alt((
         enum_base_type_atom,
@@ -147,7 +147,7 @@ pub(crate) fn enum_base_type(s: Span) -> IResult<Span, EnumBaseType> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn enum_base_type_atom(s: Span) -> IResult<Span, EnumBaseType> {
     let (s, a) = integer_atom_type(s)?;
     let (s, b) = opt(signing)(s)?;
@@ -157,7 +157,7 @@ pub(crate) fn enum_base_type_atom(s: Span) -> IResult<Span, EnumBaseType> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn enum_base_type_vector(s: Span) -> IResult<Span, EnumBaseType> {
     let (s, a) = integer_vector_type(s)?;
     let (s, b) = opt(signing)(s)?;
@@ -168,7 +168,7 @@ pub(crate) fn enum_base_type_vector(s: Span) -> IResult<Span, EnumBaseType> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn enum_base_type_type(s: Span) -> IResult<Span, EnumBaseType> {
     let (s, a) = type_identifier(s)?;
     let (s, b) = opt(packed_dimension)(s)?;
@@ -178,7 +178,7 @@ pub(crate) fn enum_base_type_type(s: Span) -> IResult<Span, EnumBaseType> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn enum_name_declaration(s: Span) -> IResult<Span, EnumNameDeclaration> {
     let (s, a) = enum_identifier(s)?;
     let (s, b) = opt(bracket(pair(
@@ -190,14 +190,14 @@ pub(crate) fn enum_name_declaration(s: Span) -> IResult<Span, EnumNameDeclaratio
 }
 
 #[packrat_parser]
-#[parser]
+#[tracable_parser]
 pub(crate) fn class_scope(s: Span) -> IResult<Span, ClassScope> {
     let (s, a) = class_type(s)?;
     let (s, b) = symbol("::")(s)?;
     Ok((s, ClassScope { nodes: (a, b) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn class_type(s: Span) -> IResult<Span, ClassType> {
     let (s, a) = ps_class_identifier(s)?;
     let (s, b) = opt(parameter_value_assignment)(s)?;
@@ -209,7 +209,7 @@ pub(crate) fn class_type(s: Span) -> IResult<Span, ClassType> {
     Ok((s, ClassType { nodes: (a, b, c) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn integer_type(s: Span) -> IResult<Span, IntegerType> {
     alt((
         map(integer_vector_type, |x| {
@@ -221,7 +221,7 @@ pub(crate) fn integer_type(s: Span) -> IResult<Span, IntegerType> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn integer_atom_type(s: Span) -> IResult<Span, IntegerAtomType> {
     alt((
         map(keyword("byte"), |x| IntegerAtomType::Byte(Box::new(x))),
@@ -239,7 +239,7 @@ pub(crate) fn integer_atom_type(s: Span) -> IResult<Span, IntegerAtomType> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn integer_vector_type(s: Span) -> IResult<Span, IntegerVectorType> {
     alt((
         map(keyword("bit"), |x| IntegerVectorType::Bit(Box::new(x))),
@@ -248,7 +248,7 @@ pub(crate) fn integer_vector_type(s: Span) -> IResult<Span, IntegerVectorType> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn non_integer_type(s: Span) -> IResult<Span, NonIntegerType> {
     alt((
         map(keyword("shortreal"), |x| {
@@ -261,7 +261,7 @@ pub(crate) fn non_integer_type(s: Span) -> IResult<Span, NonIntegerType> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn net_type(s: Span) -> IResult<Span, NetType> {
     alt((
         map(keyword("supply0"), |x| NetType::Supply0(Box::new(x))),
@@ -279,7 +279,7 @@ pub(crate) fn net_type(s: Span) -> IResult<Span, NetType> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn net_port_type(s: Span) -> IResult<Span, NetPortType> {
     alt((
         net_port_type_data_type,
@@ -290,7 +290,7 @@ pub(crate) fn net_port_type(s: Span) -> IResult<Span, NetPortType> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn net_port_type_data_type(s: Span) -> IResult<Span, NetPortType> {
     let (s, a) = opt(net_type)(s)?;
     let (s, b) = data_type_or_implicit(s)?;
@@ -300,7 +300,7 @@ pub(crate) fn net_port_type_data_type(s: Span) -> IResult<Span, NetPortType> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn net_port_type_interconnect(s: Span) -> IResult<Span, NetPortType> {
     let (s, a) = keyword("interconnect")(s)?;
     let (s, b) = implicit_data_type(s)?;
@@ -310,13 +310,13 @@ pub(crate) fn net_port_type_interconnect(s: Span) -> IResult<Span, NetPortType> 
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn variable_port_type(s: Span) -> IResult<Span, VariablePortType> {
     let (s, a) = var_data_type(s)?;
     Ok((s, VariablePortType { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn var_data_type(s: Span) -> IResult<Span, VarDataType> {
     alt((
         map(data_type, |x| VarDataType::DataType(Box::new(x))),
@@ -324,7 +324,7 @@ pub(crate) fn var_data_type(s: Span) -> IResult<Span, VarDataType> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn var_data_type_var(s: Span) -> IResult<Span, VarDataType> {
     let (s, a) = keyword("var")(s)?;
     let (s, b) = data_type_or_implicit(s)?;
@@ -334,7 +334,7 @@ pub(crate) fn var_data_type_var(s: Span) -> IResult<Span, VarDataType> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn signing(s: Span) -> IResult<Span, Signing> {
     alt((
         map(keyword("signed"), |x| Signing::Signed(Box::new(x))),
@@ -343,7 +343,7 @@ pub(crate) fn signing(s: Span) -> IResult<Span, Signing> {
 }
 
 #[packrat_parser]
-#[parser]
+#[tracable_parser]
 pub(crate) fn simple_type(s: Span) -> IResult<Span, SimpleType> {
     alt((
         map(integer_type, |x| SimpleType::IntegerType(Box::new(x))),
@@ -359,7 +359,7 @@ pub(crate) fn simple_type(s: Span) -> IResult<Span, SimpleType> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn struct_union_member(s: Span) -> IResult<Span, StructUnionMember> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = opt(random_qualifier)(s)?;
@@ -374,7 +374,7 @@ pub(crate) fn struct_union_member(s: Span) -> IResult<Span, StructUnionMember> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn data_type_or_void(s: Span) -> IResult<Span, DataTypeOrVoid> {
     alt((
         map(data_type, |x| DataTypeOrVoid::DataType(Box::new(x))),
@@ -382,7 +382,7 @@ pub(crate) fn data_type_or_void(s: Span) -> IResult<Span, DataTypeOrVoid> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn struct_union(s: Span) -> IResult<Span, StructUnion> {
     alt((
         map(keyword("struct"), |x| StructUnion::Struct(Box::new(x))),
@@ -393,12 +393,12 @@ pub(crate) fn struct_union(s: Span) -> IResult<Span, StructUnion> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn type_reference(s: Span) -> IResult<Span, TypeReference> {
     alt((type_reference_expression, type_reference_data_type))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn type_reference_expression(s: Span) -> IResult<Span, TypeReference> {
     let (s, a) = keyword("type")(s)?;
     let (s, b) = paren(expression)(s)?;
@@ -408,7 +408,7 @@ pub(crate) fn type_reference_expression(s: Span) -> IResult<Span, TypeReference>
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn type_reference_data_type(s: Span) -> IResult<Span, TypeReference> {
     let (s, a) = keyword("type")(s)?;
     let (s, b) = paren(data_type)(s)?;

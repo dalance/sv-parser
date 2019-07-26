@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn checker_instantiation(s: Span) -> IResult<Span, CheckerInstantiation> {
     let (s, a) = ps_checker_identifier(s)?;
     let (s, b) = name_of_instance(s)?;
@@ -16,7 +16,7 @@ pub(crate) fn checker_instantiation(s: Span) -> IResult<Span, CheckerInstantiati
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn list_of_checker_port_connections(
     s: Span,
 ) -> IResult<Span, ListOfCheckerPortConnections> {
@@ -27,7 +27,7 @@ pub(crate) fn list_of_checker_port_connections(
 }
 
 #[recursive_parser]
-#[parser]
+#[tracable_parser]
 pub(crate) fn list_of_checker_port_connections_ordered(
     s: Span,
 ) -> IResult<Span, ListOfCheckerPortConnections> {
@@ -40,7 +40,7 @@ pub(crate) fn list_of_checker_port_connections_ordered(
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn list_of_checker_port_connections_named(
     s: Span,
 ) -> IResult<Span, ListOfCheckerPortConnections> {
@@ -54,7 +54,7 @@ pub(crate) fn list_of_checker_port_connections_named(
 }
 
 #[recursive_parser]
-#[parser]
+#[tracable_parser]
 pub(crate) fn ordered_checker_port_connection(
     s: Span,
 ) -> IResult<Span, OrderedCheckerPortConnection> {
@@ -63,7 +63,7 @@ pub(crate) fn ordered_checker_port_connection(
     Ok((s, OrderedCheckerPortConnection { nodes: (x, y) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn named_checker_port_connection(s: Span) -> IResult<Span, NamedCheckerPortConnection> {
     alt((
         named_checker_port_connection_identifier,
@@ -71,7 +71,7 @@ pub(crate) fn named_checker_port_connection(s: Span) -> IResult<Span, NamedCheck
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn named_checker_port_connection_identifier(
     s: Span,
 ) -> IResult<Span, NamedCheckerPortConnection> {
@@ -87,7 +87,7 @@ pub(crate) fn named_checker_port_connection_identifier(
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn named_checker_port_connection_asterisk(
     s: Span,
 ) -> IResult<Span, NamedCheckerPortConnection> {

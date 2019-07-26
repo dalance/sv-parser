@@ -33,6 +33,9 @@ pub(crate) use nom::sequence::*;
 pub(crate) use nom::{Err, IResult};
 pub(crate) use nom_packrat::{self, packrat_parser};
 pub(crate) use nom_recursive::{recursive_parser, RecursiveInfo, RecursiveTracer};
+pub(crate) use nom_tracable::tracable_parser;
+#[cfg(any(feature = "forward_trace", feature = "backward_trace"))]
+pub(crate) use nom_tracable::{HasTracableInfo, Tracable, TracableInfo};
 pub(crate) use sv_parser_macros::*;
 pub(crate) use sv_parser_syntaxtree::*;
 
@@ -40,8 +43,8 @@ pub(crate) use sv_parser_syntaxtree::*;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct SpanInfo {
-    #[cfg(feature = "trace")]
-    pub depth: usize,
+    #[cfg(any(feature = "forward_trace", feature = "backward_trace"))]
+    pub tracable_info: TracableInfo,
     pub recursive_info: RecursiveInfo,
 }
 
@@ -54,6 +57,18 @@ impl RecursiveTracer for SpanInfo {
 
     fn set_info(mut self, info: RecursiveInfo) -> Self {
         self.recursive_info = info;
+        self
+    }
+}
+
+#[cfg(any(feature = "forward_trace", feature = "backward_trace"))]
+impl HasTracableInfo for SpanInfo {
+    fn get_tracable_info(&self) -> TracableInfo {
+        self.tracable_info
+    }
+
+    fn set_tracable_info(mut self, info: TracableInfo) -> Self {
+        self.tracable_info = info;
         self
     }
 }

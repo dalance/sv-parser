@@ -11,8 +11,9 @@ description = ""
 edition = "2018"
 
 [features]
-default = []
-trace = ["sv-parser-parser/trace"]
+default        = []
+forward_trace  = ["sv-parser-parser/forward_trace"]
+backward_trace = ["sv-parser-parser/backward_trace"]
 
 [dependencies]
 sv-parser-parser     = { path = "../sv-parser-parser" }

@@ -266,10 +266,9 @@ where
     }
 }
 
+#[cfg(not(any(feature = "forward_trace", feature = "backward_trace")))]
 pub(crate) fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol> {
     move |s: Span<'a>| {
-        #[cfg(feature = "trace")]
-        let s = trace(s, &format!("symbol(\"{}\")", t));
         let (s, x) = map(ws(map(tag(t.clone()), |x: Span| into_locate(x))), |x| {
             Symbol { nodes: x }
         })(s)?;
@@ -277,10 +276,24 @@ pub(crate) fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, S
     }
 }
 
+#[cfg(any(feature = "forward_trace", feature = "backward_trace"))]
+pub(crate) fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol> {
+    move |s: Span<'a>| {
+        let (depth, s) = forward_trace(s, &format!("symbol(\"{}\")", t));
+        let body = || {
+            let (s, x) = map(ws(map(tag(t.clone()), |x: Span| into_locate(x))), |x| {
+                Symbol { nodes: x }
+            })(s)?;
+            Ok((s, x))
+        };
+        let ret = body();
+        backward_trace(ret, &format!("symbol(\"{}\")", t), depth)
+    }
+}
+
+#[cfg(not(any(feature = "forward_trace", feature = "backward_trace")))]
 pub(crate) fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Keyword> {
     move |s: Span<'a>| {
-        #[cfg(feature = "trace")]
-        let s = trace(s, &format!("keyword(\"{}\")", t));
         let (s, x) = map(
             ws(terminated(
                 map(tag(t.clone()), |x: Span| into_locate(x)),
@@ -292,13 +305,31 @@ pub(crate) fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, 
     }
 }
 
+#[cfg(any(feature = "forward_trace", feature = "backward_trace"))]
+pub(crate) fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Keyword> {
+    move |s: Span<'a>| {
+        let (depth, s) = forward_trace(s, &format!("keyword(\"{}\")", t));
+        let body = || {
+            let (s, x) = map(
+                ws(terminated(
+                    map(tag(t.clone()), |x: Span| into_locate(x)),
+                    peek(none_of(AZ09_)),
+                )),
+                |x| Keyword { nodes: x },
+            )(s)?;
+            Ok((s, x))
+        };
+        let ret = body();
+        backward_trace(ret, &format!("keyword(\"{}\")", t), depth)
+    }
+}
+
+#[cfg(not(any(feature = "forward_trace", feature = "backward_trace")))]
 pub(crate) fn paren<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Paren<O>>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
-        #[cfg(feature = "trace")]
-        let s = trace(s, "paren");
         let (s, a) = symbol("(")(s)?;
         let (s, b) = f(s)?;
         let (s, c) = symbol(")")(s)?;
@@ -306,13 +337,30 @@ where
     }
 }
 
+#[cfg(any(feature = "forward_trace", feature = "backward_trace"))]
+pub(crate) fn paren<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Paren<O>>
+where
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+{
+    move |s: Span<'a>| {
+        let (depth, s) = forward_trace(s, "paren");
+        let body = || {
+            let (s, a) = symbol("(")(s)?;
+            let (s, b) = f(s)?;
+            let (s, c) = symbol(")")(s)?;
+            Ok((s, Paren { nodes: (a, b, c) }))
+        };
+        let ret = body();
+        backward_trace(ret, "paren", depth)
+    }
+}
+
+#[cfg(not(any(feature = "forward_trace", feature = "backward_trace")))]
 pub(crate) fn bracket<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Bracket<O>>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
-        #[cfg(feature = "trace")]
-        let s = trace(s, "bracket");
         let (s, a) = symbol("[")(s)?;
         let (s, b) = f(s)?;
         let (s, c) = symbol("]")(s)?;
@@ -320,13 +368,30 @@ where
     }
 }
 
+#[cfg(any(feature = "forward_trace", feature = "backward_trace"))]
+pub(crate) fn bracket<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Bracket<O>>
+where
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+{
+    move |s: Span<'a>| {
+        let (depth, s) = forward_trace(s, "bracket");
+        let body = || {
+            let (s, a) = symbol("[")(s)?;
+            let (s, b) = f(s)?;
+            let (s, c) = symbol("]")(s)?;
+            Ok((s, Bracket { nodes: (a, b, c) }))
+        };
+        let ret = body();
+        backward_trace(ret, "bracket", depth)
+    }
+}
+
+#[cfg(not(any(feature = "forward_trace", feature = "backward_trace")))]
 pub(crate) fn brace<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Brace<O>>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
-        #[cfg(feature = "trace")]
-        let s = trace(s, "brace");
         let (s, a) = symbol("{")(s)?;
         let (s, b) = f(s)?;
         let (s, c) = symbol("}")(s)?;
@@ -334,6 +399,25 @@ where
     }
 }
 
+#[cfg(any(feature = "forward_trace", feature = "backward_trace"))]
+pub(crate) fn brace<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Brace<O>>
+where
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+{
+    move |s: Span<'a>| {
+        let (depth, s) = forward_trace(s, "brace");
+        let body = || {
+            let (s, a) = symbol("{")(s)?;
+            let (s, b) = f(s)?;
+            let (s, c) = symbol("}")(s)?;
+            Ok((s, Brace { nodes: (a, b, c) }))
+        };
+        let ret = body();
+        backward_trace(ret, "brace", depth)
+    }
+}
+
+#[cfg(not(any(feature = "forward_trace", feature = "backward_trace")))]
 pub(crate) fn apostrophe_brace<'a, O, F>(
     f: F,
 ) -> impl Fn(Span<'a>) -> IResult<Span<'a>, ApostropheBrace<O>>
@@ -341,12 +425,30 @@ where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
-        #[cfg(feature = "trace")]
-        let s = trace(s, "apostrophe_brace");
         let (s, a) = symbol("'{")(s)?;
         let (s, b) = f(s)?;
         let (s, c) = symbol("}")(s)?;
         Ok((s, ApostropheBrace { nodes: (a, b, c) }))
+    }
+}
+
+#[cfg(any(feature = "forward_trace", feature = "backward_trace"))]
+pub(crate) fn apostrophe_brace<'a, O, F>(
+    f: F,
+) -> impl Fn(Span<'a>) -> IResult<Span<'a>, ApostropheBrace<O>>
+where
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+{
+    move |s: Span<'a>| {
+        let (depth, s) = forward_trace(s, "apostrophe_brace");
+        let body = || {
+            let (s, a) = symbol("'{")(s)?;
+            let (s, b) = f(s)?;
+            let (s, c) = symbol("}")(s)?;
+            Ok((s, ApostropheBrace { nodes: (a, b, c) }))
+        };
+        let ret = body();
+        backward_trace(ret, "apostrophe_brace", depth)
     }
 }
 
@@ -424,7 +526,7 @@ where
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
     alt((
         map(multispace1, |x: Span| {
@@ -467,16 +569,59 @@ pub(crate) fn into_locate(s: Span) -> Locate {
     }
 }
 
-#[cfg(feature = "trace")]
-pub(crate) fn trace<'a>(mut s: Span<'a>, name: &str) -> Span<'a> {
+#[cfg(any(feature = "forward_trace", feature = "backward_trace"))]
+pub(crate) fn forward_trace<'a>(s: Span<'a>, name: &str) -> (usize, Span<'a>) {
+    let depth = s.get_depth();
+    #[cfg(feature = "forward_trace")]
     println!(
-        //"{:<128} : {:<4},{:>032x} : {}",
-        "{:<128} : {:<4} : {}",
-        format!("{}{}", " ".repeat(s.extra.depth), name),
-        s.offset,
-        //s.extra.recursive_flag[0],
-        s.fragment
+        "{:<128} : {}",
+        format!(
+            "{}{}-> {}{}",
+            "\u{001b}[1;37m",
+            " ".repeat(depth),
+            name,
+            "\u{001b}[0m"
+        ),
+        s.format(),
     );
-    s.extra.depth += 1;
-    s
+    (depth, s.inc_depth())
+}
+
+#[cfg(any(feature = "forward_trace", feature = "backward_trace"))]
+pub(crate) fn backward_trace<'a, O>(
+    ret: IResult<Span<'a>, O>,
+    name: &str,
+    depth: usize,
+) -> IResult<Span<'a>, O> {
+    match ret {
+        Ok((s, x)) => {
+            #[cfg(feature = "backward_trace")]
+            println!(
+                "{:<128} : {}",
+                format!(
+                    "{}{}<- {}{}",
+                    "\u{001b}[1;32m",
+                    " ".repeat(depth),
+                    name,
+                    "\u{001b}[0m"
+                ),
+                s.format(),
+            );
+            Ok((s.dec_depth(), x))
+        }
+        Err(x) => {
+            #[cfg(feature = "backward_trace")]
+            println!(
+                "{:<128}",
+                format!(
+                    "{}{}<- {}{}",
+                    "\u{001b}[1;31m",
+                    " ".repeat(depth),
+                    name,
+                    "\u{001b}[0m"
+                ),
+            );
+            Err(x)
+        }
+    }
 }

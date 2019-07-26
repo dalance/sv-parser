@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn drive_strength(s: Span) -> IResult<Span, DriveStrength> {
     alt((
         drive_strength01,
@@ -14,7 +14,7 @@ pub(crate) fn drive_strength(s: Span) -> IResult<Span, DriveStrength> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn drive_strength01(s: Span) -> IResult<Span, DriveStrength> {
     let (s, a) = paren(triple(strength0, symbol(","), strength1))(s)?;
     Ok((
@@ -23,7 +23,7 @@ pub(crate) fn drive_strength01(s: Span) -> IResult<Span, DriveStrength> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn drive_strength10(s: Span) -> IResult<Span, DriveStrength> {
     let (s, a) = paren(triple(strength1, symbol(","), strength0))(s)?;
     Ok((
@@ -32,7 +32,7 @@ pub(crate) fn drive_strength10(s: Span) -> IResult<Span, DriveStrength> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn drive_strength0z(s: Span) -> IResult<Span, DriveStrength> {
     let (s, a) = paren(triple(strength0, symbol(","), keyword("highz1")))(s)?;
     Ok((
@@ -41,7 +41,7 @@ pub(crate) fn drive_strength0z(s: Span) -> IResult<Span, DriveStrength> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn drive_strength1z(s: Span) -> IResult<Span, DriveStrength> {
     let (s, a) = paren(triple(strength1, symbol(","), keyword("highz0")))(s)?;
     Ok((
@@ -50,7 +50,7 @@ pub(crate) fn drive_strength1z(s: Span) -> IResult<Span, DriveStrength> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn drive_strengthz1(s: Span) -> IResult<Span, DriveStrength> {
     let (s, a) = paren(triple(keyword("highz0"), symbol(","), strength1))(s)?;
     Ok((
@@ -59,7 +59,7 @@ pub(crate) fn drive_strengthz1(s: Span) -> IResult<Span, DriveStrength> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn drive_strengthz0(s: Span) -> IResult<Span, DriveStrength> {
     let (s, a) = paren(triple(keyword("highz1"), symbol(","), strength0))(s)?;
     Ok((
@@ -68,7 +68,7 @@ pub(crate) fn drive_strengthz0(s: Span) -> IResult<Span, DriveStrength> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn strength0(s: Span) -> IResult<Span, Strength0> {
     alt((
         map(keyword("supply0"), |x| Strength0::Supply0(Box::new(x))),
@@ -78,7 +78,7 @@ pub(crate) fn strength0(s: Span) -> IResult<Span, Strength0> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn strength1(s: Span) -> IResult<Span, Strength1> {
     alt((
         map(keyword("supply1"), |x| Strength1::Supply1(Box::new(x))),
@@ -88,7 +88,7 @@ pub(crate) fn strength1(s: Span) -> IResult<Span, Strength1> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn charge_strength(s: Span) -> IResult<Span, ChargeStrength> {
     alt((
         charge_strength_small,
@@ -97,7 +97,7 @@ pub(crate) fn charge_strength(s: Span) -> IResult<Span, ChargeStrength> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn charge_strength_small(s: Span) -> IResult<Span, ChargeStrength> {
     let (s, a) = paren(keyword("small"))(s)?;
     Ok((
@@ -106,7 +106,7 @@ pub(crate) fn charge_strength_small(s: Span) -> IResult<Span, ChargeStrength> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn charge_strength_medium(s: Span) -> IResult<Span, ChargeStrength> {
     let (s, a) = paren(keyword("medium"))(s)?;
     Ok((
@@ -115,7 +115,7 @@ pub(crate) fn charge_strength_medium(s: Span) -> IResult<Span, ChargeStrength> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn charge_strength_large(s: Span) -> IResult<Span, ChargeStrength> {
     let (s, a) = paren(keyword("large"))(s)?;
     Ok((

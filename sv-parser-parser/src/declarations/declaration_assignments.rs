@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn defparam_assignment(s: Span) -> IResult<Span, DefparamAssignment> {
     let (s, a) = hierarchical_parameter_identifier(s)?;
     let (s, b) = symbol("=")(s)?;
@@ -10,7 +10,7 @@ pub(crate) fn defparam_assignment(s: Span) -> IResult<Span, DefparamAssignment> 
     Ok((s, DefparamAssignment { nodes: (a, b, c) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn net_decl_assignment(s: Span) -> IResult<Span, NetDeclAssignment> {
     let (s, a) = net_identifier(s)?;
     let (s, b) = many0(unpacked_dimension)(s)?;
@@ -18,7 +18,7 @@ pub(crate) fn net_decl_assignment(s: Span) -> IResult<Span, NetDeclAssignment> {
     Ok((s, NetDeclAssignment { nodes: (a, b, c) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn param_assignment(s: Span) -> IResult<Span, ParamAssignment> {
     let (s, a) = parameter_identifier(s)?;
     let (s, b) = many0(unpacked_dimension)(s)?;
@@ -26,7 +26,7 @@ pub(crate) fn param_assignment(s: Span) -> IResult<Span, ParamAssignment> {
     Ok((s, ParamAssignment { nodes: (a, b, c) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn specparam_assignment(s: Span) -> IResult<Span, SpecparamAssignment> {
     alt((
         specparam_assignment_mintypmax,
@@ -36,7 +36,7 @@ pub(crate) fn specparam_assignment(s: Span) -> IResult<Span, SpecparamAssignment
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn specparam_assignment_mintypmax(s: Span) -> IResult<Span, SpecparamAssignment> {
     let (s, a) = specparam_identifier(s)?;
     let (s, b) = symbol("=")(s)?;
@@ -47,14 +47,14 @@ pub(crate) fn specparam_assignment_mintypmax(s: Span) -> IResult<Span, Specparam
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn type_assignment(s: Span) -> IResult<Span, TypeAssignment> {
     let (s, a) = type_identifier(s)?;
     let (s, b) = opt(pair(symbol("="), data_type))(s)?;
     Ok((s, TypeAssignment { nodes: (a, b) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn pulse_control_specparam(s: Span) -> IResult<Span, PulseControlSpecparam> {
     alt((
         pulse_control_specparam_without_descriptor,
@@ -62,7 +62,7 @@ pub(crate) fn pulse_control_specparam(s: Span) -> IResult<Span, PulseControlSpec
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn pulse_control_specparam_without_descriptor(
     s: Span,
 ) -> IResult<Span, PulseControlSpecparam> {
@@ -80,7 +80,7 @@ pub(crate) fn pulse_control_specparam_without_descriptor(
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn pulse_control_specparam_with_descriptor(
     s: Span,
 ) -> IResult<Span, PulseControlSpecparam> {
@@ -101,25 +101,25 @@ pub(crate) fn pulse_control_specparam_with_descriptor(
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn error_limit_value(s: Span) -> IResult<Span, ErrorLimitValue> {
     let (s, a) = limit_value(s)?;
     Ok((s, ErrorLimitValue { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn reject_limit_value(s: Span) -> IResult<Span, RejectLimitValue> {
     let (s, a) = limit_value(s)?;
     Ok((s, RejectLimitValue { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn limit_value(s: Span) -> IResult<Span, LimitValue> {
     let (s, a) = constant_mintypmax_expression(s)?;
     Ok((s, LimitValue { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn variable_decl_assignment(s: Span) -> IResult<Span, VariableDeclAssignment> {
     alt((
         variable_decl_assignment_variable,
@@ -128,7 +128,7 @@ pub(crate) fn variable_decl_assignment(s: Span) -> IResult<Span, VariableDeclAss
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn variable_decl_assignment_variable(s: Span) -> IResult<Span, VariableDeclAssignment> {
     let (s, a) = variable_identifier(s)?;
     let (s, b) = many0(variable_dimension)(s)?;
@@ -141,7 +141,7 @@ pub(crate) fn variable_decl_assignment_variable(s: Span) -> IResult<Span, Variab
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn variable_decl_assignment_dynamic_array(
     s: Span,
 ) -> IResult<Span, VariableDeclAssignment> {
@@ -157,7 +157,7 @@ pub(crate) fn variable_decl_assignment_dynamic_array(
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn variable_decl_assignment_class(s: Span) -> IResult<Span, VariableDeclAssignment> {
     let (s, a) = class_variable_identifier(s)?;
     let (s, b) = opt(pair(symbol("="), class_new))(s)?;
@@ -167,12 +167,12 @@ pub(crate) fn variable_decl_assignment_class(s: Span) -> IResult<Span, VariableD
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn class_new(s: Span) -> IResult<Span, ClassNew> {
     alt((class_new_argument, class_new_expression))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn class_new_argument(s: Span) -> IResult<Span, ClassNew> {
     let (s, a) = opt(class_scope)(s)?;
     let (s, b) = keyword("new")(s)?;
@@ -183,7 +183,7 @@ pub(crate) fn class_new_argument(s: Span) -> IResult<Span, ClassNew> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn class_new_expression(s: Span) -> IResult<Span, ClassNew> {
     let (s, a) = keyword("new")(s)?;
     let (s, b) = expression(s)?;
@@ -193,7 +193,7 @@ pub(crate) fn class_new_expression(s: Span) -> IResult<Span, ClassNew> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn dynamic_array_new(s: Span) -> IResult<Span, DynamicArrayNew> {
     let (s, a) = keyword("new")(s)?;
     let (s, b) = bracket(expression)(s)?;

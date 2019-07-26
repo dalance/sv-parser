@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn local_parameter_declaration(s: Span) -> IResult<Span, LocalParameterDeclaration> {
     alt((
         local_parameter_declaration_param,
@@ -11,6 +11,7 @@ pub(crate) fn local_parameter_declaration(s: Span) -> IResult<Span, LocalParamet
 }
 
 #[parser(Ambiguous)]
+#[tracable_parser]
 pub(crate) fn local_parameter_declaration_param(
     s: Span,
 ) -> IResult<Span, LocalParameterDeclaration> {
@@ -25,7 +26,7 @@ pub(crate) fn local_parameter_declaration_param(
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn local_parameter_declaration_type(
     s: Span,
 ) -> IResult<Span, LocalParameterDeclaration> {
@@ -40,12 +41,13 @@ pub(crate) fn local_parameter_declaration_type(
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn parameter_declaration(s: Span) -> IResult<Span, ParameterDeclaration> {
     alt((parameter_declaration_param, parameter_declaration_type))(s)
 }
 
 #[parser(Ambiguous)]
+#[tracable_parser]
 pub(crate) fn parameter_declaration_param(s: Span) -> IResult<Span, ParameterDeclaration> {
     let (s, a) = keyword("parameter")(s)?;
     let (s, b) = ambiguous_opt(data_type_or_implicit)(s)?;
@@ -56,7 +58,7 @@ pub(crate) fn parameter_declaration_param(s: Span) -> IResult<Span, ParameterDec
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn parameter_declaration_type(s: Span) -> IResult<Span, ParameterDeclaration> {
     let (s, a) = keyword("parameter")(s)?;
     let (s, b) = keyword("type")(s)?;
@@ -67,7 +69,7 @@ pub(crate) fn parameter_declaration_type(s: Span) -> IResult<Span, ParameterDecl
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn specparam_declaration(s: Span) -> IResult<Span, SpecparamDeclaration> {
     let (s, a) = keyword("specparam")(s)?;
     let (s, b) = opt(packed_dimension)(s)?;

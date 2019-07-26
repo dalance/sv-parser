@@ -2,19 +2,19 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn list_of_defparam_assignments(s: Span) -> IResult<Span, ListOfDefparamAssignments> {
     let (s, a) = list(symbol(","), defparam_assignment)(s)?;
     Ok((s, ListOfDefparamAssignments { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn list_of_genvar_identifiers(s: Span) -> IResult<Span, ListOfGenvarIdentifiers> {
     let (s, a) = list(symbol(","), genvar_identifier)(s)?;
     Ok((s, ListOfGenvarIdentifiers { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn list_of_interface_identifiers(s: Span) -> IResult<Span, ListOfInterfaceIdentifiers> {
     let (s, a) = list(
         symbol(","),
@@ -23,19 +23,19 @@ pub(crate) fn list_of_interface_identifiers(s: Span) -> IResult<Span, ListOfInte
     Ok((s, ListOfInterfaceIdentifiers { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn list_of_net_decl_assignments(s: Span) -> IResult<Span, ListOfNetDeclAssignments> {
     let (s, a) = list(symbol(","), net_decl_assignment)(s)?;
     Ok((s, ListOfNetDeclAssignments { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn list_of_param_assignments(s: Span) -> IResult<Span, ListOfParamAssignments> {
     let (s, a) = list(symbol(","), param_assignment)(s)?;
     Ok((s, ListOfParamAssignments { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn list_of_port_identifiers(s: Span) -> IResult<Span, ListOfPortIdentifiers> {
     let (s, a) = list(
         symbol(","),
@@ -44,19 +44,19 @@ pub(crate) fn list_of_port_identifiers(s: Span) -> IResult<Span, ListOfPortIdent
     Ok((s, ListOfPortIdentifiers { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn list_of_udp_port_identifiers(s: Span) -> IResult<Span, ListOfUdpPortIdentifiers> {
     let (s, a) = list(symbol(","), port_identifier)(s)?;
     Ok((s, ListOfUdpPortIdentifiers { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn list_of_specparam_assignments(s: Span) -> IResult<Span, ListOfSpecparamAssignments> {
     let (s, a) = list(symbol(","), specparam_assignment)(s)?;
     Ok((s, ListOfSpecparamAssignments { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn list_of_tf_variable_identifiers(
     s: Span,
 ) -> IResult<Span, ListOfTfVariableIdentifiers> {
@@ -71,13 +71,13 @@ pub(crate) fn list_of_tf_variable_identifiers(
     Ok((s, ListOfTfVariableIdentifiers { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn list_of_type_assignments(s: Span) -> IResult<Span, ListOfTypeAssignments> {
     let (s, a) = list(symbol(","), type_assignment)(s)?;
     Ok((s, ListOfTypeAssignments { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn list_of_variable_decl_assignments(
     s: Span,
 ) -> IResult<Span, ListOfVariableDeclAssignments> {
@@ -85,7 +85,7 @@ pub(crate) fn list_of_variable_decl_assignments(
     Ok((s, ListOfVariableDeclAssignments { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn list_of_variable_identifiers(s: Span) -> IResult<Span, ListOfVariableIdentifiers> {
     let (s, a) = list(
         symbol(","),
@@ -94,7 +94,7 @@ pub(crate) fn list_of_variable_identifiers(s: Span) -> IResult<Span, ListOfVaria
     Ok((s, ListOfVariableIdentifiers { nodes: (a,) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn list_of_variable_port_identifiers(
     s: Span,
 ) -> IResult<Span, ListOfVariablePortIdentifiers> {

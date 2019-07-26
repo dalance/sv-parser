@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn gate_instantiation(s: Span) -> IResult<Span, GateInstantiation> {
     alt((
         gate_instantiation_cmos,
@@ -17,7 +17,7 @@ pub(crate) fn gate_instantiation(s: Span) -> IResult<Span, GateInstantiation> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn gate_instantiation_cmos(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, a) = cmos_switchtype(s)?;
     let (s, b) = opt(delay3)(s)?;
@@ -31,7 +31,7 @@ pub(crate) fn gate_instantiation_cmos(s: Span) -> IResult<Span, GateInstantiatio
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn gate_instantiation_enable(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, a) = enable_gatetype(s)?;
     let (s, b) = opt(drive_strength)(s)?;
@@ -46,7 +46,7 @@ pub(crate) fn gate_instantiation_enable(s: Span) -> IResult<Span, GateInstantiat
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn gate_instantiation_mos(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, a) = mos_switchtype(s)?;
     let (s, b) = opt(delay3)(s)?;
@@ -60,7 +60,7 @@ pub(crate) fn gate_instantiation_mos(s: Span) -> IResult<Span, GateInstantiation
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn gate_instantiation_n_input(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, a) = n_input_gatetype(s)?;
     let (s, b) = opt(drive_strength)(s)?;
@@ -75,7 +75,7 @@ pub(crate) fn gate_instantiation_n_input(s: Span) -> IResult<Span, GateInstantia
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn gate_instantiation_n_output(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, a) = n_output_gatetype(s)?;
     let (s, b) = opt(drive_strength)(s)?;
@@ -90,7 +90,7 @@ pub(crate) fn gate_instantiation_n_output(s: Span) -> IResult<Span, GateInstanti
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn gate_instantiation_pass_en(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, a) = pass_en_switchtype(s)?;
     let (s, b) = opt(delay2)(s)?;
@@ -104,7 +104,7 @@ pub(crate) fn gate_instantiation_pass_en(s: Span) -> IResult<Span, GateInstantia
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn gate_instantiation_pass(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, a) = pass_switchtype(s)?;
     let (s, b) = list(symbol(","), pass_switch_instance)(s)?;
@@ -115,7 +115,7 @@ pub(crate) fn gate_instantiation_pass(s: Span) -> IResult<Span, GateInstantiatio
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn gate_instantiation_pulldown(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, a) = keyword("pulldown")(s)?;
     let (s, b) = opt(pulldown_strength)(s)?;
@@ -129,7 +129,7 @@ pub(crate) fn gate_instantiation_pulldown(s: Span) -> IResult<Span, GateInstanti
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn gate_instantiation_pullup(s: Span) -> IResult<Span, GateInstantiation> {
     let (s, a) = keyword("pullup")(s)?;
     let (s, b) = opt(pullup_strength)(s)?;
@@ -143,7 +143,7 @@ pub(crate) fn gate_instantiation_pullup(s: Span) -> IResult<Span, GateInstantiat
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn cmos_switch_instance(s: Span) -> IResult<Span, CmosSwitchInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(tuple((
@@ -158,7 +158,7 @@ pub(crate) fn cmos_switch_instance(s: Span) -> IResult<Span, CmosSwitchInstance>
     Ok((s, CmosSwitchInstance { nodes: (a, b) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn enable_gate_instance(s: Span) -> IResult<Span, EnableGateInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(tuple((
@@ -171,7 +171,7 @@ pub(crate) fn enable_gate_instance(s: Span) -> IResult<Span, EnableGateInstance>
     Ok((s, EnableGateInstance { nodes: (a, b) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn mos_switch_instance(s: Span) -> IResult<Span, MosSwitchInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(tuple((
@@ -184,7 +184,7 @@ pub(crate) fn mos_switch_instance(s: Span) -> IResult<Span, MosSwitchInstance> {
     Ok((s, MosSwitchInstance { nodes: (a, b) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn n_input_gate_instance(s: Span) -> IResult<Span, NInputGateInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(tuple((
@@ -195,7 +195,7 @@ pub(crate) fn n_input_gate_instance(s: Span) -> IResult<Span, NInputGateInstance
     Ok((s, NInputGateInstance { nodes: (a, b) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn n_output_gate_instance(s: Span) -> IResult<Span, NOutputGateInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(tuple((
@@ -206,14 +206,14 @@ pub(crate) fn n_output_gate_instance(s: Span) -> IResult<Span, NOutputGateInstan
     Ok((s, NOutputGateInstance { nodes: (a, b) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn pass_switch_instance(s: Span) -> IResult<Span, PassSwitchInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(tuple((inout_terminal, symbol(","), inout_terminal)))(s)?;
     Ok((s, PassSwitchInstance { nodes: (a, b) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn pass_enable_switch_instance(s: Span) -> IResult<Span, PassEnableSwitchInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(tuple((
@@ -226,7 +226,7 @@ pub(crate) fn pass_enable_switch_instance(s: Span) -> IResult<Span, PassEnableSw
     Ok((s, PassEnableSwitchInstance { nodes: (a, b) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn pull_gate_instance(s: Span) -> IResult<Span, PullGateInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(output_terminal)(s)?;

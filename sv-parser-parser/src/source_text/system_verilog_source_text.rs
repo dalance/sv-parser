@@ -2,14 +2,14 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn source_text(s: Span) -> IResult<Span, SourceText> {
     let (s, a) = opt(timeunits_declaration)(s)?;
     let (s, b) = many0(description)(s)?;
     Ok((s, SourceText { nodes: (a, b) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn description(s: Span) -> IResult<Span, Description> {
     alt((
         map(module_declaration, |x| {
@@ -39,7 +39,7 @@ pub(crate) fn description(s: Span) -> IResult<Span, Description> {
 }
 
 #[recursive_parser]
-#[parser]
+#[tracable_parser]
 pub(crate) fn description_package_item(s: Span) -> IResult<Span, Description> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = package_item(s)?;
@@ -49,7 +49,7 @@ pub(crate) fn description_package_item(s: Span) -> IResult<Span, Description> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn description_bind_directive(s: Span) -> IResult<Span, Description> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = bind_directive(s)?;
@@ -59,7 +59,7 @@ pub(crate) fn description_bind_directive(s: Span) -> IResult<Span, Description> 
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn module_nonansi_header(s: Span) -> IResult<Span, ModuleNonansiHeader> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = module_keyword(s)?;
@@ -77,7 +77,7 @@ pub(crate) fn module_nonansi_header(s: Span) -> IResult<Span, ModuleNonansiHeade
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn module_ansi_header(s: Span) -> IResult<Span, ModuleAnsiHeader> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = module_keyword(s)?;
@@ -95,7 +95,7 @@ pub(crate) fn module_ansi_header(s: Span) -> IResult<Span, ModuleAnsiHeader> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn module_declaration(s: Span) -> IResult<Span, ModuleDeclaration> {
     alt((
         module_declaration_nonansi,
@@ -106,7 +106,7 @@ pub(crate) fn module_declaration(s: Span) -> IResult<Span, ModuleDeclaration> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn module_declaration_nonansi(s: Span) -> IResult<Span, ModuleDeclaration> {
     let (s, a) = module_nonansi_header(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
@@ -121,7 +121,7 @@ pub(crate) fn module_declaration_nonansi(s: Span) -> IResult<Span, ModuleDeclara
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn module_declaration_ansi(s: Span) -> IResult<Span, ModuleDeclaration> {
     let (s, a) = module_ansi_header(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
@@ -136,7 +136,7 @@ pub(crate) fn module_declaration_ansi(s: Span) -> IResult<Span, ModuleDeclaratio
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn module_declaration_wildcard(s: Span) -> IResult<Span, ModuleDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = module_keyword(s)?;
@@ -156,7 +156,7 @@ pub(crate) fn module_declaration_wildcard(s: Span) -> IResult<Span, ModuleDeclar
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn module_declaration_extern_nonansi(s: Span) -> IResult<Span, ModuleDeclaration> {
     let (s, a) = keyword("extern")(s)?;
     let (s, b) = module_nonansi_header(s)?;
@@ -168,7 +168,7 @@ pub(crate) fn module_declaration_extern_nonansi(s: Span) -> IResult<Span, Module
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn module_declaration_extern_ansi(s: Span) -> IResult<Span, ModuleDeclaration> {
     let (s, a) = keyword("extern")(s)?;
     let (s, b) = module_ansi_header(s)?;
@@ -178,7 +178,7 @@ pub(crate) fn module_declaration_extern_ansi(s: Span) -> IResult<Span, ModuleDec
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn module_keyword(s: Span) -> IResult<Span, ModuleKeyword> {
     alt((
         map(keyword("module"), |x| ModuleKeyword::Module(Box::new(x))),
@@ -188,7 +188,7 @@ pub(crate) fn module_keyword(s: Span) -> IResult<Span, ModuleKeyword> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn interface_declaration(s: Span) -> IResult<Span, InterfaceDeclaration> {
     alt((
         interface_declaration_nonansi,
@@ -199,7 +199,7 @@ pub(crate) fn interface_declaration(s: Span) -> IResult<Span, InterfaceDeclarati
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn interface_declaration_nonansi(s: Span) -> IResult<Span, InterfaceDeclaration> {
     let (s, a) = interface_nonansi_header(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
@@ -214,7 +214,7 @@ pub(crate) fn interface_declaration_nonansi(s: Span) -> IResult<Span, InterfaceD
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn interface_declaration_ansi(s: Span) -> IResult<Span, InterfaceDeclaration> {
     let (s, a) = interface_ansi_header(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
@@ -229,7 +229,7 @@ pub(crate) fn interface_declaration_ansi(s: Span) -> IResult<Span, InterfaceDecl
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn interface_declaration_wildcard(s: Span) -> IResult<Span, InterfaceDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("interface")(s)?;
@@ -249,7 +249,7 @@ pub(crate) fn interface_declaration_wildcard(s: Span) -> IResult<Span, Interface
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn interface_declaration_extern_nonansi(s: Span) -> IResult<Span, InterfaceDeclaration> {
     let (s, a) = keyword("extern")(s)?;
     let (s, b) = interface_nonansi_header(s)?;
@@ -261,7 +261,7 @@ pub(crate) fn interface_declaration_extern_nonansi(s: Span) -> IResult<Span, Int
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn interface_declaration_extern_ansi(s: Span) -> IResult<Span, InterfaceDeclaration> {
     let (s, a) = keyword("extern")(s)?;
     let (s, b) = interface_ansi_header(s)?;
@@ -273,7 +273,7 @@ pub(crate) fn interface_declaration_extern_ansi(s: Span) -> IResult<Span, Interf
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn interface_nonansi_header(s: Span) -> IResult<Span, InterfaceNonansiHeader> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("interface")(s)?;
@@ -291,7 +291,7 @@ pub(crate) fn interface_nonansi_header(s: Span) -> IResult<Span, InterfaceNonans
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn interface_ansi_header(s: Span) -> IResult<Span, InterfaceAnsiHeader> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("interface")(s)?;
@@ -309,7 +309,7 @@ pub(crate) fn interface_ansi_header(s: Span) -> IResult<Span, InterfaceAnsiHeade
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn program_declaration(s: Span) -> IResult<Span, ProgramDeclaration> {
     alt((
         program_declaration_nonansi,
@@ -320,7 +320,7 @@ pub(crate) fn program_declaration(s: Span) -> IResult<Span, ProgramDeclaration> 
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn program_declaration_nonansi(s: Span) -> IResult<Span, ProgramDeclaration> {
     let (s, a) = program_nonansi_header(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
@@ -335,7 +335,7 @@ pub(crate) fn program_declaration_nonansi(s: Span) -> IResult<Span, ProgramDecla
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn program_declaration_ansi(s: Span) -> IResult<Span, ProgramDeclaration> {
     let (s, a) = program_ansi_header(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
@@ -350,7 +350,7 @@ pub(crate) fn program_declaration_ansi(s: Span) -> IResult<Span, ProgramDeclarat
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn program_declaration_wildcard(s: Span) -> IResult<Span, ProgramDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("program")(s)?;
@@ -369,7 +369,7 @@ pub(crate) fn program_declaration_wildcard(s: Span) -> IResult<Span, ProgramDecl
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn program_declaration_extern_nonansi(s: Span) -> IResult<Span, ProgramDeclaration> {
     let (s, a) = keyword("extern")(s)?;
     let (s, b) = program_nonansi_header(s)?;
@@ -381,7 +381,7 @@ pub(crate) fn program_declaration_extern_nonansi(s: Span) -> IResult<Span, Progr
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn program_declaration_extern_ansi(s: Span) -> IResult<Span, ProgramDeclaration> {
     let (s, a) = keyword("extern")(s)?;
     let (s, b) = program_ansi_header(s)?;
@@ -391,7 +391,7 @@ pub(crate) fn program_declaration_extern_ansi(s: Span) -> IResult<Span, ProgramD
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn program_nonansi_header(s: Span) -> IResult<Span, ProgramNonansiHeader> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("prgogram")(s)?;
@@ -409,7 +409,7 @@ pub(crate) fn program_nonansi_header(s: Span) -> IResult<Span, ProgramNonansiHea
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn program_ansi_header(s: Span) -> IResult<Span, ProgramAnsiHeader> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("program")(s)?;
@@ -427,7 +427,7 @@ pub(crate) fn program_ansi_header(s: Span) -> IResult<Span, ProgramAnsiHeader> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn checker_declaration(s: Span) -> IResult<Span, CheckerDeclaration> {
     let (s, a) = keyword("checker")(s)?;
     let (s, b) = checker_identifier(s)?;
@@ -444,7 +444,7 @@ pub(crate) fn checker_declaration(s: Span) -> IResult<Span, CheckerDeclaration> 
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn class_declaration(s: Span) -> IResult<Span, ClassDeclaration> {
     let (s, a) = opt(map(keyword("virtual"), |x| Virtual { nodes: (x,) }))(s)?;
     let (s, b) = keyword("class")(s)?;
@@ -472,14 +472,14 @@ pub(crate) fn class_declaration(s: Span) -> IResult<Span, ClassDeclaration> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn interface_class_type(s: Span) -> IResult<Span, InterfaceClassType> {
     let (s, a) = ps_class_identifier(s)?;
     let (s, b) = opt(parameter_value_assignment)(s)?;
     Ok((s, InterfaceClassType { nodes: (a, b) }))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn interface_class_declaration(s: Span) -> IResult<Span, InterfaceClassDeclaration> {
     let (s, a) = keyword("interface")(s)?;
     let (s, b) = keyword("class")(s)?;
@@ -501,7 +501,7 @@ pub(crate) fn interface_class_declaration(s: Span) -> IResult<Span, InterfaceCla
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn interface_class_item(s: Span) -> IResult<Span, InterfaceClassItem> {
     alt((
         map(type_declaration, |x| {
@@ -518,7 +518,7 @@ pub(crate) fn interface_class_item(s: Span) -> IResult<Span, InterfaceClassItem>
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn interface_class_item_method(s: Span) -> IResult<Span, InterfaceClassItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = interface_class_method(s)?;
@@ -528,7 +528,7 @@ pub(crate) fn interface_class_item_method(s: Span) -> IResult<Span, InterfaceCla
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn interface_class_method(s: Span) -> IResult<Span, InterfaceClassMethod> {
     let (s, a) = keyword("pure")(s)?;
     let (s, b) = keyword("virtual")(s)?;
@@ -542,7 +542,7 @@ pub(crate) fn interface_class_method(s: Span) -> IResult<Span, InterfaceClassMet
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn package_declaration(s: Span) -> IResult<Span, PackageDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("package")(s)?;
@@ -561,7 +561,7 @@ pub(crate) fn package_declaration(s: Span) -> IResult<Span, PackageDeclaration> 
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn timeunits_declaration(s: Span) -> IResult<Span, TimeunitsDeclaration> {
     alt((
         timeunits_declaration_timeunit_timeprecision,
@@ -571,7 +571,7 @@ pub(crate) fn timeunits_declaration(s: Span) -> IResult<Span, TimeunitsDeclarati
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn timeunits_declaration_timeunit(s: Span) -> IResult<Span, TimeunitsDeclaration> {
     let (s, a) = keyword("timeunit")(s)?;
     let (s, b) = time_literal(s)?;
@@ -585,7 +585,7 @@ pub(crate) fn timeunits_declaration_timeunit(s: Span) -> IResult<Span, Timeunits
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn timeunits_declaration_timeprecision(s: Span) -> IResult<Span, TimeunitsDeclaration> {
     let (s, a) = keyword("timeprecision")(s)?;
     let (s, b) = time_literal(s)?;
@@ -598,7 +598,7 @@ pub(crate) fn timeunits_declaration_timeprecision(s: Span) -> IResult<Span, Time
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn timeunits_declaration_timeunit_timeprecision(
     s: Span,
 ) -> IResult<Span, TimeunitsDeclaration> {
@@ -618,7 +618,7 @@ pub(crate) fn timeunits_declaration_timeunit_timeprecision(
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn timeunits_declaration_timeprecision_timeunit(
     s: Span,
 ) -> IResult<Span, TimeunitsDeclaration> {

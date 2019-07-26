@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn package_item(s: Span) -> IResult<Span, PackageItem> {
     alt((
         map(package_or_generate_item_declaration, |x| {
@@ -20,7 +20,7 @@ pub(crate) fn package_item(s: Span) -> IResult<Span, PackageItem> {
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn package_or_generate_item_declaration(
     s: Span,
 ) -> IResult<Span, PackageOrGenerateItemDeclaration> {
@@ -70,7 +70,7 @@ pub(crate) fn package_or_generate_item_declaration(
     ))(s)
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn anonymous_program(s: Span) -> IResult<Span, AnonymousProgram> {
     let (s, a) = keyword("program")(s)?;
     let (s, b) = symbol(";")(s)?;
@@ -84,7 +84,7 @@ pub(crate) fn anonymous_program(s: Span) -> IResult<Span, AnonymousProgram> {
     ))
 }
 
-#[parser]
+#[tracable_parser]
 pub(crate) fn anonymous_program_item(s: Span) -> IResult<Span, AnonymousProgramItem> {
     alt((
         map(task_declaration, |x| {

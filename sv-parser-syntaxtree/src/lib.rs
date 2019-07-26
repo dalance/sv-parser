@@ -23,48 +23,15 @@ pub use special_node::*;
 pub use specify_section::*;
 pub use udp_declaration_and_instantiation::*;
 
-pub(crate) use nom_recursive::{RecursiveInfo, RecursiveTracer};
 pub(crate) use sv_parser_macros::*;
-
-// -----------------------------------------------------------------------------
-
-#[derive(Clone, Copy, Debug, Default, PartialEq)]
-pub struct SpanInfo {
-    #[cfg(feature = "trace")]
-    pub depth: usize,
-    pub recursive_info: RecursiveInfo,
-}
-
-pub type Span<'a> = nom_locate::LocatedSpanEx<&'a str, SpanInfo>;
-
-impl RecursiveTracer for SpanInfo {
-    fn get_info(&self) -> RecursiveInfo {
-        self.recursive_info
-    }
-
-    fn set_info(mut self, info: RecursiveInfo) -> Self {
-        self.recursive_info = info;
-        self
-    }
-}
 
 // -----------------------------------------------------------------------------
 
 #[derive(Copy, Clone, Default, Debug, PartialEq)]
 pub struct Locate {
-    offset: usize,
-    line: u32,
-    len: usize,
-}
-
-impl<'a> From<Span<'a>> for Locate {
-    fn from(x: Span<'a>) -> Self {
-        Locate {
-            offset: x.offset,
-            line: x.line,
-            len: x.fragment.len(),
-        }
-    }
+    pub offset: usize,
+    pub line: u32,
+    pub len: usize,
 }
 
 // -----------------------------------------------------------------------------

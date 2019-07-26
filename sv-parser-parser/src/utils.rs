@@ -270,8 +270,8 @@ pub(crate) fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, S
     move |s: Span<'a>| {
         #[cfg(feature = "trace")]
         let s = trace(s, &format!("symbol(\"{}\")", t));
-        let (s, x) = map(ws(map(tag(t.clone()), |x: Span| x.into())), |x| Symbol {
-            nodes: x,
+        let (s, x) = map(ws(map(tag(t.clone()), |x: Span| into_locate(x))), |x| {
+            Symbol { nodes: x }
         })(s)?;
         Ok((s, x))
     }
@@ -283,7 +283,7 @@ pub(crate) fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, 
         let s = trace(s, &format!("keyword(\"{}\")", t));
         let (s, x) = map(
             ws(terminated(
-                map(tag(t.clone()), |x: Span| x.into()),
+                map(tag(t.clone()), |x: Span| into_locate(x)),
                 peek(none_of(AZ09_)),
             )),
             |x| Keyword { nodes: x },
@@ -427,7 +427,9 @@ where
 #[parser]
 pub(crate) fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
     alt((
-        map(multispace1, |x: Span| WhiteSpace::Space(Box::new(x.into()))),
+        map(multispace1, |x: Span| {
+            WhiteSpace::Space(Box::new(into_locate(x)))
+        }),
         map(comment, |x| WhiteSpace::Comment(Box::new(x))),
     ))(s)
 }
@@ -455,6 +457,14 @@ pub(crate) fn is_keyword(s: &Span) -> bool {
         }
     }
     false
+}
+
+pub(crate) fn into_locate(s: Span) -> Locate {
+    Locate {
+        offset: s.offset,
+        line: s.line,
+        len: s.fragment.len(),
+    }
 }
 
 #[cfg(feature = "trace")]

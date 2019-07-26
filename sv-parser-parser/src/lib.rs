@@ -32,9 +32,31 @@ pub(crate) use nom::multi::*;
 pub(crate) use nom::sequence::*;
 pub(crate) use nom::{Err, IResult};
 pub(crate) use nom_packrat::{self, packrat_parser};
-pub(crate) use nom_recursive::{recursive_parser, RecursiveTracer};
+pub(crate) use nom_recursive::{recursive_parser, RecursiveInfo, RecursiveTracer};
 pub(crate) use sv_parser_macros::*;
 pub(crate) use sv_parser_syntaxtree::*;
+
+// -----------------------------------------------------------------------------
+
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct SpanInfo {
+    #[cfg(feature = "trace")]
+    pub depth: usize,
+    pub recursive_info: RecursiveInfo,
+}
+
+pub type Span<'a> = nom_locate::LocatedSpanEx<&'a str, SpanInfo>;
+
+impl RecursiveTracer for SpanInfo {
+    fn get_info(&self) -> RecursiveInfo {
+        self.recursive_info
+    }
+
+    fn set_info(mut self, info: RecursiveInfo) -> Self {
+        self.recursive_info = info;
+        self
+    }
+}
 
 // -----------------------------------------------------------------------------
 

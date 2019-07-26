@@ -44,7 +44,7 @@ pub(crate) fn c_identifier_impl(s: Span) -> IResult<Span, Locate> {
     if is_keyword(&a) {
         Err(Err::Error(make_error(s, ErrorKind::Fix)))
     } else {
-        Ok((s, a.into()))
+        Ok((s, into_locate(a)))
     }
 }
 
@@ -148,7 +148,7 @@ pub(crate) fn escaped_identifier_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = tag("\\")(s)?;
     let (s, b) = is_not(" \t\r\n")(s)?;
     let a = concat(a, b).unwrap();
-    Ok((s, a.into()))
+    Ok((s, into_locate(a)))
 }
 
 #[allow(dead_code)]
@@ -637,7 +637,7 @@ pub(crate) fn simple_identifier_impl(s: Span) -> IResult<Span, Locate> {
     if is_keyword(&a) {
         Err(Err::Error(make_error(s, ErrorKind::Fix)))
     } else {
-        Ok((s, a.into()))
+        Ok((s, into_locate(a)))
     }
 }
 
@@ -658,7 +658,7 @@ pub(crate) fn system_tf_identifier_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = tag("$")(s)?;
     let (s, b) = is_a(AZ09_DOLLAR)(s)?;
     let a = concat(a, b).unwrap();
-    Ok((s, a.into()))
+    Ok((s, into_locate(a)))
 }
 
 #[parser]

@@ -118,7 +118,7 @@ pub(crate) fn non_zero_unsigned_number_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = fold_many0(alt((tag("_"), digit1)), a, |acc, item| {
         concat(acc, item).unwrap()
     })(s)?;
-    Ok((s, a.into()))
+    Ok((s, into_locate(a)))
 }
 
 #[parser]
@@ -150,7 +150,7 @@ pub(crate) fn real_number_floating(s: Span) -> IResult<Span, RealNumber> {
 pub(crate) fn fixed_point_number(s: Span) -> IResult<Span, FixedPointNumber> {
     let (s, a) = unsigned_number(s)?;
     let (s, b) = map(tag("."), |x: Span| Symbol {
-        nodes: (x.into(), vec![]),
+        nodes: (into_locate(x), vec![]),
     })(s)?;
     let (s, c) = unsigned_number(s)?;
     Ok((s, FixedPointNumber { nodes: (a, b, c) }))
@@ -174,7 +174,7 @@ pub(crate) fn unsigned_number_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = fold_many0(alt((tag("_"), digit1)), a, |acc, item| {
         concat(acc, item).unwrap()
     })(s)?;
-    Ok((s, a.into()))
+    Ok((s, into_locate(a)))
 }
 
 #[parser]
@@ -189,7 +189,7 @@ pub(crate) fn binary_value_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = fold_many0(alt((tag("_"), is_a("01xXzZ?"))), a, |acc, item| {
         concat(acc, item).unwrap()
     })(s)?;
-    Ok((s, a.into()))
+    Ok((s, into_locate(a)))
 }
 
 #[parser]
@@ -204,7 +204,7 @@ pub(crate) fn octal_value_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = fold_many0(alt((tag("_"), is_a("01234567xXzZ?"))), a, |acc, item| {
         concat(acc, item).unwrap()
     })(s)?;
-    Ok((s, a.into()))
+    Ok((s, into_locate(a)))
 }
 
 #[parser]
@@ -221,7 +221,7 @@ pub(crate) fn hex_value_impl(s: Span) -> IResult<Span, Locate> {
         a,
         |acc, item| concat(acc, item).unwrap(),
     )(s)?;
-    Ok((s, a.into()))
+    Ok((s, into_locate(a)))
 }
 
 #[parser]
@@ -233,7 +233,7 @@ pub(crate) fn decimal_base(s: Span) -> IResult<Span, DecimalBase> {
 #[parser]
 pub(crate) fn decimal_base_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = alt((tag_no_case("'d"), tag_no_case("'sd")))(s)?;
-    Ok((s, a.into()))
+    Ok((s, into_locate(a)))
 }
 
 #[parser]
@@ -245,7 +245,7 @@ pub(crate) fn binary_base(s: Span) -> IResult<Span, BinaryBase> {
 #[parser]
 pub(crate) fn binary_base_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = alt((tag_no_case("'b"), tag_no_case("'sb")))(s)?;
-    Ok((s, a.into()))
+    Ok((s, into_locate(a)))
 }
 
 #[parser]
@@ -257,7 +257,7 @@ pub(crate) fn octal_base(s: Span) -> IResult<Span, OctalBase> {
 #[parser]
 pub(crate) fn octal_base_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = alt((tag_no_case("'o"), tag_no_case("'so")))(s)?;
-    Ok((s, a.into()))
+    Ok((s, into_locate(a)))
 }
 
 #[parser]
@@ -269,7 +269,7 @@ pub(crate) fn hex_base(s: Span) -> IResult<Span, HexBase> {
 #[parser]
 pub(crate) fn hex_base_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = alt((tag_no_case("'h"), tag_no_case("'sh")))(s)?;
-    Ok((s, a.into()))
+    Ok((s, into_locate(a)))
 }
 
 #[parser]
@@ -284,7 +284,7 @@ pub(crate) fn x_number_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = fold_many0(alt((tag("_"), is_a("_"))), a, |acc, item| {
         concat(acc, item).unwrap()
     })(s)?;
-    Ok((s, a.into()))
+    Ok((s, into_locate(a)))
 }
 
 #[parser]
@@ -299,7 +299,7 @@ pub(crate) fn z_number_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = fold_many0(alt((tag("_"), is_a("_"))), a, |acc, item| {
         concat(acc, item).unwrap()
     })(s)?;
-    Ok((s, a.into()))
+    Ok((s, into_locate(a)))
 }
 
 #[parser]

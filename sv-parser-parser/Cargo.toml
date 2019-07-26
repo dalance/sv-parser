@@ -6,12 +6,13 @@ edition = "2018"
 
 [features]
 default = []
-trace = ["sv-parser-syntaxtree/trace"]
+trace = []
 
 [dependencies]
 nom                  = "5.0.0"
+nom_locate           = { path = "../../nom_locate" }
 nom-packrat          = "0.1.17"
 nom-recursive        = { path = "../../nom-recursive/nom-recursive" }
 str-concat           = "*"
-sv-parser-syntaxtree = { path = "../sv-parser-syntaxtree" }
 sv-parser-macros     = { path = "../sv-parser-macros" }
+sv-parser-syntaxtree = { path = "../sv-parser-syntaxtree" }

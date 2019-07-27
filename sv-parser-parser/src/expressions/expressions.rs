@@ -51,9 +51,9 @@ pub(crate) fn conditional_expression(s: Span) -> IResult<Span, ConditionalExpres
 #[tracable_parser]
 pub(crate) fn constant_expression(s: Span) -> IResult<Span, ConstantExpression> {
     alt((
-        constant_expression_unary,
         constant_expression_binary,
         constant_expression_ternary,
+        constant_expression_unary,
         map(constant_primary, |x| {
             ConstantExpression::ConstantPrimary(Box::new(x))
         }),
@@ -203,11 +203,6 @@ pub(crate) fn constant_indexed_range(s: Span) -> IResult<Span, ConstantIndexedRa
 #[tracable_parser]
 pub(crate) fn expression(s: Span) -> IResult<Span, Expression> {
     alt((
-        expression_unary,
-        map(inc_or_dec_expression, |x| {
-            Expression::IncOrDecExpression(Box::new(x))
-        }),
-        expression_operator_assignment,
         expression_binary,
         map(conditional_expression, |x| {
             Expression::ConditionalExpression(Box::new(x))
@@ -215,6 +210,11 @@ pub(crate) fn expression(s: Span) -> IResult<Span, Expression> {
         map(inside_expression, |x| {
             Expression::InsideExpression(Box::new(x))
         }),
+        expression_unary,
+        map(inc_or_dec_expression, |x| {
+            Expression::IncOrDecExpression(Box::new(x))
+        }),
+        expression_operator_assignment,
         map(tagged_union_expression, |x| {
             Expression::TaggedUnionExpression(Box::new(x))
         }),

@@ -12,7 +12,7 @@ backward_trace = ["nom-tracable/backward_trace"]
 [dependencies]
 nom                  = "5.0.0"
 nom_locate           = { path = "../../nom_locate" }
-nom-packrat          = "0.1.17"
+nom-packrat          = { path = "../../nom-packrat/nom-packrat" }
 nom-recursive        = { path = "../../nom-recursive/nom-recursive" }
 nom-tracable         = { path = "../../nom-tracable/nom-tracable" }
 str-concat           = "*"

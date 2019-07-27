@@ -789,3 +789,12 @@ fn test_attribute_instance() {
         Ok((_, _))
     );
 }
+
+#[test]
+fn test_expression() {
+    test!(
+        mintypmax_expression,
+        "!a ? 0 : !b : 1 : c ? 0 : 1",
+        Ok((_, _))
+    );
+}

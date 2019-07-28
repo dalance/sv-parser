@@ -166,9 +166,6 @@ pub fn parser(attr: TokenStream, item: TokenStream) -> TokenStream {
 fn impl_parser(attr: &AttributeArgs, item: &ItemFn) -> TokenStream {
     let ambiguous = impl_parser_attribute(attr);
 
-    let trace = impl_parser_trace(&item);
-    let trace = parse_macro_input!(trace as Stmt);
-
     let body = if ambiguous {
         impl_parser_body_ambiguous(&item)
     } else {
@@ -179,7 +176,6 @@ fn impl_parser(attr: &AttributeArgs, item: &ItemFn) -> TokenStream {
     let mut item = item.clone();
 
     item.block.stmts.clear();
-    item.block.stmts.push(trace);
     item.block.stmts.push(body);
 
     let gen = quote! {
@@ -199,16 +195,6 @@ fn impl_parser_attribute(attr: &AttributeArgs) -> bool {
     }
 
     ambiguous
-}
-
-fn impl_parser_trace(item: &ItemFn) -> TokenStream {
-    let ident = &item.ident;
-
-    let gen = quote! {
-        #[cfg(feature = "trace")]
-        let s = trace(s, stringify!(#ident));
-    };
-    gen.into()
 }
 
 fn impl_parser_body(item: &ItemFn) -> TokenStream {

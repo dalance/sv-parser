@@ -34,8 +34,8 @@ pub(crate) use nom::{Err, IResult};
 pub(crate) use nom_packrat::{self, packrat_parser, HasExtraState};
 pub(crate) use nom_recursive::{recursive_parser, HasRecursiveInfo, RecursiveInfo};
 pub(crate) use nom_tracable::tracable_parser;
-#[cfg(any(feature = "forward_trace", feature = "backward_trace"))]
-pub(crate) use nom_tracable::{HasTracableInfo, Tracable, TracableInfo};
+#[cfg(feature = "trace")]
+pub(crate) use nom_tracable::{HasTracableInfo, TracableInfo};
 pub(crate) use sv_parser_macros::*;
 pub(crate) use sv_parser_syntaxtree::*;
 
@@ -43,7 +43,7 @@ pub(crate) use sv_parser_syntaxtree::*;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct SpanInfo {
-    #[cfg(any(feature = "forward_trace", feature = "backward_trace"))]
+    #[cfg(feature = "trace")]
     pub tracable_info: TracableInfo,
     pub recursive_info: RecursiveInfo,
 }
@@ -61,7 +61,7 @@ impl HasRecursiveInfo for SpanInfo {
     }
 }
 
-#[cfg(any(feature = "forward_trace", feature = "backward_trace"))]
+#[cfg(feature = "trace")]
 impl HasTracableInfo for SpanInfo {
     fn get_tracable_info(&self) -> TracableInfo {
         self.tracable_info
@@ -78,10 +78,16 @@ impl HasExtraState<RecursiveInfo> for SpanInfo {
         self.recursive_info
     }
 }
+//impl HasExtraState<()> for SpanInfo {
+//    fn get_extra_state(&self) -> () {
+//        ()
+//    }
+//}
 
 // -----------------------------------------------------------------------------
 
 nom_packrat::storage!(AnyNode, RecursiveInfo);
+//nom_packrat::storage!(AnyNode);
 
 pub fn parse_sv(s: &str) -> Result<SourceText, ()> {
     let s = Span::new_extra(s, SpanInfo::default());

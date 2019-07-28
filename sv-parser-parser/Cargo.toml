@@ -5,9 +5,8 @@ authors = ["dalance <dalance@gmail.com>"]
 edition = "2018"
 
 [features]
-default        = []
-forward_trace  = ["nom-tracable/forward_trace"]
-backward_trace = ["nom-tracable/backward_trace"]
+default = []
+trace   = ["nom-tracable/trace"]
 
 [dependencies]
 nom                  = "5.0.0"

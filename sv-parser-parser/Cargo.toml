@@ -10,10 +10,10 @@ trace   = ["nom-tracable/trace"]
 
 [dependencies]
 nom                  = "5.0.0"
-nom_locate           = { path = "../../nom_locate" }
-nom-packrat          = { path = "../../nom-packrat/nom-packrat" }
-nom-recursive        = { path = "../../nom-recursive/nom-recursive" }
-nom-tracable         = { path = "../../nom-tracable/nom-tracable" }
+nom_locate           = "0.4.0"
+nom-packrat          = {path = "../../nom-packrat/nom-packrat"}
+nom-recursive        = {path = "../../nom-recursive/nom-recursive"}
+nom-tracable         = {path = "../../nom-tracable/nom-tracable"}
 str-concat           = "*"
-sv-parser-macros     = { path = "../sv-parser-macros" }
-sv-parser-syntaxtree = { path = "../sv-parser-syntaxtree" }
+sv-parser-macros     = {path = "../sv-parser-macros"}
+sv-parser-syntaxtree = {path = "../sv-parser-syntaxtree"}

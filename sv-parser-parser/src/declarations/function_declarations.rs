@@ -30,12 +30,12 @@ pub(crate) fn function_body_declaration(s: Span) -> IResult<Span, FunctionBodyDe
     ))(s)
 }
 
-#[parser(Ambiguous)]
+#[both_parser]
 #[tracable_parser]
 pub(crate) fn function_body_declaration_without_port(
     s: Span,
 ) -> IResult<Span, FunctionBodyDeclaration> {
-    let (s, a) = ambiguous_opt(function_data_type_or_implicit)(s)?;
+    let (s, a) = both_opt(function_data_type_or_implicit)(s)?;
     let (s, b) = opt(interface_identifier_or_class_scope)(s)?;
     let (s, c) = function_identifier(s)?;
     let (s, d) = symbol(";")(s)?;
@@ -51,12 +51,12 @@ pub(crate) fn function_body_declaration_without_port(
     ))
 }
 
-#[parser(Ambiguous)]
+#[both_parser]
 #[tracable_parser]
 pub(crate) fn function_body_declaration_with_port(
     s: Span,
 ) -> IResult<Span, FunctionBodyDeclaration> {
-    let (s, a) = ambiguous_opt(function_data_type_or_implicit)(s)?;
+    let (s, a) = both_opt(function_data_type_or_implicit)(s)?;
     let (s, b) = opt(interface_identifier_or_class_scope)(s)?;
     let (s, c) = function_identifier(s)?;
     let (s, d) = paren(opt(tf_port_list))(s)?;

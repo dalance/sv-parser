@@ -495,35 +495,6 @@ where
     }
 }
 
-pub(crate) fn none<'a, O, F>(_f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Option<O>>
-where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
-{
-    move |s: Span<'a>| Ok((s, None))
-}
-
-pub(crate) fn alt_left<'a, O, F, G>(f: F, _g: G) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
-where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
-    G: Fn(Span<'a>) -> IResult<Span<'a>, O>,
-{
-    move |s: Span<'a>| {
-        let (s, x) = f(s)?;
-        Ok((s, x))
-    }
-}
-
-pub(crate) fn alt_right<'a, O, F, G>(_f: F, g: G) -> impl Fn(Span<'a>) -> IResult<Span<'a>, O>
-where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
-    G: Fn(Span<'a>) -> IResult<Span<'a>, O>,
-{
-    move |s: Span<'a>| {
-        let (s, x) = g(s)?;
-        Ok((s, x))
-    }
-}
-
 // -----------------------------------------------------------------------------
 
 #[tracable_parser]

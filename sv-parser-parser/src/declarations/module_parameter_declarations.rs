@@ -10,13 +10,13 @@ pub(crate) fn local_parameter_declaration(s: Span) -> IResult<Span, LocalParamet
     ))(s)
 }
 
-#[parser(Ambiguous)]
+#[both_parser]
 #[tracable_parser]
 pub(crate) fn local_parameter_declaration_param(
     s: Span,
 ) -> IResult<Span, LocalParameterDeclaration> {
     let (s, a) = keyword("localparam")(s)?;
-    let (s, b) = ambiguous_opt(data_type_or_implicit)(s)?;
+    let (s, b) = both_opt(data_type_or_implicit)(s)?;
     let (s, c) = list_of_param_assignments(s)?;
     Ok((
         s,
@@ -46,11 +46,11 @@ pub(crate) fn parameter_declaration(s: Span) -> IResult<Span, ParameterDeclarati
     alt((parameter_declaration_param, parameter_declaration_type))(s)
 }
 
-#[parser(Ambiguous)]
+#[both_parser]
 #[tracable_parser]
 pub(crate) fn parameter_declaration_param(s: Span) -> IResult<Span, ParameterDeclaration> {
     let (s, a) = keyword("parameter")(s)?;
-    let (s, b) = ambiguous_opt(data_type_or_implicit)(s)?;
+    let (s, b) = both_opt(data_type_or_implicit)(s)?;
     let (s, c) = list_of_param_assignments(s)?;
     Ok((
         s,

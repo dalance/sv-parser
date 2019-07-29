@@ -234,12 +234,12 @@ pub(crate) fn property_port_list(s: Span) -> IResult<Span, PropertyPortList> {
     Ok((s, PropertyPortList { nodes: (a,) }))
 }
 
-#[parser(Ambiguous)]
+#[both_parser]
 #[tracable_parser]
 pub(crate) fn property_port_item(s: Span) -> IResult<Span, PropertyPortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = opt(pair(local, opt(property_lvar_port_direction)))(s)?;
-    let (s, c) = ambiguous_opt(property_formal_type)(s)?;
+    let (s, c) = both_opt(property_formal_type)(s)?;
     let (s, d) = formal_port_identifier(s)?;
     let (s, e) = many0(variable_dimension)(s)?;
     let (s, f) = opt(pair(symbol("="), property_actual_arg))(s)?;
@@ -724,12 +724,12 @@ pub(crate) fn sequence_port_list(s: Span) -> IResult<Span, SequencePortList> {
     Ok((s, SequencePortList { nodes: (a,) }))
 }
 
-#[parser(Ambiguous)]
+#[both_parser]
 #[tracable_parser]
 pub(crate) fn sequence_port_item(s: Span) -> IResult<Span, SequencePortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = opt(pair(local, opt(sequence_lvar_port_direction)))(s)?;
-    let (s, c) = ambiguous_opt(sequence_formal_type)(s)?;
+    let (s, c) = both_opt(sequence_formal_type)(s)?;
     let (s, d) = formal_port_identifier(s)?;
     let (s, e) = many0(variable_dimension)(s)?;
     let (s, f) = opt(pair(symbol("="), sequence_actual_arg))(s)?;

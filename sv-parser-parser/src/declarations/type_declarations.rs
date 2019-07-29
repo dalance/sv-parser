@@ -18,13 +18,13 @@ pub(crate) fn data_declaration(s: Span) -> IResult<Span, DataDeclaration> {
     ))(s)
 }
 
-#[parser(Ambiguous)]
+#[both_parser]
 #[tracable_parser]
 pub(crate) fn data_declaration_variable(s: Span) -> IResult<Span, DataDeclaration> {
     let (s, a) = opt(r#const)(s)?;
     let (s, b) = opt(var)(s)?;
     let (s, c) = opt(lifetime)(s)?;
-    let (s, d) = ambiguous_opt(data_type_or_implicit)(s)?;
+    let (s, d) = both_opt(data_type_or_implicit)(s)?;
     let (s, e) = list_of_variable_decl_assignments(s)?;
     let (s, f) = symbol(";")(s)?;
     Ok((
@@ -127,13 +127,13 @@ pub(crate) fn net_declaration(s: Span) -> IResult<Span, NetDeclaration> {
     ))(s)
 }
 
-#[parser(Ambiguous)]
+#[both_parser]
 #[tracable_parser]
 pub(crate) fn net_declaration_net_type(s: Span) -> IResult<Span, NetDeclaration> {
     let (s, a) = net_type(s)?;
     let (s, b) = opt(strength)(s)?;
     let (s, c) = opt(vector_scalar)(s)?;
-    let (s, d) = ambiguous_opt(data_type_or_implicit)(s)?;
+    let (s, d) = both_opt(data_type_or_implicit)(s)?;
     let (s, e) = opt(delay3)(s)?;
     let (s, f) = list_of_net_decl_assignments(s)?;
     let (s, g) = symbol(";")(s)?;

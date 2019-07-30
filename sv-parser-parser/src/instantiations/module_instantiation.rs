@@ -26,8 +26,8 @@ pub(crate) fn parameter_value_assignment(s: Span) -> IResult<Span, ParameterValu
 #[tracable_parser]
 pub(crate) fn list_of_parameter_assignments(s: Span) -> IResult<Span, ListOfParameterAssignments> {
     alt((
-        list_of_parameter_assignments_ordered,
         list_of_parameter_assignments_named,
+        list_of_parameter_assignments_ordered,
     ))(s)
 }
 
@@ -89,8 +89,8 @@ pub(crate) fn name_of_instance(s: Span) -> IResult<Span, NameOfInstance> {
 #[tracable_parser]
 pub(crate) fn list_of_port_connections(s: Span) -> IResult<Span, ListOfPortConnections> {
     alt((
-        list_of_port_connections_ordered,
         list_of_port_connections_named,
+        list_of_port_connections_ordered,
     ))(s)
 }
 

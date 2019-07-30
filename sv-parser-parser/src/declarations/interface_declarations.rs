@@ -76,7 +76,7 @@ pub(crate) fn modport_simple_ports_declaration(
 
 #[tracable_parser]
 pub(crate) fn modport_simple_port(s: Span) -> IResult<Span, ModportSimplePort> {
-    alt((modport_simple_port_ordered, modport_simple_port_named))(s)
+    alt((modport_simple_port_named, modport_simple_port_ordered))(s)
 }
 
 #[tracable_parser]

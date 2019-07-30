@@ -78,7 +78,7 @@ pub(crate) fn let_expression(s: Span) -> IResult<Span, LetExpression> {
 
 #[tracable_parser]
 pub(crate) fn let_list_of_arguments(s: Span) -> IResult<Span, LetListOfArguments> {
-    alt((let_list_of_arguments_ordered, let_list_of_arguments_named))(s)
+    alt((let_list_of_arguments_named, let_list_of_arguments_ordered))(s)
 }
 
 #[recursive_parser]

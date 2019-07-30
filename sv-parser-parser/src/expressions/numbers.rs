@@ -304,6 +304,13 @@ pub(crate) fn z_number_impl(s: Span) -> IResult<Span, Locate> {
 
 #[tracable_parser]
 pub(crate) fn unbased_unsized_literal(s: Span) -> IResult<Span, UnbasedUnsizedLiteral> {
-    let (s, a) = alt((symbol("'0"), symbol("'1"), symbol("'z"), symbol("'x")))(s)?;
+    let (s, a) = alt((
+        symbol("'0"),
+        symbol("'1"),
+        symbol("'z"),
+        symbol("'x"),
+        symbol("'Z"),
+        symbol("'X"),
+    ))(s)?;
     Ok((s, UnbasedUnsizedLiteral { nodes: (a,) }))
 }

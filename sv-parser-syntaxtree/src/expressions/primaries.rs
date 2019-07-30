@@ -95,7 +95,7 @@ pub enum Primary {
     StreamingConcatenation(Box<StreamingConcatenation>),
     SequenceMethodCall(Box<SequenceMethodCall>),
     This(Box<Keyword>),
-    Dollar(Box<Symbol>),
+    Dollar(Box<Keyword>),
     Null(Box<Keyword>),
 }
 

@@ -145,7 +145,7 @@ pub(crate) fn module_path_primary_mintypmax_expression(
 pub(crate) fn primary(s: Span) -> IResult<Span, Primary> {
     alt((
         map(keyword("this"), |x| Primary::This(Box::new(x))),
-        map(symbol("$"), |x| Primary::Dollar(Box::new(x))),
+        map(keyword("$"), |x| Primary::Dollar(Box::new(x))),
         map(keyword("null"), |x| Primary::Null(Box::new(x))),
         map(primary_literal, |x| Primary::PrimaryLiteral(Box::new(x))),
         primary_hierarchical,

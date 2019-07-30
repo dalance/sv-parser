@@ -145,8 +145,8 @@ pub(crate) fn property_instance(s: Span) -> IResult<Span, PropertyInstance> {
 #[tracable_parser]
 pub(crate) fn property_list_of_arguments(s: Span) -> IResult<Span, PropertyListOfArguments> {
     alt((
-        property_list_of_arguments_ordered,
         property_list_of_arguments_named,
+        property_list_of_arguments_ordered,
     ))(s)
 }
 
@@ -1028,8 +1028,8 @@ pub(crate) fn sequence_instance(s: Span) -> IResult<Span, SequenceInstance> {
 #[tracable_parser]
 pub(crate) fn sequence_list_of_arguments(s: Span) -> IResult<Span, SequenceListOfArguments> {
     alt((
-        sequence_list_of_arguments_ordered,
         sequence_list_of_arguments_named,
+        sequence_list_of_arguments_ordered,
     ))(s)
 }
 

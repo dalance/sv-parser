@@ -199,7 +199,10 @@ pub(crate) fn n_input_gate_instance(s: Span) -> IResult<Span, NInputGateInstance
 pub(crate) fn n_output_gate_instance(s: Span) -> IResult<Span, NOutputGateInstance> {
     let (s, a) = opt(name_of_instance)(s)?;
     let (s, b) = paren(tuple((
-        list(symbol(","), output_terminal),
+        list(
+            terminated(symbol(","), peek(pair(output_terminal, symbol(",")))),
+            output_terminal,
+        ),
         symbol(","),
         input_terminal,
     )))(s)?;

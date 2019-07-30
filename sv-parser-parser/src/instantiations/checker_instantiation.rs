@@ -21,8 +21,8 @@ pub(crate) fn list_of_checker_port_connections(
     s: Span,
 ) -> IResult<Span, ListOfCheckerPortConnections> {
     alt((
-        list_of_checker_port_connections_ordered,
         list_of_checker_port_connections_named,
+        list_of_checker_port_connections_ordered,
     ))(s)
 }
 

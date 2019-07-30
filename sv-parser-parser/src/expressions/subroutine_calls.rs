@@ -88,7 +88,7 @@ pub(crate) fn function_subroutine_call(s: Span) -> IResult<Span, FunctionSubrout
 
 #[tracable_parser]
 pub(crate) fn list_of_arguments(s: Span) -> IResult<Span, ListOfArguments> {
-    alt((list_of_arguments_ordered, list_of_arguments_named))(s)
+    alt((list_of_arguments_named, list_of_arguments_ordered))(s)
 }
 
 #[recursive_parser]

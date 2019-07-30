@@ -7,6 +7,9 @@ use crate::*;
 pub(crate) fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
     alt((
         map(keyword("null"), |x| ConstantPrimary::Null(Box::new(x))),
+        map(constant_assignment_pattern_expression, |x| {
+            ConstantPrimary::ConstantAssignmentPatternExpression(Box::new(x))
+        }),
         map(primary_literal, |x| {
             ConstantPrimary::PrimaryLiteral(Box::new(x))
         }),
@@ -28,9 +31,6 @@ pub(crate) fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
         constant_primary_mintypmax_expression,
         map(constant_cast, |x| {
             ConstantPrimary::ConstantCast(Box::new(x))
-        }),
-        map(constant_assignment_pattern_expression, |x| {
-            ConstantPrimary::ConstantAssignmentPatternExpression(Box::new(x))
         }),
         map(type_reference, |x| {
             ConstantPrimary::TypeReference(Box::new(x))
@@ -147,8 +147,11 @@ pub(crate) fn primary(s: Span) -> IResult<Span, Primary> {
         map(keyword("this"), |x| Primary::This(Box::new(x))),
         map(keyword("$"), |x| Primary::Dollar(Box::new(x))),
         map(keyword("null"), |x| Primary::Null(Box::new(x))),
+        map(assignment_pattern_expression, |x| {
+            Primary::AssignmentPatternExpression(Box::new(x))
+        }),
         map(primary_literal, |x| Primary::PrimaryLiteral(Box::new(x))),
-        primary_hierarchical,
+        terminated(primary_hierarchical, peek(none_of("("))),
         map(empty_unpacked_array_concatenation, |x| {
             Primary::EmptyUnpackedArrayConcatenation(Box::new(x))
         }),
@@ -160,9 +163,6 @@ pub(crate) fn primary(s: Span) -> IResult<Span, Primary> {
         map(let_expression, |x| Primary::LetExpression(Box::new(x))),
         primary_mintypmax_expression,
         map(cast, |x| Primary::Cast(Box::new(x))),
-        map(assignment_pattern_expression, |x| {
-            Primary::AssignmentPatternExpression(Box::new(x))
-        }),
         map(streaming_concatenation, |x| {
             Primary::StreamingConcatenation(Box::new(x))
         }),

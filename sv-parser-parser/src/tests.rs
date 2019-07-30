@@ -966,13 +966,12 @@ fn test_clause5() {
         r##"c = '{default:0}; // all elements of structure c are set to 0"##,
         Ok((_, _))
     );
-    //TODO
-    //test!(
-    //    module_item,
-    //    r##"d = ab'{int:1, shortreal:1.0}; // data type and default value for all
-    //                                       // members of that type"##,
-    //    Ok((_, _))
-    //);
+    test!(
+        module_item,
+        r##"d = ab'{int:1, shortreal:1.0}; // data type and default value for all
+                                           // members of that type"##,
+        Ok((_, _))
+    );
     test!(
         module_item,
         r##"ab abarr[1:0] = '{'{1, 1.0}, '{2, 2.0}};"##,
@@ -1039,15 +1038,17 @@ fn test_clause5() {
                                           // to be the string cla."##,
         Ok((_, _))
     );
-    //TODO
-    //test!(
-    //    module_item,
-    //    r##"a = add (* mode = "cla" *) (b, c);"##,
-    //    Ok((_, _))
-    //);
+    test!(
+        module_item,
+        r##"a = add (* mode = "cla" *) (b, c);"##,
+        Ok((_, _))
+    );
     test!(
         module_item,
         r##"a = b ? (* no_glitch *) c : d;"##,
         Ok((_, _))
     );
 }
+
+#[test]
+fn test_debug() {}

@@ -28,7 +28,7 @@ pub struct LetPortList {
 pub struct LetPortItem {
     pub nodes: (
         Vec<AttributeInstance>,
-        Option<LetFormalType>,
+        LetFormalType,
         FormalPortIdentifier,
         Vec<VariableDimension>,
         Option<(Symbol, Expression)>,

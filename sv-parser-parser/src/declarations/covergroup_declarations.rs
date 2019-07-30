@@ -206,11 +206,10 @@ pub(crate) fn hierarchical_identifier_or_class_scope(
     ))(s)
 }
 
-#[both_parser]
 #[tracable_parser]
 pub(crate) fn cover_point(s: Span) -> IResult<Span, CoverPoint> {
     let (s, a) = opt(triple(
-        both_opt(data_type_or_implicit),
+        opt(data_type_or_implicit_cover_point),
         cover_point_identifier,
         symbol(":"),
     ))(s)?;
@@ -224,6 +223,19 @@ pub(crate) fn cover_point(s: Span) -> IResult<Span, CoverPoint> {
             nodes: (a, b, c, d, e),
         },
     ))
+}
+
+#[tracable_parser]
+pub(crate) fn data_type_or_implicit_cover_point(s: Span) -> IResult<Span, DataTypeOrImplicit> {
+    alt((
+        map(terminated(data_type, peek(cover_point_identifier)), |x| {
+            DataTypeOrImplicit::DataType(Box::new(x))
+        }),
+        map(
+            terminated(implicit_data_type, peek(cover_point_identifier)),
+            |x| DataTypeOrImplicit::ImplicitDataType(Box::new(x)),
+        ),
+    ))(s)
 }
 
 #[tracable_parser]

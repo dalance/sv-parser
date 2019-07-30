@@ -234,12 +234,11 @@ pub(crate) fn property_port_list(s: Span) -> IResult<Span, PropertyPortList> {
     Ok((s, PropertyPortList { nodes: (a,) }))
 }
 
-#[both_parser]
 #[tracable_parser]
 pub(crate) fn property_port_item(s: Span) -> IResult<Span, PropertyPortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = opt(pair(local, opt(property_lvar_port_direction)))(s)?;
-    let (s, c) = both_opt(property_formal_type)(s)?;
+    let (s, c) = property_formal_type(s)?;
     let (s, d) = formal_port_identifier(s)?;
     let (s, e) = many0(variable_dimension)(s)?;
     let (s, f) = opt(pair(symbol("="), property_actual_arg))(s)?;
@@ -724,12 +723,11 @@ pub(crate) fn sequence_port_list(s: Span) -> IResult<Span, SequencePortList> {
     Ok((s, SequencePortList { nodes: (a,) }))
 }
 
-#[both_parser]
 #[tracable_parser]
 pub(crate) fn sequence_port_item(s: Span) -> IResult<Span, SequencePortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = opt(pair(local, opt(sequence_lvar_port_direction)))(s)?;
-    let (s, c) = both_opt(sequence_formal_type)(s)?;
+    let (s, c) = sequence_formal_type(s)?;
     let (s, d) = formal_port_identifier(s)?;
     let (s, e) = many0(variable_dimension)(s)?;
     let (s, f) = opt(pair(symbol("="), sequence_actual_arg))(s)?;
@@ -759,7 +757,7 @@ pub(crate) fn sequence_lvar_port_direction(s: Span) -> IResult<Span, SequenceLva
 #[tracable_parser]
 pub(crate) fn sequence_formal_type(s: Span) -> IResult<Span, SequenceFormalType> {
     alt((
-        map(data_type_or_implicit, |x| {
+        map(data_type_or_implicit_sequence_formal_type, |x| {
             SequenceFormalType::DataTypeOrImplicit(Box::new(x))
         }),
         map(keyword("sequence"), |x| {
@@ -768,6 +766,21 @@ pub(crate) fn sequence_formal_type(s: Span) -> IResult<Span, SequenceFormalType>
         map(keyword("untyped"), |x| {
             SequenceFormalType::Untyped(Box::new(x))
         }),
+    ))(s)
+}
+
+#[tracable_parser]
+pub(crate) fn data_type_or_implicit_sequence_formal_type(
+    s: Span,
+) -> IResult<Span, DataTypeOrImplicit> {
+    alt((
+        map(terminated(data_type, peek(formal_port_identifier)), |x| {
+            DataTypeOrImplicit::DataType(Box::new(x))
+        }),
+        map(
+            terminated(implicit_data_type, peek(formal_port_identifier)),
+            |x| DataTypeOrImplicit::ImplicitDataType(Box::new(x)),
+        ),
     ))(s)
 }
 

@@ -5,12 +5,26 @@ use crate::*;
 #[tracable_parser]
 pub(crate) fn function_data_type_or_implicit(s: Span) -> IResult<Span, FunctionDataTypeOrImplicit> {
     alt((
-        map(data_type_or_void, |x| {
-            FunctionDataTypeOrImplicit::DataTypeOrVoid(Box::new(x))
-        }),
-        map(implicit_data_type, |x| {
-            FunctionDataTypeOrImplicit::ImplicitDataType(Box::new(x))
-        }),
+        map(
+            terminated(
+                data_type_or_void,
+                peek(pair(
+                    opt(interface_identifier_or_class_scope),
+                    function_identifier,
+                )),
+            ),
+            |x| FunctionDataTypeOrImplicit::DataTypeOrVoid(Box::new(x)),
+        ),
+        map(
+            terminated(
+                implicit_data_type,
+                peek(pair(
+                    opt(interface_identifier_or_class_scope),
+                    function_identifier,
+                )),
+            ),
+            |x| FunctionDataTypeOrImplicit::ImplicitDataType(Box::new(x)),
+        ),
     ))(s)
 }
 
@@ -30,12 +44,11 @@ pub(crate) fn function_body_declaration(s: Span) -> IResult<Span, FunctionBodyDe
     ))(s)
 }
 
-#[both_parser]
 #[tracable_parser]
 pub(crate) fn function_body_declaration_without_port(
     s: Span,
 ) -> IResult<Span, FunctionBodyDeclaration> {
-    let (s, a) = both_opt(function_data_type_or_implicit)(s)?;
+    let (s, a) = function_data_type_or_implicit(s)?;
     let (s, b) = opt(interface_identifier_or_class_scope)(s)?;
     let (s, c) = function_identifier(s)?;
     let (s, d) = symbol(";")(s)?;
@@ -51,12 +64,11 @@ pub(crate) fn function_body_declaration_without_port(
     ))
 }
 
-#[both_parser]
 #[tracable_parser]
 pub(crate) fn function_body_declaration_with_port(
     s: Span,
 ) -> IResult<Span, FunctionBodyDeclaration> {
-    let (s, a) = both_opt(function_data_type_or_implicit)(s)?;
+    let (s, a) = function_data_type_or_implicit(s)?;
     let (s, b) = opt(interface_identifier_or_class_scope)(s)?;
     let (s, c) = function_identifier(s)?;
     let (s, d) = paren(opt(tf_port_list))(s)?;

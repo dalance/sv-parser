@@ -22,7 +22,7 @@ pub enum FunctionBodyDeclaration {
 #[derive(Clone, Debug, Node)]
 pub struct FunctionBodyDeclarationWithoutPort {
     pub nodes: (
-        Option<FunctionDataTypeOrImplicit>,
+        FunctionDataTypeOrImplicit,
         Option<InterfaceIdentifierOrClassScope>,
         FunctionIdentifier,
         Symbol,
@@ -36,7 +36,7 @@ pub struct FunctionBodyDeclarationWithoutPort {
 #[derive(Clone, Debug, Node)]
 pub struct FunctionBodyDeclarationWithPort {
     pub nodes: (
-        Option<FunctionDataTypeOrImplicit>,
+        FunctionDataTypeOrImplicit,
         Option<InterfaceIdentifierOrClassScope>,
         FunctionIdentifier,
         Paren<Option<TfPortList>>,

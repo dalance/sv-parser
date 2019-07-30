@@ -10,13 +10,12 @@ pub(crate) fn local_parameter_declaration(s: Span) -> IResult<Span, LocalParamet
     ))(s)
 }
 
-#[both_parser]
 #[tracable_parser]
 pub(crate) fn local_parameter_declaration_param(
     s: Span,
 ) -> IResult<Span, LocalParameterDeclaration> {
     let (s, a) = keyword("localparam")(s)?;
-    let (s, b) = both_opt(data_type_or_implicit)(s)?;
+    let (s, b) = data_type_or_implicit_local_parameter_declaration_param(s)?;
     let (s, c) = list_of_param_assignments(s)?;
     Ok((
         s,
@@ -24,6 +23,21 @@ pub(crate) fn local_parameter_declaration_param(
             nodes: (a, b, c),
         })),
     ))
+}
+
+#[tracable_parser]
+pub(crate) fn data_type_or_implicit_local_parameter_declaration_param(
+    s: Span,
+) -> IResult<Span, DataTypeOrImplicit> {
+    alt((
+        map(terminated(data_type, peek(param_assignment)), |x| {
+            DataTypeOrImplicit::DataType(Box::new(x))
+        }),
+        map(
+            terminated(implicit_data_type, peek(param_assignment)),
+            |x| DataTypeOrImplicit::ImplicitDataType(Box::new(x)),
+        ),
+    ))(s)
 }
 
 #[tracable_parser]
@@ -46,16 +60,30 @@ pub(crate) fn parameter_declaration(s: Span) -> IResult<Span, ParameterDeclarati
     alt((parameter_declaration_param, parameter_declaration_type))(s)
 }
 
-#[both_parser]
 #[tracable_parser]
 pub(crate) fn parameter_declaration_param(s: Span) -> IResult<Span, ParameterDeclaration> {
     let (s, a) = keyword("parameter")(s)?;
-    let (s, b) = both_opt(data_type_or_implicit)(s)?;
+    let (s, b) = data_type_or_implicit_parameter_declaration_param(s)?;
     let (s, c) = list_of_param_assignments(s)?;
     Ok((
         s,
         ParameterDeclaration::Param(Box::new(ParameterDeclarationParam { nodes: (a, b, c) })),
     ))
+}
+
+#[tracable_parser]
+pub(crate) fn data_type_or_implicit_parameter_declaration_param(
+    s: Span,
+) -> IResult<Span, DataTypeOrImplicit> {
+    alt((
+        map(terminated(data_type, peek(param_assignment)), |x| {
+            DataTypeOrImplicit::DataType(Box::new(x))
+        }),
+        map(
+            terminated(implicit_data_type, peek(param_assignment)),
+            |x| DataTypeOrImplicit::ImplicitDataType(Box::new(x)),
+        ),
+    ))(s)
 }
 
 #[tracable_parser]

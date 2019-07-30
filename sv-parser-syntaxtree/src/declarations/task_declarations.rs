@@ -57,7 +57,7 @@ pub struct TfPortItem {
         Vec<AttributeInstance>,
         Option<TfPortDirection>,
         Option<Var>,
-        Option<DataTypeOrImplicit>,
+        DataTypeOrImplicit,
         Option<(
             PortIdentifier,
             Vec<VariableDimension>,
@@ -78,7 +78,7 @@ pub struct TfPortDeclaration {
         Vec<AttributeInstance>,
         TfPortDirection,
         Option<Var>,
-        Option<DataTypeOrImplicit>,
+        DataTypeOrImplicit,
         ListOfTfVariableIdentifiers,
         Symbol,
     ),

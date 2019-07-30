@@ -71,13 +71,12 @@ pub(crate) fn tf_port_list(s: Span) -> IResult<Span, TfPortList> {
     Ok((s, TfPortList { nodes: (a,) }))
 }
 
-#[both_parser]
 #[tracable_parser]
 pub(crate) fn tf_port_item(s: Span) -> IResult<Span, TfPortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = opt(tf_port_direction)(s)?;
     let (s, c) = opt(var)(s)?;
-    let (s, d) = both_opt(data_type_or_implicit)(s)?;
+    let (s, d) = data_type_or_implicit_tf_port_item(s)?;
     let (s, e) = opt(triple(
         port_identifier,
         many0(variable_dimension),
@@ -92,6 +91,40 @@ pub(crate) fn tf_port_item(s: Span) -> IResult<Span, TfPortItem> {
 }
 
 #[tracable_parser]
+pub(crate) fn data_type_or_implicit_tf_port_item(s: Span) -> IResult<Span, DataTypeOrImplicit> {
+    alt((
+        map(
+            terminated(
+                data_type,
+                peek(pair(
+                    opt(triple(
+                        port_identifier,
+                        many0(variable_dimension),
+                        opt(pair(symbol(":"), expression)),
+                    )),
+                    alt((symbol(","), symbol(")"))),
+                )),
+            ),
+            |x| DataTypeOrImplicit::DataType(Box::new(x)),
+        ),
+        map(
+            terminated(
+                implicit_data_type,
+                peek(pair(
+                    opt(triple(
+                        port_identifier,
+                        many0(variable_dimension),
+                        opt(pair(symbol(":"), expression)),
+                    )),
+                    alt((symbol(","), symbol(")"))),
+                )),
+            ),
+            |x| DataTypeOrImplicit::ImplicitDataType(Box::new(x)),
+        ),
+    ))(s)
+}
+
+#[tracable_parser]
 pub(crate) fn tf_port_direction(s: Span) -> IResult<Span, TfPortDirection> {
     alt((
         map(port_direction, |x| {
@@ -103,13 +136,12 @@ pub(crate) fn tf_port_direction(s: Span) -> IResult<Span, TfPortDirection> {
     ))(s)
 }
 
-#[both_parser]
 #[tracable_parser]
 pub(crate) fn tf_port_declaration(s: Span) -> IResult<Span, TfPortDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = tf_port_direction(s)?;
     let (s, c) = opt(var)(s)?;
-    let (s, d) = both_opt(data_type_or_implicit)(s)?;
+    let (s, d) = data_type_or_implicit_tf_port_declaration(s)?;
     let (s, e) = list_of_tf_variable_identifiers(s)?;
     let (s, f) = symbol(";")(s)?;
     Ok((
@@ -118,6 +150,21 @@ pub(crate) fn tf_port_declaration(s: Span) -> IResult<Span, TfPortDeclaration> {
             nodes: (a, b, c, d, e, f),
         },
     ))
+}
+
+#[tracable_parser]
+pub(crate) fn data_type_or_implicit_tf_port_declaration(
+    s: Span,
+) -> IResult<Span, DataTypeOrImplicit> {
+    alt((
+        map(terminated(data_type, peek(variable_identifier)), |x| {
+            DataTypeOrImplicit::DataType(Box::new(x))
+        }),
+        map(
+            terminated(implicit_data_type, peek(variable_identifier)),
+            |x| DataTypeOrImplicit::ImplicitDataType(Box::new(x)),
+        ),
+    ))(s)
 }
 
 #[tracable_parser]

@@ -18,13 +18,12 @@ pub(crate) fn data_declaration(s: Span) -> IResult<Span, DataDeclaration> {
     ))(s)
 }
 
-#[both_parser]
 #[tracable_parser]
 pub(crate) fn data_declaration_variable(s: Span) -> IResult<Span, DataDeclaration> {
     let (s, a) = opt(r#const)(s)?;
     let (s, b) = opt(var)(s)?;
     let (s, c) = opt(lifetime)(s)?;
-    let (s, d) = both_opt(data_type_or_implicit)(s)?;
+    let (s, d) = data_type_or_implicit_data_declaration_variable(s)?;
     let (s, e) = list_of_variable_decl_assignments(s)?;
     let (s, f) = symbol(";")(s)?;
     Ok((
@@ -33,6 +32,21 @@ pub(crate) fn data_declaration_variable(s: Span) -> IResult<Span, DataDeclaratio
             nodes: (a, b, c, d, e, f),
         })),
     ))
+}
+
+#[tracable_parser]
+pub(crate) fn data_type_or_implicit_data_declaration_variable(
+    s: Span,
+) -> IResult<Span, DataTypeOrImplicit> {
+    alt((
+        map(terminated(data_type, peek(variable_decl_assignment)), |x| {
+            DataTypeOrImplicit::DataType(Box::new(x))
+        }),
+        map(
+            terminated(implicit_data_type, peek(variable_decl_assignment)),
+            |x| DataTypeOrImplicit::ImplicitDataType(Box::new(x)),
+        ),
+    ))(s)
 }
 
 #[tracable_parser]
@@ -127,13 +141,12 @@ pub(crate) fn net_declaration(s: Span) -> IResult<Span, NetDeclaration> {
     ))(s)
 }
 
-#[both_parser]
 #[tracable_parser]
 pub(crate) fn net_declaration_net_type(s: Span) -> IResult<Span, NetDeclaration> {
     let (s, a) = net_type(s)?;
     let (s, b) = opt(strength)(s)?;
     let (s, c) = opt(vector_scalar)(s)?;
-    let (s, d) = both_opt(data_type_or_implicit)(s)?;
+    let (s, d) = data_type_or_implicit_net_declaration_net_type(s)?;
     let (s, e) = opt(delay3)(s)?;
     let (s, f) = list_of_net_decl_assignments(s)?;
     let (s, g) = symbol(";")(s)?;
@@ -143,6 +156,25 @@ pub(crate) fn net_declaration_net_type(s: Span) -> IResult<Span, NetDeclaration>
             nodes: (a, b, c, d, e, f, g),
         })),
     ))
+}
+
+#[tracable_parser]
+pub(crate) fn data_type_or_implicit_net_declaration_net_type(
+    s: Span,
+) -> IResult<Span, DataTypeOrImplicit> {
+    alt((
+        map(
+            terminated(data_type, peek(pair(opt(delay3), net_decl_assignment))),
+            |x| DataTypeOrImplicit::DataType(Box::new(x)),
+        ),
+        map(
+            terminated(
+                implicit_data_type,
+                peek(pair(opt(delay3), net_decl_assignment)),
+            ),
+            |x| DataTypeOrImplicit::ImplicitDataType(Box::new(x)),
+        ),
+    ))(s)
 }
 
 #[tracable_parser]

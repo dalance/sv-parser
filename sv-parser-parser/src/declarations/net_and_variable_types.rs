@@ -121,6 +121,8 @@ pub(crate) fn data_type_type(s: Span) -> IResult<Span, DataType> {
     ))
 }
 
+// all data_type_or_implicit call are specialized for each parser
+#[allow(dead_code)]
 #[tracable_parser]
 pub(crate) fn data_type_or_implicit(s: Span) -> IResult<Span, DataTypeOrImplicit> {
     alt((
@@ -293,11 +295,25 @@ pub(crate) fn net_port_type(s: Span) -> IResult<Span, NetPortType> {
 #[tracable_parser]
 pub(crate) fn net_port_type_data_type(s: Span) -> IResult<Span, NetPortType> {
     let (s, a) = opt(net_type)(s)?;
-    let (s, b) = data_type_or_implicit(s)?;
+    let (s, b) = data_type_or_implicit_net_port_type_data_type(s)?;
     Ok((
         s,
         NetPortType::DataType(Box::new(NetPortTypeDataType { nodes: (a, b) })),
     ))
+}
+
+#[tracable_parser]
+pub(crate) fn data_type_or_implicit_net_port_type_data_type(
+    s: Span,
+) -> IResult<Span, DataTypeOrImplicit> {
+    alt((
+        map(terminated(data_type, peek(port_identifier)), |x| {
+            DataTypeOrImplicit::DataType(Box::new(x))
+        }),
+        map(terminated(implicit_data_type, peek(port_identifier)), |x| {
+            DataTypeOrImplicit::ImplicitDataType(Box::new(x))
+        }),
+    ))(s)
 }
 
 #[tracable_parser]
@@ -319,7 +335,9 @@ pub(crate) fn variable_port_type(s: Span) -> IResult<Span, VariablePortType> {
 #[tracable_parser]
 pub(crate) fn var_data_type(s: Span) -> IResult<Span, VarDataType> {
     alt((
-        map(data_type, |x| VarDataType::DataType(Box::new(x))),
+        map(terminated(data_type, peek(variable_identifier)), |x| {
+            VarDataType::DataType(Box::new(x))
+        }),
         var_data_type_var,
     ))(s)
 }
@@ -327,11 +345,26 @@ pub(crate) fn var_data_type(s: Span) -> IResult<Span, VarDataType> {
 #[tracable_parser]
 pub(crate) fn var_data_type_var(s: Span) -> IResult<Span, VarDataType> {
     let (s, a) = keyword("var")(s)?;
-    let (s, b) = data_type_or_implicit(s)?;
+    let (s, b) = data_type_or_implicit_var_data_type_var(s)?;
     Ok((
         s,
         VarDataType::Var(Box::new(VarDataTypeVar { nodes: (a, b) })),
     ))
+}
+
+#[tracable_parser]
+pub(crate) fn data_type_or_implicit_var_data_type_var(
+    s: Span,
+) -> IResult<Span, DataTypeOrImplicit> {
+    alt((
+        map(terminated(data_type, peek(variable_identifier)), |x| {
+            DataTypeOrImplicit::DataType(Box::new(x))
+        }),
+        map(
+            terminated(implicit_data_type, peek(variable_identifier)),
+            |x| DataTypeOrImplicit::ImplicitDataType(Box::new(x)),
+        ),
+    ))(s)
 }
 
 #[tracable_parser]

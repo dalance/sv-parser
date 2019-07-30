@@ -31,7 +31,6 @@ pub(crate) use nom::error::{make_error, ErrorKind};
 pub(crate) use nom::multi::*;
 pub(crate) use nom::sequence::*;
 pub(crate) use nom::{Err, IResult};
-pub(crate) use nom_both::both_parser;
 pub(crate) use nom_packrat::{self, packrat_parser, HasExtraState};
 pub(crate) use nom_recursive::{recursive_parser, HasRecursiveInfo, RecursiveInfo};
 pub(crate) use nom_tracable::tracable_parser;

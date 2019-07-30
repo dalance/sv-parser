@@ -803,3 +803,18 @@ fn test_attribute_instance() {
 fn test_expression() {
     test!(expression, "(!a ? 0 : !b : 1 : c ? 0 : 1)", Ok((_, _)));
 }
+
+#[test]
+fn test_clause3() {
+    test!(
+        module_declaration,
+        r##"module mux2to1 (input wire a, b, sel, // combined port and type declaration
+                            output logic y);
+              always_comb begin // procedural block
+                if (sel) y = a; // procedural statement
+                else y = b;
+              end
+            endmodule: mux2to1"##,
+        Ok((_, _))
+    );
+}

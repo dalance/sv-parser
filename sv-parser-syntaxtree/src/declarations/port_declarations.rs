@@ -4,7 +4,7 @@ use crate::*;
 
 #[derive(Clone, Debug, Node)]
 pub struct InoutDeclaration {
-    pub nodes: (Keyword, Option<NetPortType>, ListOfPortIdentifiers),
+    pub nodes: (Keyword, NetPortType, ListOfPortIdentifiers),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -15,7 +15,7 @@ pub enum InputDeclaration {
 
 #[derive(Clone, Debug, Node)]
 pub struct InputDeclarationNet {
-    pub nodes: (Keyword, Option<NetPortType>, ListOfPortIdentifiers),
+    pub nodes: (Keyword, NetPortType, ListOfPortIdentifiers),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -31,7 +31,7 @@ pub enum OutputDeclaration {
 
 #[derive(Clone, Debug, Node)]
 pub struct OutputDeclarationNet {
-    pub nodes: (Keyword, Option<NetPortType>, ListOfPortIdentifiers),
+    pub nodes: (Keyword, NetPortType, ListOfPortIdentifiers),
 }
 
 #[derive(Clone, Debug, Node)]

@@ -10,7 +10,7 @@ pub enum LocalParameterDeclaration {
 
 #[derive(Clone, Debug, Node)]
 pub struct LocalParameterDeclarationParam {
-    pub nodes: (Keyword, Option<DataTypeOrImplicit>, ListOfParamAssignments),
+    pub nodes: (Keyword, DataTypeOrImplicit, ListOfParamAssignments),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -26,7 +26,7 @@ pub enum ParameterDeclaration {
 
 #[derive(Clone, Debug, Node)]
 pub struct ParameterDeclarationParam {
-    pub nodes: (Keyword, Option<DataTypeOrImplicit>, ListOfParamAssignments),
+    pub nodes: (Keyword, DataTypeOrImplicit, ListOfParamAssignments),
 }
 
 #[derive(Clone, Debug, Node)]

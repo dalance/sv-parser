@@ -30,11 +30,10 @@ pub(crate) fn let_port_list(s: Span) -> IResult<Span, LetPortList> {
     Ok((s, LetPortList { nodes: (a,) }))
 }
 
-#[both_parser]
 #[tracable_parser]
 pub(crate) fn let_port_item(s: Span) -> IResult<Span, LetPortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = both_opt(let_formal_type)(s)?;
+    let (s, b) = let_formal_type(s)?;
     let (s, c) = formal_port_identifier(s)?;
     let (s, d) = many0(variable_dimension)(s)?;
     let (s, e) = opt(pair(symbol("="), expression))(s)?;
@@ -49,10 +48,23 @@ pub(crate) fn let_port_item(s: Span) -> IResult<Span, LetPortItem> {
 #[tracable_parser]
 pub(crate) fn let_formal_type(s: Span) -> IResult<Span, LetFormalType> {
     alt((
-        map(data_type_or_implicit, |x| {
+        map(data_type_or_implicit_let_formal_type, |x| {
             LetFormalType::DataTypeOrImplicit(Box::new(x))
         }),
         map(keyword("untyped"), |x| LetFormalType::Untyped(Box::new(x))),
+    ))(s)
+}
+
+#[tracable_parser]
+pub(crate) fn data_type_or_implicit_let_formal_type(s: Span) -> IResult<Span, DataTypeOrImplicit> {
+    alt((
+        map(terminated(data_type, peek(formal_port_identifier)), |x| {
+            DataTypeOrImplicit::DataType(Box::new(x))
+        }),
+        map(
+            terminated(implicit_data_type, peek(formal_port_identifier)),
+            |x| DataTypeOrImplicit::ImplicitDataType(Box::new(x)),
+        ),
     ))(s)
 }
 

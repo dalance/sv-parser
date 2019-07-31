@@ -27,8 +27,10 @@ pub(crate) fn data_type(s: Span) -> IResult<Span, DataType> {
         map(keyword("string"), |x| DataType::String(Box::new(x))),
         map(keyword("chandle"), |x| DataType::Chandle(Box::new(x))),
         data_type_virtual,
+        map(terminated(class_type, peek(not(packed_dimension))), |x| {
+            DataType::ClassType(Box::new(x))
+        }),
         data_type_type,
-        map(class_type, |x| DataType::ClassType(Box::new(x))),
         map(keyword("event"), |x| DataType::Chandle(Box::new(x))),
         map(ps_covergroup_identifier, |x| {
             DataType::PsCovergroupIdentifier(Box::new(x))

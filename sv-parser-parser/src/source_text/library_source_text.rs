@@ -47,9 +47,19 @@ pub(crate) fn include_statement(s: Span) -> IResult<Span, IncludeStatement> {
     Ok((s, IncludeStatement { nodes: (a, b, c) }))
 }
 
-//TODO support non literal path
 #[tracable_parser]
 pub(crate) fn file_path_spec(s: Span) -> IResult<Span, FilePathSpec> {
-    let (s, a) = string_literal(s)?;
-    Ok((s, FilePathSpec { nodes: (a,) }))
+    alt((
+        map(string_literal, |x| FilePathSpec::Literal(x)),
+        file_path_spec_non_literal,
+    ))(s)
+}
+
+#[tracable_parser]
+pub(crate) fn file_path_spec_non_literal(s: Span) -> IResult<Span, FilePathSpec> {
+    let (s, a) = ws(map(is_not(",; "), |x| into_locate(x)))(s)?;
+    Ok((
+        s,
+        FilePathSpec::NonLiteral(FilePathSpecNonLiteral { nodes: a }),
+    ))
 }

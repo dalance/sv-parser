@@ -51,9 +51,9 @@ pub(crate) fn loop_statement_for(s: Span) -> IResult<Span, LoopStatement> {
     let (s, a) = keyword("for")(s)?;
     let (s, b) = paren(tuple((
         opt(for_initialization),
-        symbol(":"),
+        symbol(";"),
         opt(expression),
-        symbol(":"),
+        symbol(";"),
         opt(for_step),
     )))(s)?;
     let (s, c) = statement_or_null(s)?;

@@ -472,9 +472,12 @@ where
         let mut ret = Vec::new();
         loop {
             if let Ok((t, b)) = f(s) {
-                let (u, c) = g(t)?;
-                s = u;
-                ret.push((b, c));
+                if let Ok((u, c)) = g(t) {
+                    s = u;
+                    ret.push((b, c));
+                } else {
+                    break;
+                }
             } else {
                 break;
             }

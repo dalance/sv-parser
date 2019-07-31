@@ -121,10 +121,10 @@ pub(crate) fn event_control_sequence_identifier(s: Span) -> IResult<Span, EventC
 #[tracable_parser]
 pub(crate) fn event_expression(s: Span) -> IResult<Span, EventExpression> {
     alt((
-        event_expression_expression,
-        event_expression_sequence,
         event_expression_or,
         event_expression_comma,
+        event_expression_expression,
+        event_expression_sequence,
         event_expression_paren,
     ))(s)
 }

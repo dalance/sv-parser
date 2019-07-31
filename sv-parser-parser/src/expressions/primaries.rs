@@ -151,6 +151,7 @@ pub(crate) fn primary(s: Span) -> IResult<Span, Primary> {
             Primary::AssignmentPatternExpression(Box::new(x))
         }),
         map(primary_literal, |x| Primary::PrimaryLiteral(Box::new(x))),
+        map(cast, |x| Primary::Cast(Box::new(x))),
         terminated(primary_hierarchical, peek(none_of("("))),
         map(empty_unpacked_array_concatenation, |x| {
             Primary::EmptyUnpackedArrayConcatenation(Box::new(x))
@@ -162,7 +163,6 @@ pub(crate) fn primary(s: Span) -> IResult<Span, Primary> {
         }),
         map(let_expression, |x| Primary::LetExpression(Box::new(x))),
         primary_mintypmax_expression,
-        map(cast, |x| Primary::Cast(Box::new(x))),
         map(streaming_concatenation, |x| {
             Primary::StreamingConcatenation(Box::new(x))
         }),
@@ -319,7 +319,10 @@ pub(crate) fn bit_select(s: Span) -> IResult<Span, BitSelect> {
 #[tracable_parser]
 pub(crate) fn select(s: Span) -> IResult<Span, Select> {
     let (s, a) = opt(triple(
-        many0(triple(symbol("."), member_identifier, bit_select)),
+        many0(terminated(
+            triple(symbol("."), member_identifier, bit_select),
+            peek(symbol(".")),
+        )),
         symbol("."),
         member_identifier,
     ))(s)?;
@@ -348,7 +351,10 @@ pub(crate) fn constant_bit_select(s: Span) -> IResult<Span, ConstantBitSelect> {
 #[tracable_parser]
 pub(crate) fn constant_select(s: Span) -> IResult<Span, ConstantSelect> {
     let (s, a) = opt(triple(
-        many0(triple(symbol("."), member_identifier, constant_bit_select)),
+        many0(terminated(
+            triple(symbol("."), member_identifier, constant_bit_select),
+            peek(symbol(".")),
+        )),
         symbol("."),
         member_identifier,
     ))(s)?;

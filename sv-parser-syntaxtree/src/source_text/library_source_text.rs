@@ -32,6 +32,12 @@ pub struct IncludeStatement {
 }
 
 #[derive(Clone, Debug, Node)]
-pub struct FilePathSpec {
-    pub nodes: (StringLiteral,),
+pub enum FilePathSpec {
+    Literal(StringLiteral),
+    NonLiteral(FilePathSpecNonLiteral),
+}
+
+#[derive(Clone, Debug, Node)]
+pub struct FilePathSpecNonLiteral {
+    pub nodes: (Locate, Vec<WhiteSpace>),
 }

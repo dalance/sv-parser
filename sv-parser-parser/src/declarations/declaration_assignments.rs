@@ -122,9 +122,9 @@ pub(crate) fn limit_value(s: Span) -> IResult<Span, LimitValue> {
 #[tracable_parser]
 pub(crate) fn variable_decl_assignment(s: Span) -> IResult<Span, VariableDeclAssignment> {
     alt((
-        variable_decl_assignment_variable,
         variable_decl_assignment_dynamic_array,
         variable_decl_assignment_class,
+        variable_decl_assignment_variable,
     ))(s)
 }
 
@@ -160,7 +160,7 @@ pub(crate) fn variable_decl_assignment_dynamic_array(
 #[tracable_parser]
 pub(crate) fn variable_decl_assignment_class(s: Span) -> IResult<Span, VariableDeclAssignment> {
     let (s, a) = class_variable_identifier(s)?;
-    let (s, b) = opt(pair(symbol("="), class_new))(s)?;
+    let (s, b) = pair(symbol("="), class_new)(s)?;
     Ok((
         s,
         VariableDeclAssignment::Class(Box::new(VariableDeclAssignmentClass { nodes: (a, b) })),
@@ -169,7 +169,7 @@ pub(crate) fn variable_decl_assignment_class(s: Span) -> IResult<Span, VariableD
 
 #[tracable_parser]
 pub(crate) fn class_new(s: Span) -> IResult<Span, ClassNew> {
-    alt((class_new_argument, class_new_expression))(s)
+    alt((class_new_expression, class_new_argument))(s)
 }
 
 #[tracable_parser]

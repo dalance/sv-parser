@@ -79,22 +79,22 @@ A parser library for System Verilog.
 
 # Test Status
 
-| Clause | Test | Clause | Test | Clause | Test | Clause | Test |
-| ------ | ---- | ------ | ---- | ------ | ---- | ------ | ---- |
-| 3      | x    | 13     |      | 23     |      | 33     |      |
-| 4      | x    | 14     |      | 24     |      | 34     |      |
-| 5      | x    | 15     |      | 25     |      | 35     |      |
-| 6      |      | 16     |      | 26     |      | 36     |      |
-| 7      |      | 17     |      | 27     |      | 37     |      |
-| 8      |      | 18     |      | 28     |      | 38     |      |
-| 9      |      | 19     |      | 29     |      | 39     |      |
-| 10     |      | 20     |      | 30     |      | 40     |      |
-| 11     |      | 21     |      | 31     |      |        |      |
-| 12     |      | 22     |      | 32     |      |        |      |
+| Clause | Exist | Pass | Clause | Exist | Pass | Clause | Exist | Pass | Clause | Exist | Pass |
+| ------ | ----- | ---- | ------ | ----- | ---- | ------ | ----- | ---- | ------ | ----- | ---- |
+| 3      | x     | x    | 13     |       |      | 23     |       |      | 33     |       |      |
+| 4      | x     | x    | 14     |       |      | 24     |       |      | 34     |       |      |
+| 5      | x     | x    | 15     |       |      | 25     |       |      | 35     |       |      |
+| 6      | x     |      | 16     |       |      | 26     |       |      | 36     |       |      |
+| 7      | x     |      | 17     |       |      | 27     |       |      | 37     |       |      |
+| 8      | x     |      | 18     |       |      | 28     |       |      | 38     |       |      |
+| 9      |       |      | 19     |       |      | 29     |       |      | 39     |       |      |
+| 10     |       |      | 20     |       |      | 30     |       |      | 40     |       |      |
+| 11     |       |      | 21     |       |      | 31     |       |      |        |       |      |
+| 12     |       |      | 22     |       |      | 32     |       |      |        |       |      |
 
 ## Missing entry of specification
 
-* interface_class_declaration -> connect to description
+* interface_class_declaration -> connect to description/package_or_generate_item_declaration/anonymous_program_item
 * formal_identifier -> ignore
 * covergroup_variable_identifier -> ignore
 * array_identifier -> ignore

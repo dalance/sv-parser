@@ -62,11 +62,11 @@ pub(crate) fn system_tf_call_arg_expression(s: Span) -> IResult<Span, SystemTfCa
 #[tracable_parser]
 pub(crate) fn subroutine_call(s: Span) -> IResult<Span, SubroutineCall> {
     alt((
+        map(method_call, |x| SubroutineCall::MethodCall(Box::new(x))),
         map(tf_call, |x| SubroutineCall::TfCall(Box::new(x))),
         map(system_tf_call, |x| {
             SubroutineCall::SystemTfCall(Box::new(x))
         }),
-        map(method_call, |x| SubroutineCall::MethodCall(Box::new(x))),
         subroutine_call_randomize,
     ))(s)
 }

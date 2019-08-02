@@ -73,7 +73,13 @@ pub(crate) fn list_of_tf_variable_identifiers(
 
 #[tracable_parser]
 pub(crate) fn list_of_type_assignments(s: Span) -> IResult<Span, ListOfTypeAssignments> {
-    let (s, a) = list(symbol(","), type_assignment)(s)?;
+    let (s, a) = list(
+        symbol(","),
+        terminated(
+            type_assignment,
+            peek(alt((symbol(","), symbol(")"), symbol(";")))),
+        ),
+    )(s)?;
     Ok((s, ListOfTypeAssignments { nodes: (a,) }))
 }
 

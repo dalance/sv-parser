@@ -2,6 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
+#[recursive_parser]
 #[packrat_parser]
 #[tracable_parser]
 pub(crate) fn casting_type(s: Span) -> IResult<Span, CastingType> {

@@ -115,7 +115,7 @@ pub struct VariableDeclAssignmentDynamicArray {
 
 #[derive(Clone, Debug, Node)]
 pub struct VariableDeclAssignmentClass {
-    pub nodes: (ClassVariableIdentifier, Option<(Symbol, ClassNew)>),
+    pub nodes: (ClassVariableIdentifier, (Symbol, ClassNew)),
 }
 
 #[derive(Clone, Debug, Node)]

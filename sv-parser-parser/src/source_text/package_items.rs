@@ -49,6 +49,9 @@ pub(crate) fn package_or_generate_item_declaration(
         map(class_declaration, |x| {
             PackageOrGenerateItemDeclaration::ClassDeclaration(Box::new(x))
         }),
+        map(interface_class_declaration, |x| {
+            PackageOrGenerateItemDeclaration::InterfaceClassDeclaration(Box::new(x))
+        }),
         map(class_constructor_declaration, |x| {
             PackageOrGenerateItemDeclaration::ClassConstructorDeclaration(Box::new(x))
         }),
@@ -95,6 +98,9 @@ pub(crate) fn anonymous_program_item(s: Span) -> IResult<Span, AnonymousProgramI
         }),
         map(class_declaration, |x| {
             AnonymousProgramItem::ClassDeclaration(Box::new(x))
+        }),
+        map(interface_class_declaration, |x| {
+            AnonymousProgramItem::InterfaceClassDeclaration(Box::new(x))
         }),
         map(covergroup_declaration, |x| {
             AnonymousProgramItem::CovergroupDeclaration(Box::new(x))

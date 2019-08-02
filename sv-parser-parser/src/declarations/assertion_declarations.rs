@@ -285,6 +285,10 @@ pub(crate) fn property_spec(s: Span) -> IResult<Span, PropertySpec> {
 pub(crate) fn property_expr(s: Span) -> IResult<Span, PropertyExpr> {
     alt((
         alt((
+            property_expr_implication_overlapped,
+            property_expr_implication_nonoverlapped,
+            property_expr_followed_by_overlapped,
+            property_expr_followed_by_nonoverlapped,
             map(sequence_expr, |x| PropertyExpr::SequenceExpr(Box::new(x))),
             property_expr_strong,
             property_expr_weak,
@@ -292,12 +296,8 @@ pub(crate) fn property_expr(s: Span) -> IResult<Span, PropertyExpr> {
             property_expr_not,
             property_expr_or,
             property_expr_and,
-            property_expr_implication_overlapped,
-            property_expr_implication_nonoverlapped,
             property_expr_if,
             property_expr_case,
-            property_expr_followed_by_overlapped,
-            property_expr_followed_by_nonoverlapped,
             property_expr_nexttime,
             property_expr_s_nexttime,
         )),
@@ -1151,11 +1151,11 @@ pub(crate) fn goto_repetition(s: Span) -> IResult<Span, GotoRepetition> {
 #[tracable_parser]
 pub(crate) fn const_or_range_expression(s: Span) -> IResult<Span, ConstOrRangeExpression> {
     alt((
-        map(constant_expression, |x| {
-            ConstOrRangeExpression::ConstantExpression(Box::new(x))
-        }),
         map(cycle_delay_const_range_expression, |x| {
             ConstOrRangeExpression::CycleDelayConstRangeExpression(Box::new(x))
+        }),
+        map(constant_expression, |x| {
+            ConstOrRangeExpression::ConstantExpression(Box::new(x))
         }),
     ))(s)
 }

@@ -2,8 +2,8 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[packrat_parser]
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn unary_operator(s: Span) -> IResult<Span, UnaryOperator> {
     let (s, a) = alt((
         symbol("+"),
@@ -22,6 +22,7 @@ pub(crate) fn unary_operator(s: Span) -> IResult<Span, UnaryOperator> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn binary_operator(s: Span) -> IResult<Span, BinaryOperator> {
     let (s, a) = alt((
         alt((
@@ -62,12 +63,14 @@ pub(crate) fn binary_operator(s: Span) -> IResult<Span, BinaryOperator> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn inc_or_dec_operator(s: Span) -> IResult<Span, IncOrDecOperator> {
     let (s, a) = alt((symbol("++"), symbol("--")))(s)?;
     Ok((s, IncOrDecOperator { nodes: (a,) }))
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn unary_module_path_operator(s: Span) -> IResult<Span, UnaryModulePathOperator> {
     let (s, a) = alt((
         symbol("!"),
@@ -84,6 +87,7 @@ pub(crate) fn unary_module_path_operator(s: Span) -> IResult<Span, UnaryModulePa
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn binary_module_path_operator(s: Span) -> IResult<Span, BinaryModulePathOperator> {
     let (s, a) = alt((
         symbol("=="),

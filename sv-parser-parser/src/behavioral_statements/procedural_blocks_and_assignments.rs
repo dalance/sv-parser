@@ -3,6 +3,7 @@ use crate::*;
 // -----------------------------------------------------------------------------
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn initial_construct(s: Span) -> IResult<Span, InitialConstruct> {
     let (s, a) = keyword("initial")(s)?;
     let (s, b) = statement_or_null(s)?;
@@ -10,6 +11,7 @@ pub(crate) fn initial_construct(s: Span) -> IResult<Span, InitialConstruct> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn always_construct(s: Span) -> IResult<Span, AlwaysConstruct> {
     let (s, a) = always_keyword(s)?;
     let (s, b) = statement(s)?;
@@ -17,6 +19,7 @@ pub(crate) fn always_construct(s: Span) -> IResult<Span, AlwaysConstruct> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn always_keyword(s: Span) -> IResult<Span, AlwaysKeyword> {
     alt((
         map(keyword("always_comb"), |x| {
@@ -33,6 +36,7 @@ pub(crate) fn always_keyword(s: Span) -> IResult<Span, AlwaysKeyword> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn final_construct(s: Span) -> IResult<Span, FinalConstruct> {
     let (s, a) = keyword("final")(s)?;
     let (s, b) = function_statement(s)?;
@@ -40,6 +44,7 @@ pub(crate) fn final_construct(s: Span) -> IResult<Span, FinalConstruct> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn blocking_assignment(s: Span) -> IResult<Span, BlockingAssignment> {
     alt((
         blocking_assignment_variable,
@@ -53,6 +58,7 @@ pub(crate) fn blocking_assignment(s: Span) -> IResult<Span, BlockingAssignment> 
 
 #[recursive_parser]
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn blocking_assignment_variable(s: Span) -> IResult<Span, BlockingAssignment> {
     let (s, a) = variable_lvalue(s)?;
     let (s, b) = symbol("=")(s)?;
@@ -68,6 +74,7 @@ pub(crate) fn blocking_assignment_variable(s: Span) -> IResult<Span, BlockingAss
 
 #[recursive_parser]
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn blocking_assignment_nonrange_variable(s: Span) -> IResult<Span, BlockingAssignment> {
     let (s, a) = nonrange_variable_lvalue(s)?;
     let (s, b) = symbol("=")(s)?;
@@ -81,6 +88,7 @@ pub(crate) fn blocking_assignment_nonrange_variable(s: Span) -> IResult<Span, Bl
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn blocking_assignment_hierarchical_variable(
     s: Span,
 ) -> IResult<Span, BlockingAssignment> {
@@ -101,6 +109,7 @@ pub(crate) fn blocking_assignment_hierarchical_variable(
 
 #[recursive_parser]
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn operator_assignment(s: Span) -> IResult<Span, OperatorAssignment> {
     let (s, a) = variable_lvalue(s)?;
     let (s, b) = assignment_operator(s)?;
@@ -109,6 +118,7 @@ pub(crate) fn operator_assignment(s: Span) -> IResult<Span, OperatorAssignment> 
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn assignment_operator(s: Span) -> IResult<Span, AssignmentOperator> {
     alt((
         map(symbol("="), |x| AssignmentOperator { nodes: (x,) }),
@@ -129,6 +139,7 @@ pub(crate) fn assignment_operator(s: Span) -> IResult<Span, AssignmentOperator> 
 
 #[recursive_parser]
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn nonblocking_assignment(s: Span) -> IResult<Span, NonblockingAssignment> {
     let (s, a) = variable_lvalue(s)?;
     let (s, b) = symbol("<=")(s)?;
@@ -143,6 +154,7 @@ pub(crate) fn nonblocking_assignment(s: Span) -> IResult<Span, NonblockingAssign
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn procedural_continuous_assignment(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
@@ -157,6 +169,7 @@ pub(crate) fn procedural_continuous_assignment(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn procedural_continuous_assignment_assign(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
@@ -171,6 +184,7 @@ pub(crate) fn procedural_continuous_assignment_assign(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn procedural_continuous_assignment_deassign(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
@@ -185,6 +199,7 @@ pub(crate) fn procedural_continuous_assignment_deassign(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn procedural_continuous_assignment_force_variable(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
@@ -199,6 +214,7 @@ pub(crate) fn procedural_continuous_assignment_force_variable(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn procedural_continuous_assignment_force_net(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
@@ -213,6 +229,7 @@ pub(crate) fn procedural_continuous_assignment_force_net(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn procedural_continuous_assignment_release_variable(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
@@ -227,6 +244,7 @@ pub(crate) fn procedural_continuous_assignment_release_variable(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn procedural_continuous_assignment_release_net(
     s: Span,
 ) -> IResult<Span, ProceduralContinuousAssignment> {
@@ -242,6 +260,7 @@ pub(crate) fn procedural_continuous_assignment_release_net(
 
 #[recursive_parser]
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn variable_assignment(s: Span) -> IResult<Span, VariableAssignment> {
     let (s, a) = variable_lvalue(s)?;
     let (s, b) = symbol("=")(s)?;

@@ -3,6 +3,7 @@ use crate::*;
 // -----------------------------------------------------------------------------
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn udp_port_list(s: Span) -> IResult<Span, UdpPortList> {
     let (s, a) = output_port_identifier(s)?;
     let (s, b) = symbol(",")(s)?;
@@ -11,6 +12,7 @@ pub(crate) fn udp_port_list(s: Span) -> IResult<Span, UdpPortList> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn udp_declaration_port_list(s: Span) -> IResult<Span, UdpDeclarationPortList> {
     let (s, a) = udp_output_declaration(s)?;
     let (s, b) = symbol(",")(s)?;
@@ -19,6 +21,7 @@ pub(crate) fn udp_declaration_port_list(s: Span) -> IResult<Span, UdpDeclaration
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn udp_port_declaration(s: Span) -> IResult<Span, UdpPortDeclaration> {
     alt((
         map(pair(udp_output_declaration, symbol(";")), |x| {
@@ -34,11 +37,13 @@ pub(crate) fn udp_port_declaration(s: Span) -> IResult<Span, UdpPortDeclaration>
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn udp_output_declaration(s: Span) -> IResult<Span, UdpOutputDeclaration> {
     alt((udp_output_declaration_nonreg, udp_output_declaration_reg))(s)
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn udp_output_declaration_nonreg(s: Span) -> IResult<Span, UdpOutputDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("output")(s)?;
@@ -50,6 +55,7 @@ pub(crate) fn udp_output_declaration_nonreg(s: Span) -> IResult<Span, UdpOutputD
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn udp_output_declaration_reg(s: Span) -> IResult<Span, UdpOutputDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("output")(s)?;
@@ -65,6 +71,7 @@ pub(crate) fn udp_output_declaration_reg(s: Span) -> IResult<Span, UdpOutputDecl
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn udp_input_declaration(s: Span) -> IResult<Span, UdpInputDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("input")(s)?;
@@ -73,6 +80,7 @@ pub(crate) fn udp_input_declaration(s: Span) -> IResult<Span, UdpInputDeclaratio
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn udp_reg_declaration(s: Span) -> IResult<Span, UdpRegDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("reg")(s)?;

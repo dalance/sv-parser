@@ -3,6 +3,7 @@ use crate::*;
 // -----------------------------------------------------------------------------
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn udp_nonansi_declaration(s: Span) -> IResult<Span, UdpNonansiDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("primitive")(s)?;
@@ -18,6 +19,7 @@ pub(crate) fn udp_nonansi_declaration(s: Span) -> IResult<Span, UdpNonansiDeclar
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn udp_ansi_declaration(s: Span) -> IResult<Span, UdpAnsiDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("primitive")(s)?;
@@ -33,6 +35,7 @@ pub(crate) fn udp_ansi_declaration(s: Span) -> IResult<Span, UdpAnsiDeclaration>
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn udp_declaration(s: Span) -> IResult<Span, UdpDeclaration> {
     alt((
         udp_declaration_nonansi,
@@ -44,6 +47,7 @@ pub(crate) fn udp_declaration(s: Span) -> IResult<Span, UdpDeclaration> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn udp_declaration_nonansi(s: Span) -> IResult<Span, UdpDeclaration> {
     let (s, a) = udp_nonansi_declaration(s)?;
     let (s, b) = udp_port_declaration(s)?;
@@ -60,6 +64,7 @@ pub(crate) fn udp_declaration_nonansi(s: Span) -> IResult<Span, UdpDeclaration> 
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn udp_declaration_ansi(s: Span) -> IResult<Span, UdpDeclaration> {
     let (s, a) = udp_ansi_declaration(s)?;
     let (s, b) = udp_body(s)?;
@@ -74,6 +79,7 @@ pub(crate) fn udp_declaration_ansi(s: Span) -> IResult<Span, UdpDeclaration> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn udp_declaration_extern_nonansi(s: Span) -> IResult<Span, UdpDeclaration> {
     let (s, a) = keyword("extern")(s)?;
     let (s, b) = udp_nonansi_declaration(s)?;
@@ -84,6 +90,7 @@ pub(crate) fn udp_declaration_extern_nonansi(s: Span) -> IResult<Span, UdpDeclar
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn udp_declaration_extern_ansi(s: Span) -> IResult<Span, UdpDeclaration> {
     let (s, a) = keyword("extern")(s)?;
     let (s, b) = udp_ansi_declaration(s)?;
@@ -94,6 +101,7 @@ pub(crate) fn udp_declaration_extern_ansi(s: Span) -> IResult<Span, UdpDeclarati
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn udp_declaration_wildcard(s: Span) -> IResult<Span, UdpDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = keyword("primitive")(s)?;

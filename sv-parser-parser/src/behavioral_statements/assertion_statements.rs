@@ -3,6 +3,7 @@ use crate::*;
 // -----------------------------------------------------------------------------
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn assertion_item(s: Span) -> IResult<Span, AssertionItem> {
     alt((
         map(concurrent_assertion_item, |x| {
@@ -15,6 +16,7 @@ pub(crate) fn assertion_item(s: Span) -> IResult<Span, AssertionItem> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn deferred_immediate_assertion_item(
     s: Span,
 ) -> IResult<Span, DeferredImmediateAssetionItem> {
@@ -24,6 +26,7 @@ pub(crate) fn deferred_immediate_assertion_item(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn procedural_assertion_statement(
     s: Span,
 ) -> IResult<Span, ProceduralAssertionStatement> {
@@ -41,6 +44,7 @@ pub(crate) fn procedural_assertion_statement(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn immediate_assertion_statement(s: Span) -> IResult<Span, ImmediateAssetionStatement> {
     alt((
         map(simple_immediate_assertion_statement, |x| {
@@ -53,6 +57,7 @@ pub(crate) fn immediate_assertion_statement(s: Span) -> IResult<Span, ImmediateA
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn simple_immediate_assertion_statement(
     s: Span,
 ) -> IResult<Span, SimpleImmediateAssertionStatement> {
@@ -70,6 +75,7 @@ pub(crate) fn simple_immediate_assertion_statement(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn simple_immediate_assert_statement(
     s: Span,
 ) -> IResult<Span, SimpleImmediateAssertStatement> {
@@ -80,6 +86,7 @@ pub(crate) fn simple_immediate_assert_statement(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn simple_immediate_assume_statement(
     s: Span,
 ) -> IResult<Span, SimpleImmediateAssumeStatement> {
@@ -90,6 +97,7 @@ pub(crate) fn simple_immediate_assume_statement(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn simple_immediate_cover_statement(
     s: Span,
 ) -> IResult<Span, SimpleImmediateCoverStatement> {
@@ -100,6 +108,7 @@ pub(crate) fn simple_immediate_cover_statement(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn deferred_immediate_assertion_statement(
     s: Span,
 ) -> IResult<Span, DeferredImmediateAssertionStatement> {
@@ -117,6 +126,7 @@ pub(crate) fn deferred_immediate_assertion_statement(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn deferred_immediate_assert_statement(
     s: Span,
 ) -> IResult<Span, DeferredImmediateAssertStatement> {
@@ -133,6 +143,7 @@ pub(crate) fn deferred_immediate_assert_statement(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn deferred_immediate_assume_statement(
     s: Span,
 ) -> IResult<Span, DeferredImmediateAssumeStatement> {
@@ -149,6 +160,7 @@ pub(crate) fn deferred_immediate_assume_statement(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn deferred_immediate_cover_statement(
     s: Span,
 ) -> IResult<Span, DeferredImmediateCoverStatement> {
@@ -165,6 +177,7 @@ pub(crate) fn deferred_immediate_cover_statement(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn assert_timing(s: Span) -> IResult<Span, AssertTiming> {
     alt((
         map(symbol("#0"), |x| AssertTiming::Zero(Box::new(x))),

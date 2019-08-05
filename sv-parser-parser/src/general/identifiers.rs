@@ -27,6 +27,7 @@ pub(crate) fn bin_identifier(s: Span) -> IResult<Span, BinIdentifier> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn c_identifier(s: Span) -> IResult<Span, CIdentifier> {
     let (s, a) = ws(c_identifier_impl)(s)?;
     Ok((s, CIdentifier { nodes: a }))
@@ -200,8 +201,8 @@ pub(crate) fn hierarchical_event_identifier(s: Span) -> IResult<Span, Hierarchic
     Ok((s, HierarchicalEventIdentifier { nodes: (a,) }))
 }
 
-#[packrat_parser]
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn hierarchical_identifier(s: Span) -> IResult<Span, HierarchicalIdentifier> {
     let (s, a) = opt(root)(s)?;
     let (s, b) = many0(triple(identifier, constant_bit_select, symbol(".")))(s)?;
@@ -210,6 +211,7 @@ pub(crate) fn hierarchical_identifier(s: Span) -> IResult<Span, HierarchicalIden
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn root(s: Span) -> IResult<Span, Root> {
     let (s, a) = keyword("$root")(s)?;
     let (s, b) = symbol(".")(s)?;
@@ -266,8 +268,8 @@ pub(crate) fn hierarchical_variable_identifier(
     Ok((s, HierarchicalVariableIdentifier { nodes: (a,) }))
 }
 
-#[packrat_parser]
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn identifier(s: Span) -> IResult<Span, Identifier> {
     alt((
         map(escaped_identifier, |x| {
@@ -369,8 +371,8 @@ pub(crate) fn package_identifier(s: Span) -> IResult<Span, PackageIdentifier> {
     Ok((s, PackageIdentifier { nodes: (a,) }))
 }
 
-#[packrat_parser]
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn package_scope(s: Span) -> IResult<Span, PackageScope> {
     alt((
         package_scope_package,
@@ -379,6 +381,7 @@ pub(crate) fn package_scope(s: Span) -> IResult<Span, PackageScope> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn package_scope_package(s: Span) -> IResult<Span, PackageScope> {
     let (s, a) = package_identifier(s)?;
     let (s, b) = symbol("::")(s)?;
@@ -389,6 +392,7 @@ pub(crate) fn package_scope_package(s: Span) -> IResult<Span, PackageScope> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn unit(s: Span) -> IResult<Span, Unit> {
     let (s, a) = keyword("$unit")(s)?;
     let (s, b) = symbol("::")(s)?;
@@ -426,6 +430,7 @@ pub(crate) fn property_identifier(s: Span) -> IResult<Span, PropertyIdentifier> 
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn ps_class_identifier(s: Span) -> IResult<Span, PsClassIdentifier> {
     let (s, a) = opt(package_scope)(s)?;
     let (s, b) = class_identifier(s)?;
@@ -433,6 +438,7 @@ pub(crate) fn ps_class_identifier(s: Span) -> IResult<Span, PsClassIdentifier> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn ps_covergroup_identifier(s: Span) -> IResult<Span, PsCovergroupIdentifier> {
     let (s, a) = opt(package_scope)(s)?;
     let (s, b) = covergroup_identifier(s)?;
@@ -440,6 +446,7 @@ pub(crate) fn ps_covergroup_identifier(s: Span) -> IResult<Span, PsCovergroupIde
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn ps_checker_identifier(s: Span) -> IResult<Span, PsCheckerIdentifier> {
     let (s, a) = opt(package_scope)(s)?;
     let (s, b) = checker_identifier(s)?;
@@ -447,6 +454,7 @@ pub(crate) fn ps_checker_identifier(s: Span) -> IResult<Span, PsCheckerIdentifie
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn ps_identifier(s: Span) -> IResult<Span, PsIdentifier> {
     let (s, a) = opt(package_scope)(s)?;
     let (s, b) = identifier(s)?;
@@ -454,6 +462,7 @@ pub(crate) fn ps_identifier(s: Span) -> IResult<Span, PsIdentifier> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn ps_or_hierarchical_array_identifier(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalArrayIdentifier> {
@@ -463,6 +472,7 @@ pub(crate) fn ps_or_hierarchical_array_identifier(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn ps_or_hierarchical_net_identifier(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalNetIdentifier> {
@@ -475,6 +485,7 @@ pub(crate) fn ps_or_hierarchical_net_identifier(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn ps_or_hierarchical_net_identifier_package_scope(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalNetIdentifier> {
@@ -489,6 +500,7 @@ pub(crate) fn ps_or_hierarchical_net_identifier_package_scope(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn ps_or_hierarchical_property_identifier(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalPropertyIdentifier> {
@@ -501,6 +513,7 @@ pub(crate) fn ps_or_hierarchical_property_identifier(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn ps_or_hierarchical_property_identifier_package_scope(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalPropertyIdentifier> {
@@ -515,6 +528,7 @@ pub(crate) fn ps_or_hierarchical_property_identifier_package_scope(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn ps_or_hierarchical_sequence_identifier(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalSequenceIdentifier> {
@@ -527,6 +541,7 @@ pub(crate) fn ps_or_hierarchical_sequence_identifier(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn ps_or_hierarchical_sequence_identifier_package_scope(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalSequenceIdentifier> {
@@ -541,6 +556,7 @@ pub(crate) fn ps_or_hierarchical_sequence_identifier_package_scope(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn ps_or_hierarchical_tf_identifier(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalTfIdentifier> {
@@ -553,6 +569,7 @@ pub(crate) fn ps_or_hierarchical_tf_identifier(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn ps_or_hierarchical_tf_identifier_package_scope(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalTfIdentifier> {
@@ -566,8 +583,8 @@ pub(crate) fn ps_or_hierarchical_tf_identifier_package_scope(
     ))
 }
 
-#[packrat_parser]
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn ps_parameter_identifier(s: Span) -> IResult<Span, PsParameterIdentifier> {
     alt((
         ps_parameter_identifier_scope,
@@ -576,6 +593,7 @@ pub(crate) fn ps_parameter_identifier(s: Span) -> IResult<Span, PsParameterIdent
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn ps_parameter_identifier_scope(s: Span) -> IResult<Span, PsParameterIdentifier> {
     let (s, a) = opt(package_scope_or_class_scope)(s)?;
     let (s, b) = parameter_identifier(s)?;
@@ -586,6 +604,7 @@ pub(crate) fn ps_parameter_identifier_scope(s: Span) -> IResult<Span, PsParamete
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn ps_parameter_identifier_generate(s: Span) -> IResult<Span, PsParameterIdentifier> {
     let (s, a) = many0(triple(
         generate_block_identifier,
@@ -599,8 +618,8 @@ pub(crate) fn ps_parameter_identifier_generate(s: Span) -> IResult<Span, PsParam
     ))
 }
 
-#[packrat_parser]
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn ps_type_identifier(s: Span) -> IResult<Span, PsTypeIdentifier> {
     let (s, a) = opt(local_or_package_scope_or_class_scope)(s)?;
     let (s, b) = type_identifier(s)?;
@@ -620,6 +639,7 @@ pub(crate) fn signal_identifier(s: Span) -> IResult<Span, SignalIdentifier> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn simple_identifier(s: Span) -> IResult<Span, SimpleIdentifier> {
     let (s, a) = ws(simple_identifier_impl)(s)?;
     Ok((s, SimpleIdentifier { nodes: a }))
@@ -648,6 +668,7 @@ pub(crate) fn specparam_identifier(s: Span) -> IResult<Span, SpecparamIdentifier
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn system_tf_identifier(s: Span) -> IResult<Span, SystemTfIdentifier> {
     let (s, a) = ws(system_tf_identifier_impl)(s)?;
     Ok((s, SystemTfIdentifier { nodes: a }))
@@ -705,6 +726,7 @@ pub(crate) fn variable_identifier(s: Span) -> IResult<Span, VariableIdentifier> 
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn implicit_class_handle_or_class_scope_or_package_scope(
     s: Span,
 ) -> IResult<Span, ImplicitClassHandleOrClassScopeOrPackageScope> {
@@ -722,6 +744,7 @@ pub(crate) fn implicit_class_handle_or_class_scope_or_package_scope(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn implicit_class_handle_or_package_scope(
     s: Span,
 ) -> IResult<Span, ImplicitClassHandleOrPackageScope> {
@@ -736,6 +759,7 @@ pub(crate) fn implicit_class_handle_or_package_scope(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn implicit_class_handle_or_class_scope(
     s: Span,
 ) -> IResult<Span, ImplicitClassHandleOrClassScope> {
@@ -750,6 +774,7 @@ pub(crate) fn implicit_class_handle_or_class_scope(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn package_scope_or_class_scope(s: Span) -> IResult<Span, PackageScopeOrClassScope> {
     alt((
         map(package_scope, |x| {
@@ -762,6 +787,7 @@ pub(crate) fn package_scope_or_class_scope(s: Span) -> IResult<Span, PackageScop
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn local_or_package_scope_or_class_scope(
     s: Span,
 ) -> IResult<Span, LocalOrPackageScopeOrClassScope> {
@@ -779,6 +805,7 @@ pub(crate) fn local_or_package_scope_or_class_scope(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn local(s: Span) -> IResult<Span, Local> {
     let (s, a) = keyword("local")(s)?;
     let (s, b) = symbol("::")(s)?;

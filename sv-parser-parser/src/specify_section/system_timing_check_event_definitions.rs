@@ -3,6 +3,7 @@ use crate::*;
 // -----------------------------------------------------------------------------
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn timing_check_event(s: Span) -> IResult<Span, TimingCheckEvent> {
     let (s, a) = opt(timing_check_event_control)(s)?;
     let (s, b) = specify_terminal_descriptor(s)?;
@@ -11,6 +12,7 @@ pub(crate) fn timing_check_event(s: Span) -> IResult<Span, TimingCheckEvent> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn controlled_timing_check_event(s: Span) -> IResult<Span, ControlledTimingCheckEvent> {
     let (s, a) = timing_check_event_control(s)?;
     let (s, b) = specify_terminal_descriptor(s)?;
@@ -19,6 +21,7 @@ pub(crate) fn controlled_timing_check_event(s: Span) -> IResult<Span, Controlled
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn timing_check_event_control(s: Span) -> IResult<Span, TimingCheckEventControl> {
     alt((
         map(keyword("posedge"), |x| {
@@ -37,6 +40,7 @@ pub(crate) fn timing_check_event_control(s: Span) -> IResult<Span, TimingCheckEv
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn specify_terminal_descriptor(s: Span) -> IResult<Span, SpecifyTerminalDescriptor> {
     alt((
         map(specify_input_terminal_descriptor, |x| {
@@ -49,6 +53,7 @@ pub(crate) fn specify_terminal_descriptor(s: Span) -> IResult<Span, SpecifyTermi
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn edge_control_specifier(s: Span) -> IResult<Span, EdgeControlSpecifier> {
     let (s, a) = keyword("edge")(s)?;
     let (s, b) = bracket(list(symbol(","), edge_descriptor))(s)?;
@@ -56,6 +61,7 @@ pub(crate) fn edge_control_specifier(s: Span) -> IResult<Span, EdgeControlSpecif
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn edge_descriptor(s: Span) -> IResult<Span, EdgeDescriptor> {
     alt((
         map(keyword("01"), |x| EdgeDescriptor { nodes: (x,) }),
@@ -80,6 +86,7 @@ pub(crate) fn edge_descriptor(s: Span) -> IResult<Span, EdgeDescriptor> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn timing_check_condition(s: Span) -> IResult<Span, TimingCheckCondition> {
     alt((
         map(scalar_timing_check_condition, |x| {
@@ -90,6 +97,7 @@ pub(crate) fn timing_check_condition(s: Span) -> IResult<Span, TimingCheckCondit
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn timing_check_condition_paren(s: Span) -> IResult<Span, TimingCheckCondition> {
     let (s, a) = paren(scalar_timing_check_condition)(s)?;
     Ok((
@@ -99,6 +107,7 @@ pub(crate) fn timing_check_condition_paren(s: Span) -> IResult<Span, TimingCheck
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn scalar_timing_check_condition(s: Span) -> IResult<Span, ScalarTimingCheckCondition> {
     alt((
         map(expression, |x| {
@@ -110,6 +119,7 @@ pub(crate) fn scalar_timing_check_condition(s: Span) -> IResult<Span, ScalarTimi
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn scalar_timing_check_condition_unary(
     s: Span,
 ) -> IResult<Span, ScalarTimingCheckCondition> {
@@ -124,6 +134,7 @@ pub(crate) fn scalar_timing_check_condition_unary(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn scalar_timing_check_condition_binary(
     s: Span,
 ) -> IResult<Span, ScalarTimingCheckCondition> {
@@ -139,6 +150,7 @@ pub(crate) fn scalar_timing_check_condition_binary(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn scalar_constant(s: Span) -> IResult<Span, ScalarConstant> {
     alt((
         map(keyword("1'b0"), |x| ScalarConstant { nodes: (x,) }),

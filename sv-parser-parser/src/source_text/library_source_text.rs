@@ -3,12 +3,14 @@ use crate::*;
 // -----------------------------------------------------------------------------
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn library_text(s: Span) -> IResult<Span, LibraryText> {
     let (s, a) = many0(library_description)(s)?;
     Ok((s, LibraryText { nodes: (a,) }))
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn library_description(s: Span) -> IResult<Span, LibraryDescription> {
     alt((
         map(library_declaration, |x| {
@@ -25,6 +27,7 @@ pub(crate) fn library_description(s: Span) -> IResult<Span, LibraryDescription> 
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn library_declaration(s: Span) -> IResult<Span, LibraryDeclaration> {
     let (s, a) = keyword("library")(s)?;
     let (s, b) = library_identifier(s)?;
@@ -40,6 +43,7 @@ pub(crate) fn library_declaration(s: Span) -> IResult<Span, LibraryDeclaration> 
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn include_statement(s: Span) -> IResult<Span, IncludeStatement> {
     let (s, a) = keyword("include")(s)?;
     let (s, b) = file_path_spec(s)?;
@@ -48,6 +52,7 @@ pub(crate) fn include_statement(s: Span) -> IResult<Span, IncludeStatement> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn file_path_spec(s: Span) -> IResult<Span, FilePathSpec> {
     alt((
         map(string_literal, |x| FilePathSpec::Literal(x)),
@@ -56,6 +61,7 @@ pub(crate) fn file_path_spec(s: Span) -> IResult<Span, FilePathSpec> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn file_path_spec_non_literal(s: Span) -> IResult<Span, FilePathSpec> {
     let (s, a) = ws(map(is_not(",; "), |x| into_locate(x)))(s)?;
     Ok((

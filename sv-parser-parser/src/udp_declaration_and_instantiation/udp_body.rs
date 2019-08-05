@@ -3,6 +3,7 @@ use crate::*;
 // -----------------------------------------------------------------------------
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn udp_body(s: Span) -> IResult<Span, UdpBody> {
     alt((
         map(combinational_body, |x| {
@@ -13,6 +14,7 @@ pub(crate) fn udp_body(s: Span) -> IResult<Span, UdpBody> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn combinational_body(s: Span) -> IResult<Span, CombinationalBody> {
     let (s, a) = keyword("table")(s)?;
     let (s, b) = combinational_entry(s)?;
@@ -27,6 +29,7 @@ pub(crate) fn combinational_body(s: Span) -> IResult<Span, CombinationalBody> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn combinational_entry(s: Span) -> IResult<Span, CombinationalEntry> {
     let (s, a) = level_input_list(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -41,6 +44,7 @@ pub(crate) fn combinational_entry(s: Span) -> IResult<Span, CombinationalEntry> 
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn sequential_body(s: Span) -> IResult<Span, SequentialBody> {
     let (s, a) = opt(udp_initial_statement)(s)?;
     let (s, b) = keyword("table")(s)?;
@@ -56,6 +60,7 @@ pub(crate) fn sequential_body(s: Span) -> IResult<Span, SequentialBody> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn udp_initial_statement(s: Span) -> IResult<Span, UdpInitialStatement> {
     let (s, a) = keyword("initial")(s)?;
     let (s, b) = output_port_identifier(s)?;
@@ -71,6 +76,7 @@ pub(crate) fn udp_initial_statement(s: Span) -> IResult<Span, UdpInitialStatemen
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn init_val(s: Span) -> IResult<Span, InitVal> {
     alt((
         map(keyword("1'b0"), |x| InitVal { nodes: (x,) }),
@@ -87,6 +93,7 @@ pub(crate) fn init_val(s: Span) -> IResult<Span, InitVal> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn sequential_entry(s: Span) -> IResult<Span, SequentialEntry> {
     let (s, a) = seq_input_list(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -103,6 +110,7 @@ pub(crate) fn sequential_entry(s: Span) -> IResult<Span, SequentialEntry> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn seq_input_list(s: Span) -> IResult<Span, SeqInputList> {
     alt((
         map(level_input_list, |x| {
@@ -115,6 +123,7 @@ pub(crate) fn seq_input_list(s: Span) -> IResult<Span, SeqInputList> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn level_input_list(s: Span) -> IResult<Span, LevelInputList> {
     let (s, a) = level_symbol(s)?;
     let (s, b) = many0(level_symbol)(s)?;
@@ -122,6 +131,7 @@ pub(crate) fn level_input_list(s: Span) -> IResult<Span, LevelInputList> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn edge_input_list(s: Span) -> IResult<Span, EdgeInputList> {
     let (s, a) = many0(level_symbol)(s)?;
     let (s, b) = edge_indicator(s)?;
@@ -130,6 +140,7 @@ pub(crate) fn edge_input_list(s: Span) -> IResult<Span, EdgeInputList> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn edge_indicator(s: Span) -> IResult<Span, EdgeIndicator> {
     alt((
         edge_indicator_paren,
@@ -138,6 +149,7 @@ pub(crate) fn edge_indicator(s: Span) -> IResult<Span, EdgeIndicator> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn edge_indicator_paren(s: Span) -> IResult<Span, EdgeIndicator> {
     let (s, a) = paren(pair(level_symbol, level_symbol))(s)?;
     Ok((
@@ -147,12 +159,14 @@ pub(crate) fn edge_indicator_paren(s: Span) -> IResult<Span, EdgeIndicator> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn current_state(s: Span) -> IResult<Span, CurrentState> {
     let (s, a) = level_symbol(s)?;
     Ok((s, CurrentState { nodes: (a,) }))
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn next_state(s: Span) -> IResult<Span, NextState> {
     alt((
         map(output_symbol, |x| NextState::OutputSymbol(Box::new(x))),
@@ -161,6 +175,7 @@ pub(crate) fn next_state(s: Span) -> IResult<Span, NextState> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn output_symbol(s: Span) -> IResult<Span, OutputSymbol> {
     alt((
         map(keyword("0"), |x| OutputSymbol { nodes: (x,) }),
@@ -171,6 +186,7 @@ pub(crate) fn output_symbol(s: Span) -> IResult<Span, OutputSymbol> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn level_symbol(s: Span) -> IResult<Span, LevelSymbol> {
     alt((
         map(keyword("0"), |x| LevelSymbol { nodes: (x,) }),
@@ -184,6 +200,7 @@ pub(crate) fn level_symbol(s: Span) -> IResult<Span, LevelSymbol> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn edge_symbol(s: Span) -> IResult<Span, EdgeSymbol> {
     alt((
         map(keyword("r"), |x| EdgeSymbol { nodes: (x,) }),

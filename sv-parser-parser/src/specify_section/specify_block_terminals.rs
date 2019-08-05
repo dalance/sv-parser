@@ -3,6 +3,7 @@ use crate::*;
 // -----------------------------------------------------------------------------
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn specify_input_terminal_descriptor(
     s: Span,
 ) -> IResult<Span, SpecifyInputTerminalDescriptor> {
@@ -12,6 +13,7 @@ pub(crate) fn specify_input_terminal_descriptor(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn specify_output_terminal_descriptor(
     s: Span,
 ) -> IResult<Span, SpecifyOutputTerminalDescriptor> {
@@ -21,6 +23,7 @@ pub(crate) fn specify_output_terminal_descriptor(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn input_identifier(s: Span) -> IResult<Span, InputIdentifier> {
     alt((
         map(input_port_identifier, |x| {
@@ -34,6 +37,7 @@ pub(crate) fn input_identifier(s: Span) -> IResult<Span, InputIdentifier> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn input_identifier_interface(s: Span) -> IResult<Span, InputIdentifier> {
     let (s, a) = interface_identifier(s)?;
     let (s, b) = symbol(".")(s)?;
@@ -45,6 +49,7 @@ pub(crate) fn input_identifier_interface(s: Span) -> IResult<Span, InputIdentifi
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn output_identifier(s: Span) -> IResult<Span, OutputIdentifier> {
     alt((
         map(output_port_identifier, |x| {
@@ -58,6 +63,7 @@ pub(crate) fn output_identifier(s: Span) -> IResult<Span, OutputIdentifier> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn output_identifier_interface(s: Span) -> IResult<Span, OutputIdentifier> {
     let (s, a) = interface_identifier(s)?;
     let (s, b) = symbol(".")(s)?;

@@ -3,6 +3,7 @@ use crate::*;
 // -----------------------------------------------------------------------------
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn case_statement(s: Span) -> IResult<Span, CaseStatement> {
     alt((
         case_statement_normal,
@@ -12,6 +13,7 @@ pub(crate) fn case_statement(s: Span) -> IResult<Span, CaseStatement> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn case_statement_normal(s: Span) -> IResult<Span, CaseStatement> {
     let (s, a) = opt(unique_priority)(s)?;
     let (s, b) = case_keyword(s)?;
@@ -28,6 +30,7 @@ pub(crate) fn case_statement_normal(s: Span) -> IResult<Span, CaseStatement> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn case_statement_matches(s: Span) -> IResult<Span, CaseStatement> {
     let (s, a) = opt(unique_priority)(s)?;
     let (s, b) = case_keyword(s)?;
@@ -45,6 +48,7 @@ pub(crate) fn case_statement_matches(s: Span) -> IResult<Span, CaseStatement> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn case_statement_inside(s: Span) -> IResult<Span, CaseStatement> {
     let (s, a) = opt(unique_priority)(s)?;
     let (s, b) = keyword("case")(s)?;
@@ -62,6 +66,7 @@ pub(crate) fn case_statement_inside(s: Span) -> IResult<Span, CaseStatement> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn case_keyword(s: Span) -> IResult<Span, CaseKeyword> {
     alt((
         map(keyword("casez"), |x| CaseKeyword::Casez(Box::new(x))),
@@ -71,12 +76,14 @@ pub(crate) fn case_keyword(s: Span) -> IResult<Span, CaseKeyword> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn case_expression(s: Span) -> IResult<Span, CaseExpression> {
     let (s, a) = expression(s)?;
     Ok((s, CaseExpression { nodes: (a,) }))
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn case_item(s: Span) -> IResult<Span, CaseItem> {
     alt((
         case_item_nondefault,
@@ -86,6 +93,7 @@ pub(crate) fn case_item(s: Span) -> IResult<Span, CaseItem> {
 
 #[recursive_parser]
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn case_item_nondefault(s: Span) -> IResult<Span, CaseItem> {
     let (s, a) = list(symbol(","), case_item_expression)(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -97,6 +105,7 @@ pub(crate) fn case_item_nondefault(s: Span) -> IResult<Span, CaseItem> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn case_item_default(s: Span) -> IResult<Span, CaseItemDefault> {
     let (s, a) = keyword("default")(s)?;
     let (s, b) = opt(symbol(":"))(s)?;
@@ -105,6 +114,7 @@ pub(crate) fn case_item_default(s: Span) -> IResult<Span, CaseItemDefault> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn case_pattern_item(s: Span) -> IResult<Span, CasePatternItem> {
     alt((
         case_pattern_item_nondefault,
@@ -114,6 +124,7 @@ pub(crate) fn case_pattern_item(s: Span) -> IResult<Span, CasePatternItem> {
 
 #[recursive_parser]
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn case_pattern_item_nondefault(s: Span) -> IResult<Span, CasePatternItem> {
     let (s, a) = pattern(s)?;
     let (s, b) = opt(pair(symbol("&&&"), expression))(s)?;
@@ -128,6 +139,7 @@ pub(crate) fn case_pattern_item_nondefault(s: Span) -> IResult<Span, CasePattern
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn case_inside_item(s: Span) -> IResult<Span, CaseInsideItem> {
     alt((
         case_inside_item_nondefault,
@@ -137,6 +149,7 @@ pub(crate) fn case_inside_item(s: Span) -> IResult<Span, CaseInsideItem> {
 
 #[recursive_parser]
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn case_inside_item_nondefault(s: Span) -> IResult<Span, CaseInsideItem> {
     let (s, a) = open_range_list(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -148,12 +161,14 @@ pub(crate) fn case_inside_item_nondefault(s: Span) -> IResult<Span, CaseInsideIt
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn case_item_expression(s: Span) -> IResult<Span, CaseItemExpression> {
     let (s, a) = expression(s)?;
     Ok((s, CaseItemExpression { nodes: (a,) }))
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn randcase_statement(s: Span) -> IResult<Span, RandcaseStatement> {
     let (s, a) = keyword("randcase")(s)?;
     let (s, b) = randcase_item(s)?;
@@ -169,6 +184,7 @@ pub(crate) fn randcase_statement(s: Span) -> IResult<Span, RandcaseStatement> {
 
 #[recursive_parser]
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn randcase_item(s: Span) -> IResult<Span, RandcaseItem> {
     let (s, a) = expression(s)?;
     let (s, b) = symbol(":")(s)?;
@@ -178,12 +194,14 @@ pub(crate) fn randcase_item(s: Span) -> IResult<Span, RandcaseItem> {
 
 #[recursive_parser]
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn open_range_list(s: Span) -> IResult<Span, OpenRangeList> {
     let (s, a) = list(symbol(","), open_value_range)(s)?;
     Ok((s, OpenRangeList { nodes: (a,) }))
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn open_value_range(s: Span) -> IResult<Span, OpenValueRange> {
     let (s, a) = value_range(s)?;
     Ok((s, OpenValueRange { nodes: (a,) }))

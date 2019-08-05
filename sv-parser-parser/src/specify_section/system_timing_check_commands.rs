@@ -3,6 +3,7 @@ use crate::*;
 // -----------------------------------------------------------------------------
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn system_timing_check(s: Span) -> IResult<Span, SystemTimingCheck> {
     alt((
         map(setup_timing_check, |x| {
@@ -45,6 +46,7 @@ pub(crate) fn system_timing_check(s: Span) -> IResult<Span, SystemTimingCheck> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn setup_timing_check(s: Span) -> IResult<Span, SetupTimingCheck> {
     let (s, a) = keyword("$setup")(s)?;
     let (s, b) = paren(tuple((
@@ -60,6 +62,7 @@ pub(crate) fn setup_timing_check(s: Span) -> IResult<Span, SetupTimingCheck> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn hold_timing_check(s: Span) -> IResult<Span, HoldTimingCheck> {
     let (s, a) = keyword("$setup")(s)?;
     let (s, b) = paren(tuple((
@@ -75,6 +78,7 @@ pub(crate) fn hold_timing_check(s: Span) -> IResult<Span, HoldTimingCheck> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn setuphold_timing_check(s: Span) -> IResult<Span, SetupholdTimingCheck> {
     let (s, a) = keyword("$setuphold")(s)?;
     let (s, b) = paren(tuple((
@@ -108,6 +112,7 @@ pub(crate) fn setuphold_timing_check(s: Span) -> IResult<Span, SetupholdTimingCh
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn recovery_timing_check(s: Span) -> IResult<Span, RecoveryTimingCheck> {
     let (s, a) = keyword("$recovery")(s)?;
     let (s, b) = paren(tuple((
@@ -123,6 +128,7 @@ pub(crate) fn recovery_timing_check(s: Span) -> IResult<Span, RecoveryTimingChec
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn removal_timing_check(s: Span) -> IResult<Span, RemovalTimingCheck> {
     let (s, a) = keyword("$removal")(s)?;
     let (s, b) = paren(tuple((
@@ -138,6 +144,7 @@ pub(crate) fn removal_timing_check(s: Span) -> IResult<Span, RemovalTimingCheck>
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn recrem_timing_check(s: Span) -> IResult<Span, RecremTimingCheck> {
     let (s, a) = keyword("$recrem")(s)?;
     let (s, b) = paren(tuple((
@@ -171,6 +178,7 @@ pub(crate) fn recrem_timing_check(s: Span) -> IResult<Span, RecremTimingCheck> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn skew_timing_check(s: Span) -> IResult<Span, SkewTimingCheck> {
     let (s, a) = keyword("$skew")(s)?;
     let (s, b) = paren(tuple((
@@ -186,6 +194,7 @@ pub(crate) fn skew_timing_check(s: Span) -> IResult<Span, SkewTimingCheck> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn timeskew_timing_check(s: Span) -> IResult<Span, TimeskewTimingCheck> {
     let (s, a) = keyword("$timeskew")(s)?;
     let (s, b) = paren(tuple((
@@ -209,6 +218,7 @@ pub(crate) fn timeskew_timing_check(s: Span) -> IResult<Span, TimeskewTimingChec
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn fullskew_timing_check(s: Span) -> IResult<Span, FullskewTimingCheck> {
     let (s, a) = keyword("$fullskew")(s)?;
     let (s, b) = paren(tuple((
@@ -234,6 +244,7 @@ pub(crate) fn fullskew_timing_check(s: Span) -> IResult<Span, FullskewTimingChec
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn period_timing_check(s: Span) -> IResult<Span, PeriodTimingCheck> {
     let (s, a) = keyword("$period")(s)?;
     let (s, b) = paren(tuple((
@@ -247,6 +258,7 @@ pub(crate) fn period_timing_check(s: Span) -> IResult<Span, PeriodTimingCheck> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn width_timing_check(s: Span) -> IResult<Span, WidthTimingCheck> {
     let (s, a) = keyword("$width")(s)?;
     let (s, b) = paren(tuple((
@@ -262,6 +274,7 @@ pub(crate) fn width_timing_check(s: Span) -> IResult<Span, WidthTimingCheck> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn nocharge_timing_check(s: Span) -> IResult<Span, NochargeTimingCheck> {
     let (s, a) = keyword("$nocharge")(s)?;
     let (s, b) = paren(tuple((

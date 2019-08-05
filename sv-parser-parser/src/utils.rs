@@ -507,6 +507,7 @@ where
 // -----------------------------------------------------------------------------
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
     alt((
         map(multispace1, |x: Span| {

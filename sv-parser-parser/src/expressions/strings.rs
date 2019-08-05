@@ -3,6 +3,7 @@ use crate::*;
 // -----------------------------------------------------------------------------
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn string_literal(s: Span) -> IResult<Span, StringLiteral> {
     let (s, a) = ws(string_literal_impl)(s)?;
     Ok((s, StringLiteral { nodes: a }))

@@ -3,6 +3,7 @@ use crate::*;
 // -----------------------------------------------------------------------------
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn pattern(s: Span) -> IResult<Span, Pattern> {
     alt((
         pattern_variable,
@@ -17,6 +18,7 @@ pub(crate) fn pattern(s: Span) -> IResult<Span, Pattern> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn pattern_variable(s: Span) -> IResult<Span, Pattern> {
     let (s, a) = symbol(".")(s)?;
     let (s, b) = variable_identifier(s)?;
@@ -27,6 +29,7 @@ pub(crate) fn pattern_variable(s: Span) -> IResult<Span, Pattern> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn pattern_tagged(s: Span) -> IResult<Span, Pattern> {
     let (s, a) = keyword("tagged")(s)?;
     let (s, b) = member_identifier(s)?;
@@ -38,12 +41,14 @@ pub(crate) fn pattern_tagged(s: Span) -> IResult<Span, Pattern> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn pattern_list(s: Span) -> IResult<Span, Pattern> {
     let (s, a) = apostrophe_brace(list(symbol(","), pattern))(s)?;
     Ok((s, Pattern::List(Box::new(PatternList { nodes: (a,) }))))
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn pattern_identifier_list(s: Span) -> IResult<Span, Pattern> {
     let (s, a) = apostrophe_brace(list(
         symbol(","),
@@ -56,6 +61,7 @@ pub(crate) fn pattern_identifier_list(s: Span) -> IResult<Span, Pattern> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn assignment_pattern(s: Span) -> IResult<Span, AssignmentPattern> {
     alt((
         assignment_pattern_list,
@@ -66,6 +72,7 @@ pub(crate) fn assignment_pattern(s: Span) -> IResult<Span, AssignmentPattern> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn assignment_pattern_list(s: Span) -> IResult<Span, AssignmentPattern> {
     let (s, a) = apostrophe_brace(list(symbol(","), expression))(s)?;
     Ok((
@@ -75,6 +82,7 @@ pub(crate) fn assignment_pattern_list(s: Span) -> IResult<Span, AssignmentPatter
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn assignment_pattern_structure(s: Span) -> IResult<Span, AssignmentPattern> {
     let (s, a) = apostrophe_brace(list(
         symbol(","),
@@ -87,6 +95,7 @@ pub(crate) fn assignment_pattern_structure(s: Span) -> IResult<Span, AssignmentP
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn assignment_pattern_array(s: Span) -> IResult<Span, AssignmentPattern> {
     let (s, a) = apostrophe_brace(list(
         symbol(","),
@@ -99,6 +108,7 @@ pub(crate) fn assignment_pattern_array(s: Span) -> IResult<Span, AssignmentPatte
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn assignment_pattern_repeat(s: Span) -> IResult<Span, AssignmentPattern> {
     let (s, a) = apostrophe_brace(pair(
         constant_expression,
@@ -111,6 +121,7 @@ pub(crate) fn assignment_pattern_repeat(s: Span) -> IResult<Span, AssignmentPatt
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn structure_pattern_key(s: Span) -> IResult<Span, StructurePatternKey> {
     alt((
         map(member_identifier, |x| {
@@ -123,6 +134,7 @@ pub(crate) fn structure_pattern_key(s: Span) -> IResult<Span, StructurePatternKe
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn array_pattern_key(s: Span) -> IResult<Span, ArrayPatternKey> {
     alt((
         map(constant_expression, |x| {
@@ -135,6 +147,7 @@ pub(crate) fn array_pattern_key(s: Span) -> IResult<Span, ArrayPatternKey> {
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn assignment_pattern_key(s: Span) -> IResult<Span, AssignmentPatternKey> {
     alt((
         map(simple_type, |x| {
@@ -146,8 +159,8 @@ pub(crate) fn assignment_pattern_key(s: Span) -> IResult<Span, AssignmentPattern
     ))(s)
 }
 
-#[packrat_parser]
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn assignment_pattern_expression(s: Span) -> IResult<Span, AssignmentPatternExpression> {
     let (s, a) = opt(assignment_pattern_expression_type)(s)?;
     let (s, b) = assignment_pattern(s)?;
@@ -155,6 +168,7 @@ pub(crate) fn assignment_pattern_expression(s: Span) -> IResult<Span, Assignment
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn assignment_pattern_expression_type(
     s: Span,
 ) -> IResult<Span, AssignmentPatternExpressionType> {
@@ -175,6 +189,7 @@ pub(crate) fn assignment_pattern_expression_type(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn constant_assignment_pattern_expression(
     s: Span,
 ) -> IResult<Span, ConstantAssignmentPatternExpression> {
@@ -183,12 +198,14 @@ pub(crate) fn constant_assignment_pattern_expression(
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn assignment_pattern_net_lvalue(s: Span) -> IResult<Span, AssignmentPatternNetLvalue> {
     let (s, a) = apostrophe_brace(list(symbol(","), net_lvalue))(s)?;
     Ok((s, AssignmentPatternNetLvalue { nodes: (a,) }))
 }
 
 #[tracable_parser]
+#[packrat_parser]
 pub(crate) fn assignment_pattern_variable_lvalue(
     s: Span,
 ) -> IResult<Span, AssignmentPatternVariableLvalue> {

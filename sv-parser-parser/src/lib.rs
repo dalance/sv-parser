@@ -72,21 +72,21 @@ impl HasTracableInfo for SpanInfo {
     }
 }
 
-impl HasExtraState<RecursiveInfo> for SpanInfo {
-    fn get_extra_state(&self) -> RecursiveInfo {
-        self.recursive_info
-    }
-}
-//impl HasExtraState<()> for SpanInfo {
-//    fn get_extra_state(&self) -> () {
-//        ()
+//impl HasExtraState<RecursiveInfo> for SpanInfo {
+//    fn get_extra_state(&self) -> RecursiveInfo {
+//        self.recursive_info
 //    }
 //}
+impl HasExtraState<()> for SpanInfo {
+    fn get_extra_state(&self) -> () {
+        ()
+    }
+}
 
 // -----------------------------------------------------------------------------
 
-nom_packrat::storage!(AnyNode, RecursiveInfo);
-//nom_packrat::storage!(AnyNode);
+//nom_packrat::storage!(AnyNode, RecursiveInfo);
+nom_packrat::storage!(AnyNode);
 
 pub fn parse_sv(s: &str) -> Result<SourceText, ()> {
     let s = Span::new_extra(s, SpanInfo::default());

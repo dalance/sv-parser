@@ -205,7 +205,10 @@ pub(crate) fn hierarchical_event_identifier(s: Span) -> IResult<Span, Hierarchic
 #[packrat_parser]
 pub(crate) fn hierarchical_identifier(s: Span) -> IResult<Span, HierarchicalIdentifier> {
     let (s, a) = opt(root)(s)?;
-    let (s, b) = many0(triple(identifier, constant_bit_select, symbol(".")))(s)?;
+    let (s, b) = many0(terminated(
+        triple(identifier, constant_bit_select, symbol(".")),
+        peek(identifier),
+    ))(s)?;
     let (s, c) = identifier(s)?;
     Ok((s, HierarchicalIdentifier { nodes: (a, b, c) }))
 }
@@ -561,10 +564,10 @@ pub(crate) fn ps_or_hierarchical_tf_identifier(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalTfIdentifier> {
     alt((
-        ps_or_hierarchical_tf_identifier_package_scope,
         map(hierarchical_tf_identifier, |x| {
             PsOrHierarchicalTfIdentifier::HierarchicalTfIdentifier(Box::new(x))
         }),
+        ps_or_hierarchical_tf_identifier_package_scope,
     ))(s)
 }
 
@@ -606,10 +609,13 @@ pub(crate) fn ps_parameter_identifier_scope(s: Span) -> IResult<Span, PsParamete
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn ps_parameter_identifier_generate(s: Span) -> IResult<Span, PsParameterIdentifier> {
-    let (s, a) = many0(triple(
-        generate_block_identifier,
-        opt(bracket(constant_expression)),
-        symbol("."),
+    let (s, a) = many0(terminated(
+        triple(
+            generate_block_identifier,
+            opt(bracket(constant_expression)),
+            symbol("."),
+        ),
+        peek(parameter_identifier),
     ))(s)?;
     let (s, b) = parameter_identifier(s)?;
     Ok((

@@ -161,7 +161,13 @@ pub(crate) fn primary(s: Span) -> IResult<Span, Primary> {
         }),
         map(primary_literal, |x| Primary::PrimaryLiteral(Box::new(x))),
         map(cast, |x| Primary::Cast(Box::new(x))),
-        terminated(primary_hierarchical, peek(none_of("("))),
+        terminated(
+            primary_hierarchical,
+            peek(not(alt((
+                map(one_of("(."), |_| ()),
+                map(keyword("with"), |_| ()),
+            )))),
+        ),
         map(empty_unpacked_array_concatenation, |x| {
             Primary::EmptyUnpackedArrayConcatenation(Box::new(x))
         }),

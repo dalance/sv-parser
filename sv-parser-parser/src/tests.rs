@@ -1529,6 +1529,7 @@ mod spec {
             r##"localparam type T = type(bit[12:0]);"##,
             Ok((_, _))
         );
+        // TODO
         // What is addfixed_int/add_float? UDP?
         //test!(
         //    many1(module_item),
@@ -1616,26 +1617,31 @@ mod spec {
                 dest_t b = dest_t'(a);"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"typedef struct {
-        //          shortint address;
-        //          logic [3:0] code;
-        //          byte command [2];
-        //        } Control;
+        test!(
+            many1(module_item),
+            r##"typedef struct {
+                  shortint address;
+                  logic [3:0] code;
+                  byte command [2];
+                } Control;
 
-        //        typedef bit Bits [36:1];
+                typedef bit Bits [36:1];
 
-        //        Control p;
-        //        Bits stream[$];
+                Control p;
+                Bits stream[$];
 
-        //        stream.push_back(Bits'(p)); // append packet to unpacked queue of Bits
-        //        Bits b;
-        //        Control q;
-        //        b = stream.pop_front();     // get packet (as Bits) from stream
-        //        q = Control'(b);            // convert packet bits back to a Control packet"##,
-        //    Ok((_, _))
-        //);
+                initial begin
+                  stream.push_back(Bits'(p)); // append packet to unpacked queue of Bits
+                end
+
+                initial begin
+                  Bits b;
+                  Control q;
+                  b = stream.pop_front();     // get packet (as Bits) from stream
+                  q = Control'(b);            // convert packet bits back to a Control packet
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"typedef struct {
@@ -1646,6 +1652,8 @@ mod spec {
                 } Packet;"##,
             Ok((_, _))
         );
+        // TODO
+        // randomize can't take hierarchical identifier
         //test!(
         //    many1(module_item),
         //    r##"function Packet genPkt();
@@ -1665,15 +1673,19 @@ mod spec {
                 channel = {channel, channel_type'(genPkt())};"##,
             Ok((_, _))
         );
+        // TODO
+        // $ can't be parsed because it is not constant_primary
         //test!(
         //    many1(module_item),
-        //    r##"Packet p;
-        //        int size;
+        //    r##"initial begin
+        //          Packet p;
+        //          int size;
 
-        //        size = channel[0] + 4;
-        //        p = Packet'( channel[0 : size - 1] ); // convert stream to Packet
-        //        channel = channel[ size : $ ];        // update the stream so it now
-        //                                              // lacks that packet"##,
+        //          size = channel[0] + 4;
+        //          p = Packet'( channel[0 : size - 1] ); // convert stream to Packet
+        //          channel = channel[ size : $ ];        // update the stream so it now
+        //                                                // lacks that packet
+        //        end"##,
         //    Ok((_, _))
         //);
         test!(
@@ -1702,19 +1714,21 @@ mod spec {
 
     #[test]
     fn clause7() {
-        //test!(
-        //    many1(module_item),
-        //    r##"struct { bit [7:0] opcode; bit [23:0] addr; }IR; // anonymous structure
-        //                                                         // defines variable IR
-        //        IR.opcode = 1; // set field in IR.
+        test!(
+            many1(module_item),
+            r##"struct { bit [7:0] opcode; bit [23:0] addr; }IR; // anonymous structure
+                                                                 // defines variable IR
+                initial begin
+                  IR.opcode = 1; // set field in IR.
+                end
 
-        //        typedef struct {
-        //          bit [7:0] opcode;
-        //          bit [23:0] addr;
-        //        } instruction; // named structure type
-        //        instruction IR; // define variable"##,
-        //    Ok((_, _))
-        //);
+                typedef struct {
+                  bit [7:0] opcode;
+                  bit [23:0] addr;
+                } instruction; // named structure type
+                instruction IR; // define variable"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"struct packed signed {
@@ -1765,18 +1779,21 @@ mod spec {
             r##"packet1 pi = '{1,2,'{2,3,4,5}}; //suppresses the typedef initialization"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"typedef union { int i; shortreal f; } num; // named union type
-        //        num n;
-        //        n.f = 0.0; // set n in floating point format
+        test!(
+            many1(module_item),
+            r##"typedef union { int i; shortreal f; } num; // named union type
+                num n;
 
-        //        typedef struct {
-        //          bit isfloat;
-        //          union { int i; shortreal f; } n; // anonymous union type
-        //        } tagged_st;                       // named structure"##,
-        //    Ok((_, _))
-        //);
+                initial begin
+                  n.f = 0.0; // set n in floating point format
+                end
+
+                typedef struct {
+                  bit isfloat;
+                  union { int i; shortreal f; } n; // anonymous union type
+                } tagged_st;                       // named structure"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"typedef union packed { // default unsigned
@@ -1940,57 +1957,69 @@ mod spec {
                                              // remain unsized and uninitialized"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"int arr[2][][];
-        //        arr[0] = new [4];    // dynamic subarray arr[0] sized to length 4
+        test!(
+            many1(module_item),
+            r##"int arr[2][][];
+                initial begin
+                  arr[0] = new [4];    // dynamic subarray arr[0] sized to length 4
 
-        //        arr[0][0] = new [2]; // legal, arr[0][n] created above for n = 0..3
+                  arr[0][0] = new [2]; // legal, arr[0][n] created above for n = 0..3
 
-        //        arr[1][0] = new [2]; // illegal, arr[1] not initialized so arr[1][0] does
-        //                             // not exist
+                  arr[1][0] = new [2]; // illegal, arr[1] not initialized so arr[1][0] does
+                                       // not exist
 
-        //        arr[0][1][1] = new[2]; // illegal, arr[0][1][1] is an int, not a dynamic
-        //                               // array"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"int idest[], isrc[3] = '{5, 6, 7};
-        //        idest = new [3] (isrc); // set size and array element data values (5, 6, 7)"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"int src[3], dest1[], dest2[];
-        //        src = '{2, 3, 4};
-        //        dest1 = new[2] (src); // dest1's elements are {2, 3}.
-        //        dest2 = new[4] (src); // dest2's elements are {2, 3, 4, 0}."##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"integer addr[];  // Declare the dynamic array.
-        //        addr = new[100]; // Create a 100-element array.
-        //        // Double the array size, preserving previous values.
-        //        // Preexisting references to elements of addr are outdated.
-        //        addr = new[200](addr);"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"int j = addr.size;
-        //        addr = new[ addr.size() * 4 ] (addr); // quadruple addr array"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"int ab [] = new[ N ];      // create a temporary array of size N
-        //        // use ab
-        //        ab.delete;                 // delete the array contents
-        //        $display( "%d", ab.size ); // prints 0"##,
-        //    Ok((_, _))
-        //);
+                  arr[0][1][1] = new[2]; // illegal, arr[0][1][1] is an int, not a dynamic
+                                         // array
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"int idest[], isrc[3] = '{5, 6, 7};
+                initial begin
+                  idest = new [3] (isrc); // set size and array element data values (5, 6, 7)
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"int src[3], dest1[], dest2[];
+                initial begin
+                  src = '{2, 3, 4};
+                  dest1 = new[2] (src); // dest1's elements are {2, 3}.
+                  dest2 = new[4] (src); // dest2's elements are {2, 3, 4, 0}.
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"integer addr[];  // Declare the dynamic array.
+                initial begin
+                  addr = new[100]; // Create a 100-element array.
+                  // Double the array size, preserving previous values.
+                  // Preexisting references to elements of addr are outdated.
+                  addr = new[200](addr);
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  int j = addr.size;
+                  addr = new[ addr.size() * 4 ] (addr); // quadruple addr array
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  int ab [] = new[ N ];      // create a temporary array of size N
+                  // use ab
+                  ab.delete;                 // delete the array contents
+                  $display( "%d", ab.size ); // prints 0
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"int A[10:1]; // fixed-size array of 10 elements
@@ -2009,35 +2038,41 @@ mod spec {
                 initial #10 V2 = W;"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"int A[2][100:1];
-        //        int B[] = new[100]; // dynamic array of 100 elements
-        //        int C[] = new[8];   // dynamic array of 8 elements
-        //        int D [3][][];      // multidimensional array with dynamic subarrays
-        //        D[2] = new [2];     // initialize one of D's dynamic subarrays
-        //        D[2][0] = new [100];
-        //        A[1] = B;           // OK. Both are arrays of 100 ints
-        //        A[1] = C;           // type check error: different sizes (100 vs. 8 ints)
-        //        A = D[2];           // A[0:1][100:1] and subarray D[2][0:1][0:99] both
-        //                            // comprise 2 subarrays of 100 ints"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"int A[100:1];     // fixed-size array of 100 elements
-        //        int B[];          // empty dynamic array
-        //        int C[] = new[8]; // dynamic array of size 8
+        test!(
+            many1(module_item),
+            r##"int A[2][100:1];
+                int B[] = new[100];   // dynamic array of 100 elements
+                int C[] = new[8];     // dynamic array of 8 elements
+                int D [3][][];        // multidimensional array with dynamic subarrays
+                initial begin
+                  D[2] = new [2];     // initialize one of D's dynamic subarrays
+                  D[2][0] = new [100];
+                  A[1] = B;           // OK. Both are arrays of 100 ints
+                  A[1] = C;           // type check error: different sizes (100 vs. 8 ints)
+                  A = D[2];           // A[0:1][100:1] and subarray D[2][0:1][0:99] both
+                                      // comprise 2 subarrays of 100 ints
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"int A[100:1];     // fixed-size array of 100 elements
+                int B[];          // empty dynamic array
+                int C[] = new[8]; // dynamic array of size 8
 
-        //        B = A;            // ok. B has 100 elements
-        //        B = C;            // ok. B has 8 elements"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"B = new[ C.size ] (C);"##,
-        //    Ok((_, _))
-        //);
+                initial begin
+                  B = A;          // ok. B has 100 elements
+                  B = C;          // ok. B has 8 elements
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  B = new[ C.size ] (C);
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"string d[1:5] = '{ "a", "b", "c", "d", "e" };
@@ -2131,18 +2166,18 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          int map[ string ];
-        //          map[ "hello" ] = 1;
-        //          map[ "sad" ] = 2;
-        //          map[ "world" ] = 3;
-        //          map.delete( "sad" ); // remove entry whose index is "sad" from "map"
-        //          map.delete;          // remove all entries from the associative array "map"
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  int map[ string ];
+                  map[ "hello" ] = 1;
+                  map[ "sad" ] = 2;
+                  map[ "world" ] = 3;
+                  map.delete( "sad" ); // remove entry whose index is "sad" from "map"
+                  map.delete;          // remove all entries from the associative array "map"
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -2238,6 +2273,8 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
+        // TODO
+        // $ can't be parsed because it is not constant_primary
         //test!(
         //    many1(module_item),
         //    r##"initial begin
@@ -2257,6 +2294,8 @@ mod spec {
         //        end"##,
         //    Ok((_, _))
         //);
+        // TODO
+        // $ can't be parsed because it is not constant_primary
         //test!(
         //    many1(module_item),
         //    r##"initial begin
@@ -2265,51 +2304,55 @@ mod spec {
         //        end"##,
         //    Ok((_, _))
         //);
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          string SA[10], qs[$];
-        //          int IA[int], qi[$];
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  string SA[10], qs[$];
+                  int IA[int], qi[$];
 
-        //          // Find all items greater than 5
-        //          qi = IA.find( x ) with ( x > 5 );
-        //          qi = IA.find( x ); // shall be an error
+                  // Find all items greater than 5
+                  qi = IA.find( x ) with ( x > 5 );
+                  qi = IA.find( x ); // shall be an error
 
-        //          // Find indices of all items equal to 3
-        //          qi = IA.find_index with ( item == 3 );
+                  // Find indices of all items equal to 3
+                  qi = IA.find_index with ( item == 3 );
 
-        //          // Find first item equal to Bob
-        //          qs = SA.find_first with ( item == "Bob" );
+                  // Find first item equal to Bob
+                  qs = SA.find_first with ( item == "Bob" );
 
-        //          // Find last item equal to Henry
-        //          qs = SA.find_last( y ) with ( y == "Henry" );
+                  // Find last item equal to Henry
+                  qs = SA.find_last( y ) with ( y == "Henry" );
 
-        //          // Find index of last item greater than Z
-        //          qi = SA.find_last_index( s ) with ( s > "Z" );
+                  // Find index of last item greater than Z
+                  qi = SA.find_last_index( s ) with ( s > "Z" );
 
-        //          // Find smallest item
-        //          qi = IA.min;
+                  // Find smallest item
+                  qi = IA.min;
 
-        //          // Find string with largest numerical value
-        //          qs = SA.max with ( item.atoi );
+                  // Find string with largest numerical value
+                  qs = SA.max with ( item.atoi );
 
-        //          // Find all unique string elements
-        //          qs = SA.unique;
+                  // Find all unique string elements
+                  qs = SA.unique;
 
-        //          // Find all unique strings in lowercase
-        //          qs = SA.unique( s ) with ( s.tolower );
-        //        end"##,
-        //    Ok((_, _))
-        //);
+                  // Find all unique strings in lowercase
+                  qs = SA.unique( s ) with ( s.tolower );
+                end"##,
+            Ok((_, _))
+        );
         //test!(
         //    many1(module_item),
         //    r##"initial begin
         //          string s[] = { "hello", "sad", "world" };
         //          s.reverse;                              // s becomes { "world", "sad", "hello" };
+        //        end
 
+        //        initial begin
         //          int q[$] = { 4, 5, 3, 1 };
         //          q.sort;                                 // q becomes { 1, 3, 4, 5 }
+        //        end
 
+        //        initial begin
         //          struct { byte red, green, blue; } c [512];
         //          c.sort with ( item.red );               // sort c using the red field only
         //          c.sort( x ) with ( {x.blue, x.green} ); // sort by blue then green
@@ -2324,28 +2367,32 @@ mod spec {
         //          y = b.sum ;                  // y becomes 10 => 1 + 2 + 3 + 4
         //          y = b.product ;              // y becomes 24 => 1 * 2 * 3 * 4
         //          y = b.xor with ( item + 4 ); // y becomes 12 => 5 ^ 6 ^ 7 ^ 8
+        //        end
 
+        //        initial begin
         //          logic [7:0] m [2][2] = '{ '{5, 10}, '{15, 20} };
         //          int y;
         //          y = m.sum with (item.sum with (item)); // y becomes 50 => 5+10+15+20
+        //        end
 
+        //        initial begin
         //          logic bit_arr [1024];
         //          int y;
         //          y = bit_arr.sum with ( int'(item) );   // forces result to be 32-bit
         //        end"##,
         //    Ok((_, _))
         //);
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          int arr[];
-        //          int q[$];
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  int arr[];
+                  int q[$];
 
-        //          // find all items equal to their position (index)
-        //          q = arr.find with ( item == item.index );
-        //        end"##,
-        //    Ok((_, _))
-        //);
+                  // find all items equal to their position (index)
+                  q = arr.find with ( item == item.index );
+                end"##,
+            Ok((_, _))
+        );
     }
 
     #[test]
@@ -9057,6 +9104,4 @@ mod spec {
 }
 
 #[test]
-fn debug() {
-    //nom_tracable::statistics(Span::new_extra("", SpanInfo::default()));
-}
+fn debug() {}

@@ -68,12 +68,12 @@ pub(crate) fn system_tf_call_arg_expression(s: Span) -> IResult<Span, SystemTfCa
 #[packrat_parser]
 pub(crate) fn subroutine_call(s: Span) -> IResult<Span, SubroutineCall> {
     alt((
+        subroutine_call_randomize,
         map(method_call, |x| SubroutineCall::MethodCall(Box::new(x))),
         map(tf_call, |x| SubroutineCall::TfCall(Box::new(x))),
         map(system_tf_call, |x| {
             SubroutineCall::SystemTfCall(Box::new(x))
         }),
-        subroutine_call_randomize,
     ))(s)
 }
 
@@ -152,10 +152,10 @@ pub(crate) fn method_call(s: Span) -> IResult<Span, MethodCall> {
 #[packrat_parser]
 pub(crate) fn method_call_body(s: Span) -> IResult<Span, MethodCallBody> {
     alt((
-        method_call_body_user,
         map(built_in_method_call, |x| {
             MethodCallBody::BuiltInMethodCall(Box::new(x))
         }),
+        method_call_body_user,
     ))(s)
 }
 
@@ -237,11 +237,90 @@ pub(crate) fn variable_identifier_list_or_null(
 #[packrat_parser]
 pub(crate) fn method_call_root(s: Span) -> IResult<Span, MethodCallRoot> {
     alt((
-        map(primary, |x| MethodCallRoot::Primary(Box::new(x))),
+        map(primary_method_call_root, |x| {
+            MethodCallRoot::Primary(Box::new(x))
+        }),
         map(implicit_class_handle, |x| {
             MethodCallRoot::ImplicitClassHandle(Box::new(x))
         }),
     ))(s)
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn primary_method_call_root(s: Span) -> IResult<Span, Primary> {
+    alt((
+        map(keyword("this"), |x| Primary::This(Box::new(x))),
+        map(keyword("$"), |x| Primary::Dollar(Box::new(x))),
+        map(keyword("null"), |x| Primary::Null(Box::new(x))),
+        map(assignment_pattern_expression, |x| {
+            Primary::AssignmentPatternExpression(Box::new(x))
+        }),
+        map(primary_literal, |x| Primary::PrimaryLiteral(Box::new(x))),
+        map(cast, |x| Primary::Cast(Box::new(x))),
+        terminated(primary_hierarchical_method_call_root, peek(none_of("("))),
+        map(empty_unpacked_array_concatenation, |x| {
+            Primary::EmptyUnpackedArrayConcatenation(Box::new(x))
+        }),
+        primary_concatenation,
+        primary_multiple_concatenation,
+        map(function_subroutine_call, |x| {
+            Primary::FunctionSubroutineCall(Box::new(x))
+        }),
+        map(let_expression, |x| Primary::LetExpression(Box::new(x))),
+        primary_mintypmax_expression,
+        map(streaming_concatenation, |x| {
+            Primary::StreamingConcatenation(Box::new(x))
+        }),
+        map(sequence_method_call, |x| {
+            Primary::SequenceMethodCall(Box::new(x))
+        }),
+    ))(s)
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn primary_hierarchical_method_call_root(s: Span) -> IResult<Span, Primary> {
+    let (s, a) = opt(class_qualifier_or_package_scope)(s)?;
+    let (s, b) = hierarchical_identifier_method_call_root(s)?;
+    let (s, c) = select_method_call_root(s)?;
+    Ok((
+        s,
+        Primary::Hierarchical(Box::new(PrimaryHierarchical { nodes: (a, b, c) })),
+    ))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn hierarchical_identifier_method_call_root(
+    s: Span,
+) -> IResult<Span, HierarchicalIdentifier> {
+    let (s, a) = opt(root)(s)?;
+    let (s, b) = many0(terminated(
+        triple(identifier, constant_bit_select, symbol(".")),
+        peek(pair(identifier, symbol("."))),
+    ))(s)?;
+    let (s, c) = identifier(s)?;
+    Ok((s, HierarchicalIdentifier { nodes: (a, b, c) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn select_method_call_root(s: Span) -> IResult<Span, Select> {
+    let (s, a) = opt(terminated(
+        triple(
+            many0(terminated(
+                triple(symbol("."), member_identifier, bit_select),
+                peek(triple(symbol("."), member_identifier, symbol("."))),
+            )),
+            symbol("."),
+            member_identifier,
+        ),
+        peek(symbol(".")),
+    ))(s)?;
+    let (s, b) = bit_select(s)?;
+    let (s, c) = opt(bracket(part_select_range))(s)?;
+    Ok((s, Select { nodes: (a, b, c) }))
 }
 
 #[tracable_parser]

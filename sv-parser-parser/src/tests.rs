@@ -2469,17 +2469,17 @@ mod spec {
             r##"initial $display (p.ERR_OVERFLOW);"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"class vector #(parameter width = 7, type T = int);
-        //        endclass
+        test!(
+            many1(module_item),
+            r##"class vector #(parameter width = 7, type T = int);
+                endclass
 
-        //        vector #(3) v = new;
-        //        initial $display (vector #(3)::T'(3.45)); // Typecasting
-        //        initial $display ((v.T)'(3.45)); //ILLEGAL
-        //        initial $display (v.width);"##,
-        //    Ok((_, _))
-        //);
+                vector #(3) v = new;
+                initial $display (vector #(3)::T'(3.45)); // Typecasting
+                initial $display ((v.T)'(3.45)); //ILLEGAL
+                initial $display (v.width);"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"Packet p = new;
@@ -2530,17 +2530,17 @@ mod spec {
             r##"Packet p = new(STARTUP, $random, $time);"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"class c;
-        //          function new(int cmd = IDLE, bit[12:0] adrs = 0, int cmd_time );
-        //            command = cmd;
-        //            address = adrs;
-        //            time_requested = cmd_time;
-        //          endfunction
-        //        endclass"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"class c;
+                  function new(int cmd = IDLE, bit[12:0] adrs = 0, int cmd_time );
+                    command = cmd;
+                    address = adrs;
+                    time_requested = cmd_time;
+                  endfunction
+                endclass"##,
+            Ok((_, _))
+        );
         //test!(
         //    many1(module_item),
         //    r##"class C; endclass
@@ -15503,7 +15503,7 @@ mod spec {
 fn debug() {
     test!(
         many1(module_item),
-        r##"always_comb d <= #1ns b & c;"##,
+        r##"function a(int cmd = IDLE, bit[12:0] adrs = 0, int cmd_time ); endfunction"##,
         Ok((_, _))
     );
 }

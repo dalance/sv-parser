@@ -87,7 +87,7 @@ pub(crate) fn tf_port_item(s: Span) -> IResult<Span, TfPortItem> {
     let (s, e) = opt(triple(
         port_identifier,
         many0(variable_dimension),
-        opt(pair(symbol(":"), expression)),
+        opt(pair(symbol("="), expression)),
     ))(s)?;
     Ok((
         s,
@@ -108,7 +108,7 @@ pub(crate) fn data_type_or_implicit_tf_port_item(s: Span) -> IResult<Span, DataT
                     opt(triple(
                         port_identifier,
                         many0(variable_dimension),
-                        opt(pair(symbol(":"), expression)),
+                        opt(pair(symbol("="), expression)),
                     )),
                     alt((symbol(","), symbol(")"))),
                 )),
@@ -122,7 +122,7 @@ pub(crate) fn data_type_or_implicit_tf_port_item(s: Span) -> IResult<Span, DataT
                     opt(triple(
                         port_identifier,
                         many0(variable_dimension),
-                        opt(pair(symbol(":"), expression)),
+                        opt(pair(symbol("="), expression)),
                     )),
                     alt((symbol(","), symbol(")"))),
                 )),

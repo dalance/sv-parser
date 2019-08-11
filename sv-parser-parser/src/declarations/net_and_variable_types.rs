@@ -215,9 +215,25 @@ pub(crate) fn enum_name_declaration(s: Span) -> IResult<Span, EnumNameDeclaratio
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn class_scope(s: Span) -> IResult<Span, ClassScope> {
-    let (s, a) = class_type(s)?;
+    let (s, a) = class_type_class_scope(s)?;
     let (s, b) = symbol("::")(s)?;
     Ok((s, ClassScope { nodes: (a, b) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn class_type_class_scope(s: Span) -> IResult<Span, ClassType> {
+    let (s, a) = ps_class_identifier(s)?;
+    let (s, b) = opt(parameter_value_assignment)(s)?;
+    let (s, c) = many0(terminated(
+        triple(
+            symbol("::"),
+            class_identifier,
+            opt(parameter_value_assignment),
+        ),
+        peek(symbol("::")),
+    ))(s)?;
+    Ok((s, ClassType { nodes: (a, b, c) }))
 }
 
 #[tracable_parser]

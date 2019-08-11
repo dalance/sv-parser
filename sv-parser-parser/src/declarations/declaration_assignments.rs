@@ -147,6 +147,7 @@ pub(crate) fn variable_decl_assignment_variable(s: Span) -> IResult<Span, Variab
     let (s, a) = variable_identifier(s)?;
     let (s, b) = many0(variable_dimension)(s)?;
     let (s, c) = opt(pair(symbol("="), expression))(s)?;
+    let (s, _) = not(peek(symbol("=")))(s)?;
     Ok((
         s,
         VariableDeclAssignment::Variable(Box::new(VariableDeclAssignmentVariable {
@@ -164,6 +165,7 @@ pub(crate) fn variable_decl_assignment_dynamic_array(
     let (s, b) = unsized_dimension(s)?;
     let (s, c) = many0(variable_dimension)(s)?;
     let (s, d) = opt(pair(symbol("="), dynamic_array_new))(s)?;
+    let (s, _) = not(peek(symbol("=")))(s)?;
     Ok((
         s,
         VariableDeclAssignment::DynamicArray(Box::new(VariableDeclAssignmentDynamicArray {

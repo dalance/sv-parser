@@ -564,10 +564,10 @@ pub(crate) fn ps_or_hierarchical_tf_identifier(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalTfIdentifier> {
     alt((
+        ps_or_hierarchical_tf_identifier_package_scope,
         map(hierarchical_tf_identifier, |x| {
             PsOrHierarchicalTfIdentifier::HierarchicalTfIdentifier(Box::new(x))
         }),
-        ps_or_hierarchical_tf_identifier_package_scope,
     ))(s)
 }
 

@@ -44,9 +44,9 @@ pub(crate) fn net_lvalue_lvalue(s: Span) -> IResult<Span, NetLvalue> {
 #[packrat_parser]
 pub(crate) fn variable_lvalue(s: Span) -> IResult<Span, VariableLvalue> {
     alt((
+        variable_lvalue_pattern,
         variable_lvalue_identifier,
         variable_lvalue_lvalue,
-        variable_lvalue_pattern,
         map(streaming_concatenation, |x| {
             VariableLvalue::StreamingConcatenation(Box::new(x))
         }),

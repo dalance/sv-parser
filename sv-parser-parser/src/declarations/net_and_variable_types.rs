@@ -223,7 +223,7 @@ pub(crate) fn class_scope(s: Span) -> IResult<Span, ClassScope> {
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn class_type_class_scope(s: Span) -> IResult<Span, ClassType> {
-    let (s, a) = ps_class_identifier(s)?;
+    let (s, a) = ps_class_identifier_class_type_class_scope(s)?;
     let (s, b) = opt(parameter_value_assignment)(s)?;
     let (s, c) = many0(terminated(
         triple(
@@ -234,6 +234,19 @@ pub(crate) fn class_type_class_scope(s: Span) -> IResult<Span, ClassType> {
         peek(symbol("::")),
     ))(s)?;
     Ok((s, ClassType { nodes: (a, b, c) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn ps_class_identifier_class_type_class_scope(
+    s: Span,
+) -> IResult<Span, PsClassIdentifier> {
+    let (s, a) = opt(terminated(
+        package_scope,
+        peek(pair(class_identifier, symbol("::"))),
+    ))(s)?;
+    let (s, b) = class_identifier(s)?;
+    Ok((s, PsClassIdentifier { nodes: (a, b) }))
 }
 
 #[tracable_parser]

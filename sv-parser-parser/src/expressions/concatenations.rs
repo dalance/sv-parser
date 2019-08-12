@@ -53,7 +53,7 @@ pub(crate) fn multiple_concatenation(s: Span) -> IResult<Span, MultipleConcatena
 pub(crate) fn streaming_concatenation(s: Span) -> IResult<Span, StreamingConcatenation> {
     let (s, a) = brace(triple(
         stream_operator,
-        opt(slice_size),
+        opt(terminated(slice_size, peek(symbol("{")))),
         stream_concatenation,
     ))(s)?;
     Ok((s, StreamingConcatenation { nodes: (a,) }))
@@ -99,12 +99,12 @@ pub(crate) fn stream_expression(s: Span) -> IResult<Span, StreamExpression> {
 #[packrat_parser]
 pub(crate) fn array_range_expression(s: Span) -> IResult<Span, ArrayRangeExpression> {
     alt((
-        map(expression, |x| {
-            ArrayRangeExpression::Expression(Box::new(x))
-        }),
         array_range_expression_colon,
         array_range_expression_plus_colon,
         array_range_expression_minus_colon,
+        map(expression, |x| {
+            ArrayRangeExpression::Expression(Box::new(x))
+        }),
     ))(s)
 }
 

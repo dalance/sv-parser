@@ -6,10 +6,10 @@ use crate::*;
 #[packrat_parser]
 pub(crate) fn action_block(s: Span) -> IResult<Span, ActionBlock> {
     alt((
+        action_block_else,
         map(statement_or_null, |x| {
             ActionBlock::StatementOrNull(Box::new(x))
         }),
-        action_block_else,
     ))(s)
 }
 

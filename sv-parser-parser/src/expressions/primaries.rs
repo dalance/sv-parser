@@ -153,9 +153,6 @@ pub(crate) fn module_path_primary_mintypmax_expression(
 #[packrat_parser]
 pub(crate) fn primary(s: Span) -> IResult<Span, Primary> {
     alt((
-        map(keyword("this"), |x| Primary::This(Box::new(x))),
-        map(keyword("$"), |x| Primary::Dollar(Box::new(x))),
-        map(keyword("null"), |x| Primary::Null(Box::new(x))),
         map(assignment_pattern_expression, |x| {
             Primary::AssignmentPatternExpression(Box::new(x))
         }),
@@ -184,6 +181,9 @@ pub(crate) fn primary(s: Span) -> IResult<Span, Primary> {
         map(sequence_method_call, |x| {
             Primary::SequenceMethodCall(Box::new(x))
         }),
+        map(keyword("this"), |x| Primary::This(Box::new(x))),
+        map(keyword("$"), |x| Primary::Dollar(Box::new(x))),
+        map(keyword("null"), |x| Primary::Null(Box::new(x))),
     ))(s)
 }
 
@@ -259,10 +259,10 @@ pub(crate) fn class_qualifier(s: Span) -> IResult<Span, ClassQualifier> {
 #[packrat_parser]
 pub(crate) fn range_expression(s: Span) -> IResult<Span, RangeExpression> {
     alt((
-        map(expression, |x| RangeExpression::Expression(Box::new(x))),
         map(part_select_range, |x| {
             RangeExpression::PartSelectRange(Box::new(x))
         }),
+        map(expression, |x| RangeExpression::Expression(Box::new(x))),
     ))(s)
 }
 

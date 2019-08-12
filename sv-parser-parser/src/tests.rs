@@ -2541,14 +2541,14 @@ mod spec {
                 endclass"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"class C; endclass
-        //        class D extends C; endclass
-        //        C c = D::new; // variable c of superclass type C now references
-        //                      // a newly constructed object of type D"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"class C; endclass
+                class D extends C; endclass
+                C c = D::new; // variable c of superclass type C now references
+                              // a newly constructed object of type D"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"D d = new;
@@ -2750,16 +2750,16 @@ mod spec {
                 endclass"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"class Packet;
-        //          local integer i;
-        //          function integer compare (Packet other);
-        //            compare = (this.i == other.i);
-        //          endfunction
-        //        endclass"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"class Packet;
+                  local integer i;
+                  function integer compare (Packet other);
+                    compare = (this.i == other.i);
+                  endfunction
+                endclass"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"class Jumbo_Packet;
@@ -2890,21 +2890,21 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"class Base;
-        //          typedef enum {bin,oct,dec,hex} radix;
-        //          static task print( radix r, integer n ); endtask
-        //        endclass
+        test!(
+            many1(module_item),
+            r##"class Base;
+                  typedef enum {bin,oct,dec,hex} radix;
+                  static task print( radix r, integer n ); endtask
+                endclass
 
-        //        initial begin
-        //          Base b = new;
-        //          int bin = 123;
-        //          b.print( Base::bin, bin ); // Base::bin and bin are different
-        //          Base::print( Base::hex, 66 );
-        //        end"##,
-        //    Ok((_, _))
-        //);
+                initial begin
+                  Base b = new;
+                  int bin = 123;
+                  b.print( Base::bin, bin ); // Base::bin and bin are different
+                  Base::print( Base::hex, 66 );
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"class StringList;
@@ -2947,57 +2947,57 @@ mod spec {
                 endclass"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"class Packet;
-        //          Packet next;
-        //          function Packet get_next();// single line
-        //            get_next = next;
-        //          endfunction
+        test!(
+            many1(module_item),
+            r##"class Packet;
+                  Packet next;
+                  function Packet get_next();// single line
+                    get_next = next;
+                  endfunction
 
-        //          // out-of-body (extern) declaration
-        //          extern protected virtual function int send(int value);
-        //        endclass
+                  // out-of-body (extern) declaration
+                  extern protected virtual function int send(int value);
+                endclass
 
-        //        function int Packet::send(int value);
-        //          // dropped protected virtual, added Packet::
-        //          // body of method
-        //        endfunction"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"typedef real T;
+                function int Packet::send(int value);
+                  // dropped protected virtual, added Packet::
+                  // body of method
+                endfunction"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"typedef real T;
 
-        //        class C;
-        //          typedef int T;
-        //          extern function T f();
-        //          extern function real f2();
-        //        endclass
+                class C;
+                  typedef int T;
+                  extern function T f();
+                  extern function real f2();
+                endclass
 
-        //        function C::T C::f(); // the return must use the class scope resolution
-        //                              // operator, since the type is defined within the
-        //                              // class
-        //          return 1;
-        //        endfunction
+                function C::T C::f(); // the return must use the class scope resolution
+                                      // operator, since the type is defined within the
+                                      // class
+                  return 1;
+                endfunction
 
-        //        function real C::f2();
-        //          return 1.0;
-        //        endfunction"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"typedef int T;
-        //        class C;
-        //          extern function void f(T x);
-        //          typedef real T;
-        //        endclass
+                function real C::f2();
+                  return 1.0;
+                endfunction"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"typedef int T;
+                class C;
+                  extern function void f(T x);
+                  typedef real T;
+                endclass
 
-        //        function void C::f(T x);
-        //        endfunction"##,
-        //    Ok((_, _))
-        //);
+                function void C::f(T x);
+                endfunction"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"class vector #(int size = 1);
@@ -3052,15 +3052,15 @@ mod spec {
                 Stack4 s1, s2; // declare objects of type Stack4"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"class C #(type T = bit); endclass               // base class
-        //        class D1 #(type P = real) extends C;            // T is bit (the default)
-        //        class D2 #(type P = real) extends C #(integer); // T is integer
-        //        class D3 #(type P = real) extends C #(P);       // T is P
-        //        class D4 #(type P = C#(real)) extends P;        // for default, T is real"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"class C #(type T = bit); endclass                        // base class
+                class D1 #(type P = real) extends C; endclass            // T is bit (the default)
+                class D2 #(type P = real) extends C #(integer); endclass // T is integer
+                class D3 #(type P = real) extends C #(P); endclass       // T is P
+                class D4 #(type P = C#(real)) extends P; endclass        // for default, T is real"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"class C #(int p = 1);
@@ -3071,30 +3071,32 @@ mod spec {
                 D obj; // illegal; D has no default specialization"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"class C #(int p = 1);
-        //          parameter int q = 5; // local parameter
-        //          static task t;
-        //            int p;
-        //            int x = C::p; // C::p disambiguates p
-        //                          // C::p is not p in the default specialization
-        //          endtask
-        //        endclass
+        test!(
+            many1(module_item),
+            r##"class C #(int p = 1);
+                  parameter int q = 5; // local parameter
+                  static task t;
+                    int p;
+                    int x = C::p; // C::p disambiguates p
+                                  // C::p is not p in the default specialization
+                  endtask
+                endclass
 
-        //        int x = C::p;     // illegal; C:: is not permitted in this context
-        //        int y = C#()::p;  // legal; refers to parameter p in the default
-        //                          // specialization of C
-        //        typedef C T;      // T is a default specialization, not an alias to
-        //                          // the name "C"
-        //        int z = T::p;     // legal; T::p refers to p in the default specialization
-        //        int v = C#(3)::p; // legal; parameter p in the specialization of C#(3)
-        //        int w = C#()::q;  // legal; refers to the local parameter
-        //        T obj = new();
-        //        int u = obj.q;    // legal; refers to the local parameter
-        //        bit arr[obj.q];   // illegal: local parameter is not a constant expression"##,
-        //    Ok((_, _))
-        //);
+                int x = C::p;     // illegal; C:: is not permitted in this context
+                int y = C#()::p;  // legal; refers to parameter p in the default
+                                  // specialization of C
+                typedef C T;      // T is a default specialization, not an alias to
+                                  // the name "C"
+                int z = T::p;     // legal; T::p refers to p in the default specialization
+                int v = C#(3)::p; // legal; parameter p in the specialization of C#(3)
+                int w = C#()::q;  // legal; refers to the local parameter
+                T obj = new();
+                int u = obj.q;    // legal; refers to the local parameter
+                bit arr[obj.q];   // illegal: local parameter is not a constant expression"##,
+            Ok((_, _))
+        );
+        // TODO
+        // class static method is denied because ps_or_hierarchical_tf_identifier doesn't have class_scope.
         //test!(
         //    many1(module_item),
         //    r##"class C #(int p = 1, type T = int);
@@ -3246,21 +3248,21 @@ mod spec {
                 endclass : IntfB"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"interface class IntfC;
-        //          typedef enum {ONE, TWO, THREE} t1_t;
-        //          pure virtual function t1_t funcC();
-        //        endclass : IntfC
+        test!(
+            many1(module_item),
+            r##"interface class IntfC;
+                  typedef enum {ONE, TWO, THREE} t1_t;
+                  pure virtual function t1_t funcC();
+                endclass : IntfC
 
-        //        class ClassA implements IntfC;
-        //          t1_t t1_i; // error, t1_t is not inherited from IntfC
-        //          virtual function IntfC::t1_t funcC(); // correct
-        //            return (IntfC::ONE); // correct
-        //          endfunction : funcC
-        //        endclass : ClassA"##,
-        //    Ok((_, _))
-        //);
+                class ClassA implements IntfC;
+                  t1_t t1_i; // error, t1_t is not inherited from IntfC
+                  virtual function IntfC::t1_t funcC(); // correct
+                    return (IntfC::ONE); // correct
+                  endfunction : funcC
+                endclass : ClassA"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"class Fifo #(type T = PutImp) implements T; endclass
@@ -3268,21 +3270,22 @@ mod spec {
                 interface class Fifo #(type T = PutImp) extends T; endclass"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"typedef interface class IntfD;
+        test!(
+            many1(module_item),
+            r##"typedef interface class IntfD;
 
-        //        class ClassB implements IntfD #(bit); // illegal
-        //          virtual function bit[1:0] funcD();
-        //        endclass : ClassB
+                class ClassB implements IntfD #(bit); // illegal
+                  virtual function bit[1:0] funcD();
+                  endfunction
+                endclass : ClassB
 
-        //        // This interface class declaration must be declared before ClassB
-        //        interface class IntfD #(type T1 = logic);
-        //          typedef T1[1:0] T2;
-        //          pure virtual function T2 funcD();
-        //        endclass : IntfD"##,
-        //    Ok((_, _))
-        //);
+                // This interface class declaration must be declared before ClassB
+                interface class IntfD #(type T1 = logic);
+                  typedef T1[1:0] T2;
+                  pure virtual function T2 funcD();
+                endclass : IntfD"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"class Fifo #(type T = int) implements PutImp#(T), GetImp#(T);
@@ -3845,19 +3848,19 @@ mod spec {
                 endprogram"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          repeat (3) @ (event_expression)
-        //            // will execute event_expression three times
-        //          repeat (-3) @ (event_expression)
-        //            // will not execute event_expression.
-        //          repeat (a) @ (event_expression)
-        //            // if a is assigned -3, it will execute the event_expression if a is
-        //            // declared as an unsigned variable, but not if a is signed
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  repeat (3) @ (event_expression);
+                    // will execute event_expression three times
+                  repeat (-3) @ (event_expression);
+                    // will not execute event_expression.
+                  repeat (a) @ (event_expression);
+                    // if a is assigned -3, it will execute the event_expression if a is
+                    // declared as an unsigned variable, but not if a is signed
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -4043,28 +4046,28 @@ mod spec {
                 endtask"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"task automatic do_n_way( int N );
-        //          process job[] = new [N];
+        test!(
+            many1(module_item),
+            r##"task automatic do_n_way( int N );
+                  process job[] = new [N];
 
-        //          foreach (job[j])
-        //            fork
-        //              automatic int k = j;
-        //              begin job[k] = process::self(); ... ; end
-        //            join_none
+                  foreach (job[j])
+                    fork
+                      automatic int k = j;
+                      begin job[k] = process::self(); end
+                    join_none
 
-        //          foreach (job[j]) // wait for all processes to start
-        //            wait( job[j] != null );
-        //          job[1].await(); // wait for first process to finish
+                  foreach (job[j]) // wait for all processes to start
+                    wait( job[j] != null );
+                  job[1].await(); // wait for first process to finish
 
-        //          foreach (job[j]) begin
-        //            if ( job[j].status != process::FINISHED )
-        //              job[j].kill();
-        //          end
-        //        endtask"##,
-        //    Ok((_, _))
-        //);
+                  foreach (job[j]) begin
+                    if ( job[j].status != process::FINISHED )
+                      job[j].kill();
+                  end
+                endtask"##,
+            Ok((_, _))
+        );
     }
 
     #[test]
@@ -4377,25 +4380,25 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          typedef logic [1:0] [3:0] T;
-        //          shortint'({T'{1,2}, T'{3,4}}) // yields 16'sh1234
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          typedef byte U[3];
-        //          var U A = '{1, 2, 3};
-        //          var byte a, b, c;
-        //          U'{a, b, c} = A;
-        //          U'{c, a, b} = '{a+1, b+1, c+1};
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  typedef logic [1:0] [3:0] T;
+                  a = shortint'({T'{1,2}, T'{3,4}}); // yields 16'sh1234
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  typedef byte U[3];
+                  var U A = '{1, 2, 3};
+                  var byte a, b, c;
+                  U'{a, b, c} = A;
+                  U'{c, a, b} = '{a+1, b+1, c+1};
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -4474,6 +4477,8 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
+        // TODO
+        // string is not included in assignment_pattern_key
         //test!(
         //    many1(module_item),
         //    r##"typedef struct {
@@ -4672,18 +4677,18 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          logic regA, regB, regC, result ;
+        test!(
+            many1(module_item),
+            r##"logic regA, regB, regC, result ;
 
-        //          function logic myFunc(logic x);
-        //          endfunction
+                function logic myFunc(logic x);
+                endfunction
 
-        //          result = regA & (regB | myFunc(regC)) ;
-        //        end"##,
-        //    Ok((_, _))
-        //);
+                initial begin
+                  result = regA & (regB | myFunc(regC)) ;
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -4780,15 +4785,15 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          byte a, b ;
-        //          bit [1:0] c ;
-        //          c = {a + b}[1:0]; // 2 lsb's of sum of a and b
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  byte a, b ;
+                  bit [1:0] c ;
+                  c = {a + b}[1:0]; // 2 lsb's of sum of a and b
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"parameter P = 32;
@@ -4844,16 +4849,16 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          int a, b, c;
-        //          if ( a inside {b, c} );
-        //          int array [$] = '{3,4,5};
-        //          if ( ex inside {1, 2, array} ); // same as { 1, 2, 3, 4, 5}
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  int a, b, c;
+                  int array [$] = '{3,4,5};
+                  if ( a inside {b, c} );
+                  if ( ex inside {1, 2, array} ); // same as { 1, 2, 3, 4, 5}
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -4862,14 +4867,12 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          wire r;
-        //          assign r=3'bz11 inside {3'b1?1, 3'b011}; // r = 1'bx
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"wire r;
+                assign r=3'bz11 inside {3'b1?1, 3'b011}; // r = 1'bx"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -4880,40 +4883,42 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  int a, b, c;
+                  logic [10:0] up [3:0];
+                  logic [11:1] p1, p2, p3, p4;
+                  bit [96:1] y = {>>{ a, b, c }}; // OK: pack a, b, c
+                  int j = {>>{ a, b, c }};        // error: j is 32 bits < 96 bits
+                  bit [99:0] d = {>>{ a, b, c }}; // OK: d is padded with 4 bits
+                  {>>{ a, b, c }} = 23'b1;        // error: too few bits in stream
+                  {>>{ a, b, c }} = 96'b1;        // OK: unpack a = 0, b = 0, c = 1
+                  {>>{ a, b, c }} = 100'b11111;   // OK: unpack a = 0, b = 0, c = 1
+                                                  // 96 MSBs unpacked, 4 LSBs truncated
+                  { >> {p1, p2, p3, p4}} = up;    // OK: unpack p1 = up[3], p2 = up[2],
+                                                  // p3 = up[1], p4 = up[0]
+                end"##,
+            Ok((_, _))
+        );
+        // TODO
+        // $ can't be parsed because it is not constant_primary
         //test!(
         //    many1(module_item),
-        //    r##"initial begin
-        //          int a, b, c;
-        //          logic [10:0] up [3:0];
-        //          logic [11:1] p1, p2, p3, p4;
-        //          bit [96:1] y = {>>{ a, b, c }}; // OK: pack a, b, c
-        //          int j = {>>{ a, b, c }};        // error: j is 32 bits < 96 bits
-        //          bit [99:0] d = {>>{ a, b, c }}; // OK: d is padded with 4 bits
-        //          {>>{ a, b, c }} = 23'b1;        // error: too few bits in stream
-        //          {>>{ a, b, c }} = 96'b1;        // OK: unpack a = 0, b = 0, c = 1
-        //          {>>{ a, b, c }} = 100'b11111;   // OK: unpack a = 0, b = 0, c = 1
-        //                                          // 96 MSBs unpacked, 4 LSBs truncated
-        //          { >> {p1, p2, p3, p4}} = up;    // OK: unpack p1 = up[3], p2 = up[2],
-        //                                          // p3 = up[1], p4 = up[0]
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          byte stream[$]; // byte stream
+        //    r##"byte stream[$]; // byte stream
 
-        //          class Packet;
-        //            rand int header;
-        //            rand int len;
-        //            rand byte payload[];
-        //            int crc;
+        //        class Packet;
+        //          rand int header;
+        //          rand int len;
+        //          rand byte payload[];
+        //          int crc;
 
-        //            constraint G { len > 1; payload.size == len ; }
+        //          constraint G { len > 1; payload.size == len ; }
 
-        //            function void post_randomize; crc = payload.sum; endfunction
-        //          endclass
+        //          function void post_randomize; crc = payload.sum; endfunction
+        //        endclass
 
+        //        initial begin
         //          send: begin // Create random packet and transmit
         //            byte q[$];
         //            Packet p = new;
@@ -4931,20 +4936,20 @@ mod spec {
         //        end"##,
         //    Ok((_, _))
         //);
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          q = {<<byte{p.header, p.len, p.payload with [0 +: p.len], p.crc}};
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          q = {<<byte{p.header, p.len, p.payload with [0 : p.len-1], p.crc}};
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  q = {<<byte{p.header, p.len, p.payload with [0 +: p.len], p.crc}};
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  q = {<<byte{p.header, p.len, p.payload with [0 : p.len-1], p.crc}};
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -5121,38 +5126,38 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          typedef union tagged {
-        //            struct {
-        //              bit [4:0] reg1, reg2, regd;
-        //            } Add;
-        //            union tagged {
-        //              bit [9:0] JmpU;
-        //              struct {
-        //                bit [1:0] cc;
-        //                bit [9:0] addr;
-        //              } JmpC;
-        //            } Jmp;
-        //          } Instr;
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  typedef union tagged {
+                    struct {
+                      bit [4:0] reg1, reg2, regd;
+                    } Add;
+                    union tagged {
+                      bit [9:0] JmpU;
+                      struct {
+                        bit [1:0] cc;
+                        bit [9:0] addr;
+                      } JmpC;
+                    } Jmp;
+                  } Instr;
 
-        //          Instr i1, i2;
+                  Instr i1, i2;
 
-        //          // Create an Add instruction with its 3 register fields
-        //          i1 = ( e
-        //            ? tagged Add '{ e1, 4, ed };                 // struct members by position
-        //            : tagged Add '{ reg2:e2, regd:3, reg1:19 }); // by name (order irrelevant)
+                  // Create an Add instruction with its 3 register fields
+                  i1 = ( e
+                    ? tagged Add '{ e1, 4, ed }                  // struct members by position
+                    : tagged Add '{ reg2:e2, regd:3, reg1:19 }); // by name (order irrelevant)
 
-        //          // Create a Jump instruction, with "unconditional" sub-opcode
-        //          i1 = tagged Jmp (tagged JmpU 239);
+                  // Create a Jump instruction, with "unconditional" sub-opcode
+                  i1 = tagged Jmp (tagged JmpU 239);
 
-        //          // Create a Jump instruction, with "conditional" sub-opcode
-        //          i2 = tagged Jmp (tagged JmpC '{ 2, 83 });         // inner struct by position
-        //          i2 = tagged Jmp (tagged JmpC '{ cc:2, addr:83 }); // by name
-        //        end"##,
-        //    Ok((_, _))
-        //);
+                  // Create a Jump instruction, with "conditional" sub-opcode
+                  i2 = tagged Jmp (tagged JmpC '{ 2, 83 });         // inner struct by position
+                  i2 = tagged Jmp (tagged JmpC '{ cc:2, addr:83 }); // by name
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -5560,8 +5565,8 @@ mod spec {
         //    many1(module_item),
         //    r##"module fsm();
         //          function bit f1(bit a, bit not_a)
-        //            a1: unique if (a)
-        //            else if (not_a)
+        //            a1: unique if (a);
+        //            else if (not_a);
         //          endfunction
 
         //          always_comb begin : b1
@@ -5844,38 +5849,38 @@ mod spec {
         //        end"##,
         //    Ok((_, _))
         //);
-        //test!(
-        //    many1(module_item),
-        //    r##"module m;
-        //          initial begin
-        //            for (int i = 0; i <= 255; i++)
-        //          end
+        test!(
+            many1(module_item),
+            r##"module m;
+                  initial begin
+                    for (int i = 0; i <= 255; i++);
+                  end
 
-        //          initial begin
-        //            loop2: for (int i = 15; i >= 0; i--)
-        //          end
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"module m;
-        //          initial begin
-        //            begin
-        //              automatic int i;
-        //              for (i = 0; i <= 255; i++)
-        //            end
-        //          end
+                  initial begin
+                    loop2: for (int i = 15; i >= 0; i--);
+                  end
+                endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"module m;
+                  initial begin
+                    begin
+                      automatic int i;
+                      for (i = 0; i <= 255; i++);
+                    end
+                  end
 
-        //          initial begin
-        //            begin : loop2
-        //              automatic int i;
-        //              for (i = 15; i >= 0; i--)
-        //            end
-        //          end
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                  initial begin
+                    begin : loop2
+                      automatic int i;
+                      for (i = 15; i >= 0; i--);
+                    end
+                  end
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -6119,18 +6124,18 @@ mod spec {
                 endfunction"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          a = b + myfunc1(c, d); // call myfunc1 (defined above) as an expression
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  a = b + myfunc1(c, d); // call myfunc1 (defined above) as an expression
 
-        //          myprint(a);            // call myprint (defined below) as a statement
+                  myprint(a);            // call myprint (defined below) as a statement
+                end
 
-        //          function void myprint (int a);
-        //          endfunction
-        //        end"##,
-        //    Ok((_, _))
-        //);
+                function void myprint (int a);
+                endfunction"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -6251,12 +6256,12 @@ mod spec {
                 endtask"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"task read(int j = 0, int k, int data = 1 );
-        //        endtask"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"task read(int j = 0, int k, int data = 1 );
+                endtask"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -6270,40 +6275,40 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module m;
-        //          logic a, w;
+        test!(
+            many1(module_item),
+            r##"module m;
+                  logic a, w;
 
-        //          task t1 (output o = a) ; // default binds to m.a
-        //          endtask :t1
+                  task t1 (output o = a) ; // default binds to m.a
+                  endtask :t1
 
-        //          task t2 (output o = b) ; // illegal, b cannot be resolved
-        //          endtask :t2
+                  task t2 (output o = b) ; // illegal, b cannot be resolved
+                  endtask :t2
 
-        //          task t3 (inout io = w) ; // default binds to m.w
-        //          endtask :t1
-        //        endmodule :m
+                  task t3 (inout io = w) ; // default binds to m.w
+                  endtask :t1
+                endmodule :m
 
-        //        module n;
-        //          logic a;
+                module n;
+                  logic a;
 
-        //          initial begin
-        //            m.t1(); // same as m.t1(m.a), not m.t1(n.a);
-        //                    // at end of task, value of t1.o is copied to m.a
-        //            m.t3(); // same as m.t3(m.w)
-        //                    // value of m.w is copied to t3.io at start of task and
-        //                    // value of t3.io is copied to m.w at end of task
-        //          end
-        //        endmodule :n"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"function int fun( int j = 1, string s = "no" );
-        //        endfunction"##,
-        //    Ok((_, _))
-        //);
+                  initial begin
+                    m.t1(); // same as m.t1(m.a), not m.t1(n.a);
+                            // at end of task, value of t1.o is copied to m.a
+                    m.t3(); // same as m.t3(m.w)
+                            // value of m.w is copied to t3.io at start of task and
+                            // value of t3.io is copied to m.w at end of task
+                  end
+                endmodule :n"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"function int fun( int j = 1, string s = "no" );
+                endfunction"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -6943,14 +6948,14 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          bit success;
-        //          wait_order( a, b, c ) success = 1; else success = 0;
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  bit success;
+                  wait_order( a, b, c ) success = 1; else success = 0;
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -11690,15 +11695,15 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          $dumpvars ;
-        //          $dumpflush ;
-        //          $(applications program) ;
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  $dumpvars ;
+                  $dumpflush ;
+                  //$(applications program) ;
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module dump;
@@ -15497,13 +15502,112 @@ mod spec {
         //    Ok((_, _))
         //);
     }
+
+    #[test]
+    fn clause35() {
+        //test!(
+        //    source_text,
+        //    r##"export "DPI-C" f_plus = function \f+ ; // "f+" exported as "f_plus"
+        //        export "DPI-C" function f; // "f" exported under its own name
+        //        import "DPI-C" init_1 = function void \init[1] (); // "init_1" is a linkage name
+        //        import "DPI-C" \begin = function void \init[2] (); // "begin" is a linkage name"##,
+        //    Ok((_, _))
+        //);
+        //test!(
+        //    source_text,
+        //    r##"import "DPI-C" function void myInit();
+
+        //        // from standard math library
+        //        import "DPI-C" pure function real sin(real);
+
+        //        // from standard C library: memory management
+        //        import "DPI-C" function chandle malloc(int size); // standard C function
+        //        import "DPI-C" function void free(chandle ptr); // standard C function
+
+        //        // abstract data structure: queue
+        //        import "DPI-C" function chandle newQueue(input string name_of_queue);
+
+        //        // Note the following import uses the same foreign function for
+        //        // implementation as the prior import, but has different SystemVerilog name
+        //        // and provides a default value for the argument.
+        //        import "DPI-C" newQueue=function chandle newAnonQueue(input string s=null);
+        //        import "DPI-C" function chandle newElem(bit [15:0]);
+        //        import "DPI-C" function void enqueue(chandle queue, chandle elem);
+        //        import "DPI-C" function chandle dequeue(chandle queue);
+
+        //        // miscellanea
+        //        import "DPI-C" function bit [15:0] getStimulus();
+        //        import "DPI-C” context function void processTransaction(chandle elem,
+        //        output logic [64:1] arr [0:63]);
+        //        import "DPI-C" task checkResults(input string s, bit [511:0] packet);"##,
+        //    Ok((_, _))
+        //);
+        //test!(
+        //    source_text,
+        //    r##"import "DPI-C" function void f1(input logic [127:0]);
+        //        import "DPI-C" function void f2(logic [127:0] i []); //open array of 128-bit"##,
+        //    Ok((_, _))
+        //);
+        //test!(
+        //    source_text,
+        //    r##"import "DPI-C" function void f3(input MyType i [][]);
+        //          /* 2-dimensional unsized unpacked array of MyType */"##,
+        //    Ok((_, _))
+        //);
+    }
+
+    #[test]
+    fn clause36() {
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  $get_vector("test_vector.pat", input_bus);
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  for (i = 1; i <= 1024; i = i + 1)
+                    @(posedge clk) $get_vector("test_vector.pat", input_bus);
+                end"##,
+            Ok((_, _))
+        );
+    }
 }
 
 #[test]
 fn debug() {
     test!(
         many1(module_item),
-        r##"function a(int cmd = IDLE, bit[12:0] adrs = 0, int cmd_time ); endfunction"##,
+        r##"initial begin
+                  //typedef union tagged {
+                  //  struct {
+                  //    bit [4:0] reg1, reg2, regd;
+                  //  } Add;
+                  //  union tagged {
+                  //    bit [9:0] JmpU;
+                  //    struct {
+                  //      bit [1:0] cc;
+                  //      bit [9:0] addr;
+                  //    } JmpC;
+                  //  } Jmp;
+                  //} Instr;
+
+                  //Instr i1, i2;
+
+                  // Create an Add instruction with its 3 register fields
+                  i1 = ( e
+                    ? tagged Add '{ e1, 4, ed }                  // struct members by position
+                    : tagged Add '{ reg2:e2, regd:3, reg1:19 }); // by name (order irrelevant)
+
+                  //// Create a Jump instruction, with "unconditional" sub-opcode
+                  //i1 = tagged Jmp (tagged JmpU 239);
+
+                  //// Create a Jump instruction, with "conditional" sub-opcode
+                  //i2 = tagged Jmp (tagged JmpC '{ 2, 83 });         // inner struct by position
+                  //i2 = tagged Jmp (tagged JmpC '{ cc:2, addr:83 }); // by name
+                end"##,
         Ok((_, _))
     );
 }

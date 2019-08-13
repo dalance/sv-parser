@@ -66,10 +66,10 @@ pub(crate) fn delay2_mintypmax(s: Span) -> IResult<Span, Delay2> {
 #[packrat_parser]
 pub(crate) fn delay_value(s: Span) -> IResult<Span, DelayValue> {
     alt((
+        map(keyword("1step"), |x| DelayValue::Step1(Box::new(x))),
         map(time_literal, |x| DelayValue::TimeLiteral(Box::new(x))),
         map(unsigned_number, |x| DelayValue::UnsignedNumber(Box::new(x))),
         map(real_number, |x| DelayValue::RealNumber(Box::new(x))),
         map(ps_identifier, |x| DelayValue::PsIdentifier(Box::new(x))),
-        map(keyword("1step"), |x| DelayValue::Step1(Box::new(x))),
     ))(s)
 }

@@ -316,11 +316,11 @@ pub(crate) fn net_port_header_or_interface_port_header(
     s: Span,
 ) -> IResult<Span, NetPortHeaderOrInterfacePortHeader> {
     alt((
-        map(net_port_header, |x| {
-            NetPortHeaderOrInterfacePortHeader::NetPortHeader(Box::new(x))
-        }),
         map(interface_port_header, |x| {
             NetPortHeaderOrInterfacePortHeader::InterfacePortHeader(Box::new(x))
+        }),
+        map(net_port_header, |x| {
+            NetPortHeaderOrInterfacePortHeader::NetPortHeader(Box::new(x))
         }),
     ))(s)
 }

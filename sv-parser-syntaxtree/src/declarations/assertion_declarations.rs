@@ -128,7 +128,7 @@ pub struct PropertyPortList {
 pub struct PropertyPortItem {
     pub nodes: (
         Vec<AttributeInstance>,
-        Option<(Local, Option<PropertyLvarPortDirection>)>,
+        Option<(Keyword, Option<PropertyLvarPortDirection>)>,
         PropertyFormalType,
         FormalPortIdentifier,
         Vec<VariableDimension>,
@@ -399,7 +399,7 @@ pub struct SequencePortList {
 pub struct SequencePortItem {
     pub nodes: (
         Vec<AttributeInstance>,
-        Option<(Local, Option<SequenceLvarPortDirection>)>,
+        Option<(Keyword, Option<SequenceLvarPortDirection>)>,
         SequenceFormalType,
         FormalPortIdentifier,
         Vec<VariableDimension>,

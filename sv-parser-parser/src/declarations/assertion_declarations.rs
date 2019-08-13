@@ -255,7 +255,7 @@ pub(crate) fn property_port_list(s: Span) -> IResult<Span, PropertyPortList> {
 #[packrat_parser]
 pub(crate) fn property_port_item(s: Span) -> IResult<Span, PropertyPortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = opt(pair(local, opt(property_lvar_port_direction)))(s)?;
+    let (s, b) = opt(pair(keyword("local"), opt(property_lvar_port_direction)))(s)?;
     let (s, c) = property_formal_type(s)?;
     let (s, d) = formal_port_identifier(s)?;
     let (s, e) = many0(variable_dimension)(s)?;
@@ -311,7 +311,9 @@ pub(crate) fn property_expr(s: Span) -> IResult<Span, PropertyExpr> {
             property_expr_implication_nonoverlapped,
             property_expr_followed_by_overlapped,
             property_expr_followed_by_nonoverlapped,
-            map(sequence_expr, |x| PropertyExpr::SequenceExpr(Box::new(x))),
+            map(terminated(sequence_expr, peek(not(symbol("(")))), |x| {
+                PropertyExpr::SequenceExpr(Box::new(x))
+            }),
             property_expr_strong,
             property_expr_weak,
             property_expr_paren,
@@ -783,7 +785,7 @@ pub(crate) fn sequence_port_list(s: Span) -> IResult<Span, SequencePortList> {
 #[packrat_parser]
 pub(crate) fn sequence_port_item(s: Span) -> IResult<Span, SequencePortItem> {
     let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = opt(pair(local, opt(sequence_lvar_port_direction)))(s)?;
+    let (s, b) = opt(pair(keyword("local"), opt(sequence_lvar_port_direction)))(s)?;
     let (s, c) = sequence_formal_type(s)?;
     let (s, d) = formal_port_identifier(s)?;
     let (s, e) = many0(variable_dimension)(s)?;
@@ -1153,13 +1155,37 @@ pub(crate) fn sequence_list_of_arguments_named(s: Span) -> IResult<Span, Sequenc
 #[packrat_parser]
 pub(crate) fn sequence_actual_arg(s: Span) -> IResult<Span, SequenceActualArg> {
     alt((
-        map(event_expression, |x| {
+        map(event_expression_sequence_actual_arg, |x| {
             SequenceActualArg::EventExpression(Box::new(x))
         }),
         map(sequence_expr, |x| {
             SequenceActualArg::SequenceExpr(Box::new(x))
         }),
     ))(s)
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn event_expression_sequence_actual_arg(s: Span) -> IResult<Span, EventExpression> {
+    alt((
+        event_expression_or_sequence_actual_arg,
+        event_expression_expression,
+        event_expression_sequence,
+        event_expression_paren,
+    ))(s)
+}
+
+#[recursive_parser]
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn event_expression_or_sequence_actual_arg(s: Span) -> IResult<Span, EventExpression> {
+    let (s, a) = event_expression_sequence_actual_arg(s)?;
+    let (s, b) = keyword("or")(s)?;
+    let (s, c) = event_expression_sequence_actual_arg(s)?;
+    Ok((
+        s,
+        EventExpression::Or(Box::new(EventExpressionOr { nodes: (a, b, c) })),
+    ))
 }
 
 #[tracable_parser]

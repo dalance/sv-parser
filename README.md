@@ -81,16 +81,16 @@ A parser library for System Verilog.
 
 | Clause | Exist | Pass | Clause | Exist | Pass | Clause | Exist | Pass | Clause | Exist | Pass |
 | ------ | ----- | ---- | ------ | ----- | ---- | ------ | ----- | ---- | ------ | ----- | ---- |
-| 3      | x     | x    | 13     | x     |      | 23     | x     |      | 33     | x     |      |
-| 4      | x     | x    | 14     | x     |      | 24     | x     | x    | 34     | x     |      |
-| 5      | x     | x    | 15     | x     |      | 25     | x     |      | 35     | x     |      |
+| 3      | x     | x    | 13     | x     | x    | 23     | x     |      | 33     | x     |      |
+| 4      | x     | x    | 14     | x     | x    | 24     | x     | x    | 34     | x     |      |
+| 5      | x     | x    | 15     | x     | x    | 25     | x     |      | 35     | x     |      |
 | 6      | x     | x    | 16     | x     |      | 26     | x     |      | 36     | x     | x    |
 | 7      | x     | x    | 17     | x     |      | 27     | x     |      |        |       |      |
 | 8      | x     | x    | 18     | x     |      | 28     | x     | x    |        |       |      |
 | 9      | x     | x    | 19     | x     |      | 29     | x     |      |        |       |      |
 | 10     | x     | x    | 20     | x     |      | 30     | x     |      |        |       |      |
-| 11     | x     |      | 21     | x     |      | 31     | x     |      |        |       |      |
-| 12     | x     |      | 22     |       |      | 32     | x     | x    |        |       |      |
+| 11     | x     | x    | 21     | x     |      | 31     | x     |      |        |       |      |
+| 12     | x     | x    | 22     |       |      | 32     | x     | x    |        |       |      |
 
 ## Missing entry of specification
 

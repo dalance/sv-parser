@@ -129,9 +129,9 @@ pub(crate) fn clocking_item_assertion(s: Span) -> IResult<Span, ClockingItem> {
 #[packrat_parser]
 pub(crate) fn default_skew(s: Span) -> IResult<Span, DefaultSkew> {
     alt((
+        default_skew_input_output,
         default_skew_input,
         default_skew_output,
-        default_skew_input_output,
     ))(s)
 }
 
@@ -176,9 +176,9 @@ pub(crate) fn default_skew_input_output(s: Span) -> IResult<Span, DefaultSkew> {
 #[packrat_parser]
 pub(crate) fn clocking_direction(s: Span) -> IResult<Span, ClockingDirection> {
     alt((
+        clocking_direction_input_output,
         clocking_direction_input,
         clocking_direction_output,
-        clocking_direction_input_output,
         clocking_direction_inout,
     ))(s)
 }

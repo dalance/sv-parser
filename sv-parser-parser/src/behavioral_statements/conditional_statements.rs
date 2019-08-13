@@ -49,11 +49,11 @@ pub(crate) fn cond_predicate(s: Span) -> IResult<Span, CondPredicate> {
 #[packrat_parser]
 pub(crate) fn expression_or_cond_pattern(s: Span) -> IResult<Span, ExpressionOrCondPattern> {
     alt((
-        map(expression, |x| {
-            ExpressionOrCondPattern::Expression(Box::new(x))
-        }),
         map(cond_pattern, |x| {
             ExpressionOrCondPattern::CondPattern(Box::new(x))
+        }),
+        map(expression, |x| {
+            ExpressionOrCondPattern::Expression(Box::new(x))
         }),
     ))(s)
 }

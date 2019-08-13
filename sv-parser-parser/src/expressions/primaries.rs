@@ -13,6 +13,9 @@ pub(crate) fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
         map(primary_literal, |x| {
             ConstantPrimary::PrimaryLiteral(Box::new(x))
         }),
+        map(constant_function_call, |x| {
+            ConstantPrimary::ConstantFunctionCall(Box::new(x))
+        }),
         constant_primary_ps_parameter,
         constant_primary_specparam,
         map(genvar_identifier, |x| {
@@ -22,9 +25,6 @@ pub(crate) fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
         constant_primary_enum,
         constant_primary_concatenation,
         constant_primary_multiple_concatenation,
-        map(constant_function_call, |x| {
-            ConstantPrimary::ConstantFunctionCall(Box::new(x))
-        }),
         map(constant_let_expression, |x| {
             ConstantPrimary::ConstantLetExpression(Box::new(x))
         }),

@@ -6,6 +6,14 @@ macro_rules! test {
     ( $x:expr, $y:expr, $z:pat ) => {
         nom_packrat::init!();
         let info = SpanInfo::default();
+        #[cfg(feature = "trace")]
+        let info = info.set_tracable_info(
+            info.get_tracable_info()
+                .fold("white_space")
+                .fold("number")
+                .fold("binary_operator")
+                .fold("unary_operator"),
+        );
         let ret = all_consuming($x)(Span::new_extra($y, info));
         if let $z = ret {
         } else {
@@ -5206,23 +5214,25 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"package pex_gen9_common_expressions;
-        //          let valid_arb(request, valid, override) = |(request & valid) || override;
-        //        endpackage
+        test!(
+            source_text,
+            r##"package pex_gen9_common_expressions;
+                  let valid_arb(request, valid, override) = |(request & valid) || override;
+                endpackage
 
-        //        module my_checker;
-        //          import pex_gen9_common_expressions::*;
-        //          logic a, b;
-        //          wire [1:0] req;
-        //          wire [1:0] vld;
-        //          logic ovr;
-        //          if (valid_arb(.request(req), .valid(vld), .override(ovr))) begin
-        //          end
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                module my_checker;
+                  import pex_gen9_common_expressions::*;
+                  logic a, b;
+                  wire [1:0] req;
+                  wire [1:0] vld;
+                  logic ovr;
+                  initial begin
+                    if (valid_arb(.request(req), .valid(vld), .override(ovr))) begin
+                    end
+                  end
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"let mult(x, y) = ($bits(x) + $bits(y))'(x * y);"##,
@@ -5239,20 +5249,20 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          task write_value;
-        //            input logic [31:0] addr;
-        //            input logic [31:0] value;
-        //          endtask
+        test!(
+            many1(module_item),
+            r##"task write_value;
+                  input logic [31:0] addr;
+                  input logic [31:0] value;
+                endtask
 
-        //          let addr = top.block1.unit1.base + top.block1.unit2.displ;
+                let addr = top.block1.unit1.base + top.block1.unit2.displ;
 
-        //          write_value(addr, 0);
-        //        end"##,
-        //    Ok((_, _))
-        //);
+                initial begin
+                  write_value(addr, 0);
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module m;
@@ -5343,6 +5353,8 @@ mod spec {
                 endmodule : top"##,
             Ok((_, _))
         );
+        // TODO
+        // assign can't have block_identifier like assert
         //test!(
         //    many1(module_item),
         //    r##"module m();
@@ -5354,10 +5366,10 @@ mod spec {
         //          for (genvar i = 0; i < 3; i++) begin : L0
         //            if (i !=1) begin : L1
         //              let my_let(x) = !x || b && c[i];
-        //              s1: assign d[2 – i] = my_let(a)); // OK
+        //              s1: assign d[2 - i] = my_let(a); // OK
         //            end : L1
         //          end : L0
-        //          s2: assign e = L0[0].L1.my_let(a)); // Illegal
+        //          s2: assign e = L0[0].L1.my_let(a); // Illegal
         //        endmodule : m"##,
         //    Ok((_, _))
         //);
@@ -5413,39 +5425,39 @@ mod spec {
                   endmodule : m"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module m(input clock);
-        //          logic a;
-        //          let p1(x) = $past(x);
-        //          let p2(x) = $past(x,,,@(posedge clock));
-        //          let s(x) = $sampled(x);
-        //          always_comb begin
-        //            a1: assert(p1(a));
-        //            a2: assert(p2(a));
-        //            a3: assert(s(a));
-        //          end
-        //          a4: assert property(@(posedge clock) p1(a));
-        //        endmodule : m"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"module m(input clock);
-        //          logic a;
-        //          let p1(x) = $past(x);
-        //          let p2(x) = $past(x,,,@(posedge clock));
-        //          let s(x) = $sampled(x);
-        //          always_comb begin
-        //            a1: assert(($past(a))); // Illegal: no clock can be inferred
-        //            a2: assert(($past(a,,,@(posedge clock))));
-        //            a3: assert(($sampled (a)));
-        //          end
-        //          a4: assert property(@(posedge clock)($past(a))); // @(posedge clock)
-        //                                                           // is inferred
-        //        endmodule : m"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"module m(input clock);
+                  logic a;
+                  let p1(x) = $past(x);
+                  let p2(x) = $past(x,,,@(posedge clock));
+                  let s(x) = $sampled(x);
+                  always_comb begin
+                    a1: assert(p1(a));
+                    a2: assert(p2(a));
+                    a3: assert(s(a));
+                  end
+                  a4: assert property(@(posedge clock) p1(a));
+                endmodule : m"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"module m(input clock);
+                  logic a;
+                  let p1(x) = $past(x);
+                  let p2(x) = $past(x,,,@(posedge clock));
+                  let s(x) = $sampled(x);
+                  always_comb begin
+                    a1: assert(($past(a))); // Illegal: no clock can be inferred
+                    a2: assert(($past(a,,,@(posedge clock))));
+                    a3: assert(($sampled (a)));
+                  end
+                  a4: assert property(@(posedge clock)($past(a))); // @(posedge clock)
+                                                                   // is inferred
+                endmodule : m"##,
+            Ok((_, _))
+        );
     }
 
     #[test]
@@ -5561,24 +5573,24 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module fsm();
-        //          function bit f1(bit a, bit not_a)
-        //            a1: unique if (a);
-        //            else if (not_a);
-        //          endfunction
+        test!(
+            many1(module_item),
+            r##"module fsm();
+                  function bit f1(bit a, bit not_a);
+                    a1: unique if (a);
+                    else if (not_a);
+                  endfunction
 
-        //          always_comb begin : b1
-        //            some_stuff = f1(c, d);
-        //          end
+                  always_comb begin : b1
+                    some_stuff = f1(c, d);
+                  end
 
-        //          always_comb begin : b2
-        //            other_stuff = f1(e, f);
-        //          end
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                  always_comb begin : b2
+                    other_stuff = f1(e, f);
+                  end
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -5794,6 +5806,8 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
+        // TODO
+        // tagged can't have paren.
         //test!(
         //    many1(module_item),
         //    r##"initial begin
@@ -5805,6 +5819,8 @@ mod spec {
         //        end"##,
         //    Ok((_, _))
         //);
+        // TODO
+        // tagged can't have paren.
         //test!(
         //    many1(module_item),
         //    r##"initial begin
@@ -5817,6 +5833,8 @@ mod spec {
         //        end"##,
         //    Ok((_, _))
         //);
+        // TODO
+        // tagged can't have paren.
         //test!(
         //    many1(module_item),
         //    r##"initial begin
@@ -5827,6 +5845,8 @@ mod spec {
         //        end"##,
         //    Ok((_, _))
         //);
+        // TODO
+        // tagged can't have paren.
         //test!(
         //    many1(module_item),
         //    r##"initial begin
@@ -5838,6 +5858,8 @@ mod spec {
         //        end"##,
         //    Ok((_, _))
         //);
+        // TODO
+        // tagged can't have paren.
         //test!(
         //    many1(module_item),
         //    r##"initial begin
@@ -6165,63 +6187,63 @@ mod spec {
                 endmodule: tryfact"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module ram_model (address, write, chip_select, data);
-        //          parameter data_width = 8;
-        //          parameter ram_depth = 256;
-        //          localparam addr_width = clogb2(ram_depth);
-        //          input [addr_width - 1:0] address;
-        //          input write, chip_select;
-        //          inout [data_width - 1:0] data;
+        test!(
+            many1(module_item),
+            r##"module ram_model (address, write, chip_select, data);
+                  parameter data_width = 8;
+                  parameter ram_depth = 256;
+                  localparam addr_width = clogb2(ram_depth);
+                  input [addr_width - 1:0] address;
+                  input write, chip_select;
+                  inout [data_width - 1:0] data;
 
-        //          //define the clogb2 function
-        //          function integer clogb2 (input [31:0] value);
-        //            value = value - 1;
-        //            for (clogb2 = 0; value > 0; clogb2 = clogb2 + 1)
-        //              value = value >> 1;
-        //          endfunction
+                  //define the clogb2 function
+                  function integer clogb2 (input [31:0] value);
+                    value = value - 1;
+                    for (clogb2 = 0; value > 0; clogb2 = clogb2 + 1)
+                      value = value >> 1;
+                  endfunction
 
-        //          logic [data_width - 1:0] data_store[0:ram_depth - 1];
-        //            //the rest of the ram model
-        //        endmodule: ram_model"##,
-        //    Ok((_, _))
-        //);
+                  logic [data_width - 1:0] data_store[0:ram_depth - 1];
+                    //the rest of the ram model
+                endmodule: ram_model"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"ram_model #(32,421) ram_a0(a_addr,a_wr,a_cs,a_data);"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"class IntClass;
-        //          int a;
-        //        endclass
+        test!(
+            many1(module_item),
+            r##"class IntClass;
+                  int a;
+                endclass
 
-        //        IntClass address=new(), stack=new();
+                IntClass address=new(), stack=new();
 
-        //        function automatic bit watch_for_zero( IntClass p );
-        //          fork
-        //            forever @p.a begin
-        //              if ( p.a == 0 ) $display (“Unexpected zero”);
-        //            end
-        //          join_none
-        //          return ( p.a == 0 );
-        //        endfunction
+                function automatic bit watch_for_zero( IntClass p );
+                  fork
+                    forever @p.a begin
+                      if ( p.a == 0 ) $display ("Unexpected zero");
+                    end
+                  join_none
+                  return ( p.a == 0 );
+                endfunction
 
-        //        function bit start_check();
-        //          return ( watch_for_zero( address ) | watch_for_zero( stack ) );
-        //        endfunction
+                function bit start_check();
+                  return ( watch_for_zero( address ) | watch_for_zero( stack ) );
+                endfunction
 
-        //        bit y = watch_for_zero( stack ); // illegal
+                bit y = watch_for_zero( stack ); // illegal
 
-        //        initial if ( start_check() ) $display ( “OK”); // legal
+                initial if ( start_check() ) $display ( "OK"); // legal
 
-        //        initial fork
-        //          if (start_check() ) $display( “OK too”); // legal
-        //        join_none"##,
-        //    Ok((_, _))
-        //);
+                initial fork
+                  if (start_check() ) $display( "OK too"); // legal
+                join_none"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"function automatic int crc( byte packet [1000:1] );
@@ -6323,35 +6345,37 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          //fun( .s("yes"), 2 ); // illegal
-        //          fun( 2, .s("yes") ); // OK
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"virtual class C#(parameter DECODE_W, parameter ENCODE_W = $clog2(DECODE_W));
-        //          static function logic [ENCODE_W-1:0] ENCODER_f
-        //                (input logic [DECODE_W-1:0] DecodeIn);
-        //            ENCODER_f = '0;
-        //            for (int i=0; i<DECODE_W; i++) begin
-        //              if(DecodeIn[i]) begin
-        //                ENCODER_f = i[ENCODE_W-1:0];
-        //                break;
-        //              end
-        //            end
-        //          endfunction
-        //          static function logic [DECODE_W-1:0] DECODER_f
-        //                (input logic [ENCODE_W-1:0] EncodeIn);
-        //            DECODER_f = '0;
-        //            DECODER_f[EncodeIn] = 1'b1;
-        //          endfunction
-        //        endclass"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  //fun( .s("yes"), 2 ); // illegal
+                  fun( 2, .s("yes") ); // OK
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"virtual class C#(parameter DECODE_W, parameter ENCODE_W = $clog2(DECODE_W));
+                  static function logic [ENCODE_W-1:0] ENCODER_f
+                        (input logic [DECODE_W-1:0] DecodeIn);
+                    ENCODER_f = '0;
+                    for (int i=0; i<DECODE_W; i++) begin
+                      if(DecodeIn[i]) begin
+                        ENCODER_f = i[ENCODE_W-1:0];
+                        break;
+                      end
+                    end
+                  endfunction
+                  static function logic [DECODE_W-1:0] DECODER_f
+                        (input logic [ENCODE_W-1:0] EncodeIn);
+                    DECODER_f = '0;
+                    DECODER_f[EncodeIn] = 1'b1;
+                  endfunction
+                endclass"##,
+            Ok((_, _))
+        );
+        // TODO
+        // class static method is denied because ps_or_hierarchical_tf_identifier doesn't have class_scope.
         //test!(
         //    many1(module_item),
         //    r##"module top ();
@@ -6382,47 +6406,43 @@ mod spec {
 
     #[test]
     fn clause14() {
-        //test!(
-        //    many1(module_item),
-        //    r##"clocking ck1 @(posedge clk);
-        //          default input #1step output negedge; // legal
-        //          // outputs driven on the negedge clk
-        //          input ;
-        //          output ;
-        //        endclocking
+        test!(
+            many1(module_item),
+            r##"clocking ck1 @(posedge clk);
+                  default input #1step output negedge; // legal
+                  // outputs driven on the negedge clk
+                endclocking
 
-        //        clocking ck2 @(clk); // no edge specified!
-        //          default input #1step output negedge; // legal
-        //          input ;
-        //          output ;
-        //        endclocking"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"clocking bus @(posedge clock1);
-        //          default input #10ns output #2ns;
-        //          input data, ready, enable = top.mem1.enable;
-        //          output negedge ack;
-        //          input #1step addr;
-        //        endclocking"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"clocking dram @(clk);
-        //          input #1ps address;
-        //          input #5 output #6 data;
-        //        endclocking"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"clocking cd1 @(posedge phi1);
-        //          input #1step state = top.cpu1.state;
-        //        endclocking"##,
-        //    Ok((_, _))
-        //);
+                clocking ck2 @(clk); // no edge specified!
+                  default input #1step output negedge; // legal
+                endclocking"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"clocking bus @(posedge clock1);
+                  default input #10ns output #2ns;
+                  input data, ready, enable = top.mem1.enable;
+                  output negedge ack;
+                  input #1step addr;
+                endclocking"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"clocking dram @(clk);
+                  input #1ps address;
+                  input #5 output #6 data;
+                endclocking"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"clocking cd1 @(posedge phi1);
+                  input #1step state = top.cpu1.state;
+                endclocking"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"clocking mem @(clock);
@@ -6430,32 +6450,32 @@ mod spec {
                 endclocking"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"program test( input phi1, input [15:0] data, output logic write,
-        //          input phi2, inout [8:1] cmd, input enable
-        //        );
-        //          reg [8:1] cmd_reg;
+        test!(
+            many1(module_item),
+            r##"program test( input phi1, input [15:0] data, output logic write,
+                  input phi2, inout [8:1] cmd, input enable
+                );
+                  reg [8:1] cmd_reg;
 
-        //          clocking cd1 @(posedge phi1);
-        //            input data;
-        //            output write;
-        //            input state = top.cpu1.state;
-        //          endclocking
+                  clocking cd1 @(posedge phi1);
+                    input data;
+                    output write;
+                    input state = top.cpu1.state;
+                  endclocking
 
-        //          clocking cd2 @(posedge phi2);
-        //            input #2 output #4ps cmd;
-        //            input enable;
-        //          endclocking
+                  clocking cd2 @(posedge phi2);
+                    input #2 output #4ps cmd;
+                    input enable;
+                  endclocking
 
-        //          initial begin
-        //            // program begins here
-        //            // user can access cd1.data , cd2.cmd , etc…
-        //          end
-        //          assign cmd = enable ? cmd_reg: 'x;
-        //        endprogram"##,
-        //    Ok((_, _))
-        //);
+                  initial begin
+                    // program begins here
+                    // user can access cd1.data , cd2.cmd , etc…
+                  end
+                  assign cmd = enable ? cmd_reg: 'x;
+                endprogram"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module top;
@@ -6469,42 +6489,42 @@ mod spec {
                 endmodule"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"interface bus_A (input clk);
-        //          logic [15:0] data;
-        //          logic write;
-        //          modport test (input data, output write);
-        //          modport dut (output data, input write);
-        //        endinterface
+        test!(
+            many1(module_item),
+            r##"interface bus_A (input clk);
+                  logic [15:0] data;
+                  logic write;
+                  modport test (input data, output write);
+                  modport dut (output data, input write);
+                endinterface
 
-        //        interface bus_B (input clk);
-        //          logic [8:1] cmd;
-        //          logic enable;
-        //          modport test (input enable);
-        //          modport dut (output enable);
-        //        endinterface
+                interface bus_B (input clk);
+                  logic [8:1] cmd;
+                  logic enable;
+                  modport test (input enable);
+                  modport dut (output enable);
+                endinterface
 
-        //        program test( bus_A.test a, bus_B.test b );
-        //          clocking cd1 @(posedge a.clk);
-        //            input data = a.data;
-        //            output write = a.write;
-        //            inout state = top.cpu1.state;
-        //          endclocking
+                program test( bus_A.test a, bus_B.test b );
+                  clocking cd1 @(posedge a.clk);
+                    input data = a.data;
+                    output write = a.write;
+                    inout state = top.cpu1.state;
+                  endclocking
 
-        //          clocking cd2 @(posedge b.clk);
-        //            input #2 output #4ps cmd = b.cmd;
-        //            input en = b.enable;
-        //          endclocking
+                  clocking cd2 @(posedge b.clk);
+                    input #2 output #4ps cmd = b.cmd;
+                    input en = b.enable;
+                  endclocking
 
-        //          initial begin
-        //            // program begins here
-        //            // user can access cd1.data, cd1.write, cd1.state,
-        //            // cd2.cmd, and cd2.en
-        //          end
-        //        endprogram"##,
-        //    Ok((_, _))
-        //);
+                  initial begin
+                    // program begins here
+                    // user can access cd1.data, cd1.write, cd1.state,
+                    // cd2.cmd, and cd2.en
+                  end
+                endprogram"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module top;
@@ -6558,20 +6578,20 @@ mod spec {
                 endprogram"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module processor ...
-        //          clocking busA @(posedge clk1); ... endclocking
-        //          clocking busB @(negedge clk2); ... endclocking
-        //          module cpu( interface y );
-        //            default clocking busA ;
-        //            initial begin
-        //              ## 5; // use busA => (posedge clk1)
-        //            end
-        //          endmodule
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"module processor();
+                  clocking busA @(posedge clk1); endclocking
+                  clocking busB @(negedge clk2); endclocking
+                  module cpu( interface y );
+                    default clocking busA ;
+                    initial begin
+                      ## 5; // use busA => (posedge clk1)
+                    end
+                  endmodule
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"clocking cb @(negedge clk);
@@ -6676,33 +6696,33 @@ mod spec {
                 endmodule"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module top;
-        //          logic a, b, c, clk;
-        //          global clocking top_clocking @(clk); endclocking
+        test!(
+            many1(module_item),
+            r##"module top;
+                  logic a, b, c, clk;
+                  global clocking top_clocking @(clk); endclocking
 
-        //          property p1(req, ack);
-        //            @($global_clock) req |=> ack;
-        //          endproperty
+                  property p1(req, ack);
+                    @($global_clock) req |=> ack;
+                  endproperty
 
-        //          property p2(req, ack, interrupt);
-        //            @($global_clock) accept_on(interrupt) p1(req, ack);
-        //          endproperty
+                  property p2(req, ack, interrupt);
+                    @($global_clock) accept_on(interrupt) p1(req, ack);
+                  endproperty
 
-        //          my_checker check(
-        //            p2(a, b, c),
-        //            @$global_clock a[*1:$] ##1 b);
-        //        endmodule
+                  my_checker check(
+                    p2(a, b, c),
+                    @($global_clock) a[*1:$] ##1 b);
+                endmodule
 
-        //        checker my_checker(property p, sequence s);
-        //          logic checker_clk;
-        //          global clocking checker_clocking @(checker_clk); endclocking
-        //          assert property (p);
-        //          cover property (s);
-        //        endchecker"##,
-        //    Ok((_, _))
-        //);
+                checker my_checker(property p, sequence s);
+                  logic checker_clk;
+                  global clocking checker_clocking @(checker_clk); endclocking
+                  assert property (p);
+                  cover property (s);
+                endchecker"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -6912,28 +6932,28 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          event done, blast;     // declare two new events
-        //          event done_too = done; // declare done_too as alias to done
+        test!(
+            many1(module_item),
+            r##"event done, blast;     // declare two new events
+                event done_too = done; // declare done_too as alias to done
 
-        //          task trigger( event ev );
-        //            -> ev;
-        //          endtask
+                task trigger( event ev );
+                  -> ev;
+                endtask
 
-        //          fork
-        //            @ done_too;         // wait for done through done_too
-        //            #1 trigger( done ); // trigger done through task trigger
-        //          join
+                initial begin
+                  fork
+                    @ done_too;         // wait for done through done_too
+                    #1 trigger( done ); // trigger done through task trigger
+                  join
 
-        //          fork
-        //            -> blast;
-        //            wait ( blast.triggered );
-        //          join
-        //        end"##,
-        //    Ok((_, _))
-        //);
+                  fork
+                    -> blast;
+                    wait ( blast.triggered );
+                  join
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -7011,16 +7031,16 @@ mod spec {
 
     #[test]
     fn clause16() {
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          assert_f: assert(f) $info("passed"); else $error("failed");
-        //          assume_inputs: assume (in_a || in_b) $info("assumption holds");
-        //          else $error("assumption does not hold");
-        //          cover_a_and_b: cover (in_a && in_b) $info("in_a && in_b == 1 covered");<Paste>
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  assert_f: assert(f) $info("passed"); else $error("failed");
+                  assume_inputs: assume (in_a || in_b) $info("assumption holds");
+                  else $error("assumption does not hold");
+                  cover_a_and_b: cover (in_a && in_b) $info("in_a && in_b == 1 covered");
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"time t;
@@ -7034,14 +7054,14 @@ mod spec {
                     end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          assert (myfunc(a,b)) count1 = count + 1; else ->event1;
-        //          assert (y == 0) else flag = 1;
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  assert (myfunc(a,b)) count1 = count + 1; else ->event1;
+                  assert (y == 0) else flag = 1;
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"assign not_a = !a;
@@ -7051,15 +7071,15 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"always @(a or b) begin : b1
-        //          a3: assert #0 (a == b) rptobj.success(0); else rptobj.error(0, a, b);
-        //          #1;
-        //          a4: assert #0 (a == b) rptobj.success(1); else rptobj.error(1, a, b);
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"always @(a or b) begin : b1
+                  a3: assert #0 (a == b) rptobj.success(0); else rptobj.error(0, a, b);
+                  #1;
+                  a4: assert #0 (a == b) rptobj.success(1); else rptobj.error(1, a, b);
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"always_comb begin : b1
@@ -7096,42 +7116,42 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module dut(input logic clk, input logic a, input logic b);
-        //          logic c;
-        //          always_ff @(posedge clk)
-        //            c <= b;
-        //          a1: assert #0 (!(a & c)) $display("Pass"); else $display("Fail");
-        //          a2: assert final (!(a & c)) $display("Pass"); else $display("Fail");
-        //        endmodule
+        test!(
+            many1(module_item),
+            r##"module dut(input logic clk, input logic a, input logic b);
+                  logic c;
+                  always_ff @(posedge clk)
+                    c <= b;
+                  a1: assert #0 (!(a & c)) $display("Pass"); else $display("Fail");
+                  a2: assert final (!(a & c)) $display("Pass"); else $display("Fail");
+                endmodule
 
-        //        program tb(input logic clk, output logic a, output logic b);
-        //          default clocking m @(posedge clk);
-        //            default input #0;
-        //            default output #0;
-        //            output a;
-        //            output b;
-        //          endclocking
+                program tb(input logic clk, output logic a, output logic b);
+                  default clocking m @(posedge clk);
+                    default input #0;
+                    default output #0;
+                    output a;
+                    output b;
+                  endclocking
 
-        //          initial begin
-        //            a = 1;
-        //            b = 0;
-        //            ##10;
-        //            b = 1;
-        //            ##1;
-        //            a = 0;
-        //          end
-        //        endprogram
+                  initial begin
+                    a = 1;
+                    b = 0;
+                    ##10;
+                    b = 1;
+                    ##1;
+                    a = 0;
+                  end
+                endprogram
 
-        //        module sva_svtb;
-        //          bit clk;
-        //          logic a, b;
-        //          dut dut (.*);
-        //          tb tb (.*);
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                module sva_svtb;
+                  bit clk;
+                  logic a, b;
+                  dut dut (.*);
+                  tb tb (.*);
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module m (input a, b);
@@ -7173,40 +7193,40 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module fsm();
-        //          function bit f (int a, int b)
-        //            a1: assert #0 (a == b);
-        //          endfunction
+        test!(
+            many1(module_item),
+            r##"module fsm();
+                  function bit f (int a, int b);
+                    a1: assert #0 (a == b);
+                  endfunction
 
-        //          always_comb begin : b1
-        //            some_stuff = f(x,y);
-        //          end
+                  always_comb begin : b1
+                    some_stuff = f(x,y);
+                  end
 
-        //          always_comb begin : b2
-        //            other_stuff = f(z,w);
-        //          end
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"global clocking @clk; endclocking
-        //        assert property(@$global_clock a);"##,
-        //    Ok((_, _))
-        //);
+                  always_comb begin : b2
+                    other_stuff = f(z,w);
+                  end
+                endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"global clocking @clk; endclocking
+                assert property(@($global_clock) a);"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"assert property(@clk a);"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"base_rule1: assert property (cont_prop(rst,in1,in2)) $display("%m, passing");
-        //                     else $display("%m, failed");"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"base_rule1: assert property (cont_prop(rst,in1,in2)) $display("%m, passing");
+                             else $display("%m, failed");"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"bit a;
@@ -7223,30 +7243,30 @@ mod spec {
                 endproperty"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"bit [2:0] count;
-        //        realtime t;
+        test!(
+            many1(module_item),
+            r##"bit [2:0] count;
+                realtime t;
 
-        //        initial count = 0;
-        //        always @(posedge clk) begin
-        //          if (count == 0) t = $realtime; //capture t in a procedural context
-        //          count++;
-        //        end
+                initial count = 0;
+                always @(posedge clk) begin
+                  if (count == 0) t = $realtime; //capture t in a procedural context
+                  count++;
+                end
 
-        //        property p1;
-        //          @(posedge clk)
-        //          count == 7 |-> $realtime – t < 50.5;
-        //        endproperty
+                property p1;
+                  @(posedge clk)
+                  count == 7 |-> $realtime - t < 50.5;
+                endproperty
 
-        //        property p2;
-        //          realtime l_t;
-        //          @(posedge clk)
-        //          (count == 0, l_t = $realtime) ##1 (count == 7)[->1] |->
-        //            $realtime – l_t < 50.5;
-        //        endproperty"##,
-        //    Ok((_, _))
-        //);
+                property p2;
+                  realtime l_t;
+                  @(posedge clk)
+                  (count == 0, l_t = $realtime) ##1 (count == 7)[->1] |->
+                    $realtime - l_t < 50.5;
+                endproperty"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"sequence delay_example(x, y, min, max, delay1);
@@ -7339,20 +7359,20 @@ mod spec {
             r##"cover property (x ##2 y[*3:$] ##1 z);"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"sequence event_arg_example (event ev);
-        //          @(ev) x ##1 y;
-        //        endsequence
+        test!(
+            many1(module_item),
+            r##"sequence event_arg_example (event ev);
+                  @(ev) x ##1 y;
+                endsequence
 
-        //        cover property (event_arg_example(posedge clk));"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"cover property (@(posedge clk) x ##1 y));"##,
-        //    Ok((_, _))
-        //);
+                cover property (event_arg_example(posedge clk));"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"cover property (@(posedge clk) x ##1 y);"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"sequence event_arg_example2 (reg sig);
@@ -7362,11 +7382,11 @@ mod spec {
                 cover property (event_arg_example2(clk));"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"cover property (@(posedge clk) x ##1 y));"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"cover property (@(posedge clk) x ##1 y);"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"sequence s(bit a, bit b);
@@ -7376,56 +7396,39 @@ mod spec {
                 endsequence"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"logic b_d, d_d;
-        //        sequence legal_loc_var_formal (
-        //          local inout logic a,
-        //          local logic b = b_d, // input inferred, default actual argument b_d
-        //                      c,       // local input logic inferred, no default
-        //                               // actual argument
-        //                      d = d_d, // local input logic inferred, default actual
-        //                               // argument d_d
-        //          logic e, f           // e and f are not local variable formal arguments
-        //        );
-        //          logic g = c, h = g || d;
-        //        endsequence"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"sequence illegal_loc_var_formal (
-        //          output logic a,            // illegal: local must be specified with
-        //                                     // direction
-        //          local inout logic b,
-        //                            c = 1'b0,// default actual argument illegal for inout
-        //          local d = expr,            // illegal: type must be specified explicitly
-        //          local event e,             // illegal: event is a type disallowed in
-        //                                     // 16.6
-        //          local logic f = g          // g shall not refer to the local variable
-        //                                     // below and must be resolved upward from
-        //                                     // this declaration
-        //        );
-        //          logic g = b;
-        //        endsequence"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"sequence sub_seq2(local inout int lv);
-        //          (a ##1 !a, lv += data_in)
-        //          ##1 !b[*0:$] ##1 b && (data_out == lv);
-        //        endsequence
-        //        sequence seq2;
-        //          int v1;
-        //          (c, v1 = data)
-        //          ##1 sub_seq2(v1) // lv is initialized by assigning it the value of v1;
-        //                           // when the instance sub_seq2(v1) matches, v1 is
-        //                           // assigned the value of lv
-        //          ##1 (do1 == v1);
-        //        endsequence"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"logic b_d, d_d;
+                sequence legal_loc_var_formal (
+                  local inout logic a,
+                  local logic b = b_d, // input inferred, default actual argument b_d
+                              c,       // local input logic inferred, no default
+                                       // actual argument
+                              d = d_d, // local input logic inferred, default actual
+                                       // argument d_d
+                  logic e, f           // e and f are not local variable formal arguments
+                );
+                  logic g = c, h = g || d;
+                  g ##1 h;
+                endsequence"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"sequence sub_seq2(local inout int lv);
+                  (a ##1 !a, lv += data_in)
+                  ##1 !b[*0:$] ##1 b && (data_out == lv);
+                endsequence
+                sequence seq2;
+                  int v1;
+                  (c, v1 = data)
+                  ##1 sub_seq2(v1) // lv is initialized by assigning it the value of v1;
+                                   // when the instance sub_seq2(v1) matches, v1 is
+                                   // assigned the value of lv
+                  ##1 (do1 == v1);
+                endsequence"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"sequence seq2_inlined;
@@ -7487,22 +7490,22 @@ mod spec {
                 assert property (done |=> (out == $past(q, 2,enable)) );"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"bit clk, fclk, req, gnt, en;
+        test!(
+            many1(module_item),
+            r##"bit clk, fclk, req, gnt, en;
 
-        //        a1: assert property
-        //          (@(posedge clk) en && $rose(req) |=> gnt);
-        //        a2: assert property
-        //          (@(posedge clk) en && $rose(req, @(posedge fclk)) |=> gnt);"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"always_ff @(posedge clk1)
-        //          reg1 <= $rose(b, @(posedge clk2));"##,
-        //    Ok((_, _))
-        //);
+                a1: assert property
+                  (@(posedge clk) en && $rose(req) |=> gnt);
+                a2: assert property
+                  (@(posedge clk) en && $rose(req, @(posedge fclk)) |=> gnt);"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"always_ff @(posedge clk1)
+                  reg1 <= $rose(b, @(posedge clk2));"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"always @(posedge clk) begin
@@ -15580,34 +15583,7 @@ mod spec {
 fn debug() {
     test!(
         many1(module_item),
-        r##"initial begin
-                  //typedef union tagged {
-                  //  struct {
-                  //    bit [4:0] reg1, reg2, regd;
-                  //  } Add;
-                  //  union tagged {
-                  //    bit [9:0] JmpU;
-                  //    struct {
-                  //      bit [1:0] cc;
-                  //      bit [9:0] addr;
-                  //    } JmpC;
-                  //  } Jmp;
-                  //} Instr;
-
-                  //Instr i1, i2;
-
-                  // Create an Add instruction with its 3 register fields
-                  i1 = ( e
-                    ? tagged Add '{ e1, 4, ed }                  // struct members by position
-                    : tagged Add '{ reg2:e2, regd:3, reg1:19 }); // by name (order irrelevant)
-
-                  //// Create a Jump instruction, with "unconditional" sub-opcode
-                  //i1 = tagged Jmp (tagged JmpU 239);
-
-                  //// Create a Jump instruction, with "conditional" sub-opcode
-                  //i2 = tagged Jmp (tagged JmpC '{ 2, 83 });         // inner struct by position
-                  //i2 = tagged Jmp (tagged JmpC '{ cc:2, addr:83 }); // by name
-                end"##,
+        r##"sequence legal_loc_var_formal ( local logic b = b_d, d = d_d); g ##1 h; endsequence"##,
         Ok((_, _))
     );
 }

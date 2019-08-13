@@ -144,14 +144,14 @@ pub(crate) fn constant_mintypmax_expression_ternary(
 #[packrat_parser]
 pub(crate) fn constant_param_expression(s: Span) -> IResult<Span, ConstantParamExpression> {
     alt((
-        map(symbol("$"), |x| {
-            ConstantParamExpression::Dollar(Box::new(x))
-        }),
         map(constant_mintypmax_expression, |x| {
             ConstantParamExpression::ConstantMintypmaxExpression(Box::new(x))
         }),
         map(data_type, |x| {
             ConstantParamExpression::DataType(Box::new(x))
+        }),
+        map(symbol("$"), |x| {
+            ConstantParamExpression::Dollar(Box::new(x))
         }),
     ))(s)
 }
@@ -160,11 +160,11 @@ pub(crate) fn constant_param_expression(s: Span) -> IResult<Span, ConstantParamE
 #[packrat_parser]
 pub(crate) fn param_expression(s: Span) -> IResult<Span, ParamExpression> {
     alt((
-        map(symbol("$"), |x| ParamExpression::Dollar(Box::new(x))),
         map(mintypmax_expression, |x| {
             ParamExpression::MintypmaxExpression(Box::new(x))
         }),
         map(data_type, |x| ParamExpression::DataType(Box::new(x))),
+        map(symbol("$"), |x| ParamExpression::Dollar(Box::new(x))),
     ))(s)
 }
 

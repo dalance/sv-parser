@@ -22,9 +22,9 @@ pub(crate) fn tf_call(s: Span) -> IResult<Span, TfCall> {
 #[packrat_parser]
 pub(crate) fn system_tf_call(s: Span) -> IResult<Span, SystemTfCall> {
     alt((
-        system_tf_call_arg_optional,
-        system_tf_call_arg_data_type,
         system_tf_call_arg_expression,
+        system_tf_call_arg_data_type,
+        system_tf_call_arg_optional,
     ))(s)
 }
 
@@ -55,7 +55,10 @@ pub(crate) fn system_tf_call_arg_data_type(s: Span) -> IResult<Span, SystemTfCal
 pub(crate) fn system_tf_call_arg_expression(s: Span) -> IResult<Span, SystemTfCall> {
     let (s, a) = system_tf_identifier(s)?;
     let (s, b) = paren(pair(
-        list(symbol(","), opt(expression)),
+        list(
+            terminated(symbol(","), peek(not(clocking_event))),
+            opt(expression),
+        ),
         opt(pair(symbol(","), opt(clocking_event))),
     ))(s)?;
     Ok((
@@ -104,7 +107,10 @@ pub(crate) fn list_of_arguments(s: Span) -> IResult<Span, ListOfArguments> {
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn list_of_arguments_ordered(s: Span) -> IResult<Span, ListOfArguments> {
-    let (s, a) = list(symbol(","), opt(expression))(s)?;
+    let (s, a) = list(
+        terminated(symbol(","), peek(not(symbol(".")))),
+        opt(expression),
+    )(s)?;
     let (s, b) = many0(tuple((
         symbol(","),
         symbol("."),

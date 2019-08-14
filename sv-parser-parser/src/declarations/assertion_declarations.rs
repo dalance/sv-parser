@@ -307,6 +307,7 @@ pub(crate) fn property_spec(s: Span) -> IResult<Span, PropertySpec> {
 pub(crate) fn property_expr(s: Span) -> IResult<Span, PropertyExpr> {
     alt((
         alt((
+            property_expr_binary,
             property_expr_implication_overlapped,
             property_expr_implication_nonoverlapped,
             property_expr_followed_by_overlapped,
@@ -316,26 +317,18 @@ pub(crate) fn property_expr(s: Span) -> IResult<Span, PropertyExpr> {
             }),
             property_expr_strong,
             property_expr_weak,
-            property_expr_paren,
             property_expr_not,
-            property_expr_or,
-            property_expr_and,
+            property_expr_paren,
+        )),
+        alt((
             property_expr_if,
             property_expr_case,
             property_expr_nexttime,
             property_expr_s_nexttime,
-        )),
-        alt((
             property_expr_always,
             property_expr_s_always,
             property_expr_eventually,
             property_expr_s_eventually,
-            property_expr_until,
-            property_expr_s_until,
-            property_expr_until_with,
-            property_expr_s_until_with,
-            property_expr_implies,
-            property_expr_iff,
             property_expr_accept_on,
             property_expr_reject_on,
             property_expr_sync_accept_on,
@@ -373,7 +366,7 @@ pub(crate) fn property_expr_weak(s: Span) -> IResult<Span, PropertyExpr> {
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn property_expr_paren(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = paren(sequence_expr)(s)?;
+    let (s, a) = paren(property_expr)(s)?;
     Ok((
         s,
         PropertyExpr::Paren(Box::new(PropertyExprParen { nodes: (a,) })),
@@ -394,26 +387,22 @@ pub(crate) fn property_expr_not(s: Span) -> IResult<Span, PropertyExpr> {
 #[recursive_parser]
 #[tracable_parser]
 #[packrat_parser]
-pub(crate) fn property_expr_or(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_binary(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
-    let (s, b) = keyword("or")(s)?;
+    let (s, b) = alt((
+        keyword("or"),
+        keyword("and"),
+        keyword("until_with"),
+        keyword("until"),
+        keyword("s_until_with"),
+        keyword("s_until"),
+        keyword("implies"),
+        keyword("iff"),
+    ))(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
         s,
-        PropertyExpr::Or(Box::new(PropertyExprOr { nodes: (a, b, c) })),
-    ))
-}
-
-#[recursive_parser]
-#[tracable_parser]
-#[packrat_parser]
-pub(crate) fn property_expr_and(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = property_expr(s)?;
-    let (s, b) = keyword("and")(s)?;
-    let (s, c) = property_expr(s)?;
-    Ok((
-        s,
-        PropertyExpr::And(Box::new(PropertyExprAnd { nodes: (a, b, c) })),
+        PropertyExpr::Binary(Box::new(PropertyExprBinary { nodes: (a, b, c) })),
     ))
 }
 
@@ -577,84 +566,6 @@ pub(crate) fn property_expr_s_eventually(s: Span) -> IResult<Span, PropertyExpr>
     Ok((
         s,
         PropertyExpr::SEventually(Box::new(PropertyExprSEventually { nodes: (a, b, c) })),
-    ))
-}
-
-#[recursive_parser]
-#[tracable_parser]
-#[packrat_parser]
-pub(crate) fn property_expr_until(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = property_expr(s)?;
-    let (s, b) = keyword("until")(s)?;
-    let (s, c) = property_expr(s)?;
-    Ok((
-        s,
-        PropertyExpr::Until(Box::new(PropertyExprUntil { nodes: (a, b, c) })),
-    ))
-}
-
-#[recursive_parser]
-#[tracable_parser]
-#[packrat_parser]
-pub(crate) fn property_expr_s_until(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = property_expr(s)?;
-    let (s, b) = keyword("s_until")(s)?;
-    let (s, c) = property_expr(s)?;
-    Ok((
-        s,
-        PropertyExpr::SUntil(Box::new(PropertyExprSUntil { nodes: (a, b, c) })),
-    ))
-}
-
-#[recursive_parser]
-#[tracable_parser]
-#[packrat_parser]
-pub(crate) fn property_expr_until_with(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = property_expr(s)?;
-    let (s, b) = keyword("until_with")(s)?;
-    let (s, c) = property_expr(s)?;
-    Ok((
-        s,
-        PropertyExpr::UntilWith(Box::new(PropertyExprUntilWith { nodes: (a, b, c) })),
-    ))
-}
-
-#[recursive_parser]
-#[tracable_parser]
-#[packrat_parser]
-pub(crate) fn property_expr_s_until_with(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = property_expr(s)?;
-    let (s, b) = keyword("s_until_with")(s)?;
-    let (s, c) = property_expr(s)?;
-    Ok((
-        s,
-        PropertyExpr::SUntilWith(Box::new(PropertyExprSUntilWith { nodes: (a, b, c) })),
-    ))
-}
-
-#[recursive_parser]
-#[tracable_parser]
-#[packrat_parser]
-pub(crate) fn property_expr_implies(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = property_expr(s)?;
-    let (s, b) = keyword("implies")(s)?;
-    let (s, c) = property_expr(s)?;
-    Ok((
-        s,
-        PropertyExpr::Implies(Box::new(PropertyExprImplies { nodes: (a, b, c) })),
-    ))
-}
-
-#[recursive_parser]
-#[tracable_parser]
-#[packrat_parser]
-pub(crate) fn property_expr_iff(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = property_expr(s)?;
-    let (s, b) = keyword("iff")(s)?;
-    let (s, c) = property_expr(s)?;
-    Ok((
-        s,
-        PropertyExpr::Iff(Box::new(PropertyExprIff { nodes: (a, b, c) })),
     ))
 }
 
@@ -852,15 +763,15 @@ pub(crate) fn sequence_expr(s: Span) -> IResult<Span, SequenceExpr> {
     alt((
         sequence_expr_cycle_delay_expr,
         sequence_expr_expr_cycle_delay_expr,
-        sequence_expr_expression,
-        sequence_expr_instance,
-        sequence_expr_paren,
-        sequence_expr_and,
-        sequence_expr_intersect,
-        sequence_expr_or,
-        sequence_expr_first_match,
         sequence_expr_throughout,
+        terminated(sequence_expr_expression, peek(not(symbol("(")))),
+        sequence_expr_instance,
+        sequence_expr_and,
+        sequence_expr_or,
+        sequence_expr_intersect,
         sequence_expr_within,
+        sequence_expr_paren,
+        sequence_expr_first_match,
         sequence_expr_clocking_event,
     ))(s)
 }
@@ -1155,11 +1066,11 @@ pub(crate) fn sequence_list_of_arguments_named(s: Span) -> IResult<Span, Sequenc
 #[packrat_parser]
 pub(crate) fn sequence_actual_arg(s: Span) -> IResult<Span, SequenceActualArg> {
     alt((
-        map(event_expression_sequence_actual_arg, |x| {
-            SequenceActualArg::EventExpression(Box::new(x))
-        }),
         map(sequence_expr, |x| {
             SequenceActualArg::SequenceExpr(Box::new(x))
+        }),
+        map(event_expression_sequence_actual_arg, |x| {
+            SequenceActualArg::EventExpression(Box::new(x))
         }),
     ))(s)
 }

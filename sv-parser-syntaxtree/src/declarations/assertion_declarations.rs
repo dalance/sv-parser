@@ -163,8 +163,7 @@ pub enum PropertyExpr {
     Weak(Box<PropertyExprWeak>),
     Paren(Box<PropertyExprParen>),
     Not(Box<PropertyExprNot>),
-    Or(Box<PropertyExprOr>),
-    And(Box<PropertyExprAnd>),
+    Binary(Box<PropertyExprBinary>),
     ImplicationOverlapped(Box<PropertyExprImplicationOverlapped>),
     ImplicationNonoverlapped(Box<PropertyExprImplicationNonoverlapped>),
     If(Box<PropertyExprIf>),
@@ -177,12 +176,6 @@ pub enum PropertyExpr {
     SAlways(Box<PropertyExprSAlways>),
     Eventually(Box<PropertyExprEventually>),
     SEventually(Box<PropertyExprSEventually>),
-    Until(Box<PropertyExprUntil>),
-    SUntil(Box<PropertyExprSUntil>),
-    UntilWith(Box<PropertyExprUntilWith>),
-    SUntilWith(Box<PropertyExprSUntilWith>),
-    Implies(Box<PropertyExprImplies>),
-    Iff(Box<PropertyExprIff>),
     AcceptOn(Box<PropertyExprAcceptOn>),
     RejectOn(Box<PropertyExprRejectOn>),
     SyncAcceptOn(Box<PropertyExprSyncAcceptOn>),
@@ -203,7 +196,7 @@ pub struct PropertyExprWeak {
 
 #[derive(Clone, Debug, Node)]
 pub struct PropertyExprParen {
-    pub nodes: (Paren<SequenceExpr>,),
+    pub nodes: (Paren<PropertyExpr>,),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -212,12 +205,7 @@ pub struct PropertyExprNot {
 }
 
 #[derive(Clone, Debug, Node)]
-pub struct PropertyExprOr {
-    pub nodes: (PropertyExpr, Keyword, PropertyExpr),
-}
-
-#[derive(Clone, Debug, Node)]
-pub struct PropertyExprAnd {
+pub struct PropertyExprBinary {
     pub nodes: (PropertyExpr, Keyword, PropertyExpr),
 }
 
@@ -302,36 +290,6 @@ pub struct PropertyExprSEventually {
         Option<Bracket<CycleDelayConstRangeExpression>>,
         PropertyExpr,
     ),
-}
-
-#[derive(Clone, Debug, Node)]
-pub struct PropertyExprUntil {
-    pub nodes: (PropertyExpr, Keyword, PropertyExpr),
-}
-
-#[derive(Clone, Debug, Node)]
-pub struct PropertyExprSUntil {
-    pub nodes: (PropertyExpr, Keyword, PropertyExpr),
-}
-
-#[derive(Clone, Debug, Node)]
-pub struct PropertyExprUntilWith {
-    pub nodes: (PropertyExpr, Keyword, PropertyExpr),
-}
-
-#[derive(Clone, Debug, Node)]
-pub struct PropertyExprSUntilWith {
-    pub nodes: (PropertyExpr, Keyword, PropertyExpr),
-}
-
-#[derive(Clone, Debug, Node)]
-pub struct PropertyExprImplies {
-    pub nodes: (PropertyExpr, Keyword, PropertyExpr),
-}
-
-#[derive(Clone, Debug, Node)]
-pub struct PropertyExprIff {
-    pub nodes: (PropertyExpr, Keyword, PropertyExpr),
 }
 
 #[derive(Clone, Debug, Node)]

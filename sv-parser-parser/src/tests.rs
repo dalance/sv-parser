@@ -7514,40 +7514,40 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"a1: assert property (@clk $future_gclk(a || $rising_gclk(b));
-        //        sequence s;
-        //          bit v;
-        //          (a, v = a) ##1 (b == v)[->1];
-        //        endsequence : s
+        test!(
+            many1(module_item),
+            r##"a1: assert property (@clk $future_gclk(a || $rising_gclk(b)));
+                sequence s;
+                  bit v;
+                  (a, v = a) ##1 (b == v)[->1];
+                endsequence : s
 
-        //        // Illegal: a global clocking future sampled value function shall not
-        //        // be used in an assertion containing sequence match items
-        //        a2: assert property (@clk s |=> $future_gclk(c));"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"a1: assert property (@$global_clock $changing_gclk(sig)
-        //                                         |-> $falling_gclk(clk))
-        //        else $error(”sig is not stable”);"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"a2: assume property(@$global_clock
-        //                    $falling_gclk(clk) ##1 (!$falling_gclk(clk)[*1:$]) |->
-        //                                                          $steady_gclk(sig));"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"a3: assert property (@$global_clock disable iff (rst) $changing_gclk(sig)
-        //                                             |-> $falling_gclk(clk))
-        //        else $error(”sig is not stable”);"##,
-        //    Ok((_, _))
-        //);
+                // Illegal: a global clocking future sampled value function shall not
+                // be used in an assertion containing sequence match items
+                a2: assert property (@clk s |=> $future_gclk(c));"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"a1: assert property (@($global_clock) $changing_gclk(sig)
+                                                 |-> $falling_gclk(clk))
+                else $error("sig is not stable");"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"a2: assume property(@($global_clock)
+                            $falling_gclk(clk) ##1 (!$falling_gclk(clk)[*1:$]) |->
+                                                                  $steady_gclk(sig));"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"a3: assert property (@($global_clock) disable iff (rst) $changing_gclk(sig)
+                                                     |-> $falling_gclk(clk))
+                else $error("sig is not stable");"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"a4: assert property (##1 $stable_gclk(sig));
@@ -7565,25 +7565,25 @@ mod spec {
                 endsequence"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"sequence t2;
-        //          (a ##[2:3] b) or (c ##[1:2] d);
-        //        endsequence
-        //        sequence ts2;
-        //          first_match(t2);
-        //        endsequence"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"sequence burst_rule1;
-        //          @(posedge mclk)
-        //            $fell(burst_mode) ##0
-        //            ((!burst_mode) throughout (##2 ((trdy==0)&&(irdy==0)) [*7]));
-        //        endsequence"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"sequence t2;
+                  (a ##[2:3] b) or (c ##[1:2] d);
+                endsequence
+                sequence ts2;
+                  first_match(t2);
+                endsequence"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"sequence burst_rule1;
+                  @(posedge mclk)
+                    $fell(burst_mode) ##0
+                    ((!burst_mode) throughout (##2 ((trdy==0)&&(irdy==0)) [*7]));
+                endsequence"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"sequence s;
@@ -7595,27 +7595,27 @@ mod spec {
                 endsequence"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"sequence e1;
-        //          @(posedge sysclk) $rose(ready) ##1 proc1 ##1 proc2 ;
-        //        endsequence
-        //        sequence rule;
-        //          @(posedge sysclk) reset ##1 inst ##1 e1.triggered ##1 branch_back;
-        //        endsequence"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"sequence e2(a,b,c);
-        //          @(posedge sysclk) $rose(a) ##1 b ##1 c;
-        //        endsequence
-        //        sequence rule2;
-        //          @(posedge sysclk) reset ##1 inst ##1 e2(ready,proc1,proc2).triggered
-        //            ##1 branch_back;
-        //        endsequence"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"sequence e1;
+                  @(posedge sysclk) $rose(ready) ##1 proc1 ##1 proc2 ;
+                endsequence
+                sequence rule;
+                  @(posedge sysclk) reset ##1 inst ##1 e1.triggered ##1 branch_back;
+                endsequence"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"sequence e2(a,b,c);
+                  @(posedge sysclk) $rose(a) ##1 b ##1 c;
+                endsequence
+                sequence rule2;
+                  @(posedge sysclk) reset ##1 inst ##1 e2(ready,proc1,proc2).triggered
+                    ##1 branch_back;
+                endsequence"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"sequence e2_instantiated;
@@ -7645,13 +7645,14 @@ mod spec {
                 endsequence"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"sequence s;
-        //          logic u, v = a, w = v || b;
-        //        endsequence"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"sequence s;
+                  logic u, v = a, w = v || b;
+                  u;
+                endsequence"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"property e;
@@ -7660,18 +7661,18 @@ mod spec {
                 endproperty"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"sequence data_check;
-        //          int x;
-        //          a ##1 (!a, x = data_in) ##1 !b[*0:$] ##1 b && (data_out == x);
-        //        endsequence
-        //        property data_check_p
-        //          int x;
-        //          a ##1 (!a, x = data_in) |=> !b[*0:$] ##1 b && (data_out == x);
-        //        endproperty"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"sequence data_check;
+                  int x;
+                  a ##1 (!a, x = data_in) ##1 !b[*0:$] ##1 b && (data_out == x);
+                endsequence
+                property data_check_p;
+                  int x;
+                  a ##1 (!a, x = data_in) |=> !b[*0:$] ##1 b && (data_out == x);
+                endproperty"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"sequence rep_v;
@@ -7736,46 +7737,46 @@ mod spec {
                 endsequence"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"sequence s4;
-        //          int x;
-        //          (a ##1 (b, x = data) ##1 c) or (d ##1 (e==x)); // illegal
-        //        endsequence"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"sequence s5;
-        //          int x,y;
-        //          ((a ##1 (b, x = data, y = data1) ##1 c)
-        //            or (d ##1 (`true, x = data) ##0 (e==x))) ##1 (y==data2);
-        //          // illegal because y is not in the intersection
-        //        endsequence
-        //        sequence s6;
-        //          int x,y;
-        //          ((a ##1 (b, x = data, y = data1) ##1 c)
-        //            or (d ##1 (`true, x = data) ##0 (e==x))) ##1 (x==data2);
-        //          // legal because x is in the intersection
-        //        endsequence"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"sequence s7;
-        //          int x,y;
-        //          ((a ##1 (b, x = data, y = data1) ##1 c)
-        //            and (d ##1 (`true, x = data) ##0 (e==x))) ##1 (x==data2);
-        //          // illegal because x is common to both threads
-        //        endsequence
-        //        sequence s8;
-        //          int x,y;
-        //          ((a ##1 (b, x = data, y = data1) ##1 c)
-        //            and (d ##1 (`true, x = data) ##0 (e==x))) ##1 (y==data2);
-        //          // legal because y is in the difference
-        //        endsequence"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"sequence s4;
+                  int x;
+                  (a ##1 (b, x = data) ##1 c) or (d ##1 (e==x)); // illegal
+                endsequence"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"sequence s5;
+                  int x,y;
+                  ((a ##1 (b, x = data, y = data1) ##1 c)
+                    or (d ##1 (true, x = data) ##0 (e==x))) ##1 (y==data2);
+                  // illegal because y is not in the intersection
+                endsequence
+                sequence s6;
+                  int x,y;
+                  ((a ##1 (b, x = data, y = data1) ##1 c)
+                    or (d ##1 (true, x = data) ##0 (e==x))) ##1 (x==data2);
+                  // legal because x is in the intersection
+                endsequence"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"sequence s7;
+                  int x,y;
+                  ((a ##1 (b, x = data, y = data1) ##1 c)
+                    and (d ##1 (true, x = data) ##0 (e==x))) ##1 (x==data2);
+                  // illegal because x is common to both threads
+                endsequence
+                sequence s8;
+                  int x,y;
+                  ((a ##1 (b, x = data, y = data1) ##1 c)
+                    and (d ##1 (true, x = data) ##0 (e==x))) ##1 (y==data2);
+                  // legal because y is in the difference
+                endsequence"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"sequence s1;
@@ -7944,56 +7945,56 @@ mod spec {
                 endproperty"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"property p1;
-        //          a until b;
-        //        endproperty
+        test!(
+            many1(module_item),
+            r##"property p1;
+                  a until b;
+                endproperty
 
-        //        property p2;
-        //          a s_until b;
-        //        endproperty
+                property p2;
+                  a s_until b;
+                endproperty
 
-        //        property p3;
-        //          a until_with b;
-        //        endproperty
+                property p3;
+                  a until_with b;
+                endproperty
 
-        //        property p4;
-        //          a s_until_with b;
-        //        endproperty"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"property p1;
-        //          s_eventually a;
-        //        endproperty
+                property p4;
+                  a s_until_with b;
+                endproperty"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"property p1;
+                  s_eventually a;
+                endproperty
 
-        //        property p2;
-        //          s_eventually always a;
-        //        endproperty
+                property p2;
+                  s_eventually always a;
+                endproperty
 
-        //        property p3;
-        //          always s_eventually a;
-        //        endproperty
+                property p3;
+                  always s_eventually a;
+                endproperty
 
-        //        property p4;
-        //          eventually [2:5] a;
-        //        endproperty
+                property p4;
+                  eventually [2:5] a;
+                endproperty
 
-        //        property p5;
-        //          s_eventually [2:5] a;
-        //        endproperty
+                property p5;
+                  s_eventually [2:5] a;
+                endproperty
 
-        //        property p6;
-        //          eventually [2:$] a; // Illegal
-        //        endproperty
+                //property p6;
+                //  eventually [2:$] a; // Illegal
+                //endproperty
 
-        //        property p7;
-        //          s_eventually [2:$] a;
-        //        endproperty"##,
-        //    Ok((_, _))
-        //);
+                property p7;
+                  s_eventually [2:$] a;
+                endproperty"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"assert property (@(clk) go ##1 get[*2] |-> reject_on(stop) put[->2]);"##,
@@ -8004,26 +8005,26 @@ mod spec {
             r##"assert property (@(clk) go ##1 get[*2] |-> sync_reject_on(stop) put[->2]);"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"assert property (@(clk) go ##1 get[*2] |-> !stop throughout put[->2]);"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"property p; (accept_on(a) p1) and (reject_on(b) p2); endproperty"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"property p; (accept_on(a) p1) or (reject_on(b) p2); endproperty"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"property p; not (accept_on(a) p1); endproperty"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"assert property (@(clk) go ##1 get[*2] |-> !stop throughout put[->2]);"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"property p; (accept_on(a) p1) and (reject_on(b) p2); endproperty"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"property p; (accept_on(a) p1) or (reject_on(b) p2); endproperty"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"property p; not (accept_on(a) p1); endproperty"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"property p; accept_on(a) reject_on(b) p1; endproperty"##,
@@ -8042,13 +8043,13 @@ mod spec {
                 endproperty"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"property prop_always(p);
-        //          p and (1'b1 |=> prop_always(p));
-        //        endproperty"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"property prop_always(p);
+                  p and (1'b1 |=> prop_always(p));
+                endproperty"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"property p1(s,p);
@@ -8056,13 +8057,13 @@ mod spec {
                 endproperty"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"property prop_weak_until(p,q);
-        //          q or (p and (1'b1 |=> prop_weak_until(p,q)));
-        //        endproperty"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"property prop_weak_until(p,q);
+                  q or (p and (1'b1 |=> prop_weak_until(p,q)));
+                endproperty"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"property p2(s,p,q);
@@ -8070,35 +8071,35 @@ mod spec {
                 endproperty"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"property check_phase1;
-        //          s1 |-> (phase1_prop and (1'b1 |=> check_phase2));
-        //        endproperty
-        //        property check_phase2;
-        //          s2 |-> (phase2_prop and (1'b1 |=> check_phase1));
-        //        endproperty"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"property illegal_recursion_1(p);
-        //          not prop_always(not p);
-        //        endproperty
+        test!(
+            many1(module_item),
+            r##"property check_phase1;
+                  s1 |-> (phase1_prop and (1'b1 |=> check_phase2));
+                endproperty
+                property check_phase2;
+                  s2 |-> (phase2_prop and (1'b1 |=> check_phase1));
+                endproperty"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"property illegal_recursion_1(p);
+                  not prop_always(not p);
+                endproperty
 
-        //        property illegal_recursion_2(p);
-        //          p and (1'b1 |=> not illegal_recursion_2(p));
-        //        endproperty"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"property illegal_recursion_3(p);
-        //          disable iff (b)
-        //          p and (1'b1 |=> illegal_recursion_3(p));
-        //        endproperty"##,
-        //    Ok((_, _))
-        //);
+                property illegal_recursion_2(p);
+                  p and (1'b1 |=> not illegal_recursion_2(p));
+                endproperty"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"property illegal_recursion_3(p);
+                  disable iff (b)
+                  p and (1'b1 |=> illegal_recursion_3(p));
+                endproperty"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"property legal_3(p);
@@ -8106,50 +8107,50 @@ mod spec {
                 endproperty"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"property illegal_recursion_4(p);
-        //          p and (1'b1 |-> illegal_recursion_4(p));
-        //        endproperty"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"property fibonacci1 (local input int a, b, n, int fib_sig);
-        //          (n > 0)
-        //          |->
-        //          (
-        //            (fib_sig == a)
-        //            and
-        //            (1'b1 |=> fibonacci1(b, a + b, n - 1, fib_sig))
-        //          );
-        //        endproperty"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"property fibonacci2 (int a, b, n, fib_sig);
-        //          (n > 0)
-        //          |->
-        //          (
-        //            (fib_sig == a)
-        //            and
-        //            (1'b1 |=> fibonacci2(b, a + b, n - 1, fib_sig))
-        //          );
-        //        endproperty"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"property p3(p, bit b, abort);
-        //          (p and (1'b1 |=> p4(p, b, abort)));
-        //        endproperty
+        test!(
+            many1(module_item),
+            r##"property illegal_recursion_4(p);
+                  p and (1'b1 |-> illegal_recursion_4(p));
+                endproperty"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"property fibonacci1 (local input int a, b, n, int fib_sig);
+                  (n > 0)
+                  |->
+                  (
+                    (fib_sig == a)
+                    and
+                    (1'b1 |=> fibonacci1(b, a + b, n - 1, fib_sig))
+                  );
+                endproperty"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"property fibonacci2 (int a, b, n, fib_sig);
+                  (n > 0)
+                  |->
+                  (
+                    (fib_sig == a)
+                    and
+                    (1'b1 |=> fibonacci2(b, a + b, n - 1, fib_sig))
+                  );
+                endproperty"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"property p3(p, bit b, abort);
+                  (p and (1'b1 |=> p4(p, b, abort)));
+                endproperty
 
-        //        property p4(p, bit b, abort);
-        //          accept_on(b) reject_on(abort) p3(p, b, abort);
-        //        endproperty"##,
-        //    Ok((_, _))
-        //);
+                property p4(p, bit b, abort);
+                  accept_on(b) reject_on(abort) p3(p, b, abort);
+                endproperty"##,
+            Ok((_, _))
+        );
         //test!(
         //    many1(module_item),
         //    r##"property check_write;
@@ -8214,32 +8215,32 @@ mod spec {
                 endproperty"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"property rule3;
-        //          @(posedge clk) a[*2] |-> ((##[1:3] c) or (d |=> e));
-        //        endproperty"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"property rule4;
-        //          @(posedge clk) a[*2] |-> ((##[1:3] c) and (d |=> e));
-        //        endproperty"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"property rule5;
-        //          @(posedge clk)
-        //          a ##1 (b || c)[->1] |->
-        //            if (b)
-        //              (##1 d |-> e)
-        //            else // c
-        //              f ;
-        //        endproperty"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"property rule3;
+                  @(posedge clk) a[*2] |-> ((##[1:3] c) or (d |=> e));
+                endproperty"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"property rule4;
+                  @(posedge clk) a[*2] |-> ((##[1:3] c) and (d |=> e));
+                endproperty"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"property rule5;
+                  @(posedge clk)
+                  a ##1 (b || c)[->1] |->
+                    if (b)
+                      (##1 d |-> e)
+                    else // c
+                      f ;
+                endproperty"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"property rule6(x,y);
@@ -8307,61 +8308,61 @@ mod spec {
                 endproperty"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"property mult_p8;
-        //          @(posedge clk) a ##1 b |->
-        //          if (c)
-        //            (1 |=> @(posedge clk1) d)
-        //          else
-        //            e ##1 @(posedge clk2) f ;
-        //        endproperty"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"sequence e1(a,b,c);
-        //          @(posedge clk) $rose(a) ##1 b ##1 c ;
-        //        endsequence
-        //        sequence e2;
-        //          @(posedge sysclk) reset ##1 inst ##1 e1(ready,proc1,proc2).matched [->1]
-        //            ##1 branch_back;
-        //        endsequence"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"sequence e1;
-        //          @(posedge sysclk) $rose(a) ##1 b ##1 c;
-        //        endsequence
+        test!(
+            many1(module_item),
+            r##"property mult_p8;
+                  @(posedge clk) a ##1 b |->
+                  if (c)
+                    (1 |=> @(posedge clk1) d)
+                  else
+                    e ##1 @(posedge clk2) f ;
+                endproperty"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"sequence e1(a,b,c);
+                  @(posedge clk) $rose(a) ##1 b ##1 c ;
+                endsequence
+                sequence e2;
+                  @(posedge sysclk) reset ##1 inst ##1 e1(ready,proc1,proc2).matched [->1]
+                    ##1 branch_back;
+                endsequence"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"sequence e1;
+                  @(posedge sysclk) $rose(a) ##1 b ##1 c;
+                endsequence
 
-        //        sequence e2;
-        //          @(posedge sysclk) reset ##1 inst ##1 e1.triggered ##1 branch_back;
-        //        endsequence
+                sequence e2;
+                  @(posedge sysclk) reset ##1 inst ##1 e1.triggered ##1 branch_back;
+                endsequence
 
-        //        sequence e3;
-        //          @(posedge clk) reset1 ##1 e1.matched ##1 branch_back1;
-        //        endsequence
+                sequence e3;
+                  @(posedge clk) reset1 ##1 e1.matched ##1 branch_back1;
+                endsequence
 
-        //        sequence e2_with_arg(sequence subseq);
-        //          @(posedge sysclk) reset ##1 inst ##1 subseq.triggered ##1 branch_back;
-        //        endsequence
+                sequence e2_with_arg(sequence subseq);
+                  @(posedge sysclk) reset ##1 inst ##1 subseq.triggered ##1 branch_back;
+                endsequence
 
-        //        sequence e4;
-        //          e2_with_arg(@(posedge sysclk) $rose(a) ##1 b ##1 c);
-        //        endsequence
+                sequence e4;
+                  e2_with_arg(@(posedge sysclk) $rose(a) ##1 b ##1 c);
+                endsequence
 
-        //        program check;
-        //          initial begin
-        //            wait (e1.triggered || e2.triggered);
-        //            if (e1.triggered)
-        //              $display("e1 passed");
-        //            if (e2.triggered)
-        //              $display("e2 passed");
-        //          end
-        //        endprogram"##,
-        //    Ok((_, _))
-        //);
+                program check;
+                  initial begin
+                    wait (e1.triggered || e2.triggered);
+                    if (e1.triggered)
+                      $display("e1 passed");
+                    if (e2.triggered)
+                      $display("e2 passed");
+                  end
+                endprogram"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module mod_sva_checks;
@@ -8440,47 +8441,47 @@ mod spec {
                 endmodule : mod_sva_checks"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"property p;
-        //          logic v = e;
-        //          (@(posedge clk1) (a == v)[*1:$] |-> b)
-        //          and
-        //          (@(posedge clk2) c[*1:$] |-> d == v)
-        //          ;
-        //        endproperty
-        //        a1: assert property (@(posedge clk) f |=> p);"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"property p;
-        //          logic v;
-        //          (@(posedge clk1) (1, v = e) ##0 (a == v)[*1:$] |-> b)
-        //          and
-        //          (@(posedge clk2) (1, v = e) ##0 c[*1:$] |-> d == v)
-        //          ;
-        //        endproperty"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"property abc(a, b, c);
-        //          disable iff (a==2) @(posedge clk) not (b ##1 c);
-        //        endproperty
-        //        env_prop: assert property (abc(rst, in1, in2))
-        //          $display("env_prop passed."); else $display("env_prop failed.");"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"property abc(a, b, c);
-        //          disable iff (c) @(posedge clk) a |=> b;
-        //        endproperty
-        //        env_prop:
-        //          assume property (abc(req, gnt, rst)) else $error(”Assumption failed.”);"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"property p;
+                  logic v = e;
+                  (@(posedge clk1) (a == v)[*1:$] |-> b)
+                  and
+                  (@(posedge clk2) c[*1:$] |-> d == v)
+                  ;
+                endproperty
+                a1: assert property (@(posedge clk) f |=> p);"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"property p;
+                  logic v;
+                  (@(posedge clk1) (1, v = e) ##0 (a == v)[*1:$] |-> b)
+                  and
+                  (@(posedge clk2) (1, v = e) ##0 c[*1:$] |-> d == v)
+                  ;
+                endproperty"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"property abc(a, b, c);
+                  disable iff (a==2) @(posedge clk) not (b ##1 c);
+                endproperty
+                env_prop: assert property (abc(rst, in1, in2))
+                  $display("env_prop passed."); else $display("env_prop failed.");"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"property abc(a, b, c);
+                  disable iff (c) @(posedge clk) a |=> b;
+                endproperty
+                env_prop:
+                  assume property (abc(req, gnt, rst)) else $error("Assumption failed.");"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"a1:assume property ( @(posedge clk) req dist {0:=40, 1:=60} ) ;
@@ -8761,35 +8762,35 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module m(logic a, b, c, d, rst1, clk1, clk2);
-        //          logic rst;
+        test!(
+            many1(module_item),
+            r##"module m(logic a, b, c, d, rst1, clk1, clk2);
+                  logic rst;
 
-        //          default clocking @(negedge clk1); endclocking
-        //          default disable iff rst1;
+                  default clocking @(negedge clk1); endclocking
+                  default disable iff rst1;
 
-        //          property p_triggers(start_event, end_event, form, clk = $inferred_clock,
-        //                              rst = $inferred_disable);
-        //            @clk disable iff (rst)
-        //              (start_event ##0 end_event[->1]) |=> form;
-        //          endproperty
+                  property p_triggers(start_event, end_event, form, clk = $inferred_clock,
+                                      rst = $inferred_disable);
+                    @clk disable iff (rst)
+                      (start_event ##0 end_event[->1]) |=> form;
+                  endproperty
 
-        //          property p_multiclock(clkw, clkx = $inferred_clock, clky, w, x, y, z);
-        //            @clkw w ##1 @clkx x |=> @clky y ##1 z;
-        //          endproperty
+                  property p_multiclock(clkw, clkx = $inferred_clock, clky, w, x, y, z);
+                    @clkw w ##1 @clkx x |=> @clky y ##1 z;
+                  endproperty
 
-        //          a1: assert property (p_triggers(a, b, c));
-        //          a2: assert property (p_triggers(a, b, c, posedge clk1, 1'b0) );
+                  a1: assert property (p_triggers(a, b, c));
+                  a2: assert property (p_triggers(a, b, c, posedge clk1, 1'b0) );
 
-        //          always @(posedge clk2 or posedge rst) begin
-        //          end
+                  always @(posedge clk2 or posedge rst) begin
+                  end
 
-        //          a4: assert property(p_multiclock(negedge clk2, , posedge clk1,
-        //                              a, b, c, d) );
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                  a4: assert property(p_multiclock(negedge clk2, , posedge clk1,
+                                      a, b, c, d) );
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module m(logic a, b, c, d, rst1, clk1, clk2);
@@ -8918,116 +8919,116 @@ mod spec {
                 assert property (p4);"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module examples_with_default (input logic a, b, c, clk);
-        //          property q1;
-        //            $rose(a) |-> ##[1:5] b;
-        //          endproperty
+        test!(
+            many1(module_item),
+            r##"module examples_with_default (input logic a, b, c, clk);
+                  property q1;
+                    $rose(a) |-> ##[1:5] b;
+                  endproperty
 
-        //          property q2;
-        //            @(posedge clk) q1;
-        //          endproperty
+                  property q2;
+                    @(posedge clk) q1;
+                  endproperty
 
-        //          default clocking posedge_clk @(posedge clk);
-        //            property q3;
-        //              $fell(c) |=> q1;
-        //              // legal: q1 has no clocking event
-        //            endproperty
+                  default clocking posedge_clk @(posedge clk);
+                    property q3;
+                      $fell(c) |=> q1;
+                      // legal: q1 has no clocking event
+                    endproperty
 
-        //            property q4;
-        //              $fell(c) |=> q2;
-        //              // legal: q2 has clocking event identical to that of
-        //              // the clocking block
-        //            endproperty
+                    property q4;
+                      $fell(c) |=> q2;
+                      // legal: q2 has clocking event identical to that of
+                      // the clocking block
+                    endproperty
 
-        //            sequence s1;
-        //              @(posedge clk) b[*3];
-        //              // illegal: explicit clocking event in clocking block
-        //            endsequence
-        //          endclocking
+                    sequence s1;
+                      @(posedge clk) b[*3];
+                      // illegal: explicit clocking event in clocking block
+                    endsequence
+                  endclocking
 
-        //          property q5;
-        //            @(negedge clk) b[*3] |=> !b;
-        //          endproperty
+                  property q5;
+                    @(negedge clk) b[*3] |=> !b;
+                  endproperty
 
-        //          always @(negedge clk)
-        //          begin
-        //            a1: assert property ($fell(c) |=> q1);
-        //              // legal: contextually inferred leading clocking event,
-        //              // @(negedge clk)
-        //            a2: assert property (posedge_clk.q4);
-        //              // legal: will be queued (pending) on negedge clk, then
-        //              // (if matured) checked at next posedge clk (see 16.14.6)
-        //            a3: assert property ($fell(c) |=> q2);
-        //              // illegal: multiclocked property with contextually
-        //              // inferred leading clocking event
-        //            a4: assert property (q5);
-        //              // legal: contextually inferred leading clocking event,
-        //              // @(negedge clk)
-        //          end
+                  always @(negedge clk)
+                  begin
+                    a1: assert property ($fell(c) |=> q1);
+                      // legal: contextually inferred leading clocking event,
+                      // @(negedge clk)
+                    a2: assert property (posedge_clk.q4);
+                      // legal: will be queued (pending) on negedge clk, then
+                      // (if matured) checked at next posedge clk (see 16.14.6)
+                    a3: assert property ($fell(c) |=> q2);
+                      // illegal: multiclocked property with contextually
+                      // inferred leading clocking event
+                    a4: assert property (q5);
+                      // legal: contextually inferred leading clocking event,
+                      // @(negedge clk)
+                  end
 
-        //          property q6;
-        //            q1 and q5;
-        //          endproperty
+                  property q6;
+                    q1 and q5;
+                  endproperty
 
-        //          a5: assert property (q6);
-        //            // illegal: default leading clocking event, @(posedge clk),
-        //            // but semantic leading clock is not unique
-        //          a6: assert property ($fell(c) |=> q6);
-        //            // legal: default leading clocking event, @(posedge clk),
-        //            // is the unique semantic leading clock
+                  a5: assert property (q6);
+                    // illegal: default leading clocking event, @(posedge clk),
+                    // but semantic leading clock is not unique
+                  a6: assert property ($fell(c) |=> q6);
+                    // legal: default leading clocking event, @(posedge clk),
+                    // is the unique semantic leading clock
 
-        //          sequence s2;
-        //            $rose(a) ##[1:5] b;
-        //          endsequence
+                  sequence s2;
+                    $rose(a) ##[1:5] b;
+                  endsequence
 
-        //          c1: cover property (s2);
-        //            // legal: default leading clocking event, @(posedge clk)
-        //          c2: cover property (@(negedge clk) s2);
-        //            // legal: explicit leading clocking event, @(negedge clk)
-        //        endmodule
+                  c1: cover property (s2);
+                    // legal: default leading clocking event, @(posedge clk)
+                  c2: cover property (@(negedge clk) s2);
+                    // legal: explicit leading clocking event, @(negedge clk)
+                endmodule
 
-        //        module examples_without_default (input logic a, b, c, clk);
-        //          property q1;
-        //            $rose(a) |-> ##[1:5] b;
-        //          endproperty
+                module examples_without_default (input logic a, b, c, clk);
+                  property q1;
+                    $rose(a) |-> ##[1:5] b;
+                  endproperty
 
-        //          property q5;
-        //            @(negedge clk) b[*3] |=> !b;
-        //          endproperty
+                  property q5;
+                    @(negedge clk) b[*3] |=> !b;
+                  endproperty
 
-        //          property q6;
-        //            q1 and q5;
-        //          endproperty
+                  property q6;
+                    q1 and q5;
+                  endproperty
 
-        //          a5: assert property (q6);
-        //            // illegal: no leading clocking event
-        //          a6: assert property ($fell(c) |=> q6);
-        //            // illegal: no leading clocking event
+                  a5: assert property (q6);
+                    // illegal: no leading clocking event
+                  a6: assert property ($fell(c) |=> q6);
+                    // illegal: no leading clocking event
 
-        //          sequence s2;
-        //            $rose(a) ##[1:5] b;
-        //          endsequence
+                  sequence s2;
+                    $rose(a) ##[1:5] b;
+                  endsequence
 
-        //          c1: cover property (s2);
-        //            // illegal: no leading clocking event
-        //          c2: cover property (@(negedge clk) s2);
-        //            // legal: explicit leading clocking event, @(negedge clk)
+                  c1: cover property (s2);
+                    // illegal: no leading clocking event
+                  c2: cover property (@(negedge clk) s2);
+                    // legal: explicit leading clocking event, @(negedge clk)
 
-        //          sequence s3;
-        //            @(negedge clk) s2;
-        //          endsequence
+                  sequence s3;
+                    @(negedge clk) s2;
+                  endsequence
 
-        //          c3: cover property (s3);
-        //            // legal: leading clocking event, @(negedge clk),
-        //            // determined from declaration of s3
-        //          c4: cover property (s3 ##1 b);
-        //            // illegal: no default, inferred, or explicit leading
-        //            // clocking event and maximal property is not an instance
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                  c3: cover property (s3);
+                    // legal: leading clocking event, @(negedge clk),
+                    // determined from declaration of s3
+                  c4: cover property (s3 ##1 b);
+                    // illegal: no default, inferred, or explicit leading
+                    // clocking event and maximal property is not an instance
+                endmodule"##,
+            Ok((_, _))
+        );
         //test!(
         //    many1(module_item),
         //    r##"wire clk1, clk2;
@@ -9051,20 +9052,20 @@ mod spec {
                 endprogram"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"integer data;
-        //        task automatic wait_for( integer value, output bit success );
-        //        expect( @(posedge clk) ##[1:10] data == value ) success = 1;
-        //          else success = 0;
-        //        endtask
+        test!(
+            many1(module_item),
+            r##"integer data;
+                task automatic wait_for( integer value, output bit success );
+                expect( @(posedge clk) ##[1:10] data == value ) success = 1;
+                  else success = 0;
+                endtask
 
-        //        initial begin
-        //          bit ok;
-        //          wait_for( 23, ok ); // wait for the value 23
-        //        end"##,
-        //    Ok((_, _))
-        //);
+                initial begin
+                  bit ok;
+                  wait_for( 23, ok ); // wait for the value 23
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module A;
@@ -15583,7 +15584,7 @@ mod spec {
 fn debug() {
     test!(
         many1(module_item),
-        r##"sequence legal_loc_var_formal ( local logic b = b_d, d = d_d); g ##1 h; endsequence"##,
+        r##"property p; (accept_on(a) p1) and (reject_on(b) p2); endproperty"##,
         Ok((_, _))
     );
 }

@@ -1,5 +1,5 @@
 # sv-parser
-A parser library for System Verilog.
+Parser library for System Verilog.
 
 ## Implementation Status
 

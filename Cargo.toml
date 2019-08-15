@@ -5,6 +5,3 @@ members = [
     "sv-parser-parser",
     "sv-parser-macros",
 ]
-
-[patch.crates-io]
-nom_locate = {git = "https://github.com/fflorent/nom_locate"}

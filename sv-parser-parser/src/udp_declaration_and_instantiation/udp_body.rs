@@ -113,11 +113,11 @@ pub(crate) fn sequential_entry(s: Span) -> IResult<Span, SequentialEntry> {
 #[packrat_parser]
 pub(crate) fn seq_input_list(s: Span) -> IResult<Span, SeqInputList> {
     alt((
-        map(level_input_list, |x| {
-            SeqInputList::LevelInputList(Box::new(x))
-        }),
         map(edge_input_list, |x| {
             SeqInputList::EdgeInputList(Box::new(x))
+        }),
+        map(level_input_list, |x| {
+            SeqInputList::LevelInputList(Box::new(x))
         }),
     ))(s)
 }
@@ -178,10 +178,10 @@ pub(crate) fn next_state(s: Span) -> IResult<Span, NextState> {
 #[packrat_parser]
 pub(crate) fn output_symbol(s: Span) -> IResult<Span, OutputSymbol> {
     alt((
-        map(keyword("0"), |x| OutputSymbol { nodes: (x,) }),
-        map(keyword("1"), |x| OutputSymbol { nodes: (x,) }),
-        map(keyword("x"), |x| OutputSymbol { nodes: (x,) }),
-        map(keyword("X"), |x| OutputSymbol { nodes: (x,) }),
+        map(symbol("0"), |x| OutputSymbol { nodes: (x,) }),
+        map(symbol("1"), |x| OutputSymbol { nodes: (x,) }),
+        map(symbol("x"), |x| OutputSymbol { nodes: (x,) }),
+        map(symbol("X"), |x| OutputSymbol { nodes: (x,) }),
     ))(s)
 }
 
@@ -189,13 +189,13 @@ pub(crate) fn output_symbol(s: Span) -> IResult<Span, OutputSymbol> {
 #[packrat_parser]
 pub(crate) fn level_symbol(s: Span) -> IResult<Span, LevelSymbol> {
     alt((
-        map(keyword("0"), |x| LevelSymbol { nodes: (x,) }),
-        map(keyword("1"), |x| LevelSymbol { nodes: (x,) }),
-        map(keyword("x"), |x| LevelSymbol { nodes: (x,) }),
-        map(keyword("X"), |x| LevelSymbol { nodes: (x,) }),
-        map(keyword("?"), |x| LevelSymbol { nodes: (x,) }),
-        map(keyword("b"), |x| LevelSymbol { nodes: (x,) }),
-        map(keyword("B"), |x| LevelSymbol { nodes: (x,) }),
+        map(symbol("0"), |x| LevelSymbol { nodes: (x,) }),
+        map(symbol("1"), |x| LevelSymbol { nodes: (x,) }),
+        map(symbol("x"), |x| LevelSymbol { nodes: (x,) }),
+        map(symbol("X"), |x| LevelSymbol { nodes: (x,) }),
+        map(symbol("?"), |x| LevelSymbol { nodes: (x,) }),
+        map(symbol("b"), |x| LevelSymbol { nodes: (x,) }),
+        map(symbol("B"), |x| LevelSymbol { nodes: (x,) }),
     ))(s)
 }
 
@@ -203,14 +203,14 @@ pub(crate) fn level_symbol(s: Span) -> IResult<Span, LevelSymbol> {
 #[packrat_parser]
 pub(crate) fn edge_symbol(s: Span) -> IResult<Span, EdgeSymbol> {
     alt((
-        map(keyword("r"), |x| EdgeSymbol { nodes: (x,) }),
-        map(keyword("R"), |x| EdgeSymbol { nodes: (x,) }),
-        map(keyword("f"), |x| EdgeSymbol { nodes: (x,) }),
-        map(keyword("F"), |x| EdgeSymbol { nodes: (x,) }),
-        map(keyword("p"), |x| EdgeSymbol { nodes: (x,) }),
-        map(keyword("P"), |x| EdgeSymbol { nodes: (x,) }),
-        map(keyword("n"), |x| EdgeSymbol { nodes: (x,) }),
-        map(keyword("N"), |x| EdgeSymbol { nodes: (x,) }),
-        map(keyword("*"), |x| EdgeSymbol { nodes: (x,) }),
+        map(symbol("r"), |x| EdgeSymbol { nodes: (x,) }),
+        map(symbol("R"), |x| EdgeSymbol { nodes: (x,) }),
+        map(symbol("f"), |x| EdgeSymbol { nodes: (x,) }),
+        map(symbol("F"), |x| EdgeSymbol { nodes: (x,) }),
+        map(symbol("p"), |x| EdgeSymbol { nodes: (x,) }),
+        map(symbol("P"), |x| EdgeSymbol { nodes: (x,) }),
+        map(symbol("n"), |x| EdgeSymbol { nodes: (x,) }),
+        map(symbol("N"), |x| EdgeSymbol { nodes: (x,) }),
+        map(symbol("*"), |x| EdgeSymbol { nodes: (x,) }),
     ))(s)
 }

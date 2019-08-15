@@ -96,15 +96,15 @@ pub enum NextState {
 
 #[derive(Clone, Debug, Node)]
 pub struct OutputSymbol {
-    pub nodes: (Keyword,),
+    pub nodes: (Symbol,),
 }
 
 #[derive(Clone, Debug, Node)]
 pub struct LevelSymbol {
-    pub nodes: (Keyword,),
+    pub nodes: (Symbol,),
 }
 
 #[derive(Clone, Debug, Node)]
 pub struct EdgeSymbol {
-    pub nodes: (Keyword,),
+    pub nodes: (Symbol,),
 }

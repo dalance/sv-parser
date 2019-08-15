@@ -203,8 +203,8 @@ pub(crate) fn dpi_import_export_export_task(s: Span) -> IResult<Span, DpiImportE
 #[packrat_parser]
 pub(crate) fn dpi_spec_string(s: Span) -> IResult<Span, DpiSpecString> {
     alt((
-        map(keyword("DPI-C"), |x| DpiSpecString::DpiC(Box::new(x))),
-        map(keyword("DPI"), |x| DpiSpecString::Dpi(Box::new(x))),
+        map(keyword("\"DPI-C\""), |x| DpiSpecString::DpiC(Box::new(x))),
+        map(keyword("\"DPI\""), |x| DpiSpecString::Dpi(Box::new(x))),
     ))(s)
 }
 

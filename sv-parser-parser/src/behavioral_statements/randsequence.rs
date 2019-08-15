@@ -21,7 +21,7 @@ pub(crate) fn randsequence_statement(s: Span) -> IResult<Span, RandsequenceState
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn production(s: Span) -> IResult<Span, Production> {
-    let (s, a) = opt(data_type_or_void)(s)?;
+    let (s, a) = opt(terminated(data_type_or_void, peek(production_identifier)))(s)?;
     let (s, b) = production_identifier(s)?;
     let (s, c) = opt(paren(tf_port_list))(s)?;
     let (s, d) = symbol(":")(s)?;

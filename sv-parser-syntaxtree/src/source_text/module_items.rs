@@ -152,13 +152,12 @@ pub struct BindDirectiveScope {
         BindTargetScope,
         Option<(Symbol, BindTargetInstanceList)>,
         BindInstantiation,
-        Symbol,
     ),
 }
 
 #[derive(Clone, Debug, Node)]
 pub struct BindDirectiveInstance {
-    pub nodes: (Keyword, BindTargetInstance, BindInstantiation, Symbol),
+    pub nodes: (Keyword, BindTargetInstance, BindInstantiation),
 }
 
 #[derive(Clone, Debug, Node)]

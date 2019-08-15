@@ -303,7 +303,7 @@ pub struct CoverCross {
 
 #[derive(Clone, Debug, Node)]
 pub struct ListOfCrossItems {
-    pub nodes: (CrossItem, List<Symbol, CrossItem>),
+    pub nodes: (CrossItem, Symbol, List<Symbol, CrossItem>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -320,7 +320,7 @@ pub enum CrossBody {
 
 #[derive(Clone, Debug, Node)]
 pub struct CrossBodyNonEmpty {
-    pub nodes: (Brace<Vec<(CrossBodyItem, Symbol)>>,),
+    pub nodes: (Brace<Vec<CrossBodyItem>>,),
 }
 
 #[derive(Clone, Debug, Node)]

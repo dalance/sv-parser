@@ -48,7 +48,7 @@ pub(crate) fn pulsestyle_declaration(s: Span) -> IResult<Span, PulsestyleDeclara
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn showcancelled_declaration(s: Span) -> IResult<Span, ShowcancelledDeclaration> {
-    let (s, a) = alt((keyword("showcalcelled"), keyword("noshowcancelled")))(s)?;
+    let (s, a) = alt((keyword("showcancelled"), keyword("noshowcancelled")))(s)?;
     let (s, b) = list_of_path_outputs(s)?;
     let (s, c) = symbol(";")(s)?;
     Ok((s, ShowcancelledDeclaration { nodes: (a, b, c) }))

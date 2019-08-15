@@ -26,13 +26,13 @@ pub(crate) fn specify_output_terminal_descriptor(
 #[packrat_parser]
 pub(crate) fn input_identifier(s: Span) -> IResult<Span, InputIdentifier> {
     alt((
+        input_identifier_interface,
         map(input_port_identifier, |x| {
             InputIdentifier::InputPortIdentifier(Box::new(x))
         }),
         map(inout_port_identifier, |x| {
             InputIdentifier::InoutPortIdentifier(Box::new(x))
         }),
-        input_identifier_interface,
     ))(s)
 }
 
@@ -52,13 +52,13 @@ pub(crate) fn input_identifier_interface(s: Span) -> IResult<Span, InputIdentifi
 #[packrat_parser]
 pub(crate) fn output_identifier(s: Span) -> IResult<Span, OutputIdentifier> {
     alt((
+        output_identifier_interface,
         map(output_port_identifier, |x| {
             OutputIdentifier::OutputPortIdentifier(Box::new(x))
         }),
         map(inout_port_identifier, |x| {
             OutputIdentifier::InoutPortIdentifier(Box::new(x))
         }),
-        output_identifier_interface,
     ))(s)
 }
 

@@ -324,11 +324,10 @@ pub(crate) fn bind_directive_scope(s: Span) -> IResult<Span, BindDirective> {
     let (s, b) = bind_target_scope(s)?;
     let (s, c) = opt(pair(symbol(":"), bind_target_instance_list))(s)?;
     let (s, d) = bind_instantiation(s)?;
-    let (s, e) = symbol(";")(s)?;
     Ok((
         s,
         BindDirective::Scope(Box::new(BindDirectiveScope {
-            nodes: (a, b, c, d, e),
+            nodes: (a, b, c, d),
         })),
     ))
 }
@@ -339,12 +338,9 @@ pub(crate) fn bind_directive_instance(s: Span) -> IResult<Span, BindDirective> {
     let (s, a) = keyword("bind")(s)?;
     let (s, b) = bind_target_instance(s)?;
     let (s, c) = bind_instantiation(s)?;
-    let (s, d) = symbol(";")(s)?;
     Ok((
         s,
-        BindDirective::Instance(Box::new(BindDirectiveInstance {
-            nodes: (a, b, c, d),
-        })),
+        BindDirective::Instance(Box::new(BindDirectiveInstance { nodes: (a, b, c) })),
     ))
 }
 

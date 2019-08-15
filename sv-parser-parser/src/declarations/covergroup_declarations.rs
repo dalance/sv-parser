@@ -291,8 +291,8 @@ pub(crate) fn bins_or_options(s: Span) -> IResult<Span, BinsOrOptions> {
         bins_or_options_cover_point,
         bins_or_options_set_covergroup,
         bins_or_options_trans_list,
-        bins_or_options_default,
         bins_or_options_default_sequence,
+        bins_or_options_default,
     ))(s)
 }
 
@@ -445,10 +445,10 @@ pub(crate) fn trans_set(s: Span) -> IResult<Span, TransSet> {
 #[packrat_parser]
 pub(crate) fn trans_range_list(s: Span) -> IResult<Span, TransRangeList> {
     alt((
-        map(trans_item, |x| TransRangeList::TransItem(Box::new(x))),
         trans_range_list_asterisk,
         trans_range_list_arrow,
         trans_range_list_equal,
+        map(trans_item, |x| TransRangeList::TransItem(Box::new(x))),
     ))(s)
 }
 
@@ -499,10 +499,10 @@ pub(crate) fn trans_item(s: Span) -> IResult<Span, TransItem> {
 #[packrat_parser]
 pub(crate) fn repeat_range(s: Span) -> IResult<Span, RepeatRange> {
     alt((
+        repeat_range_binary,
         map(covergroup_expression, |x| {
             RepeatRange::CovergroupExpression(Box::new(x))
         }),
-        repeat_range_binary,
     ))(s)
 }
 
@@ -539,8 +539,9 @@ pub(crate) fn cover_cross(s: Span) -> IResult<Span, CoverCross> {
 #[packrat_parser]
 pub(crate) fn list_of_cross_items(s: Span) -> IResult<Span, ListOfCrossItems> {
     let (s, a) = cross_item(s)?;
-    let (s, b) = list(symbol(","), cross_item)(s)?;
-    Ok((s, ListOfCrossItems { nodes: (a, b) }))
+    let (s, b) = symbol(",")(s)?;
+    let (s, c) = list(symbol(","), cross_item)(s)?;
+    Ok((s, ListOfCrossItems { nodes: (a, b, c) }))
 }
 
 #[tracable_parser]
@@ -568,7 +569,7 @@ pub(crate) fn cross_body(s: Span) -> IResult<Span, CrossBody> {
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn cross_body_non_empty(s: Span) -> IResult<Span, CrossBody> {
-    let (s, a) = brace(many0(pair(cross_body_item, symbol(";"))))(s)?;
+    let (s, a) = brace(many0(cross_body_item))(s)?;
     Ok((
         s,
         CrossBody::NonEmpty(Box::new(CrossBodyNonEmpty { nodes: (a,) })),
@@ -639,18 +640,18 @@ pub(crate) fn bins_selection(s: Span) -> IResult<Span, BinsSelection> {
 #[packrat_parser]
 pub(crate) fn select_expression(s: Span) -> IResult<Span, SelectExpression> {
     alt((
+        select_expression_and,
+        select_expression_or,
+        select_expression_with,
         map(select_condition, |x| {
             SelectExpression::SelectCondition(Box::new(x))
         }),
         select_expression_not,
-        select_expression_and,
-        select_expression_or,
         select_expression_paren,
-        select_expression_with,
+        select_expression_cross_set,
         map(cross_identifier, |x| {
             SelectExpression::CrossIdentifier(Box::new(x))
         }),
-        select_expression_cross_set,
     ))(s)
 }
 
@@ -742,10 +743,10 @@ pub(crate) fn select_condition(s: Span) -> IResult<Span, SelectCondition> {
 #[packrat_parser]
 pub(crate) fn bins_expression(s: Span) -> IResult<Span, BinsExpression> {
     alt((
+        bins_expression_cover_point,
         map(variable_identifier, |x| {
             BinsExpression::VariableIdentifier(Box::new(x))
         }),
-        bins_expression_cover_point,
     ))(s)
 }
 

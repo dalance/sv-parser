@@ -8151,6 +8151,8 @@ mod spec {
                 endproperty"##,
             Ok((_, _))
         );
+        // TODO
+        // stack overflow (pass with RUST_MIN_STACK=33554432)
         //test!(
         //    many1(module_item),
         //    r##"property check_write;
@@ -8682,18 +8684,18 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"always @(posedge clk) begin
-        //          if (en) begin
-        //            a9: assert property p1(a,b,c);
-        //          end
-        //          if ($sampled(en)) begin
-        //            a10: assert property p1(a,b,c);
-        //          end
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"always @(posedge clk) begin
+                  if (en) begin
+                    a9: assert property (p1(a,b,c));
+                  end
+                  if ($sampled(en)) begin
+                    a10: assert property (p1(a,b,c));
+                  end
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"assign not_a = !a;
@@ -8705,16 +8707,16 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"default clocking @(posedge clk); endclocking
-        //        always @(a or b) begin : b1
-        //          a2: assert property (a == b) r.success(0) else r.error(0, a, b);
-        //          #1;
-        //          a3: assert property (a == b) r.success(1) else r.error(1, a, b);
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"default clocking @(posedge clk); endclocking
+                always @(a or b) begin : b1
+                  a2: assert property (a == b) r.success(0); else r.error(0, a, b);
+                  #1;
+                  a3: assert property (a == b) r.success(1); else r.error(1, a, b);
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"default clocking @(posedge clk); endclocking
@@ -9029,19 +9031,19 @@ mod spec {
                 endmodule"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"wire clk1, clk2;
-        //        logic a, b;
-        //        assign clk2 = clk1;
-        //        a1: assert property (@(clk1) a and @(clk2) b); // Illegal
-        //        a2: assert property (@(clk1) a and @(clk1) b); // OK
-        //        always @(posedge clk1) begin
-        //          a3: assert property(a and @(posedge clk2)); //Illegal
-        //          a4: assert property(a and @(posedge clk1)); // OK
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"wire clk1, clk2;
+                logic a, b;
+                assign clk2 = clk1;
+                a1: assert property (@(clk1) a and @(clk2) b); // Illegal
+                a2: assert property (@(clk1) a and @(clk1) b); // OK
+                always @(posedge clk1) begin
+                  a3: assert property(a and @(posedge clk2) b); //Illegal
+                  a4: assert property(a and @(posedge clk1) b); // OK
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"program tst;
@@ -9103,36 +9105,37 @@ mod spec {
 
     #[test]
     fn clause17() {
-        //test!(
-        //    many1(module_item),
-        //    r##"checker my_check1 (logic test_sig, event clock);
-        //          default clocking @clock; endclocking
-        //          property p(logic sig);
-        //          endproperty
-        //          a1: assert property (p (test_sig));
-        //          c1: cover property (!test_sig ##1 test_sig);
-        //        endchecker : my_check1"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"checker my_check2 (logic a, b);
-        //          a1: assert #0 ($onehot0({a, b});
-        //          c1: cover #0 (a == 0 && b == 0);
-        //          c2: cover #0 (a == 1);
-        //          c3: cover #0 (b == 1);
-        //        endchecker : my_check2"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"checker my_check3 (logic a, b, event clock, output bit failure, undef);
-        //          default clocking @clock; endclocking
-        //          a1: assert property ($onehot0({a, b}) failure = 1'b0; else failure = 1'b1;
-        //          a2: assert property ($isunknown({a, b}) undef = 1'b0; else undef = 1'b1;
-        //        endchecker : my_check3"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"checker my_check1 (logic test_sig, event clock);
+                  default clocking @clock; endclocking
+                  property p(logic sig);
+                    a;
+                  endproperty
+                  a1: assert property (p (test_sig));
+                  c1: cover property (!test_sig ##1 test_sig);
+                endchecker : my_check1"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"checker my_check2 (logic a, b);
+                  a1: assert #0 ($onehot0({a, b}));
+                  c1: cover #0 (a == 0 && b == 0);
+                  c2: cover #0 (a == 1);
+                  c3: cover #0 (b == 1);
+                endchecker : my_check2"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"checker my_check3 (logic a, b, event clock, output bit failure, undef);
+                  default clocking @clock; endclocking
+                  a1: assert property ($onehot0({a, b})) failure = 1'b0; else failure = 1'b1;
+                  a2: assert property ($isunknown({a, b})) undef = 1'b0; else undef = 1'b1;
+                endchecker : my_check3"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"checker my_check4 (input logic in,
@@ -9162,82 +9165,83 @@ mod spec {
                 endmodule : m"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"checker mutex (logic [31:0] sig, event clock, output bit failure);
-        //          assert property (@clock $onehot0(sig))
-        //          failure = 1'b0; else failure = 1'b1;
-        //        endchecker : mutex
+        test!(
+            many1(module_item),
+            r##"checker mutex (logic [31:0] sig, event clock, output bit failure);
+                  assert property (@clock $onehot0(sig))
+                  failure = 1'b0; else failure = 1'b1;
+                endchecker : mutex
 
-        //        module m(wire [31:0] bus, logic clk);
-        //          logic res, scan;
-        //          // ...
-        //          mutex check_bus(bus, posedge clk, res);
-        //          always @(posedge clk) scan <= res;
-        //        endmodule : m"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"checker c1(event clk, logic[7:0] a, b);
-        //          logic [7:0] sum;
-        //          always_ff @(clk) begin
-        //            sum <= a + 1'b1;
-        //            p0: assert property (sum < `MAX_SUM);
-        //          end
-        //          p1: assert property (@clk sum < `MAX_SUM);
-        //          p2: assert property (@clk a != b);
-        //          p3: assert #0 ($onehot(a));
-        //        endchecker
+                module m(wire [31:0] bus, logic clk);
+                  logic res, scan;
+                  // ...
+                  mutex check_bus(bus, posedge clk, res);
+                  always @(posedge clk) scan <= res;
+                endmodule : m"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"checker c1(event clk, logic[7:0] a, b);
+                  logic [7:0] sum;
+                  always_ff @(clk) begin
+                    sum <= a + 1'b1;
+                    p0: assert property (sum < MAX_SUM);
+                  end
+                  p1: assert property (@clk sum < MAX_SUM);
+                  p2: assert property (@clk a != b);
+                  p3: assert #0 ($onehot(a));
+                endchecker
 
-        //        module m(input logic rst, clk, logic en, logic[7:0] in1, in2,
-        //                 in_array [20:0]);
-        //          c1 check_outside(posedge clk, in1, in2);
-        //          always @(posedge clk) begin
-        //            automatic logic [7:0] v1=0;
-        //            if (en) begin
-        //              // v1 is automatic, so current procedural value is used
-        //              c1 check_inside(posedge clk, in1, v1);
-        //            end
-        //            for (int i = 0; i < 4; i++) begin
-        //              v1 = v1+5;
-        //              if (i != 2) begin
-        //                // v1 is automatic, so current procedural value is used
-        //                c1 check_loop(posedge clk, in1, in_array[v1]);
-        //              end
-        //            end
-        //          end
-        //        endmodule : m"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"checker check_in_context (logic test_sig,
-        //                                  event clock = $inferred_clock,
-        //                                  logic reset = $inferred_disable);
-        //          property p(logic sig);
-        //          endproperty
-        //          a1: assert property (@clock disable iff (reset) p(test_sig));
-        //          c1: cover property (@clock !reset throughout !test_sig ##1 test_sig);
-        //        endchecker : check_in_context
+                module m(input logic rst, clk, logic en, logic[7:0] in1, in2,
+                         in_array [20:0]);
+                  c1 check_outside(posedge clk, in1, in2);
+                  always @(posedge clk) begin
+                    automatic logic [7:0] v1=0;
+                    if (en) begin
+                      // v1 is automatic, so current procedural value is used
+                      c1 check_inside(posedge clk, in1, v1);
+                    end
+                    for (int i = 0; i < 4; i++) begin
+                      v1 = v1+5;
+                      if (i != 2) begin
+                        // v1 is automatic, so current procedural value is used
+                        c1 check_loop(posedge clk, in1, in_array[v1]);
+                      end
+                    end
+                  end
+                endmodule : m"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"checker check_in_context (logic test_sig,
+                                          event clock = $inferred_clock,
+                                          logic reset = $inferred_disable);
+                  property p(logic sig);
+                    a;
+                  endproperty
+                  a1: assert property (@clock disable iff (reset) p(test_sig));
+                  c1: cover property (@clock !reset throughout !test_sig ##1 test_sig);
+                endchecker : check_in_context
 
-        //        module m(logic rst);
-        //          wire clk;
-        //          logic a, en;
-        //          wire b = a && en;
-        //          // No context inference
-        //          check_in_context my_check1(.test_sig(b), .clock(clk), .reset(rst));
-        //          always @(posedge clk) begin
-        //            if (en) begin
-        //              // inferred from context:
-        //              // .clock(posedge clk)
-        //              // .reset(1'b0)
-        //              check_in_context my_check2(a);
-        //            end
-        //          end
-        //        endmodule : m"##,
-        //    Ok((_, _))
-        //);
+                module m(logic rst);
+                  wire clk;
+                  logic a, en;
+                  wire b = a && en;
+                  // No context inference
+                  check_in_context my_check1(.test_sig(b), .clock(clk), .reset(rst));
+                  always @(posedge clk) begin
+                    if (en) begin
+                      // inferred from context:
+                      // .clock(posedge clk)
+                      // .reset(1'b0)
+                      check_in_context my_check2(a);
+                    end
+                  end
+                endmodule : m"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"checker check(logic a, b, c, clk, rst);
@@ -9360,28 +9364,28 @@ mod spec {
                 endchecker"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"checker counter_model(logic flag);
-        //          bit [2:0] counter = '0;
-        //          always_ff @$global_clock
-        //            counter <= counter + 1'b1;
-        //          assert property (@$global_clock counter == 0 |-> flag);
-        //        endchecker : counter_model"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"checker observer_model(bit valid, reset);
-        //          default clocking @$global_clock; endclocking
-        //          rand bit flag;
+        test!(
+            many1(module_item),
+            r##"checker counter_model(logic flag);
+                  bit [2:0] counter = '0;
+                  always_ff @($global_clock)
+                    counter <= counter + 1'b1;
+                  assert property (@($global_clock) counter == 0 |-> flag);
+                endchecker : counter_model"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"checker observer_model(bit valid, reset);
+                  default clocking @($global_clock); endclocking
+                  rand bit flag;
 
-        //          m1: assume property (reset |=> !flag);
-        //          m2: assume property (!reset && flag |=> flag);
-        //          m3: assume property ($rising_gclk(flag) |-> valid);
-        //        endchecker : observer_model"##,
-        //    Ok((_, _))
-        //);
+                  m1: assume property (reset |=> !flag);
+                  m2: assume property (!reset && flag |=> flag);
+                  m3: assume property ($rising_gclk(flag) |-> valid);
+                endchecker : observer_model"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"checker reason_about_one_bit(bit [63:0] data1, bit [63:0] data2,
@@ -9475,14 +9479,16 @@ mod spec {
                 endmodule"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"checker my_check;
-        //          sequence s; endsequence
-        //          always_ff @clk a <= s.triggered;
-        //        endchecker"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"checker my_check;
+                  sequence s;
+                    a;
+                  endsequence
+                  always_ff @clk a <= s.triggered;
+                endchecker"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"checker check(bit clk1); // clk1 assigned in the Active region
@@ -9636,6 +9642,8 @@ mod spec {
                 endclass"##,
             Ok((_, _))
         );
+        // TODO
+        // randomize is not keyword
         //test!(
         //    many1(module_item),
         //    r##"task exercise_bus (MyBus bus);
@@ -9652,6 +9660,8 @@ mod spec {
         //        endtask"##,
         //    Ok((_, _))
         //);
+        // TODO
+        // randomize is not keyword
         //test!(
         //    many1(module_item),
         //    r##"task exercise_illegal(MyBus bus, int cycles);
@@ -9670,40 +9680,38 @@ mod spec {
         //        endtask"##,
         //    Ok((_, _))
         //);
-        //test!(
-        //    many1(module_item),
-        //    r##"class XYPair;
-        //          rand integer x, y;
-        //        endclass
+        test!(
+            many1(module_item),
+            r##"class XYPair;
+                  rand integer x, y;
+                endclass
 
-        //        class MyXYPair extends XYPair
-        //          function void pre_randomize();
-        //            super.pre_randomize();
-        //            $display("Before randomize x=%0d, y=%0d", x, y);
-        //          endfunction
+                class MyXYPair extends XYPair;
+                  function void pre_randomize();
+                    super.pre_randomize();
+                    $display("Before randomize x=%0d, y=%0d", x, y);
+                  endfunction
 
-        //          function void post_randomize();
-        //            super.post_randomize();
-        //            $display("After randomize x=%0d, y=%0d", x, y);
-        //          endfunction
-        //        endclass"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          class packet;
-        //            typedef struct {
-        //              randc int addr = 1 + constant;
-        //              int crc;
-        //              rand byte data [] = {1,2,3,4};
-        //            } header;
-        //            rand header h1;
-        //          endclass
-        //          packet p1=new;
-        //        end"##,
-        //    Ok((_, _))
-        //);
+                  function void post_randomize();
+                    super.post_randomize();
+                    $display("After randomize x=%0d, y=%0d", x, y);
+                  endfunction
+                endclass"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"class packet;
+                  typedef struct {
+                    randc int addr = 1 + constant;
+                    int crc;
+                    rand byte data [] = {1,2,3,4};
+                  } header;
+                  rand header h1;
+                endclass
+                packet p1=new;"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"typedef enum bit [1:0] { A=2'b00, B=2'b11 } ab_e;
@@ -9731,40 +9739,40 @@ mod spec {
                 endclass"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          rand integer x, y, z;
-        //          constraint c1 {x inside {3, 5, [9:15], [24:32], [y:2*y], z};}
+        test!(
+            many1(module_item),
+            r##"class c;
+                  rand integer x, y, z;
+                  constraint c1 {x inside {3, 5, [9:15], [24:32], [y:2*y], z};}
 
-        //          rand integer a, b, c;
-        //          constraint c2 {a inside {b, c};}
+                  rand integer a, b, c;
+                  constraint c2 {a inside {b, c};}
 
-        //          integer fives[4] = '{ 5, 10, 15, 20 };
-        //          rand integer v;
-        //          constraint c3 { v inside {fives}; }
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          rand byte a[5];
-        //          rand byte b;
-        //          rand byte excluded;
-        //          constraint u { unique {b, a[2:3], excluded}; }
-        //          constraint exclusion { excluded == 5; }
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          rand bit [3:0] a, b;
-        //          constraint c { (a == 0) -> (b == 1); }
-        //        end"##,
-        //    Ok((_, _))
-        //);
+                  integer fives[4] = '{ 5, 10, 15, 20 };
+                  rand integer v;
+                  constraint c3 { v inside {fives}; }
+                endclass"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"class c;
+                  rand byte a[5];
+                  rand byte b;
+                  rand byte excluded;
+                  constraint u { unique {b, a[2:3], excluded}; }
+                  constraint exclusion { excluded == 5; }
+                endclass"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"class c;
+                  rand bit [3:0] a, b;
+                  constraint c { (a == 0) -> (b == 1); }
+                endclass"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"class C;
@@ -9894,6 +9902,8 @@ mod spec {
                 endclass"##,
             Ok((_, _))
         );
+        // TODO
+        // randomize is not keyword
         //test!(
         //    many1(module_item),
         //    r##"class Packet;
@@ -9914,6 +9924,8 @@ mod spec {
         //        end"##,
         //    Ok((_, _))
         //);
+        // TODO
+        // randomize is not keyword
         //test!(
         //    many1(module_item),
         //    r##"class B1;
@@ -9994,6 +10006,8 @@ mod spec {
                 endclass"##,
             Ok((_, _))
         );
+        // TODO
+        // randomize is not keyword
         //test!(
         //    many1(module_item),
         //    r##"class SimpleSum;
@@ -10007,6 +10021,8 @@ mod spec {
         //        endtask"##,
         //    Ok((_, _))
         //);
+        // TODO
+        // randomize is not keyword
         //test!(
         //    many1(module_item),
         //    r##"class C1;
@@ -10024,6 +10040,8 @@ mod spec {
         //        endclass"##,
         //    Ok((_, _))
         //);
+        // TODO
+        // randomize is not keyword
         //test!(
         //    many1(module_item),
         //    r##"class C;
@@ -10035,6 +10053,8 @@ mod spec {
         //        endfunction"##,
         //    Ok((_, _))
         //);
+        // TODO
+        // randomize is not keyword
         //test!(
         //    many1(module_item),
         //    r##"class C;
@@ -10080,23 +10100,23 @@ mod spec {
                 endfunction"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"class CA;
-        //          rand byte x, y;
-        //          byte v, w;
-        //          constraint c1 { x < v && y > w );
-        //        endclass
+        test!(
+            many1(module_item),
+            r##"class CA;
+                  rand byte x, y;
+                  byte v, w;
+                  constraint c1 { x < v && y > w; };
+                endclass
 
-        //        initial begin
-        //          CA a = new;
-        //          a.randomize();       // random variables: x, y state variables: v, w
-        //          a.randomize( x );    // random variables: x    state variables: y, v, w
-        //          a.randomize( v, w ); // random variables: v, w state variables: x, y
-        //          a.randomize( w, x ); // random variables: w, x state variables: y, v
-        //        end"##,
-        //    Ok((_, _))
-        //);
+                initial begin
+                  CA a = new;
+                  a.randomize();       // random variables: x, y state variables: v, w
+                  a.randomize( x );    // random variables: x    state variables: y, v, w
+                  a.randomize( v, w ); // random variables: v, w state variables: x, y
+                  a.randomize( w, x ); // random variables: w, x state variables: y, v
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module stim;
@@ -10131,16 +10151,16 @@ mod spec {
                 endfunction"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"task stimulus( int length );
-        //          int a, b, c, success;
+        test!(
+            many1(module_item),
+            r##"task stimulus( int length );
+                  int a, b, c, success;
 
-        //          success = std::randomize( a, b, c ) with { a < b ; a + b < length ; };
-        //          success = std::randomize( a, b ) with { b - a > length ; };
-        //        endtask"##,
-        //    Ok((_, _))
-        //);
+                  success = std::randomize( a, b, c ) with { a < b ; a + b < length ; };
+                  success = std::randomize( a, b ) with { b - a > length ; };
+                endtask"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -10153,20 +10173,20 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          integer x, y, z;
-        //          fork //set a seed at the start of a thread
-        //            begin process::self.srandom(100); x = $urandom; end
-        //               //set a seed during a thread
-        //            begin y = $urandom; process::self.srandom(200); end
-        //               // draw 2 values from the thread RNG
-        //            begin z = $urandom + $urandom ; end
-        //          join
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  integer x, y, z;
+                  fork //set a seed at the start of a thread
+                    begin process::self.srandom(100); x = $urandom; end
+                       //set a seed during a thread
+                    begin y = $urandom; process::self.srandom(200); end
+                       // draw 2 values from the thread RNG
+                    begin z = $urandom + $urandom ; end
+                  join
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"class C1;
@@ -10231,106 +10251,106 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          randsequence( main )
-        //            main   : first second done ;
-        //            first  : add | dec ;
-        //            second : pop | push ;
-        //            done   : { $display("done"); } ;
-        //            add    : { $display("add");  } ;
-        //            dec    : { $display("dec");  } ;
-        //            pop    : { $display("pop");  } ;
-        //            push   : { $display("push"); } ;
-        //          endsequence
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          randsequence()
-        //            PP_OP : if ( depth < 2 ) PUSH else POP ;
-        //            PUSH  : { ++depth; do_push(); };
-        //            POP   : { --depth; do_pop(); };
-        //          endsequence
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          randsequence()
-        //            SELECT : case ( device & 7 )
-        //              0       : NETWORK ;
-        //              1, 2    : DISK ;
-        //              default : MEMORY ;
-        //            endcase ;
-        //          endsequence
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          randsequence()
-        //            PUSH_OPER : repeat( $urandom_range( 2, 6 ) ) PUSH ;
-        //          endsequence
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          randsequence( TOP )
-        //            TOP : rand join S1 S2 ;
-        //            S1  : A B ;
-        //            S2  : C D ;
-        //          endsequence
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          randsequence()
-        //            WRITE : SETUP DATA ;
-        //            SETUP : { if( fifo_length >= max_length ) break; } COMMAND ;
-        //          endsequence
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          randsequence()
-        //            TOP : P1 P2 ;
-        //            P1  : A B C ;
-        //            P2  : A { if( flag == 1 ) return; } B C ;
-        //            A   : { $display( "A" ); } ;
-        //            B   : { if( flag == 2 ) return; $display( "B" ); } ;
-        //            C   : { $display( "C" ); } ;
-        //          endsequence
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          randsequence( main )
-        //            main                     : first second gen ;
-        //            first                    : add | dec ;
-        //            second                   : pop | push ;
-        //            add                      : gen("add") ;
-        //            dec                      : gen("dec") ;
-        //            pop                      : gen("pop") ;
-        //            push                     : gen("push") ;
-        //            gen( string s = "done" ) : { $display( s ); } ;
-        //          endsequence
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  randsequence( main )
+                    main   : first second done ;
+                    first  : add | dec ;
+                    second : pop | push ;
+                    done   : { $display("done"); } ;
+                    add    : { $display("add");  } ;
+                    dec    : { $display("dec");  } ;
+                    pop    : { $display("pop");  } ;
+                    push   : { $display("push"); } ;
+                  endsequence
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  randsequence()
+                    PP_OP : if ( depth < 2 ) PUSH else POP ;
+                    PUSH  : { ++depth; do_push(); };
+                    POP   : { --depth; do_pop(); };
+                  endsequence
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  randsequence()
+                    SELECT : case ( device & 7 )
+                      0       : NETWORK ;
+                      1, 2    : DISK ;
+                      default : MEMORY ;
+                    endcase ;
+                  endsequence
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  randsequence()
+                    PUSH_OPER : repeat( $urandom_range( 2, 6 ) ) PUSH ;
+                  endsequence
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  randsequence( TOP )
+                    TOP : rand join S1 S2 ;
+                    S1  : A B ;
+                    S2  : C D ;
+                  endsequence
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  randsequence()
+                    WRITE : SETUP DATA ;
+                    SETUP : { if( fifo_length >= max_length ) break; } COMMAND ;
+                  endsequence
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  randsequence()
+                    TOP : P1 P2 ;
+                    P1  : A B C ;
+                    P2  : A { if( flag == 1 ) return; } B C ;
+                    A   : { $display( "A" ); } ;
+                    B   : { if( flag == 2 ) return; $display( "B" ); } ;
+                    C   : { $display( "C" ); } ;
+                  endsequence
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  randsequence( main )
+                    main                     : first second gen ;
+                    first                    : add | dec ;
+                    second                   : pop | push ;
+                    add                      : gen("add") ;
+                    dec                      : gen("dec") ;
+                    pop                      : gen("pop") ;
+                    push                     : gen("push") ;
+                    gen( string s = "done" ) : { $display( s ); } ;
+                  endsequence
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -10369,6 +10389,8 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
+        // TODO
+        // function can't return queue
         //test!(
         //    many1(module_item),
         //    r##"function int[$] GenQueue(int low, int high);
@@ -10387,26 +10409,26 @@ mod spec {
         //        endfunction"##,
         //    Ok((_, _))
         //);
-        //test!(
-        //    many1(module_item),
-        //    r##"class DSL; endclass // class that creates valid DSL packets
+        test!(
+            many1(module_item),
+            r##"class DSL; endclass // class that creates valid DSL packets
 
-        //        initial begin
-        //          randsequence (STREAM)
-        //            STREAM : GAP DATA := 80
-        //                   | DATA := 20 ;
-        //            DATA   : PACKET(0) := 94 { transmit( PACKET ); }
-        //                   | PACKET(1) := 6 { transmit( PACKET ); } ;
+                initial begin
+                  randsequence (STREAM)
+                    STREAM : GAP DATA := 80
+                           | DATA := 20 ;
+                    DATA   : PACKET(0) := 94 { transmit( PACKET ); }
+                           | PACKET(1) := 6 { transmit( PACKET ); } ;
 
-        //            DSL PACKET (bit bad) : { DSL d = new;
-        //                                   if( bad ) d.crc ^= 23; // mangle crc
-        //                                   return d;
-        //                                   );
-        //            GAP: { ## {$urandom_range( 1, 20 )}; };
-        //          endsequence
-        //        end"##,
-        //    Ok((_, _))
-        //);
+                    DSL PACKET (bit bad) : { DSL d = new;
+                                           if( bad ) d.crc ^= 23; // mangle crc
+                                           return d;
+                                           };
+                    GAP: { ## ($urandom_range( 1, 20 )); };
+                  endsequence
+                end"##,
+            Ok((_, _))
+        );
     }
 
     #[test]
@@ -10426,20 +10448,20 @@ mod spec {
                 endgroup"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"enum { red, green, blue } color;
-        //        bit [3:0] pixel_adr, pixel_offset, pixel_hue;
+        test!(
+            many1(module_item),
+            r##"enum { red, green, blue } color;
+                bit [3:0] pixel_adr, pixel_offset, pixel_hue;
 
-        //        covergroup g2 @(posedge clk);
-        //          Hue: coverpoint pixel_hue;
-        //          Offset: coverpoint pixel_offset;
-        //          AxC: cross color, pixel_adr;   // cross 2 variables (implicitly declared
-        //                                         // coverpoints)
-        //          all: cross color, Hue, Offset; // cross 1 variable and 2 coverpoints
-        //        endgroup"##,
-        //    Ok((_, _))
-        //);
+                covergroup g2 @(posedge clk);
+                  Hue: coverpoint pixel_hue;
+                  Offset: coverpoint pixel_offset;
+                  AxC: cross color, pixel_adr;   // cross 2 variables (implicitly declared
+                                                 // coverpoints)
+                  all: cross color, Hue, Offset; // cross 1 variable and 2 coverpoints
+                endgroup"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"class xyz;
@@ -10508,34 +10530,34 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"covergroup cg ( ref int x , ref int y, input int c);
+        test!(
+            many1(module_item),
+            r##"covergroup cg ( ref int x , ref int y, input int c);
 
-        //          coverpoint x;      // creates coverpoint "x" covering the formal "x"
-        //          x: coverpoint y;   // INVALID: coverpoint label "x" already exists
-        //          b: coverpoint y;   // creates coverpoint "b" covering the formal "y"
+                  coverpoint x;      // creates coverpoint "x" covering the formal "x"
+                  x: coverpoint y;   // INVALID: coverpoint label "x" already exists
+                  b: coverpoint y;   // creates coverpoint "b" covering the formal "y"
 
-        //          cx: coverpoint x;  // creates coverpoint "cx" covering the formal "x"
+                  cx: coverpoint x;  // creates coverpoint "cx" covering the formal "x"
 
-        //          option.weight = c; // set weight of "cg" to value of formal "c"
+                  option.weight = c; // set weight of "cg" to value of formal "c"
 
-        //          bit [7:0] d: coverpoint y[31:24]; // creates coverpoint "d" covering the
-        //                                            // high order 8 bits of the formal "y"
-        //          e: coverpoint x {
-        //            option.weight = 2; // set the weight of coverpoint "e"
-        //          }
-        //          e.option.weight = 2; // INVALID use of "e", also syntax error
+                  bit [7:0] d: coverpoint y[31:24]; // creates coverpoint "d" covering the
+                                                    // high order 8 bits of the formal "y"
+                  e: coverpoint x {
+                    option.weight = 2; // set the weight of coverpoint "e"
+                  }
+                  //e.option.weight = 2; // INVALID use of "e", also syntax error
 
-        //          cross x, y {         // Creates implicit coverpoint "y" covering
-        //                               // the formal "y". Then creates a cross of
-        //                               // coverpoints "x", "y"
-        //            option.weight = c; // set weight of cross to value of formal "c"
-        //          }
-        //          b: cross y, x;       // INVALID: coverpoint label "b" already exists
-        //        endgroup"##,
-        //    Ok((_, _))
-        //);
+                  cross x, y {         // Creates implicit coverpoint "y" covering
+                                       // the formal "y". Then creates a cross of
+                                       // coverpoints "x", "y"
+                    option.weight = c; // set weight of cross to value of formal "c"
+                  }
+                  b: cross y, x;       // INVALID: coverpoint label "b" already exists
+                endgroup"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"covergroup g4;
@@ -10575,38 +10597,38 @@ mod spec {
                 cg c2 = new( vb, 120, 600 ); // cover variable vb in the range 120 to 600"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"bit [4:1] v_a;
-        //        covergroup cg @(posedge clk);
-        //          coverpoint v_a
-        //          {
-        //            bins sa = (4 => 5 => 6), ([7:9],10=>11,12);
-        //            bins sb[] = (4=> 5 => 6), ([7:9],10=>11,12);
-        //            bins sc = (12 => 3 [-> 1]);
-        //            bins allother = default sequence ;
-        //          }
-        //        endgroup"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"covergroup sg @(posedge clk);
-        //          coverpoint v
-        //          {
-        //            bins b2 = ( 2 [-> 3:5] );          // 3 to 5 nonconsecutive 2's
-        //            bins b3 = ( 3 [-> 3:5] );          // 3 to 5 nonconsecutive 3's
-        //            bins b5 = ( 5 [* 3] );             // 3 consecutive 5's
-        //            bins b6 = ( 1 => 3 [-> 4:6] => 1); // 1 followed by
-        //                                               // 4 to 6 goto nonconsecutive 3's
-        //                                               // followed immediately by a 1
-        //            bins b7 = ( 1 => 2 [= 3:6] => 5);  // 1 followed by
-        //                                               // 3 to 6 non consecutive 2's
-        //                                               // followed sometime later by a 5
-        //          }
-        //        endgroup"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"bit [4:1] v_a;
+                covergroup cg @(posedge clk);
+                  coverpoint v_a
+                  {
+                    bins sa = (4 => 5 => 6), ([7:9],10=>11,12);
+                    bins sb[] = (4=> 5 => 6), ([7:9],10=>11,12);
+                    bins sc = (12 => 3 [-> 1]);
+                    bins allother = default sequence ;
+                  }
+                endgroup"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"covergroup sg @(posedge clk);
+                  coverpoint v
+                  {
+                    bins b2 = ( 2 [-> 3:5] );          // 3 to 5 nonconsecutive 2's
+                    bins b3 = ( 3 [-> 3:5] );          // 3 to 5 nonconsecutive 3's
+                    bins b5 = ( 5 [* 3] );             // 3 consecutive 5's
+                    bins b6 = ( 1 => 3 [-> 4:6] => 1); // 1 followed by
+                                                       // 4 to 6 goto nonconsecutive 3's
+                                                       // followed immediately by a 1
+                    bins b7 = ( 1 => 2 [= 3:6] => 5);  // 1 followed by
+                                                       // 3 to 6 non consecutive 2's
+                                                       // followed sometime later by a 5
+                  }
+                endgroup"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"covergroup cg23;
@@ -10645,208 +10667,194 @@ mod spec {
                 endgroup"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"bit [3:0] a, b;
+        test!(
+            many1(module_item),
+            r##"bit [3:0] a, b;
 
-        //        covergroup cov @(posedge clk);
-        //          aXb : cross a, b;
-        //        endgroup"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"bit [3:0] a, b, c;
+                covergroup cov @(posedge clk);
+                  aXb : cross a, b;
+                endgroup"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"bit [3:0] a, b, c;
 
-        //        covergroup cov2 @(posedge clk);
-        //          BC: coverpoint b+c;
-        //          aXb : cross a, BC;
-        //        endgroup"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"bit [31:0] a_var;
-        //        bit [3:0] b_var;
+                covergroup cov2 @(posedge clk);
+                  BC: coverpoint b+c;
+                  aXb : cross a, BC;
+                endgroup"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"bit [31:0] a_var;
+                bit [3:0] b_var;
 
-        //        covergroup cov3 @(posedge clk);
-        //          A: coverpoint a_var { bins yy[] = { [0:9] }; }
-        //          CC: cross b_var, A;
-        //        endgroup"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"int i,j;
-        //        covergroup ct;
-        //          coverpoint i { bins i[] = { [0:1] }; }
-        //          coverpoint j { bins j[] = { [0:1] }; }
-        //          x1: cross i,j;
-        //          x2: cross i,j {
-        //            bins i_zero = binsof(i) intersect { 0 };
-        //          }
-        //        endgroup"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"bit [7:0] v_a, v_b;
+                covergroup cov3 @(posedge clk);
+                  A: coverpoint a_var { bins yy[] = { [0:9] }; }
+                  CC: cross b_var, A;
+                endgroup"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"int i,j;
+                covergroup ct;
+                  coverpoint i { bins i[] = { [0:1] }; }
+                  coverpoint j { bins j[] = { [0:1] }; }
+                  x1: cross i,j;
+                  x2: cross i,j {
+                    bins i_zero = binsof(i) intersect { 0 };
+                  }
+                endgroup"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"bit [7:0] v_a, v_b;
 
-        //        covergroup cg @(posedge clk);
-        //          a: coverpoint v_a
-        //          {
-        //            bins a1 = { [0:63] };
-        //            bins a2 = { [64:127] };
-        //            bins a3 = { [128:191] };
-        //            bins a4 = { [192:255] };
-        //          }
+                covergroup cg @(posedge clk);
+                  a: coverpoint v_a
+                  {
+                    bins a1 = { [0:63] };
+                    bins a2 = { [64:127] };
+                    bins a3 = { [128:191] };
+                    bins a4 = { [192:255] };
+                  }
 
-        //          b: coverpoint v_b
-        //          {
-        //            bins b1 = {0};
-        //            bins b2 = { [1:84] };
-        //            bins b3 = { [85:169] };
-        //            bins b4 = { [170:255] };
-        //          }
+                  b: coverpoint v_b
+                  {
+                    bins b1 = {0};
+                    bins b2 = { [1:84] };
+                    bins b3 = { [85:169] };
+                    bins b4 = { [170:255] };
+                  }
 
-        //          c : cross a, b
-        //          {
-        //            bins c1 = ! binsof(a) intersect {[100:200]};// 4 cross products
-        //            bins c2 = binsof(a.a2) || binsof(b.b2);// 7 cross products
-        //            bins c3 = binsof(a.a1) && binsof(b.b4);// 1 cross product
-        //          }
-        //        endgroup"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"logic [0:7] a, b;
-        //        parameter [0:7] mask;
+                  c : cross a, b
+                  {
+                    bins c1 = ! binsof(a) intersect {[100:200]};// 4 cross products
+                    bins c2 = binsof(a.a2) || binsof(b.b2);// 7 cross products
+                    bins c3 = binsof(a.a1) && binsof(b.b4);// 1 cross product
+                  }
+                endgroup"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"logic [0:7] a, b;
+                parameter [0:7] mask;
 
-        //        covergroup cg;
-        //          coverpoint a
-        //          {
-        //            bins low[] = {[0:127]};
-        //            bins high = {[128:255]};
-        //          }
-        //          coverpoint b
-        //          {
-        //            bins two[] = b with (item % 2 == 0)
-        //            bins three[] = b with (item % 3 == 0)
-        //          }
-        //          X: cross a,b
-        //          {
-        //            bins apple = X with (a+b < 257) matches 127;
-        //            bins cherry = ( binsof(b) intersect {[0:50]}
-        //                         && binsof(a.low) intersect {[0:50]}) with (a==b) );
-        //            bins plum = binsof(b.two) with (b > 12)
-        //                     || binsof(a.low) with (a & b & mask);
-        //          }
-        //        endgroup"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"covergroup cg (ref logic [0:3] x, ref logic [0:7] y, ref logic [0:2] a);
-        //          xy: coverpoint {x,y};
-        //          coverpoint y;
-        //          XYA: cross xy, a
-        //          {
-        //            // the cross types are as if defined here as follows:
-        //            // typedef struct {logic [11:0] xy;logic [0:2] a;} CrossValType;
-        //            // typedef CrossValType CrossQueueType[$];
-        //          };
-        //        endgroup"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"int a;
-        //        logic [7:0] b;
-        //        covergroup cg;
-        //          coverpoint a { bins x[] = {[0:10]}; }
-        //          coverpoint b { bins y[] = {[0:20]}; }
-        //          aXb : cross a, b
-        //          {
-        //            bins one = '{ '{1,2}, '{3,4}, '{5,6} };
-        //          }
-        //        endgroup"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"module mod_m;
-        //          logic [31:0] a, b;
+                covergroup cg;
+                  coverpoint a
+                  {
+                    bins low[] = {[0:127]};
+                    bins high = {[128:255]};
+                  }
+                  coverpoint b
+                  {
+                    bins two[] = b with (item % 2 == 0);
+                    bins three[] = b with (item % 3 == 0);
+                  }
+                  X: cross a,b
+                  {
+                    bins apple = X with (a+b < 257) matches 127;
+                    bins cherry = ( binsof(b) intersect {[0:50]}
+                                 && binsof(a.low) intersect {[0:50]} with (a==b) );
+                    bins plum = binsof(b.two) with (b > 12)
+                             || binsof(a.low) with (a & b & mask);
+                  }
+                endgroup"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"int a;
+                logic [7:0] b;
+                covergroup cg;
+                  coverpoint a { bins x[] = {[0:10]}; }
+                  coverpoint b { bins y[] = {[0:20]}; }
+                  aXb : cross a, b
+                  {
+                    bins one = '{ '{1,2}, '{3,4}, '{5,6} };
+                  }
+                endgroup"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"module mod_m;
+                  logic [31:0] a, b;
 
-        //          covergroup cg(int cg_lim);
-        //            coverpoint a;
-        //            coverpoint b;
-        //            aXb : cross a, b
-        //            {
-        //              function CrossQueueType myFunc1(int f_lim);
-        //                for (int i = 0; i < f_lim; ++i)
-        //                  myFunc1.push_back('{i,i});
-        //              endfunction
+                  covergroup cg(int cg_lim);
+                    coverpoint a;
+                    coverpoint b;
+                    aXb : cross a, b
+                    {
+                      function CrossQueueType myFunc1(int f_lim);
+                        for (int i = 0; i < f_lim; ++i)
+                          myFunc1.push_back('{i,i});
+                      endfunction
 
-        //              bins one = myFunc1(cg_lim);
-        //              bins two = myFunc2(cg_lim);
+                      bins one = myFunc1(cg_lim);
+                      bins two = myFunc2(cg_lim);
 
-        //              function CrossQueueType myFunc2(logic [31:0] f_lim);
-        //                for (logic [31:0] i = 0; i < f_lim; ++i)
-        //                  myFunc2.push_back('{2*i,2*i});
-        //              endfunction
-        //            }
-        //          endgroup
+                      function CrossQueueType myFunc2(logic [31:0] f_lim);
+                        for (logic [31:0] i = 0; i < f_lim; ++i)
+                          myFunc2.push_back('{2*i,2*i});
+                      endfunction
+                    }
+                  endgroup
 
-        //          cg cg_inst = new(3);
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"covergroup yy;
-        //          cross a, b
-        //          {
-        //            ignore_bins ignore = binsof(a) intersect { 5, [1:3] };
-        //          }
-        //        endgroup"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"covergroup zz(int bad);
-        //          cross x, y
-        //          {
-        //            illegal_bins illegal = binsof(y) intersect {bad};
-        //          }
-        //        endgroup"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"covergroup g1 (int w, string instComment) @(posedge clk) ;
-        //          // track coverage information for each instance of g1 in addition
-        //          // to the cumulative coverage information for covergroup type g1
-        //          option.per_instance = 1;
+                  cg cg_inst = new(3);
+                endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"covergroup yy;
+                  cross a, b
+                  {
+                    ignore_bins ignore = binsof(a) intersect { 5, [1:3] };
+                  }
+                endgroup"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"covergroup zz(int bad);
+                  cross x, y
+                  {
+                    illegal_bins illegal = binsof(y) intersect {bad};
+                  }
+                endgroup"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"covergroup g1 (int w, string instComment) @(posedge clk) ;
+                  // track coverage information for each instance of g1 in addition
+                  // to the cumulative coverage information for covergroup type g1
+                  option.per_instance = 1;
 
-        //          // comment for each instance of this covergroup
-        //          option.comment = instComment;
+                  // comment for each instance of this covergroup
+                  option.comment = instComment;
 
-        //          a : coverpoint a_var
-        //          {
-        //            // Create 128 automatic bins for coverpoint “a” of each instance of g1
-        //            option.auto_bin_max = 128;
-        //          }
-        //          b : coverpoint b_var
-        //          {
-        //            // This coverpoint contributes w times as much to the coverage of an
-        //            // instance of g1 as coverpoints "a" and "c1"
-        //            option.weight = w;
-        //          }
-        //          c1 : cross a_var, b_var ;
-        //        endgroup"##,
-        //    Ok((_, _))
-        //);
+                  a : coverpoint a_var
+                  {
+                    // Create 128 automatic bins for coverpoint “a” of each instance of g1
+                    option.auto_bin_max = 128;
+                  }
+                  b : coverpoint b_var
+                  {
+                    // This coverpoint contributes w times as much to the coverage of an
+                    // instance of g1 as coverpoints "a" and "c1"
+                    option.weight = w;
+                  }
+                  c1 : cross a_var, b_var ;
+                endgroup"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"covergroup gc (int maxA, int maxB) @(posedge clk) ;
@@ -10929,28 +10937,28 @@ mod spec {
         //        end"##,
         //    Ok((_, _))
         //);
-        //test!(
-        //    many1(module_item),
-        //    r##"covergroup p_cg with function sample(bit a, int x);
-        //          coverpoint x;
-        //          cross x, a;
-        //        endgroup : p_cg
+        test!(
+            many1(module_item),
+            r##"covergroup p_cg with function sample(bit a, int x);
+                  coverpoint x;
+                  cross x, a;
+                endgroup : p_cg
 
-        //        p_cg cg1 = new;
+                p_cg cg1 = new;
 
-        //        property p1;
-        //          int x;
-        //          @(posedge clk)(a, x = b) ##1 (c, cg1.sample(a, x));
-        //        endproperty : p1
+                property p1;
+                  int x;
+                  @(posedge clk)(a, x = b) ##1 (c, cg1.sample(a, x));
+                endproperty : p1
 
-        //        c1: cover property (p1);
+                c1: cover property (p1);
 
-        //        function automatic void F(int j);
-        //          bit d;
-        //          cg1.sample( d, j );
-        //        endfunction"##,
-        //    Ok((_, _))
-        //);
+                function automatic void F(int j);
+                  bit d;
+                  cg1.sample( d, j );
+                endfunction"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"covergroup C1 (int v) with function sample (int v, bit b); // error (v)
@@ -11145,22 +11153,22 @@ mod spec {
                 endmodule"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"typedef bit node; // "bit"
-        //        node [2:0] X; // "bit [2:0]"
-        //        int signed Y; // "int"
-        //        package A;
-        //          enum {A,B,C=99} X; // "enum{A=32'sd0,B=32'sd1,C=32'sd99}A::e$1"
-        //          typedef bit [9:1'b1] word; // "A::bit[9:1]"
-        //        endpackage : A
-        //        import A::*;
-        //        module top;
-        //          typedef struct {node A,B;} AB_t;
-        //          AB_t AB[10]; // "struct{bit A;bit B;}top.AB_t$[0:9]"
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            source_text,
+            r##"typedef bit node; // "bit"
+                node [2:0] X; // "bit [2:0]"
+                int signed Y; // "int"
+                package A;
+                  enum {A,B,C=99} X; // "enum{A=32'sd0,B=32'sd1,C=32'sd99}A::e$1"
+                  typedef bit [9:1'b1] word; // "A::bit[9:1]"
+                endpackage : A
+                import A::*;
+                module top;
+                  typedef struct {node A,B;} AB_t;
+                  AB_t AB[10]; // "struct{bit A;bit B;}top.AB_t$[0:9]"
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"typedef bit[$bits(MyType):1] MyBits; //same as typedef bit [9:1] MyBits;
@@ -11250,101 +11258,101 @@ mod spec {
                 endproperty"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module test;
-        //          logic clk;
-        //          logic a, b;
-        //          logic c, d;
+        test!(
+            many1(module_item),
+            r##"module test;
+                  logic clk;
+                  logic a, b;
+                  logic c, d;
 
-        //          // Define lets to make the code more readable.
-        //          let LOCK = 1;
-        //          let UNLOCK = 2;
-        //          let ON = 3;
-        //          let OFF = 4;
-        //          let KILL = 5;
+                  // Define lets to make the code more readable.
+                  let LOCK = 1;
+                  let UNLOCK = 2;
+                  let ON = 3;
+                  let OFF = 4;
+                  let KILL = 5;
 
-        //          let CONCURRENT = 1;
-        //          let S_IMMEDIATE = 2; // simple immediate
-        //          let D_IMMEDIATE = 12; // Final and Observed deferred immediate
-        //          let EXPECT = 16;
-        //          let UNIQUE = 32; // unique if and case violation
-        //          let UNIQUE0 = 64; // unique0 if and case violation
-        //          let PRIORITY = 128; // priority if and case violation
-        //          let ASSERT = 1;
-        //          let COVER = 2;
-        //          let ASSUME = 4;
+                  let CONCURRENT = 1;
+                  let S_IMMEDIATE = 2; // simple immediate
+                  let D_IMMEDIATE = 12; // Final and Observed deferred immediate
+                  let EXPECT = 16;
+                  let UNIQUE = 32; // unique if and case violation
+                  let UNIQUE0 = 64; // unique0 if and case violation
+                  let PRIORITY = 128; // priority if and case violation
+                  let ASSERT = 1;
+                  let COVER = 2;
+                  let ASSUME = 4;
 
-        //          let ALL_DIRECTIVES = (ASSERT|COVER|ASSUME);
-        //          let ALL_ASSERTS = (CONCURRENT|S_IMMEDIATE|D_IMMEDIATE|EXPECT);
+                  let ALL_DIRECTIVES = (ASSERT|COVER|ASSUME);
+                  let ALL_ASSERTS = (CONCURRENT|S_IMMEDIATE|D_IMMEDIATE|EXPECT);
 
-        //          let VACUOUSOFF = 11;
+                  let VACUOUSOFF = 11;
 
-        //          a1: assert property (@(posedge clk) a |=> b) $info("assert passed");
-        //              else $error("assert failed");
-        //          c1: cover property (@(posedge clk) a ##1 b);
+                  a1: assert property (@(posedge clk) a |=> b) $info("assert passed");
+                      else $error("assert failed");
+                  c1: cover property (@(posedge clk) a ##1 b);
 
-        //          always @(posedge clk) begin
-        //            ia1: assert (a);
-        //          end
+                  always @(posedge clk) begin
+                    ia1: assert (a);
+                  end
 
-        //          always_comb begin
-        //            if (c)
-        //              df1: assert #0 (d);
-        //            unique if ((a==0) || (a==1)) $display("0 or 1");
-        //            else if (a == 2) $display("2");
-        //            else if (a == 4) $display("4"); // values 3,5,6,7 cause a violation
-        //                                            // report
-        //          end
+                  always_comb begin
+                    if (c)
+                      df1: assert #0 (d);
+                    unique if ((a==0) || (a==1)) $display("0 or 1");
+                    else if (a == 2) $display("2");
+                    else if (a == 4) $display("4"); // values 3,5,6,7 cause a violation
+                                                    // report
+                  end
 
-        //          initial begin
-        //            // The following systasks affect the whole design so no modules
-        //            // are specified
+                  initial begin
+                    // The following systasks affect the whole design so no modules
+                    // are specified
 
-        //            // Disable vacuous pass action for all the concurrent asserts,
-        //            // covers and assumes in the design. Also disable vacuous pass
-        //            // action for expect statements.
-        //            $assertcontrol(VACUOUSOFF, CONCURRENT | EXPECT);
+                    // Disable vacuous pass action for all the concurrent asserts,
+                    // covers and assumes in the design. Also disable vacuous pass
+                    // action for expect statements.
+                    $assertcontrol(VACUOUSOFF, CONCURRENT | EXPECT);
 
-        //            // Disable concurrent and immediate asserts and covers.
-        //            // This will also disable violation reporting.
-        //            // The following systask does not affect expect
-        //            // statements as control type is Off.
-        //            $assertcontrol(OFF); // using default values of all the
-        //                                 // arguments after first argument
+                    // Disable concurrent and immediate asserts and covers.
+                    // This will also disable violation reporting.
+                    // The following systask does not affect expect
+                    // statements as control type is Off.
+                    $assertcontrol(OFF); // using default values of all the
+                                         // arguments after first argument
 
-        //            // After 20 time units, enable assertions,
-        //            // This will not enable violation reporting.
-        //            // explicitly specifying second, third and fourth arguments
-        //            // in the following task call
-        //            #20 $assertcontrol(ON, CONCURRENT|S_IMMEDIATE|D_IMMEDIATE,
-        //                               ASSERT|COVER|ASSUME, 0);
+                    // After 20 time units, enable assertions,
+                    // This will not enable violation reporting.
+                    // explicitly specifying second, third and fourth arguments
+                    // in the following task call
+                    #20 $assertcontrol(ON, CONCURRENT|S_IMMEDIATE|D_IMMEDIATE,
+                                       ASSERT|COVER|ASSUME, 0);
 
-        //            // Enable violation reporting after 20 time units.
-        //            #20 $assertcontrol(ON, UNIQUE|UNIQUE0|PRIORITY);
+                    // Enable violation reporting after 20 time units.
+                    #20 $assertcontrol(ON, UNIQUE|UNIQUE0|PRIORITY);
 
-        //            // Kill currently executing concurrent assertions after
-        //            // 100 time units but do not kill concurrent covers/assumes
-        //            // and immediate/deferred asserts/covers/assumes
-        //            // using appropriate values of second and third arguments.
-        //            #100 $assertcontrol(KILL, CONCURRENT, ASSERT, 0);
+                    // Kill currently executing concurrent assertions after
+                    // 100 time units but do not kill concurrent covers/assumes
+                    // and immediate/deferred asserts/covers/assumes
+                    // using appropriate values of second and third arguments.
+                    #100 $assertcontrol(KILL, CONCURRENT, ASSERT, 0);
 
-        //            // The following assertion control task does not have any effect as
-        //            // directive_type is assert but it has selected cover directive c1.
-        //            #10 $assertcontrol(ON, CONCURRENT|S_IMMEDIATE|D_IMMEDIATE, ASSERT, 0,
-        //                               c1);
+                    // The following assertion control task does not have any effect as
+                    // directive_type is assert but it has selected cover directive c1.
+                    #10 $assertcontrol(ON, CONCURRENT|S_IMMEDIATE|D_IMMEDIATE, ASSERT, 0,
+                                       c1);
 
-        //            // Now, after 10 time units, enable all the assertions except a1.
-        //            // To accomplish this, first we’ll lock a1 and then we’ll enable all
-        //            // the assertions and then unlock a1 as we want future assertion
-        //            // control tasks to affect a1.
-        //            #10 $assertcontrol(LOCK, ALL_ASSERTS, ALL_DIRECTIVES, 0, a1);
-        //            $assertcontrol(ON); // enable all the assertions except a1
-        //            $assertcontrol(UNLOCK, ALL_ASSERTS, ALL_DIRECTIVES, 0, a1);
-        //          end
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                    // Now, after 10 time units, enable all the assertions except a1.
+                    // To accomplish this, first we’ll lock a1 and then we’ll enable all
+                    // the assertions and then unlock a1 as we want future assertion
+                    // control tasks to affect a1.
+                    #10 $assertcontrol(LOCK, ALL_ASSERTS, ALL_DIRECTIVES, 0, a1);
+                    $assertcontrol(ON); // enable all the assertions except a1
+                    $assertcontrol(UNLOCK, ALL_ASSERTS, ALL_DIRECTIVES, 0, a1);
+                  end
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"wire a1, a2, a3, a4, a5, a6, a7;
@@ -11392,33 +11400,31 @@ mod spec {
                 endmodule"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module pla;
-        //          `define rows 4
-        //          `define cols 3
-        //          logic [1:`cols] a, mem[1:`rows];
-        //          logic [1:`rows] b;
-        //          initial begin
-        //            // PLA system call
-        //            $async$and$plane(mem,a[1:3],b[1:4]);
-        //            mem[1] = 3'b10?;
-        //            mem[2] = 3'b??1;
-        //            mem[3] = 3'b0?0;
-        //            mem[4] = 3'b???;
-        //            // stimulus and display
-        //            #10 a = 3'b111;
-        //            #10 $displayb(a, " -> ", b);
-        //            #10 a = 3'b000;
-        //            #10 $displayb(a, " -> ", b);
-        //            #10 a = 3'bxxx;
-        //            #10 $displayb(a, " -> ", b);
-        //            #10 a = 3'b101;
-        //            #10 $displayb(a, " -> ", b);
-        //          end
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"module pla;
+                  logic [1:cols] a, mem[1:rows];
+                  logic [1:rows] b;
+                  initial begin
+                    // PLA system call
+                    $async$and$plane(mem,a[1:3],b[1:4]);
+                    mem[1] = 3'b10?;
+                    mem[2] = 3'b??1;
+                    mem[3] = 3'b0?0;
+                    mem[4] = 3'b???;
+                    // stimulus and display
+                    #10 a = 3'b111;
+                    #10 $displayb(a, " -> ", b);
+                    #10 a = 3'b000;
+                    #10 $displayb(a, " -> ", b);
+                    #10 a = 3'bxxx;
+                    #10 $displayb(a, " -> ", b);
+                    #10 a = 3'b101;
+                    #10 $displayb(a, " -> ", b);
+                  end
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module top;
@@ -11498,25 +11504,24 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"integer
-        //          messages, broadcast,
-        //          cpu_chann, alu_chann, mem_chann;
-        //        initial begin
-        //          cpu_chann = $fopen("cpu.dat");
-        //          if (cpu_chann == 0) $finish;
-        //          alu_chann = $fopen("alu.dat");
-        //          if (alu_chann == 0) $finish;
-        //          mem_chann = $fopen("mem.dat");
-        //          if (mem_chann == 0) $finish;
-        //          messages = cpu_chann | alu_chann | mem_chann;
-        //          // broadcast includes standard output
-        //          broadcast = 1 | messages;
-        //        end
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"integer
+                  messages, broadcast,
+                  cpu_chann, alu_chann, mem_chann;
+                initial begin
+                  cpu_chann = $fopen("cpu.dat");
+                  if (cpu_chann == 0) $finish;
+                  alu_chann = $fopen("alu.dat");
+                  if (alu_chann == 0) $finish;
+                  mem_chann = $fopen("mem.dat");
+                  if (mem_chann == 0) $finish;
+                  messages = cpu_chann | alu_chann | mem_chann;
+                  // broadcast includes standard output
+                  broadcast = 1 | messages;
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -11623,50 +11628,49 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"`define STRING logic [1024 * 8:1]
-        //        module goodtasks;
-        //          `STRING str;
-        //          integer i1;
-        //          logic [31:0] vect;
-        //          real realvar;
+        test!(
+            many1(module_item),
+            r##"module goodtasks;
+                  STRING str;
+                  integer i1;
+                  logic [31:0] vect;
+                  real realvar;
 
-        //          initial
-        //            begin
-        //              if ($value$plusargs("TEST=%d", i1))
-        //                $display("value was %d", i1);
-        //              else
-        //                $display("+TEST= not found");
-        //              #100 $finish;
-        //            end
-        //        endmodule
+                  initial
+                    begin
+                      if ($value$plusargs("TEST=%d", i1))
+                        $display("value was %d", i1);
+                      else
+                        $display("+TEST= not found");
+                      #100 $finish;
+                    end
+                endmodule
 
-        //        module ieee1364_example;
-        //          real frequency;
-        //          logic [8*32:1] testname;
-        //          logic [64*8:1] pstring;
-        //          logic clk;
+                module ieee1364_example;
+                  real frequency;
+                  logic [8*32:1] testname;
+                  logic [64*8:1] pstring;
+                  logic clk;
 
-        //          initial
-        //            begin
-        //              if ($value$plusargs("TESTNAME=%s",testname))
-        //                begin
-        //                  $display(" TESTNAME= %s.",testname);
-        //                  $finish;
-        //                end
+                  initial
+                    begin
+                      if ($value$plusargs("TESTNAME=%s",testname))
+                        begin
+                          $display(" TESTNAME= %s.",testname);
+                          $finish;
+                        end
 
-        //              if (!($value$plusargs("FREQ+%0F",frequency)))
-        //                frequency = 8.33333; // 166 MHz
-        //              $display("frequency = %f",frequency);
+                      if (!($value$plusargs("FREQ+%0F",frequency)))
+                        frequency = 8.33333; // 166 MHz
+                      $display("frequency = %f",frequency);
 
-        //              pstring = "TEST%d";
-        //              if ($value$plusargs(pstring, testname))
-        //                $display("Running test number %0d.",testname);
-        //            end
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                      pstring = "TEST%d";
+                      if ($value$plusargs(pstring, testname))
+                        $display("Running test number %0d.",testname);
+                    end
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial $dumpfile ("module1.dump") ;"##,
@@ -11728,19 +11732,19 @@ mod spec {
                 endmodule"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module test_device(count_out, carry, data, reset)
-        //          output count_out, carry ;
-        //          input [0:3] data;
-        //          input reset;
-        //          initial
-        //            begin
-        //              $dumpports(testbench.DUT, "testoutput.vcd");
-        //            end
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"module test_device(count_out, carry, data, reset);
+                  output count_out, carry ;
+                  input [0:3] data;
+                  input reset;
+                  initial
+                    begin
+                      $dumpports(testbench.DUT, "testoutput.vcd");
+                    end
+                endmodule"##,
+            Ok((_, _))
+        );
     }
 
     #[test]
@@ -11777,16 +11781,16 @@ mod spec {
                 endmodule"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module complex_ports ( {c,d}, .e(f) );
-        //          // Nets {c,d} receive the first port bits.
-        //          // Name 'f' is declared inside the module.
-        //          // Name 'e' is defined outside the module.
-        //          // Cannot use named port connections of first port
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"module complex_ports ( {c,d}, .e(f) );
+                  // Nets {c,d} receive the first port bits.
+                  // Name 'f' is declared inside the module.
+                  // Name 'e' is defined outside the module.
+                  // Cannot use named port connections of first port
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module split_ports (a[7:4], a[3:0]);
@@ -11821,14 +11825,14 @@ mod spec {
                 endmodule"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module mixed_direction (.p({a, e}));
-        //          input a; // p contains both input and output directions.
-        //          output e;
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"module mixed_direction (.p({a, e}));
+                  input a; // p contains both input and output directions.
+                  output e;
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module test (
@@ -11863,71 +11867,71 @@ mod spec {
                 endmodule"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module mh_nonansi(x, y);
-        //          input wire x;
-        //          output tri0 y;
-        //        endmodule
+        test!(
+            many1(module_item),
+            r##"module mh_nonansi(x, y);
+                  input wire x;
+                  output tri0 y;
+                endmodule
 
-        //        module mh0 (wire x);                // inout wire logic x
+                module mh0 (wire x); endmodule               // inout wire logic x
 
-        //        module mh1 (integer x);             // inout wire integer x
+                module mh1 (integer x); endmodule            // inout wire integer x
 
-        //        module mh2 (inout integer x);       // inout wire integer x
+                module mh2 (inout integer x); endmodule      // inout wire integer x
 
-        //        module mh3 ([5:0] x);               // inout wire logic [5:0] x
+                module mh3 ([5:0] x); endmodule              // inout wire logic [5:0] x
 
-        //        module mh4 (var x);                 // ERROR: direction defaults to inout,
-        //                                            // which cannot be var
+                module mh4 (var x); endmodule                // ERROR: direction defaults to inout,
+                                                             // which cannot be var
 
-        //        module mh5 (input x);               // input wire logic x
+                module mh5 (input x); endmodule              // input wire logic x
 
-        //        module mh6 (input var x);           // input var logic x
+                module mh6 (input var x); endmodule          // input var logic x
 
-        //        module mh7 (input var integer x);   // input var integer x
+                module mh7 (input var integer x); endmodule  // input var integer x
 
-        //        module mh8 (output x);              // output wire logic x
+                module mh8 (output x); endmodule             // output wire logic x
 
-        //        module mh9 (output var x);          // output var logic x
+                module mh9 (output var x); endmodule         // output var logic x
 
-        //        module mh10(output signed [5:0] x); // output wire logic signed [5:0] x
+                module mh10(output signed [5:0] x); endmodule// output wire logic signed [5:0] x
 
-        //        module mh11(output integer x);      // output var integer x
+                module mh11(output integer x); endmodule     // output var integer x
 
-        //        module mh12(ref [5:0] x);           // ref var logic [5:0] x
+                module mh12(ref [5:0] x); endmodule          // ref var logic [5:0] x
 
-        //        module mh13(ref x [5:0]);           // ref var logic x [5:0]"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"module mh14(wire x, y[7:0]);              // inout wire logic x
-        //                                                  // inout wire logic y[7:0]
+                module mh13(ref x [5:0]); endmodule          // ref var logic x [5:0]"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"module mh14(wire x, y[7:0]); endmodule              // inout wire logic x
+                                                                    // inout wire logic y[7:0]
 
-        //        module mh15(integer x, signed [5:0] y);   // inout wire integer x
-        //                                                  // inout wire logic signed [5:0] y
+                module mh15(integer x, signed [5:0] y); endmodule   // inout wire integer x
+                                                                    // inout wire logic signed [5:0] y
 
-        //        module mh16([5:0] x, wire y);             // inout wire logic [5:0] x
-        //                                                  // inout wire logic y
+                module mh16([5:0] x, wire y); endmodule             // inout wire logic [5:0] x
+                                                                    // inout wire logic y
 
-        //        module mh17(input var integer x, wire y); // input var integer x
-        //                                                  // input wire logic y
+                module mh17(input var integer x, wire y); endmodule // input var integer x
+                                                                    // input wire logic y
 
-        //        module mh18(output var x, input y);       // output var logic x
-        //                                                  // input wire logic y
+                module mh18(output var x, input y); endmodule       // output var logic x
+                                                                    // input wire logic y
 
-        //        module mh19(output signed [5:0] x, integer y);
-        //                                                  // output wire logic signed [5:0] x
-        //                                                  // output var integer y
+                module mh19(output signed [5:0] x, integer y); endmodule
+                                                                    // output wire logic signed [5:0] x
+                                                                    // output var integer y
 
-        //        module mh20(ref [5:0] x, y);              // ref var logic [5:0] x
-        //                                                  // ref var logic [5:0] y
+                module mh20(ref [5:0] x, y); endmodule              // ref var logic [5:0] x
+                                                                    // ref var logic [5:0] y
 
-        //        module mh21(ref x [5:0], y);              // ref var logic x [5:0]
-        //                                                  // ref var logic y"##,
-        //    Ok((_, _))
-        //);
+                module mh21(ref x [5:0], y); endmodule              // ref var logic x [5:0]
+                                                                    // ref var logic y"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module mh22 (input wire integer p_a, .p_b(s_b), p_c);
@@ -12334,94 +12338,94 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module top();
-        //          logic clk, x, y, z;
-        //          m m_i(clk, x, y, z);
-        //        endmodule
+        test!(
+            many1(module_item),
+            r##"module top();
+                  logic clk, x, y, z;
+                  m m_i(clk, x, y, z);
+                endmodule
 
-        //        module m(input logic clk, a, b, c);
-        //          assert #0 (a^b);     // no label, assertion cannot be referred to
-        //          A1: assert #0 (a^b); // assertion can be accessed in control tasks
+                module m(input logic clk, a, b, c);
+                  assert #0 (a^b);     // no label, assertion cannot be referred to
+                  A1: assert #0 (a^b); // assertion can be accessed in control tasks
 
-        //          initial begin : B1
-        //            assert (a);    // cannot be accessed in control tasks
-        //            A1: assert (a) // can be accessed, e.g., top.m_i.B1.A1
-        //              begin        // unnamed block, d cannot be accessed
-        //                bit d;
-        //                d = a ^ b;
-        //              end
-        //            else
-        //              begin : B2 // name required to access items in action block
-        //                bit d;   // d can be accessed using, e.g., top.m_i.B1.A1.B2.d
-        //                d = a ^ b;
-        //              end
-        //          end
+                  initial begin : B1
+                    assert (a);    // cannot be accessed in control tasks
+                    A1: assert (a) // can be accessed, e.g., top.m_i.B1.A1
+                      begin        // unnamed block, d cannot be accessed
+                        bit d;
+                        d = a ^ b;
+                      end
+                    else
+                      begin : B2 // name required to access items in action block
+                        bit d;   // d can be accessed using, e.g., top.m_i.B1.A1.B2.d
+                        d = a ^ b;
+                      end
+                  end
 
-        //          logic e;
-        //          always_ff @(posedge clk) begin // unnamed block, no scope created
-        //            e <= a && c;
-        //            C1: cover property(e)        // C1 and A2 can be referred to
-        //              begin                      // hierarchical name top.m_i.C1.A2
-        //                A2: assert (m_i.B1.A1.B2.d);
-        //              end
-        //          end
+                  logic e;
+                  always_ff @(posedge clk) begin // unnamed block, no scope created
+                    e <= a && c;
+                    C1: cover property(e)        // C1 and A2 can be referred to
+                      begin                      // hierarchical name top.m_i.C1.A2
+                        A2: assert (m_i.B1.A1.B2.d);
+                      end
+                  end
 
-        //          always_ff @(posedge clk) begin // unnamed block, scope created
-        //            // declaration of f causes begin-end to create scope
-        //            static logic f;
-        //            f <= a && c;
-        //            C2: cover property(f) // C2 and A3 cannot be referred to
-        //              begin
-        //                A3: assert (m_i.B1.A1.B2.d);
-        //              end
-        //          end
+                  always_ff @(posedge clk) begin // unnamed block, scope created
+                    // declaration of f causes begin-end to create scope
+                    static logic f;
+                    f <= a && c;
+                    C2: cover property(f) // C2 and A3 cannot be referred to
+                      begin
+                        A3: assert (m_i.B1.A1.B2.d);
+                      end
+                  end
 
-        //          always_ff @(posedge clk) begin : B2 // named block and scope created
-        //            static logic f;
-        //            f <= a && c;
-        //            C3: cover property(f) // C3 and A4 can be referred to
-        //              begin               // hierarchical name top.m_i.B2.C3.A4
-        //                A4: assert (m_i.B1.A1.B2.d);
-        //              end
-        //          end
+                  always_ff @(posedge clk) begin : B2 // named block and scope created
+                    static logic f;
+                    f <= a && c;
+                    C3: cover property(f) // C3 and A4 can be referred to
+                      begin               // hierarchical name top.m_i.B2.C3.A4
+                        A4: assert (m_i.B1.A1.B2.d);
+                      end
+                  end
 
-        //          assert property(@(posedge clk) a |-> b) else // unnamed assertion
-        //            begin: B3
-        //              static bit d;  // d can be referred to, e.g., top.m_i.B3.d
-        //              A5: assert(d); // hierarchical name top.m_i.B3.A5
-        //            end
-        //          // Any other labelled object with name B3 at the module
-        //          // level shall be an error
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"package p;
-        //          struct { int x; } s1;
-        //          struct { int x; } s2;
-        //          function void f();
-        //            int x;
-        //          endfunction
-        //        endpackage
+                  assert property(@(posedge clk) a |-> b) else // unnamed assertion
+                    begin: B3
+                      static bit d;  // d can be referred to, e.g., top.m_i.B3.d
+                      A5: assert(d); // hierarchical name top.m_i.B3.A5
+                    end
+                  // Any other labelled object with name B3 at the module
+                  // level shall be an error
+                endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"package p;
+                  struct { int x; } s1;
+                  struct { int x; } s2;
+                  function void f();
+                    int x;
+                  endfunction
+                endpackage
 
-        //        module m;
-        //          import p::*;
-        //          if (1) begin : s1
-        //            initial begin
-        //              s1.x = 1; // dotted name 1
-        //              s2.x = 1; // dotted name 2
-        //              f.x = 1;  // dotted name 3
-        //              f2.x = 1; // dotted name 4
-        //            end
-        //            int x;
-        //            some_module s2();
-        //          end
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                module m;
+                  import p::*;
+                  if (1) begin : s1
+                    initial begin
+                      s1.x = 1; // dotted name 1
+                      s2.x = 1; // dotted name 2
+                      f.x = 1;  // dotted name 3
+                      f2.x = 1; // dotted name 4
+                    end
+                    int x;
+                    some_module s2();
+                  end
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module a;
@@ -12471,25 +12475,25 @@ mod spec {
                 endfunction"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"package p;
-        //          function void f();
-        //            $display("p::f");
-        //          endfunction
-        //        endpackage
+        test!(
+            source_text,
+            r##"package p;
+                  function void f();
+                    $display("p::f");
+                  endfunction
+                endpackage
 
-        //        module top;
-        //          import p::*;
-        //          if (1) begin : b // generate block
-        //            initial f(); // reference to “f”
-        //            function void f();
-        //              $display("top.b.f");
-        //            endfunction
-        //          end
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                module top;
+                  import p::*;
+                  if (1) begin : b // generate block
+                    initial f(); // reference to “f”
+                    function void f();
+                      $display("top.b.f");
+                    endfunction
+                  end
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"task t;
@@ -12505,33 +12509,33 @@ mod spec {
                 endtask"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module generic_fifo
-        //          #(MSB=3, LSB=0) // parameter port list parameters
-        //           (input wire [MSB:LSB] in,
-        //            input wire clk, read, write, reset,
-        //            output logic [MSB:LSB] out,
-        //            output logic full, empty );
+        test!(
+            many1(module_item),
+            r##"module generic_fifo
+                  #(MSB=3, LSB=0) // parameter port list parameters
+                   (input wire [MSB:LSB] in,
+                    input wire clk, read, write, reset,
+                    output logic [MSB:LSB] out,
+                    output logic full, empty );
 
-        //          parameter DEPTH=4; // module item parameter
+                  parameter DEPTH=4; // module item parameter
 
-        //          localparam FIFO_MSB = DEPTH*MSB;
-        //          localparam FIFO_LSB = LSB;
-        //            // These constants are local, and cannot be overridden.
-        //            // They can be affected by altering the value parameters above
+                  localparam FIFO_MSB = DEPTH*MSB;
+                  localparam FIFO_LSB = LSB;
+                    // These constants are local, and cannot be overridden.
+                    // They can be affected by altering the value parameters above
 
-        //          logic [FIFO_MSB:FIFO_LSB] fifo;
-        //          logic [LOG2(DEPTH):0] depth;
+                  logic [FIFO_MSB:FIFO_LSB] fifo;
+                  logic [LOG2(DEPTH):0] depth;
 
-        //          always @(posedge clk or posedge reset) begin
-        //            casez ({read,write,reset})
-        //              // implementation of fifo
-        //            endcase
-        //          end
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                  always @(posedge clk or posedge reset) begin
+                    //casez ({read,write,reset})
+                    //  // implementation of fifo
+                    //endcase
+                  end
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module m1 (a,b);
@@ -12752,40 +12756,40 @@ mod spec {
                 endmodule"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"bind cpu fpu_props fpu_rules_1(a,b,c);"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"bind cpu: cpu1 fpu_props fpu_rules_1(a, b, c);"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"bind cpu: cpu1, cpu2, cpu3 fpu_props fpu_rules_1(a, b, c);"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"interface range (input clk, enable, input var int minval, expr);
-        //          property crange_en;
-        //            @(posedge clk) enable |-> (minval <= expr);
-        //          endproperty
-        //          range_chk: assert property (crange_en);
-        //        endinterface
+        test!(
+            many1(module_item),
+            r##"bind cpu fpu_props fpu_rules_1(a,b,c);"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"bind cpu: cpu1 fpu_props fpu_rules_1(a, b, c);"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"bind cpu: cpu1, cpu2, cpu3 fpu_props fpu_rules_1(a, b, c);"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"interface range (input clk, enable, input var int minval, expr);
+                  property crange_en;
+                    @(posedge clk) enable |-> (minval <= expr);
+                  endproperty
+                  range_chk: assert property (crange_en);
+                endinterface
 
-        //        bind cr_unit range r1(c_clk,c_en,v_low,(in1&&in2));"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"bind targetmod
-        //        mycheck #(.param1(const4), .param2(8'h44))
-        //        i_mycheck(.*, .p1(f1({v1, 1'b0, b1.c}, v2 & v3)), .p2(top.v4));"##,
-        //    Ok((_, _))
-        //);
+                bind cr_unit range r1(c_clk,c_en,v_low,(in1&&in2));"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"bind targetmod
+                mycheck #(.param1(const4), .param2(8'h44))
+                i_mycheck(.*, .p1(f1({v1, 1'b0, b1.c}, v2 & v3)), .p2(top.v4));"##,
+            Ok((_, _))
+        );
     }
 
     #[test]
@@ -13032,21 +13036,21 @@ mod spec {
                 endinterface"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module m (i2.master i);
-        //        endmodule
+        test!(
+            many1(module_item),
+            r##"module m (i2.master i);
+                endmodule
 
-        //        module s (i2.slave i);
-        //        endmodule
+                module s (i2.slave i);
+                endmodule
 
-        //        module top;
-        //          i2 i();
-        //          m u1(.i(i));
-        //          s u2(.i(i));
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                module top;
+                  i2 i();
+                  m u1(.i(i));
+                  s u2(.i(i));
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module m (i2 i);
@@ -13081,42 +13085,42 @@ mod spec {
                 endinterface : illegal_i"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"interface simple_bus (input logic clk); // Define the interface
-        //          logic req, gnt;
-        //          logic [7:0] addr, data;
-        //          logic [1:0] mode;
-        //          logic start, rdy;
-        //          modport slave (input req, addr, mode, start, clk,
-        //                         output gnt, rdy,
-        //                         ref data);
-        //          modport master(input gnt, rdy, clk,
-        //                         output req, addr, mode, start,
-        //                         ref data);
-        //        endinterface: simple_bus
+        test!(
+            many1(module_item),
+            r##"interface simple_bus (input logic clk); // Define the interface
+                  logic req, gnt;
+                  logic [7:0] addr, data;
+                  logic [1:0] mode;
+                  logic start, rdy;
+                  modport slave (input req, addr, mode, start, clk,
+                                 output gnt, rdy,
+                                 ref data);
+                  modport master(input gnt, rdy, clk,
+                                 output req, addr, mode, start,
+                                 ref data);
+                endinterface: simple_bus
 
-        //        module memMod (simple_bus.slave a); // interface name and modport name
-        //          logic avail;
-        //          always @(posedge a.clk) // the clk signal from the interface
-        //            a.gnt <= a.req & avail; // the gnt and req signal in the interface
-        //        endmodule
+                module memMod (simple_bus.slave a); // interface name and modport name
+                  logic avail;
+                  always @(posedge a.clk) // the clk signal from the interface
+                    a.gnt <= a.req & avail; // the gnt and req signal in the interface
+                endmodule
 
-        //        module cpuMod (simple_bus.master b);
-        //        endmodule
+                module cpuMod (simple_bus.master b);
+                endmodule
 
-        //        module top;
-        //          logic clk = 0;
+                module top;
+                  logic clk = 0;
 
-        //          simple_bus sb_intf(clk); // Instantiate the interface
+                  simple_bus sb_intf(clk); // Instantiate the interface
 
-        //          initial repeat(10) #10 clk++;
+                  initial repeat(10) #10 clk++;
 
-        //          memMod mem(.a(sb_intf)); // Connect the interface to the module instance
-        //          cpuMod cpu(.b(sb_intf));
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                  memMod mem(.a(sb_intf)); // Connect the interface to the module instance
+                  cpuMod cpu(.b(sb_intf));
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"interface simple_bus (input logic clk); // Define the interface
@@ -13235,96 +13239,96 @@ mod spec {
                 endinterface"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module dev1(A_Bus.DUT b); // Some device: Part of the design
-        //        endmodule
+        test!(
+            many1(module_item),
+            r##"module dev1(A_Bus.DUT b); // Some device: Part of the design
+                endmodule
 
-        //        module dev2(A_Bus.DUT b); // Some device: Part of the design
-        //        endmodule
+                module dev2(A_Bus.DUT b); // Some device: Part of the design
+                endmodule
 
-        //        module top;
-        //          logic clk;
-        //          A_Bus b1( clk );
-        //          A_Bus b2( clk );
-        //          dev1 d1( b1 );
-        //          dev2 d2( b2 );
-        //          T tb( b1, b2 );
-        //        endmodule
+                module top;
+                  logic clk;
+                  A_Bus b1( clk );
+                  A_Bus b2( clk );
+                  dev1 d1( b1 );
+                  dev2 d2( b2 );
+                  T tb( b1, b2 );
+                endmodule
 
-        //        program T (A_Bus.STB b1, A_Bus.STB b2 ); // testbench: 2 synchronous ports
-        //          assert property (b1.sb.p1); // assert property from within program
+                program T (A_Bus.STB b1, A_Bus.STB b2 ); // testbench: 2 synchronous ports
+                  assert property (b1.sb.p1); // assert property from within program
 
-        //          initial begin
-        //            b1.sb.req <= 1;
-        //            wait( b1.sb.gnt == 1 );
-        //            b1.sb.req <= 0;
-        //            b2.sb.req <= 1;
-        //            wait( b2.sb.gnt == 1 );
-        //            b2.sb.req <= 0;
-        //          end
-        //        endprogram"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"interface itf;
-        //          logic c,q,d;
-        //          modport flop (input c,d, output q);
-        //        endinterface
+                  initial begin
+                    b1.sb.req <= 1;
+                    wait( b1.sb.gnt == 1 );
+                    b1.sb.req <= 0;
+                    b2.sb.req <= 1;
+                    wait( b2.sb.gnt == 1 );
+                    b2.sb.req <= 0;
+                  end
+                endprogram"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"interface itf;
+                  logic c,q,d;
+                  modport flop (input c,d, output q);
+                endinterface
 
-        //        module dtype (itf.flop ch);
-        //          always_ff @(posedge ch.c) ch.q <= ch.d;
-        //          specify
-        //            ( posedge ch.c => (ch.q+:ch.d)) = (5,6);
-        //            $setup( ch.d, posedge ch.c, 1 );
-        //          endspecify
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"interface simple_bus (input logic clk); // Define the interface
-        //          logic req, gnt;
-        //          logic [7:0] addr, data;
-        //          logic [1:0] mode;
-        //          logic start, rdy;
+                module dtype (itf.flop ch);
+                  always_ff @(posedge ch.c) ch.q <= ch.d;
+                  specify
+                    ( posedge ch.c => (ch.q+:ch.d)) = (5,6);
+                    $setup( ch.d, posedge ch.c, 1 );
+                  endspecify
+                endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"interface simple_bus (input logic clk); // Define the interface
+                  logic req, gnt;
+                  logic [7:0] addr, data;
+                  logic [1:0] mode;
+                  logic start, rdy;
 
-        //          task masterRead(input logic [7:0] raddr); // masterRead method
-        //            // ...
-        //          endtask: masterRead
+                  task masterRead(input logic [7:0] raddr); // masterRead method
+                    // ...
+                  endtask: masterRead
 
-        //          task slaveRead; // slaveRead method
-        //            // ...
-        //          endtask: slaveRead
-        //        endinterface: simple_bus
+                  task slaveRead; // slaveRead method
+                    // ...
+                  endtask: slaveRead
+                endinterface: simple_bus
 
-        //        module memMod(interface a); // Uses any interface
-        //          logic avail;
+                module memMod(interface a); // Uses any interface
+                  logic avail;
 
-        //          always @(posedge a.clk)  // the clk signal from the interface
-        //            a.gnt <= a.req & avail // the gnt and req signals in the interface
+                  always @(posedge a.clk)   // the clk signal from the interface
+                    a.gnt <= a.req & avail; // the gnt and req signals in the interface
 
-        //          always @(a.start)
-        //            a.slaveRead;
-        //        endmodule
+                  always @(a.start)
+                    a.slaveRead;
+                endmodule
 
-        //        module cpuMod(interface b);
-        //          enum {read, write} instr;
-        //          logic [7:0] raddr;
-        //          always @(posedge b.clk)
-        //            if (instr == read)
-        //              b.masterRead(raddr); // call the Interface method
-        //        endmodule
+                module cpuMod(interface b);
+                  enum {read, write} instr;
+                  logic [7:0] raddr;
+                  always @(posedge b.clk)
+                    if (instr == read)
+                      b.masterRead(raddr); // call the Interface method
+                endmodule
 
-        //        module top;
-        //          logic clk = 0;
-        //          simple_bus sb_intf(clk); // Instantiate the interface
-        //          memMod mem(sb_intf);
-        //          cpuMod cpu(sb_intf);
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                module top;
+                  logic clk = 0;
+                  simple_bus sb_intf(clk); // Instantiate the interface
+                  memMod mem(sb_intf);
+                  cpuMod cpu(sb_intf);
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"interface simple_bus (input logic clk); // Define the interface
@@ -13457,114 +13461,114 @@ mod spec {
                 endmodule"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"interface simple_bus (input logic clk); // Define the interface
-        //          logic req, gnt;
-        //          logic [7:0] addr, data;
-        //          logic [1:0] mode;
-        //          logic start, rdy;
-        //          int slaves = 0;
+        test!(
+            many1(module_item),
+            r##"interface simple_bus (input logic clk); // Define the interface
+                  logic req, gnt;
+                  logic [7:0] addr, data;
+                  logic [1:0] mode;
+                  logic start, rdy;
+                  int slaves = 0;
 
-        //          // tasks executed concurrently as a fork-join block
-        //          extern forkjoin task countSlaves();
-        //          extern forkjoin task Read (input logic [7:0] raddr);
-        //          extern forkjoin task Write (input logic [7:0] waddr);
+                  // tasks executed concurrently as a fork-join block
+                  extern forkjoin task countSlaves();
+                  extern forkjoin task Read (input logic [7:0] raddr);
+                  extern forkjoin task Write (input logic [7:0] waddr);
 
-        //          modport slave (input req,addr, mode, start, clk,
-        //                         output gnt, rdy,
-        //                         ref data, slaves,
-        //                         export Read, Write, countSlaves);
-        //            // export from module that uses the modport
+                  modport slave (input req,addr, mode, start, clk,
+                                 output gnt, rdy,
+                                 ref data, slaves,
+                                 export Read, Write, countSlaves);
+                    // export from module that uses the modport
 
-        //          modport master ( input gnt, rdy, clk,
-        //                           output req, addr, mode, start,
-        //                           ref data,
-        //                           import task Read(input logic [7:0] raddr),
-        //                                  task Write(input logic [7:0] waddr));
-        //            // import requires the full task prototype
+                  modport master ( input gnt, rdy, clk,
+                                   output req, addr, mode, start,
+                                   ref data,
+                                   import task Read(input logic [7:0] raddr),
+                                          task Write(input logic [7:0] waddr));
+                    // import requires the full task prototype
 
-        //          initial begin
-        //            slaves = 0;
-        //            countSlaves;
-        //            $display ("number of slaves = %d", slaves);
-        //          end
-        //        endinterface: simple_bus
+                  initial begin
+                    slaves = 0;
+                    countSlaves;
+                    $display ("number of slaves = %d", slaves);
+                  end
+                endinterface: simple_bus
 
-        //        module memMod #(parameter int minaddr=0, maxaddr=0;) (interface a);
-        //          logic avail = 1;
-        //          logic [7:0] mem[255:0];
+                module memMod #(parameter int minaddr=0, maxaddr=0) (interface a);
+                  logic avail = 1;
+                  logic [7:0] mem[255:0];
 
-        //          task a.countSlaves();
-        //            a.slaves++;
-        //          endtask
+                  task a.countSlaves();
+                    a.slaves++;
+                  endtask
 
-        //          task a.Read(input logic [7:0] raddr); // Read method
-        //            if (raddr >= minaddr && raddr <= maxaddr) begin
-        //              avail = 0;
-        //              #10 a.data = mem[raddr];
-        //              avail = 1;
-        //            end
-        //          endtask
+                  task a.Read(input logic [7:0] raddr); // Read method
+                    if (raddr >= minaddr && raddr <= maxaddr) begin
+                      avail = 0;
+                      #10 a.data = mem[raddr];
+                      avail = 1;
+                    end
+                  endtask
 
-        //          task a.Write(input logic [7:0] waddr); // Write method
-        //            if (waddr >= minaddr && waddr <= maxaddr) begin
-        //              avail = 0;
-        //              #10 mem[waddr] = a.data;
-        //              avail = 1;
-        //            end
-        //          endtask
-        //        endmodule
+                  task a.Write(input logic [7:0] waddr); // Write method
+                    if (waddr >= minaddr && waddr <= maxaddr) begin
+                      avail = 0;
+                      #10 mem[waddr] = a.data;
+                      avail = 1;
+                    end
+                  endtask
+                endmodule
 
-        //        module cpuMod(interface b);
-        //          typedef enum {read, write} instr;
-        //          instr inst;
-        //          logic [7:0] raddr;
-        //          integer seed;
+                module cpuMod(interface b);
+                  typedef enum {read, write} instr;
+                  instr inst;
+                  logic [7:0] raddr;
+                  integer seed;
 
-        //          always @(posedge b.clk) begin
-        //            inst = instr'($dist_uniform(seed, 0, 1));
-        //            raddr = $dist_uniform(seed, 0, 3);
-        //            if (inst == read) begin
-        //              $display("%t begin read %h @ %h", $time, b.data, raddr);
-        //              callr:b.Read(raddr);
-        //              $display("%t end read %h @ %h", $time, b.data, raddr);
-        //            end
-        //            else begin
-        //              $display("%t begin write %h @ %h", $time, b.data, raddr);
-        //              b.data = raddr;
-        //              callw:b.Write(raddr);
-        //              $display("%t end write %h @ %h", $time, b.data, raddr);
-        //            end
-        //          end
-        //        endmodule
+                  always @(posedge b.clk) begin
+                    inst = instr'($dist_uniform(seed, 0, 1));
+                    raddr = $dist_uniform(seed, 0, 3);
+                    if (inst == read) begin
+                      $display("%t begin read %h @ %h", $time, b.data, raddr);
+                      callr:b.Read(raddr);
+                      $display("%t end read %h @ %h", $time, b.data, raddr);
+                    end
+                    else begin
+                      $display("%t begin write %h @ %h", $time, b.data, raddr);
+                      b.data = raddr;
+                      callw:b.Write(raddr);
+                      $display("%t end write %h @ %h", $time, b.data, raddr);
+                    end
+                  end
+                endmodule
 
-        //        module top;
-        //          logic clk = 0;
+                module top;
+                  logic clk = 0;
 
-        //          function void interrupt();
-        //            disable mem1.a.Read; // task via module instance
-        //            disable sb_intf.Write; // task via interface instance
-        //            if (mem1.avail == 0) $display ("mem1 was interrupted");
-        //            if (mem2.avail == 0) $display ("mem2 was interrupted");
-        //          endfunction
+                  function void interrupt();
+                    disable mem1.a.Read; // task via module instance
+                    disable sb_intf.Write; // task via interface instance
+                    if (mem1.avail == 0) $display ("mem1 was interrupted");
+                    if (mem2.avail == 0) $display ("mem2 was interrupted");
+                  endfunction
 
-        //          always #5 clk++;
+                  always #5 clk++;
 
-        //          initial begin
-        //            #28 interrupt();
-        //            #10 interrupt();
-        //            #100 $finish;
-        //          end
+                  initial begin
+                    #28 interrupt();
+                    #10 interrupt();
+                    #100 $finish;
+                  end
 
-        //          simple_bus sb_intf(clk);
+                  simple_bus sb_intf(clk);
 
-        //          memMod #(0, 127) mem1(sb_intf.slave);
-        //          memMod #(128, 255) mem2(sb_intf.slave);
-        //          cpuMod cpu(sb_intf.master);
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                  memMod #(0, 127) mem1(sb_intf.slave);
+                  memMod #(128, 255) mem2(sb_intf.slave);
+                  cpuMod cpu(sb_intf.master);
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"interface simple_bus #(AWIDTH = 8, DWIDTH = 8)
@@ -13779,60 +13783,60 @@ mod spec {
                 endinterface"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module dev1(A_Bus.DUT b); // Some device: Part of the design
-        //        endmodule
+        test!(
+            many1(module_item),
+            r##"module dev1(A_Bus.DUT b); // Some device: Part of the design
+                endmodule
 
-        //        module dev2(A_Bus.DUT b); // Some device: Part of the design
-        //        endmodule
+                module dev2(A_Bus.DUT b); // Some device: Part of the design
+                endmodule
 
-        //        program T (A_Bus.STB b1, A_Bus.STB b2 ); // Testbench: 2 synchronous ports
-        //        endprogram
+                program T (A_Bus.STB b1, A_Bus.STB b2 ); // Testbench: 2 synchronous ports
+                endprogram
 
-        //        module top;
-        //          logic clk;
-        //          A_Bus b1( clk );
-        //          A_Bus b2( clk );
-        //          dev1 d1( b1 );
-        //          dev2 d2( b2 );
-        //          T tb( b1, b2 );
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"program T (A_Bus.STB b1, A_Bus.STB b2 ); // Testbench: 2 synchronous ports
-        //          typedef virtual A_Bus.STB SYNCTB;
+                module top;
+                  logic clk;
+                  A_Bus b1( clk );
+                  A_Bus b2( clk );
+                  dev1 d1( b1 );
+                  dev2 d2( b2 );
+                  T tb( b1, b2 );
+                endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"program T (A_Bus.STB b1, A_Bus.STB b2 ); // Testbench: 2 synchronous ports
+                  typedef virtual A_Bus.STB SYNCTB;
 
-        //          task request( SYNCTB s );
-        //            s.sb.req <= 1;
-        //          endtask
+                  task request( SYNCTB s );
+                    s.sb.req <= 1;
+                  endtask
 
-        //          task wait_grant( SYNCTB s );
-        //            wait( s.sb.gnt == 1 );
-        //          endtask
+                  task wait_grant( SYNCTB s );
+                    wait( s.sb.gnt == 1 );
+                  endtask
 
-        //          task drive(SYNCTB s, logic [7:0] adr, data );
-        //            if( s.sb.gnt == 0 ) begin
-        //              request(s); // acquire bus if needed
-        //              wait_grant(s);
-        //            end
-        //            s.sb.addr = adr;
-        //            s.sb.data = data;
-        //            repeat(2) @s.sb;
-        //            s.sb.req = 0; //release bus
-        //          endtask
+                  task drive(SYNCTB s, logic [7:0] adr, data );
+                    if( s.sb.gnt == 0 ) begin
+                      request(s); // acquire bus if needed
+                      wait_grant(s);
+                    end
+                    s.sb.addr = adr;
+                    s.sb.data = data;
+                    repeat(2) @s.sb;
+                    s.sb.req = 0; //release bus
+                  endtask
 
-        //          assert property (b1.sb.p1); // assert property from within program
+                  assert property (b1.sb.p1); // assert property from within program
 
-        //          initial begin
-        //            drive( b1, $random, $random );
-        //            drive( b2, $random, $random );
-        //          end
-        //        endprogram"##,
-        //    Ok((_, _))
-        //);
+                  initial begin
+                    drive( b1, $random, $random );
+                    drive( b2, $random, $random );
+                  end
+                endprogram"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"interface ebus_i;
@@ -13864,179 +13868,179 @@ mod spec {
 
     #[test]
     fn clause26() {
-        //test!(
-        //    many1(module_item),
-        //    r##"package ComplexPkg;
-        //          typedef struct {
-        //            shortreal i, r;
-        //          } Complex;
+        test!(
+            source_text,
+            r##"package ComplexPkg;
+                  typedef struct {
+                    shortreal i, r;
+                  } Complex;
 
-        //          function Complex add(Complex a, b);
-        //            add.r = a.r + b.r;
-        //            add.i = a.i + b.i;
-        //          endfunction
+                  function Complex add(Complex a, b);
+                    add.r = a.r + b.r;
+                    add.i = a.i + b.i;
+                  endfunction
 
-        //          function Complex mul(Complex a, b);
-        //            mul.r = (a.r * b.r) - (a.i * b.i);
-        //            mul.i = (a.r * b.i) + (a.i * b.r);
-        //          endfunction
-        //        endpackage : ComplexPkg"##,
-        //    Ok((_, _))
-        //);
+                  function Complex mul(Complex a, b);
+                    mul.r = (a.r * b.r) - (a.i * b.i);
+                    mul.i = (a.r * b.i) + (a.i * b.r);
+                  endfunction
+                endpackage : ComplexPkg"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"import ComplexPkg::Complex;
                 import ComplexPkg::add;"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"package p;
-        //          typedef enum { FALSE, TRUE } bool_t;
-        //        endpackage
+        test!(
+            source_text,
+            r##"package p;
+                  typedef enum { FALSE, TRUE } bool_t;
+                endpackage
 
-        //        package q;
-        //          typedef enum { ORIGINAL, FALSE } teeth_t;
-        //        endpackage
+                package q;
+                  typedef enum { ORIGINAL, FALSE } teeth_t;
+                endpackage
 
-        //        module top1 ;
-        //          import p::*;
-        //          import q::teeth_t;
-        //          teeth_t myteeth;
-        //          initial begin
-        //            myteeth = q:: FALSE; // OK:
-        //            myteeth = FALSE; // ERROR: Direct reference to FALSE refers to the
-        //          end // FALSE enumeration literal imported from p
-        //        endmodule
+                module top1 ;
+                  import p::*;
+                  import q::teeth_t;
+                  teeth_t myteeth;
+                  initial begin
+                    myteeth = q:: FALSE; // OK:
+                    myteeth = FALSE; // ERROR: Direct reference to FALSE refers to the
+                  end // FALSE enumeration literal imported from p
+                endmodule
 
-        //        module top2 ;
-        //          import p::*;
-        //          import q::teeth_t, q::ORIGINAL, q::FALSE;
-        //          teeth_t myteeth;
-        //          initial begin
-        //            myteeth = FALSE; // OK: Direct reference to FALSE refers to the
-        //          end // FALSE enumeration literal imported from q
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                module top2 ;
+                  import p::*;
+                  import q::teeth_t, q::ORIGINAL, q::FALSE;
+                  teeth_t myteeth;
+                  initial begin
+                    myteeth = FALSE; // OK: Direct reference to FALSE refers to the
+                  end // FALSE enumeration literal imported from q
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(many1(module_item), r##"import ComplexPkg::*;"##, Ok((_, _)));
-        //test!(
-        //    many1(module_item),
-        //    r##"package p;
-        //          int x;
-        //        endpackage
+        test!(
+            source_text,
+            r##"package p;
+                  int x;
+                endpackage
 
-        //        module top;
-        //          import p::*;     // line 1
+                module top;
+                  import p::*;     // line 1
 
-        //          if (1) begin : b
-        //            initial x = 1; // line 2
-        //            int x;         // line 3
-        //            initial x = 1; // line 4
-        //          end
-        //          int x;           // line 5
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"package p;
-        //          int x;
-        //        endpackage
+                  if (1) begin : b
+                    initial x = 1; // line 2
+                    int x;         // line 3
+                    initial x = 1; // line 4
+                  end
+                  int x;           // line 5
+                endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"package p;
+                  int x;
+                endpackage
 
-        //        package p2;
-        //          int x;
-        //        endpackage
+                package p2;
+                  int x;
+                endpackage
 
-        //        module top;
-        //          import p::*;     // line 1
-        //          if (1) begin : b
-        //            initial x = 1; // line 2
-        //            import p2::*;  // line 3
-        //          end
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"package p;
-        //          function int f();
-        //            return 1;
-        //          endfunction
-        //        endpackage
+                module top;
+                  import p::*;     // line 1
+                  if (1) begin : b
+                    initial x = 1; // line 2
+                    import p2::*;  // line 3
+                  end
+                endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"package p;
+                  function int f();
+                    return 1;
+                  endfunction
+                endpackage
 
-        //        module top;
-        //          int x;
-        //          if (1) begin : b
-        //            initial x = f(); // line 2
-        //            import p::*;     // line 3
-        //          end
+                module top;
+                  int x;
+                  if (1) begin : b
+                    initial x = f(); // line 2
+                    import p::*;     // line 3
+                  end
 
-        //          function int f();
-        //            return 1;
-        //          endfunction
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"package p;
-        //          function int f();
-        //            return 1;
-        //          endfunction
-        //        endpackage
+                  function int f();
+                    return 1;
+                  endfunction
+                endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"package p;
+                  function int f();
+                    return 1;
+                  endfunction
+                endpackage
 
-        //        package p2;
-        //          function int f();
-        //            return 1;
-        //          endfunction
-        //        endpackage
+                package p2;
+                  function int f();
+                    return 1;
+                  endfunction
+                endpackage
 
-        //        module top;
-        //          import p::*;
-        //          int x;
-        //          if (1) begin : b
-        //            initial x = f(); // line 1
-        //          end
-        //          import p2::*;
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"package A;
-        //          typedef struct {
-        //            bit [ 7:0] opcode;
-        //            bit [23:0] addr;
-        //          } instruction_t;
-        //        endpackage: A
+                module top;
+                  import p::*;
+                  int x;
+                  if (1) begin : b
+                    initial x = f(); // line 1
+                  end
+                  import p2::*;
+                endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"package A;
+                  typedef struct {
+                    bit [ 7:0] opcode;
+                    bit [23:0] addr;
+                  } instruction_t;
+                endpackage: A
 
-        //        package B;
-        //          typedef enum bit {FALSE, TRUE} boolean_t;
-        //        endpackage: B
+                package B;
+                  typedef enum bit {FALSE, TRUE} boolean_t;
+                endpackage: B
 
-        //        module M import A::instruction_t, B::*;
-        //          #(WIDTH = 32)
-        //          (input [WIDTH-1:0] data,
-        //           input instruction_t a,
-        //           output [WIDTH-1:0] result,
-        //           output boolean_t OK
-        //          );
-        //        endmodule: M"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"package p;
-        //          typedef enum { FALSE, TRUE } BOOL;
-        //          const BOOL c = FALSE;
-        //        endpackage
+                module M import A::instruction_t, B::*;
+                  #(WIDTH = 32)
+                  (input [WIDTH-1:0] data,
+                   input instruction_t a,
+                   output [WIDTH-1:0] result,
+                   output boolean_t OK
+                  );
+                endmodule: M"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"package p;
+                  typedef enum { FALSE, TRUE } BOOL;
+                  const BOOL c = FALSE;
+                endpackage
 
-        //        package q;
-        //          const int c = 0;
-        //        endpackage"##,
-        //    Ok((_, _))
-        //);
+                package q;
+                  const int c = 0;
+                endpackage"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module m;
@@ -14046,69 +14050,71 @@ mod spec {
                 endmodule"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"package p1;
-        //          int x, y;
-        //        endpackage
+        test!(
+            source_text,
+            r##"package p1;
+                  int x, y;
+                endpackage
 
-        //        package p2;
-        //          import p1::x;
-        //          export p1::*; // exports p1::x as the name "x";
-        //                        // p1::x and p2::x are the same declaration
-        //        endpackage
+                package p2;
+                  import p1::x;
+                  export p1::*; // exports p1::x as the name "x";
+                                // p1::x and p2::x are the same declaration
+                endpackage
 
-        //        package p3;
-        //          import p1::*;
-        //          import p2::*;
-        //          export p2::*;
-        //          int q = x;
-        //          // p1::x and q are made available from p3. Although p1::y
-        //          // is a candidate for import, it is not actually imported
-        //          // since it is not referenced. Since p1::y is not imported,
-        //          // it is not made available by the export.
-        //        endpackage
+                package p3;
+                  import p1::*;
+                  import p2::*;
+                  export p2::*;
+                  int q = x;
+                  // p1::x and q are made available from p3. Although p1::y
+                  // is a candidate for import, it is not actually imported
+                  // since it is not referenced. Since p1::y is not imported,
+                  // it is not made available by the export.
+                endpackage
 
-        //        package p4;
-        //          import p1::*;
-        //          export p1::*;
-        //          int y = x; // y is available as a direct declaration;
-        //                     // p1::x is made available by the export
-        //        endpackage
+                package p4;
+                  import p1::*;
+                  export p1::*;
+                  int y = x; // y is available as a direct declaration;
+                             // p1::x is made available by the export
+                endpackage
 
-        //        package p5;
-        //          import p4::*;
-        //          import p1::*;
-        //          export p1::x;
-        //          export p4::x; // p4::x refers to the same declaration
-        //                        // as p1::x so this is legal.
-        //        endpackage
+                package p5;
+                  import p4::*;
+                  import p1::*;
+                  export p1::x;
+                  export p4::x; // p4::x refers to the same declaration
+                                // as p1::x so this is legal.
+                endpackage
 
-        //        package p6;
-        //          import p1::*;
-        //          export p1::x;
-        //          int x; // Error. export p1::x is considered to
-        //                 // be a reference to "x" so a subsequent
-        //                 // declaration of x is illegal.
-        //        endpackage
+                package p6;
+                  import p1::*;
+                  export p1::x;
+                  int x; // Error. export p1::x is considered to
+                         // be a reference to "x" so a subsequent
+                         // declaration of x is illegal.
+                endpackage
 
-        //        package p7;
-        //          int y;
-        //        endpackage
+                package p7;
+                  int y;
+                endpackage
 
-        //        package p8;
-        //          export *::*; // Exports both p7::y and p1::x.
-        //          import p7::y;
-        //          import p1::x;
-        //        endpackage
+                package p8;
+                  export *::*; // Exports both p7::y and p1::x.
+                  import p7::y;
+                  import p1::x;
+                endpackage
 
-        //        module top;
-        //          import p2::*;
-        //          import p4::*;
-        //          int y = x; // x is p1::x
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                module top;
+                  import p2::*;
+                  import p4::*;
+                  int y = x; // x is p1::x
+                endmodule"##,
+            Ok((_, _))
+        );
+        // TODO
+        // Syntax 26-5 (not in Annex A)
         //test!(
         //    many1(module_item),
         //    r##"initial begin
@@ -14342,74 +14348,74 @@ mod spec {
                 endgenerate"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module dimm(addr, ba, rasx, casx, csx, wex, cke, clk, dqm, data, dev_id);
-        //          parameter [31:0] MEM_WIDTH = 16, MEM_SIZE = 8; // in mbytes
-        //          input [10:0] addr;
-        //          input ba, rasx, casx, csx, wex, cke, clk;
-        //          input [ 7:0] dqm;
-        //          inout [63:0] data;
-        //          input [ 4:0] dev_id;
-        //          genvar i;
+        test!(
+            many1(module_item),
+            r##"module dimm(addr, ba, rasx, casx, csx, wex, cke, clk, dqm, data, dev_id);
+                  parameter [31:0] MEM_WIDTH = 16, MEM_SIZE = 8; // in mbytes
+                  input [10:0] addr;
+                  input ba, rasx, casx, csx, wex, cke, clk;
+                  input [ 7:0] dqm;
+                  inout [63:0] data;
+                  input [ 4:0] dev_id;
+                  genvar i;
 
-        //          case ({MEM_SIZE, MEM_WIDTH})
-        //            {32'd8, 32'd16}: // 8Meg x 16 bits wide
-        //              begin: memory
-        //                for (i=0; i<4; i=i+1) begin:word16
-        //                  sms_08b216t0 p(.clk(clk), .csb(csx), .cke(cke),.ba(ba),
-        //                                 .addr(addr), .rasb(rasx), .casb(casx),
-        //                                 .web(wex), .udqm(dqm[2*i+1]), .ldqm(dqm[2*i]),
-        //                                 .dqi(data[15+16*i:16*i]), .dev_id(dev_id));
-        //                  // The hierarchical instance names are:
-        //                  // memory.word16[3].p, memory.word16[2].p,
-        //                  // memory.word16[1].p, memory.word16[0].p,
-        //                  // and the task memory.read_mem
-        //                end
-        //                task read_mem;
-        //                  input [31:0] address;
-        //                  output [63:0] data;
-        //                  begin // call read_mem in sms module
-        //                    word[3].p.read_mem(address, data[63:48]);
-        //                    word[2].p.read_mem(address, data[47:32]);
-        //                    word[1].p.read_mem(address, data[31:16]);
-        //                    word[0].p.read_mem(address, data[15: 0]);
-        //                  end
-        //                endtask
-        //              end
-        //            {32'd16, 32'd8}: // 16Meg x 8 bits wide
-        //              begin: memory
-        //                for (i=0; i<8; i=i+1) begin:word8
-        //                  sms_16b208t0 p(.clk(clk), .csb(csx), .cke(cke),.ba(ba),
-        //                                 .addr(addr), .rasb(rasx), .casb(casx),
-        //                                 .web(wex), .dqm(dqm[i]),
-        //                                 .dqi(data[7+8*i:8*i]), .dev_id(dev_id));
-        //                  // The hierarchical instance names are
-        //                  // memory.word8[7].p, memory.word8[6].p,
-        //                  // ...
-        //                  // memory.word8[1].p, memory.word8[0].p,
-        //                  // and the task memory.read_mem
-        //                end
-        //                task read_mem;
-        //                  input [31:0] address;
-        //                  output [63:0] data;
-        //                  begin // call read_mem in sms module
-        //                    byte[7].p.read_mem(address, data[63:56]);
-        //                    byte[6].p.read_mem(address, data[55:48]);
-        //                    byte[5].p.read_mem(address, data[47:40]);
-        //                    byte[4].p.read_mem(address, data[39:32]);
-        //                    byte[3].p.read_mem(address, data[31:24]);
-        //                    byte[2].p.read_mem(address, data[23:16]);
-        //                    byte[1].p.read_mem(address, data[15: 8]);
-        //                    byte[0].p.read_mem(address, data[ 7: 0]);
-        //                  end
-        //                endtask
-        //              end
-        //            // Other memory cases ...
-        //          endcase
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                  case ({MEM_SIZE, MEM_WIDTH})
+                    {32'd8, 32'd16}: // 8Meg x 16 bits wide
+                      begin: memory
+                        for (i=0; i<4; i=i+1) begin:word16
+                          sms_08b216t0 p(.clk(clk), .csb(csx), .cke(cke),.ba(ba),
+                                         .addr(addr), .rasb(rasx), .casb(casx),
+                                         .web(wex), .udqm(dqm[2*i+1]), .ldqm(dqm[2*i]),
+                                         .dqi(data[15+16*i:16*i]), .dev_id(dev_id));
+                          // The hierarchical instance names are:
+                          // memory.word16[3].p, memory.word16[2].p,
+                          // memory.word16[1].p, memory.word16[0].p,
+                          // and the task memory.read_mem
+                        end
+                        task read_mem;
+                          input [31:0] address;
+                          output [63:0] data;
+                          begin // call read_mem in sms module
+                            word16[3].p.read_mem(address, data[63:48]);
+                            word16[2].p.read_mem(address, data[47:32]);
+                            word16[1].p.read_mem(address, data[31:16]);
+                            word16[0].p.read_mem(address, data[15: 0]);
+                          end
+                        endtask
+                      end
+                    {32'd16, 32'd8}: // 16Meg x 8 bits wide
+                      begin: memory
+                        for (i=0; i<8; i=i+1) begin:word8
+                          sms_16b208t0 p(.clk(clk), .csb(csx), .cke(cke),.ba(ba),
+                                         .addr(addr), .rasb(rasx), .casb(casx),
+                                         .web(wex), .dqm(dqm[i]),
+                                         .dqi(data[7+8*i:8*i]), .dev_id(dev_id));
+                          // The hierarchical instance names are
+                          // memory.word8[7].p, memory.word8[6].p,
+                          // ...
+                          // memory.word8[1].p, memory.word8[0].p,
+                          // and the task memory.read_mem
+                        end
+                        task read_mem;
+                          input [31:0] address;
+                          output [63:0] data;
+                          begin // call read_mem in sms module
+                            word8[7].p.read_mem(address, data[63:56]);
+                            word8[6].p.read_mem(address, data[55:48]);
+                            word8[5].p.read_mem(address, data[47:40]);
+                            word8[4].p.read_mem(address, data[39:32]);
+                            word8[3].p.read_mem(address, data[31:24]);
+                            word8[2].p.read_mem(address, data[23:16]);
+                            word8[1].p.read_mem(address, data[15: 8]);
+                            word8[0].p.read_mem(address, data[ 7: 0]);
+                          end
+                        endtask
+                      end
+                    // Other memory cases ...
+                  endcase
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module top;
@@ -14636,123 +14642,123 @@ mod spec {
 
     #[test]
     fn clause29() {
-        //test!(
-        //    many1(module_item),
-        //    r##"primitive multiplexer (mux, control, dataA, dataB);
-        //          output mux;
-        //          input control, dataA, dataB;
-        //          table
-        //            // control dataA dataB mux
-        //               0       1     0    : 1 ;
-        //               0       1     1    : 1 ;
-        //               0       1     x    : 1 ;
-        //               0       0     0    : 0 ;
-        //               0       0     1    : 0 ;
-        //               0       0     x    : 0 ;
-        //               1       0     1    : 1 ;
-        //               1       1     1    : 1 ;
-        //               1       x     1    : 1 ;
-        //               1       0     0    : 0 ;
-        //               1       1     0    : 0 ;
-        //               1       x     0    : 0 ;
-        //               x       0     0    : 0 ;
-        //               x       1     1    : 1 ;
-        //          endtable
-        //        endprimitive"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"primitive multiplexer (mux, control, dataA, dataB);
-        //          output mux;
-        //          input control, dataA, dataB;
-        //          table
-        //            // control dataA dataB mux
-        //               0       1     ?    : 1 ; // ? = 0 1 x
-        //               0       0     ?    : 0 ;
-        //               1       ?     1    : 1 ;
-        //               1       ?     0    : 0 ;
-        //               x       0     0    : 0 ;
-        //               x       1     1    : 1 ;
-        //          endtable
-        //        endprimitive"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"primitive latch (q, ena_, data);
-        //          output q; reg q;
-        //          input ena_, data;
-        //          table
-        //            // ena_ data : q : q+
-        //               0    1    : ? : 1 ;
-        //               0    0    : ? : 0 ;
-        //               1    ?    : ? : - ; // - = no change
-        //          endtable
-        //        endprimitive"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"primitive d_edge_ff (q, clock, data);
-        //          output q; reg q;
-        //          input clock, data;
-        //          table
-        //            // clock data q q+
-        //            // obtain output on rising edge of clock
-        //            (01) 0 : ? : 0 ;
-        //            (01) 1 : ? : 1 ;
-        //            (0?) 1 : 1 : 1 ;
-        //            (0?) 0 : 0 : 0 ;
-        //            // ignore negative edge of clock
-        //            (?0) ? : ? : - ;
-        //            // ignore data changes on steady clock
-        //            ? (??) : ? : - ;
-        //          endtable
-        //        endprimitive"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"primitive srff (q, s, r);
-        //          output q; reg q;
-        //          input s, r;
-        //          initial q = 1'b1;
-        //          table
-        //            // s r q q+
-        //            1 0 : ? : 1 ;
-        //            f 0 : 1 : - ;
-        //            0 r : ? : 0 ;
-        //            0 f : 0 : - ;
-        //            1 1 : ? : 0 ;
-        //          endtable
-        //        endprimitive"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"primitive dff1 (q, clk, d);
-        //          input clk, d;
-        //          output q; reg q;
-        //          initial q = 1'b1;
-        //          table
-        //            // clk d q q+
-        //            r 0 : ? : 0 ;
-        //            r 1 : ? : 1 ;
-        //            f ? : ? : - ;
-        //            ? * : ? : - ;
-        //          endtable
-        //        endprimitive
+        test!(
+            source_text,
+            r##"primitive multiplexer (mux, control, dataA, dataB);
+                  output mux;
+                  input control, dataA, dataB;
+                  table
+                    // control dataA dataB mux
+                       0       1     0    : 1 ;
+                       0       1     1    : 1 ;
+                       0       1     x    : 1 ;
+                       0       0     0    : 0 ;
+                       0       0     1    : 0 ;
+                       0       0     x    : 0 ;
+                       1       0     1    : 1 ;
+                       1       1     1    : 1 ;
+                       1       x     1    : 1 ;
+                       1       0     0    : 0 ;
+                       1       1     0    : 0 ;
+                       1       x     0    : 0 ;
+                       x       0     0    : 0 ;
+                       x       1     1    : 1 ;
+                  endtable
+                endprimitive"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"primitive multiplexer (mux, control, dataA, dataB);
+                  output mux;
+                  input control, dataA, dataB;
+                  table
+                    // control dataA dataB mux
+                       0       1     ?    : 1 ; // ? = 0 1 x
+                       0       0     ?    : 0 ;
+                       1       ?     1    : 1 ;
+                       1       ?     0    : 0 ;
+                       x       0     0    : 0 ;
+                       x       1     1    : 1 ;
+                  endtable
+                endprimitive"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"primitive latch (q, ena_, data);
+                  output q; reg q;
+                  input ena_, data;
+                  table
+                    // ena_ data : q : q+
+                       0    1    : ? : 1 ;
+                       0    0    : ? : 0 ;
+                       1    ?    : ? : - ; // - = no change
+                  endtable
+                endprimitive"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"primitive d_edge_ff (q, clock, data);
+                  output q; reg q;
+                  input clock, data;
+                  table
+                    // clock data q q+
+                    // obtain output on rising edge of clock
+                    (01) 0 : ? : 0 ;
+                    (01) 1 : ? : 1 ;
+                    (0?) 1 : 1 : 1 ;
+                    (0?) 0 : 0 : 0 ;
+                    // ignore negative edge of clock
+                    (?0) ? : ? : - ;
+                    // ignore data changes on steady clock
+                    ? (??) : ? : - ;
+                  endtable
+                endprimitive"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"primitive srff (q, s, r);
+                  output q; reg q;
+                  input s, r;
+                  initial q = 1'b1;
+                  table
+                    // s r q q+
+                    1 0 : ? : 1 ;
+                    f 0 : 1 : - ;
+                    0 r : ? : 0 ;
+                    0 f : 0 : - ;
+                    1 1 : ? : 0 ;
+                  endtable
+                endprimitive"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"primitive dff1 (q, clk, d);
+                  input clk, d;
+                  output q; reg q;
+                  initial q = 1'b1;
+                  table
+                    // clk d q q+
+                    r 0 : ? : 0 ;
+                    r 1 : ? : 1 ;
+                    f ? : ? : - ;
+                    ? * : ? : - ;
+                  endtable
+                endprimitive
 
-        //        module dff (q, qb, clk, d);
-        //          input clk, d;
-        //          output q, qb;
-        //          dff1 g1 (qi, clk, d);
-        //          buf #3 g2 (q, qi);
-        //          not #5 g3 (qb, qi);
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                module dff (q, qb, clk, d);
+                  input clk, d;
+                  output q, qb;
+                  dff1 g1 (qi, clk, d);
+                  buf #3 g2 (q, qi);
+                  not #5 g3 (qb, qi);
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module flip;
@@ -14774,30 +14780,30 @@ mod spec {
                 endmodule"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"primitive jk_edge_ff (q, clock, j, k, preset, clear);
-        //          output q; reg q;
-        //          input clock, j, k, preset, clear;
-        //          table
-        //            // clock jk pc state output/next state
-        //            ? ?? 01 : ? : 1 ; // preset logic
-        //            ? ?? *1 : 1 : 1 ;
-        //            ? ?? 10 : ? : 0 ; // clear logic
-        //            ? ?? 1* : 0 : 0 ;
-        //            r 00 00 : 0 : 1 ; // normal clocking cases
-        //            r 00 11 : ? : - ;
-        //            r 01 11 : ? : 0 ;
-        //            r 10 11 : ? : 1 ;
-        //            r 11 11 : 0 : 1 ;
-        //            r 11 11 : 1 : 0 ;
-        //            f ?? ?? : ? : - ;
-        //            b *? ?? : ? : - ; // j and k transition cases
-        //            b ?* ?? : ? : - ;
-        //          endtable
-        //        endprimitive"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            source_text,
+            r##"primitive jk_edge_ff (q, clock, j, k, preset, clear);
+                  output q; reg q;
+                  input clock, j, k, preset, clear;
+                  table
+                    // clock jk pc state output/next state
+                    ? ?? 01 : ? : 1 ; // preset logic
+                    ? ?? *1 : 1 : 1 ;
+                    ? ?? 10 : ? : 0 ; // clear logic
+                    ? ?? 1* : 0 : 0 ;
+                    r 00 00 : 0 : 1 ; // normal clocking cases
+                    r 00 11 : ? : - ;
+                    r 01 11 : ? : 0 ;
+                    r 10 11 : ? : 1 ;
+                    r 11 11 : 0 : 1 ;
+                    r 11 11 : 1 : 0 ;
+                    f ?? ?? : ? : - ;
+                    b *? ?? : ? : - ; // j and k transition cases
+                    b ?* ?? : ? : - ;
+                  endtable
+                endprimitive"##,
+            Ok((_, _))
+        );
     }
 
     #[test]
@@ -14833,27 +14839,27 @@ mod spec {
                 endmodule"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"module ALU (o1, i1, i2, opcode);
-        //          input [7:0] i1, i2;
-        //          input [2:1] opcode;
-        //          output [7:0] o1;
+        test!(
+            many1(module_item),
+            r##"module ALU (o1, i1, i2, opcode);
+                  input [7:0] i1, i2;
+                  input [2:1] opcode;
+                  output [7:0] o1;
 
-        //          //functional description omitted
-        //          specify
-        //            // add operation
-        //            if (opcode == 2'b00) (i1,i2 *> o1) = (25.0, 25.0);
-        //            // pass-through i1 operation
-        //            if (opcode == 2'b01) (i1 => o1) = (5.6, 8.0);
-        //            // pass-through i2 operation
-        //            if (opcode == 2'b10) (i2 => o1) = (5.6, 8.0);
-        //            // delays on opcode changes
-        //            (opcode *> o1) = (6.1, 6.5);
-        //          endspecify
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                  //functional description omitted
+                  specify
+                    // add operation
+                    if (opcode == 2'b00) (i1,i2 *> o1) = (25.0, 25.0);
+                    // pass-through i1 operation
+                    if (opcode == 2'b01) (i1 => o1) = (5.6, 8.0);
+                    // pass-through i2 operation
+                    if (opcode == 2'b10) (i2 => o1) = (5.6, 8.0);
+                    // delays on opcode changes
+                    (opcode *> o1) = (6.1, 6.5);
+                  endspecify
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"specify
@@ -14862,16 +14868,16 @@ mod spec {
                 endspecify"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"specify
-        //          if (reset)
-        //            (posedge clk => ( q[0] : data ) ) = (15, 8);
-        //          if (!reset && cntrl)
-        //            (posedge clk => ( q[0] : data ) ) = (6, 2);
-        //        endspecify"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"specify
+                  if (reset)
+                    (posedge clk => ( q[0] : data ) ) = (15, 8);
+                  if (!reset && cntrl)
+                    (posedge clk => ( q[0] : data ) ) = (6, 2);
+                endspecify"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"specify
@@ -14945,6 +14951,8 @@ mod spec {
                 endspecify"##,
             Ok((_, _))
         );
+        // TODO
+        // specify_input_terminal_descriptor can have $
         //test!(
         //    many1(module_item),
         //    r##"specify
@@ -14967,38 +14975,38 @@ mod spec {
                 endspecify"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"specify
-        //          (a=>out)=(2,3);
-        //          showcancelled out;
-        //          (b =>out)=(3,4);
-        //        endspecify"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"specify
-        //          showcancelled out;
-        //          pulsestyle_ondetect out;
-        //          (a => out) = (2,3);
-        //          (b => out) = (4,5);
-        //          showcancelled out_b;
-        //          pulsestyle_ondetect out_b;
-        //          (a => out_b) = (3,4);
-        //          (b => out_b) = (5,6);
-        //        endspecify
+        test!(
+            many1(module_item),
+            r##"specify
+                  (a=>out)=(2,3);
+                  showcancelled out;
+                  (b =>out)=(3,4);
+                endspecify"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"specify
+                  showcancelled out;
+                  pulsestyle_ondetect out;
+                  (a => out) = (2,3);
+                  (b => out) = (4,5);
+                  showcancelled out_b;
+                  pulsestyle_ondetect out_b;
+                  (a => out_b) = (3,4);
+                  (b => out_b) = (5,6);
+                endspecify
 
-        //        specify
-        //          showcancelled out,out_b;
-        //          pulsestyle_ondetect out,out_b;
-        //          (a => out) = (2,3);
-        //          (b => out) = (4,5);
-        //          (a => out_b) = (3,4);
-        //          (b => out_b) = (5,6);
-        //        endspecify"##,
-        //    Ok((_, _))
-        //);
+                specify
+                  showcancelled out,out_b;
+                  pulsestyle_ondetect out,out_b;
+                  (a => out) = (2,3);
+                  (b => out) = (4,5);
+                  (a => out_b) = (3,4);
+                  (b => out_b) = (5,6);
+                endspecify"##,
+            Ok((_, _))
+        );
     }
 
     #[test]
@@ -15010,14 +15018,14 @@ mod spec {
                 endspecify"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"specify
-        //          $setup( data, posedge clk, tSU );
-        //          $hold( posedge clk, data, tHLD );
-        //        endspecify"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"specify
+                  $setup( data, posedge clk, tSU );
+                  $hold( posedge clk, data, tHLD );
+                endspecify"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"specify
@@ -15056,6 +15064,8 @@ mod spec {
                 endspecify"##,
             Ok((_, _))
         );
+        // TODO
+        // $width must have threshold
         //test!(
         //    many1(module_item),
         //    r##"specify
@@ -15064,18 +15074,18 @@ mod spec {
         //          $width ( negedge clr, lim, thresh, notif );
         //          $width ( negedge clr, lim, 0, notif );
         //          // Illegal Calls
-        //          $width ( negedge clr, lim, , notif );
-        //          $width ( negedge clr, lim, notif );
+        //          //$width ( negedge clr, lim, , notif );
+        //          //$width ( negedge clr, lim, notif );
         //        endspecify"##,
         //    Ok((_, _))
         //);
-        //test!(
-        //    many1(module_item),
-        //    r##"specify
-        //          $nochange( posedge clk, data, 0, 0) ;
-        //        endspecify"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"specify
+                  $nochange( posedge clk, data, 0, 0) ;
+                endspecify"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"specify
@@ -15084,63 +15094,63 @@ mod spec {
                 endspecify"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"primitive posdff_udp(q, clock, data, preset, clear, notifier);
-        //          output q; reg q;
-        //          input clock, data, preset, clear, notifier;
-        //          table
-        //            //clock data p c notifier state q
-        //            //-------------------------------------
-        //            r 0 1 1 ? : ? : 0 ;
-        //            r 1 1 1 ? : ? : 1 ;
-        //            p 1 ? 1 ? : 1 : 1 ;
-        //            p 0 1 ? ? : 0 : 0 ;
-        //            n ? ? ? ? : ? : - ;
-        //            ? * ? ? ? : ? : - ;
-        //            ? ? 0 1 ? : ? : 1 ;
-        //            ? ? * 1 ? : 1 : 1 ;
-        //            ? ? 1 0 ? : ? : 0 ;
-        //            ? ? 1 * ? : 0 : 0 ;
-        //            ? ? ? ? * : ? : x ;// At any notifier event
-        //            // output x
-        //          endtable
-        //        endprimitive
+        test!(
+            source_text,
+            r##"primitive posdff_udp(q, clock, data, preset, clear, notifier);
+                  output q; reg q;
+                  input clock, data, preset, clear, notifier;
+                  table
+                    //clock data p c notifier state q
+                    //-------------------------------------
+                    r 0 1 1 ? : ? : 0 ;
+                    r 1 1 1 ? : ? : 1 ;
+                    p 1 ? 1 ? : 1 : 1 ;
+                    p 0 1 ? ? : 0 : 0 ;
+                    n ? ? ? ? : ? : - ;
+                    ? * ? ? ? : ? : - ;
+                    ? ? 0 1 ? : ? : 1 ;
+                    ? ? * 1 ? : 1 : 1 ;
+                    ? ? 1 0 ? : ? : 0 ;
+                    ? ? 1 * ? : 0 : 0 ;
+                    ? ? ? ? * : ? : x ;// At any notifier event
+                    // output x
+                  endtable
+                endprimitive
 
-        //        module dff(q, qbar, clock, data, preset, clear);
-        //          output q, qbar;
-        //          input clock, data, preset, clear;
-        //          reg notifier;
-        //          and (enable, preset, clear);
-        //          not (qbar, ffout);
-        //          buf (q, ffout);
-        //          posdff_udp (ffout, clock, data, preset, clear, notifier);
+                module dff(q, qbar, clock, data, preset, clear);
+                  output q, qbar;
+                  input clock, data, preset, clear;
+                  reg notifier;
+                  and (enable, preset, clear);
+                  not (qbar, ffout);
+                  buf (q, ffout);
+                  posdff_udp (ffout, clock, data, preset, clear, notifier);
 
-        //          specify
-        //            // Define timing check specparam values
-        //            specparam tSU = 10, tHD = 1, tPW = 25, tWPC = 10, tREC = 5;
-        //            // Define module path delay rise and fall min:typ:max values
-        //            specparam tPLHc = 4:6:9 , tPHLc = 5:8:11;
-        //            specparam tPLHpc = 3:5:6 , tPHLpc = 4:7:9;
-        //            // Specify module path delays
-        //            (clock *> q,qbar) = (tPLHc, tPHLc);
-        //            (preset,clear *> q,qbar) = (tPLHpc, tPHLpc);
-        //            // Setup time : data to clock, only when preset and clear are 1
-        //            $setup(data, posedge clock &&& enable, tSU, notifier);
-        //            // Hold time: clock to data, only when preset and clear are 1
-        //            $hold(posedge clock, data &&& enable, tHD, notifier);
-        //            // Clock period check
-        //            $period(posedge clock, tPW, notifier);
-        //            // Pulse width : preset, clear
-        //            $width(negedge preset, tWPC, 0, notifier);
-        //            $width(negedge clear, tWPC, 0, notifier);
-        //            // Recovery time: clear or preset to clock
-        //            $recovery(posedge preset, posedge clock, tREC, notifier);
-        //            $recovery(posedge clear, posedge clock, tREC, notifier);
-        //          endspecify
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                  specify
+                    // Define timing check specparam values
+                    specparam tSU = 10, tHD = 1, tPW = 25, tWPC = 10, tREC = 5;
+                    // Define module path delay rise and fall min:typ:max values
+                    specparam tPLHc = 4:6:9 , tPHLc = 5:8:11;
+                    specparam tPLHpc = 3:5:6 , tPHLpc = 4:7:9;
+                    // Specify module path delays
+                    (clock *> q,qbar) = (tPLHc, tPHLc);
+                    (preset,clear *> q,qbar) = (tPLHpc, tPHLpc);
+                    // Setup time : data to clock, only when preset and clear are 1
+                    $setup(data, posedge clock &&& enable, tSU, notifier);
+                    // Hold time: clock to data, only when preset and clear are 1
+                    $hold(posedge clock, data &&& enable, tHD, notifier);
+                    // Clock period check
+                    $period(posedge clock, tPW, notifier);
+                    // Pulse width : preset, clear
+                    $width(negedge preset, tWPC, 0, notifier);
+                    $width(negedge clear, tWPC, 0, notifier);
+                    // Recovery time: clear or preset to clock
+                    $recovery(posedge preset, posedge clock, tREC, notifier);
+                    $recovery(posedge clear, posedge clock, tREC, notifier);
+                  endspecify
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"specify
@@ -15207,23 +15217,23 @@ mod spec {
                 endspecify"##,
             Ok((_, _))
         );
-        //test!(
-        //    many1(module_item),
-        //    r##"specify
-        //          (CLK = Q) = 6;
-        //          $setuphold (posedge CLK, posedge D, -3, 8, , , , dCLK, dD);
-        //          $setuphold (posedge CLK, negedge D, -7, 13, , , , dCLK, dD);
-        //        endspecify"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"specify
-        //          $setup (data, clk &&& cond1, tsetup, ntfr);
-        //          $hold (clk, data &&& cond1, thold, ntfr);
-        //        endspecify"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"specify
+                  (CLK => Q) = 6;
+                  $setuphold (posedge CLK, posedge D, -3, 8, , , , dCLK, dD);
+                  $setuphold (posedge CLK, negedge D, -7, 13, , , , dCLK, dD);
+                endspecify"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"specify
+                  $setup (data, clk &&& cond1, tsetup, ntfr);
+                  $hold (clk, data &&& cond1, thold, ntfr);
+                endspecify"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"specify
@@ -15320,6 +15330,8 @@ mod spec {
                 endconfig"##,
             Ok((_, _))
         );
+        // TODO
+        // use don't have #()
         //test!(
         //    source_text,
         //    r##"config cfgl;
@@ -15329,6 +15341,8 @@ mod spec {
         //        endconfig"##,
         //    Ok((_, _))
         //);
+        // TODO
+        // use don't have #()
         //test!(
         //    source_text,
         //    r##"module top4 ();
@@ -15347,6 +15361,8 @@ mod spec {
         //        endconfig"##,
         //    Ok((_, _))
         //);
+        // TODO
+        // use don't have #()
         //test!(
         //    source_text,
         //    r##"config cfg3;
@@ -15355,6 +15371,8 @@ mod spec {
         //        endconfig"##,
         //    Ok((_, _))
         //);
+        // TODO
+        // use don't have #()
         //test!(
         //    source_text,
         //    r##"config cfg4;
@@ -15364,6 +15382,8 @@ mod spec {
         //        endconfig"##,
         //    Ok((_, _))
         //);
+        // TODO
+        // use don't have #()
         //test!(
         //    source_text,
         //    r##"module test;
@@ -15416,15 +15436,15 @@ mod spec {
                 endconfig"##,
             Ok((_, _))
         );
-        //test!(
-        //    source_text,
-        //    r##"config cfg4
-        //          design rtlLib.top ;
-        //          default liblist gateLib rtlLib;
-        //          instance top.a2 liblist aLib;
-        //        endconfig"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            source_text,
+            r##"config cfg4;
+                  design rtlLib.top ;
+                  default liblist gateLib rtlLib;
+                  instance top.a2 liblist aLib;
+                endconfig"##,
+            Ok((_, _))
+        );
         test!(
             source_text,
             r##"config cfg5;
@@ -15509,6 +15529,8 @@ mod spec {
 
     #[test]
     fn clause35() {
+        // TODO
+        // c_identifier can't accept \begin.
         //test!(
         //    source_text,
         //    r##"export "DPI-C" f_plus = function \f+ ; // "f+" exported as "f_plus"
@@ -15517,47 +15539,47 @@ mod spec {
         //        import "DPI-C" \begin = function void \init[2] (); // "begin" is a linkage name"##,
         //    Ok((_, _))
         //);
-        //test!(
-        //    source_text,
-        //    r##"import "DPI-C" function void myInit();
+        test!(
+            source_text,
+            r##"import "DPI-C" function void myInit();
 
-        //        // from standard math library
-        //        import "DPI-C" pure function real sin(real);
+                // from standard math library
+                import "DPI-C" pure function real sin(real);
 
-        //        // from standard C library: memory management
-        //        import "DPI-C" function chandle malloc(int size); // standard C function
-        //        import "DPI-C" function void free(chandle ptr); // standard C function
+                // from standard C library: memory management
+                import "DPI-C" function chandle malloc(int size); // standard C function
+                import "DPI-C" function void free(chandle ptr); // standard C function
 
-        //        // abstract data structure: queue
-        //        import "DPI-C" function chandle newQueue(input string name_of_queue);
+                // abstract data structure: queue
+                import "DPI-C" function chandle newQueue(input string name_of_queue);
 
-        //        // Note the following import uses the same foreign function for
-        //        // implementation as the prior import, but has different SystemVerilog name
-        //        // and provides a default value for the argument.
-        //        import "DPI-C" newQueue=function chandle newAnonQueue(input string s=null);
-        //        import "DPI-C" function chandle newElem(bit [15:0]);
-        //        import "DPI-C" function void enqueue(chandle queue, chandle elem);
-        //        import "DPI-C" function chandle dequeue(chandle queue);
+                // Note the following import uses the same foreign function for
+                // implementation as the prior import, but has different SystemVerilog name
+                // and provides a default value for the argument.
+                import "DPI-C" newQueue=function chandle newAnonQueue(input string s=null);
+                import "DPI-C" function chandle newElem(bit [15:0]);
+                import "DPI-C" function void enqueue(chandle queue, chandle elem);
+                import "DPI-C" function chandle dequeue(chandle queue);
 
-        //        // miscellanea
-        //        import "DPI-C" function bit [15:0] getStimulus();
-        //        import "DPI-C” context function void processTransaction(chandle elem,
-        //        output logic [64:1] arr [0:63]);
-        //        import "DPI-C" task checkResults(input string s, bit [511:0] packet);"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    source_text,
-        //    r##"import "DPI-C" function void f1(input logic [127:0]);
-        //        import "DPI-C" function void f2(logic [127:0] i []); //open array of 128-bit"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    source_text,
-        //    r##"import "DPI-C" function void f3(input MyType i [][]);
-        //          /* 2-dimensional unsized unpacked array of MyType */"##,
-        //    Ok((_, _))
-        //);
+                // miscellanea
+                import "DPI-C" function bit [15:0] getStimulus();
+                import "DPI-C" context function void processTransaction(chandle elem,
+                output logic [64:1] arr [0:63]);
+                import "DPI-C" task checkResults(input string s, bit [511:0] packet);"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"import "DPI-C" function void f1(input logic [127:0]);
+                import "DPI-C" function void f2(logic [127:0] i []); //open array of 128-bit"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"import "DPI-C" function void f3(input MyType i [][]);
+                  /* 2-dimensional unsized unpacked array of MyType */"##,
+            Ok((_, _))
+        );
     }
 
     #[test]
@@ -15581,10 +15603,4 @@ mod spec {
 }
 
 #[test]
-fn debug() {
-    test!(
-        many1(module_item),
-        r##"property p; (accept_on(a) p1) and (reject_on(b) p2); endproperty"##,
-        Ok((_, _))
-    );
-}
+fn debug() {}

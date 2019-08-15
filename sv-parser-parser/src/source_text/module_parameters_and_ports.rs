@@ -178,7 +178,7 @@ pub(crate) fn port_declaration_interface(s: Span) -> IResult<Span, PortDeclarati
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn port(s: Span) -> IResult<Span, Port> {
-    alt((port_non_named, port_named))(s)
+    alt((port_named, port_non_named))(s)
 }
 
 #[recursive_parser]
@@ -205,13 +205,13 @@ pub(crate) fn port_expression(s: Span) -> IResult<Span, PortExpression> {
         map(port_reference, |x| {
             PortExpression::PortReference(Box::new(x))
         }),
-        port_expressio_named,
+        port_expression_named,
     ))(s)
 }
 
 #[tracable_parser]
 #[packrat_parser]
-pub(crate) fn port_expressio_named(s: Span) -> IResult<Span, PortExpression> {
+pub(crate) fn port_expression_named(s: Span) -> IResult<Span, PortExpression> {
     let (s, a) = brace(list(symbol(","), port_reference))(s)?;
     Ok((
         s,

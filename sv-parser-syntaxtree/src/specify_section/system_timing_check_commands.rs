@@ -15,7 +15,7 @@ pub enum SystemTimingCheck {
     FullskewTimingCheck(Box<FullskewTimingCheck>),
     PeriodTimingCheck(Box<PeriodTimingCheck>),
     WidthTimingCheck(Box<WidthTimingCheck>),
-    NochargeTimingCheck(Box<NochargeTimingCheck>),
+    NochangeTimingCheck(Box<NochangeTimingCheck>),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -247,7 +247,7 @@ pub struct WidthTimingCheck {
 }
 
 #[derive(Clone, Debug, Node)]
-pub struct NochargeTimingCheck {
+pub struct NochangeTimingCheck {
     pub nodes: (
         Keyword,
         Paren<(

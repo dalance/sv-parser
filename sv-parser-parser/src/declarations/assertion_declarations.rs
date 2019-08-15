@@ -307,11 +307,8 @@ pub(crate) fn property_spec(s: Span) -> IResult<Span, PropertySpec> {
 pub(crate) fn property_expr(s: Span) -> IResult<Span, PropertyExpr> {
     alt((
         alt((
-            property_expr_binary,
-            property_expr_implication_overlapped,
-            property_expr_implication_nonoverlapped,
-            property_expr_followed_by_overlapped,
-            property_expr_followed_by_nonoverlapped,
+            property_expr_binary_property,
+            property_expr_binary_sequence,
             map(terminated(sequence_expr, peek(not(symbol("(")))), |x| {
                 PropertyExpr::SequenceExpr(Box::new(x))
             }),
@@ -387,7 +384,7 @@ pub(crate) fn property_expr_not(s: Span) -> IResult<Span, PropertyExpr> {
 #[recursive_parser]
 #[tracable_parser]
 #[packrat_parser]
-pub(crate) fn property_expr_binary(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_binary_property(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = property_expr(s)?;
     let (s, b) = alt((
         keyword("or"),
@@ -402,37 +399,20 @@ pub(crate) fn property_expr_binary(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, c) = property_expr(s)?;
     Ok((
         s,
-        PropertyExpr::Binary(Box::new(PropertyExprBinary { nodes: (a, b, c) })),
+        PropertyExpr::BinaryProperty(Box::new(PropertyExprBinaryProperty { nodes: (a, b, c) })),
     ))
 }
 
 #[recursive_parser]
 #[tracable_parser]
 #[packrat_parser]
-pub(crate) fn property_expr_implication_overlapped(s: Span) -> IResult<Span, PropertyExpr> {
+pub(crate) fn property_expr_binary_sequence(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = sequence_expr(s)?;
-    let (s, b) = symbol("|->")(s)?;
+    let (s, b) = alt((symbol("|->"), symbol("|=>"), symbol("#-#"), symbol("#=#")))(s)?;
     let (s, c) = property_expr(s)?;
     Ok((
         s,
-        PropertyExpr::ImplicationOverlapped(Box::new(PropertyExprImplicationOverlapped {
-            nodes: (a, b, c),
-        })),
-    ))
-}
-
-#[recursive_parser]
-#[tracable_parser]
-#[packrat_parser]
-pub(crate) fn property_expr_implication_nonoverlapped(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = sequence_expr(s)?;
-    let (s, b) = symbol("|=>")(s)?;
-    let (s, c) = property_expr(s)?;
-    Ok((
-        s,
-        PropertyExpr::ImplicationNonoverlapped(Box::new(PropertyExprImplicationNonoverlapped {
-            nodes: (a, b, c),
-        })),
+        PropertyExpr::BinarySequence(Box::new(PropertyExprBinarySequence { nodes: (a, b, c) })),
     ))
 }
 
@@ -466,37 +446,6 @@ pub(crate) fn property_expr_case(s: Span) -> IResult<Span, PropertyExpr> {
         })),
     ))
 }
-
-#[recursive_parser]
-#[tracable_parser]
-#[packrat_parser]
-pub(crate) fn property_expr_followed_by_overlapped(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = sequence_expr(s)?;
-    let (s, b) = symbol("#-#")(s)?;
-    let (s, c) = property_expr(s)?;
-    Ok((
-        s,
-        PropertyExpr::FollowedByOverlapped(Box::new(PropertyExprFollowedByOverlapped {
-            nodes: (a, b, c),
-        })),
-    ))
-}
-
-#[recursive_parser]
-#[tracable_parser]
-#[packrat_parser]
-pub(crate) fn property_expr_followed_by_nonoverlapped(s: Span) -> IResult<Span, PropertyExpr> {
-    let (s, a) = sequence_expr(s)?;
-    let (s, b) = symbol("#=#")(s)?;
-    let (s, c) = property_expr(s)?;
-    Ok((
-        s,
-        PropertyExpr::FollowedByNonoverlapped(Box::new(PropertyExprFollowedByNonoverlapped {
-            nodes: (a, b, c),
-        })),
-    ))
-}
-
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn property_expr_nexttime(s: Span) -> IResult<Span, PropertyExpr> {
@@ -766,10 +715,7 @@ pub(crate) fn sequence_expr(s: Span) -> IResult<Span, SequenceExpr> {
         sequence_expr_throughout,
         terminated(sequence_expr_expression, peek(not(symbol("(")))),
         sequence_expr_instance,
-        sequence_expr_and,
-        sequence_expr_or,
-        sequence_expr_intersect,
-        sequence_expr_within,
+        sequence_expr_binary,
         sequence_expr_paren,
         sequence_expr_first_match,
         sequence_expr_clocking_event,
@@ -844,39 +790,18 @@ pub(crate) fn sequence_expr_paren(s: Span) -> IResult<Span, SequenceExpr> {
 #[recursive_parser]
 #[tracable_parser]
 #[packrat_parser]
-pub(crate) fn sequence_expr_and(s: Span) -> IResult<Span, SequenceExpr> {
+pub(crate) fn sequence_expr_binary(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
-    let (s, b) = keyword("and")(s)?;
+    let (s, b) = alt((
+        keyword("and"),
+        keyword("intersect"),
+        keyword("or"),
+        keyword("within"),
+    ))(s)?;
     let (s, c) = sequence_expr(s)?;
     Ok((
         s,
-        SequenceExpr::And(Box::new(SequenceExprAnd { nodes: (a, b, c) })),
-    ))
-}
-
-#[recursive_parser]
-#[tracable_parser]
-#[packrat_parser]
-pub(crate) fn sequence_expr_intersect(s: Span) -> IResult<Span, SequenceExpr> {
-    let (s, a) = sequence_expr(s)?;
-    let (s, b) = keyword("intersect")(s)?;
-    let (s, c) = sequence_expr(s)?;
-    Ok((
-        s,
-        SequenceExpr::Intersect(Box::new(SequenceExprIntersect { nodes: (a, b, c) })),
-    ))
-}
-
-#[recursive_parser]
-#[tracable_parser]
-#[packrat_parser]
-pub(crate) fn sequence_expr_or(s: Span) -> IResult<Span, SequenceExpr> {
-    let (s, a) = sequence_expr(s)?;
-    let (s, b) = keyword("or")(s)?;
-    let (s, c) = sequence_expr(s)?;
-    Ok((
-        s,
-        SequenceExpr::Or(Box::new(SequenceExprOr { nodes: (a, b, c) })),
+        SequenceExpr::Binary(Box::new(SequenceExprBinary { nodes: (a, b, c) })),
     ))
 }
 
@@ -904,19 +829,6 @@ pub(crate) fn sequence_expr_throughout(s: Span) -> IResult<Span, SequenceExpr> {
     Ok((
         s,
         SequenceExpr::Throughout(Box::new(SequenceExprThroughout { nodes: (a, b, c) })),
-    ))
-}
-
-#[recursive_parser]
-#[tracable_parser]
-#[packrat_parser]
-pub(crate) fn sequence_expr_within(s: Span) -> IResult<Span, SequenceExpr> {
-    let (s, a) = sequence_expr(s)?;
-    let (s, b) = keyword("within")(s)?;
-    let (s, c) = sequence_expr(s)?;
-    Ok((
-        s,
-        SequenceExpr::Within(Box::new(SequenceExprWithin { nodes: (a, b, c) })),
     ))
 }
 

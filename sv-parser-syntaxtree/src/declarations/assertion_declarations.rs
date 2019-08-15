@@ -163,13 +163,10 @@ pub enum PropertyExpr {
     Weak(Box<PropertyExprWeak>),
     Paren(Box<PropertyExprParen>),
     Not(Box<PropertyExprNot>),
-    Binary(Box<PropertyExprBinary>),
-    ImplicationOverlapped(Box<PropertyExprImplicationOverlapped>),
-    ImplicationNonoverlapped(Box<PropertyExprImplicationNonoverlapped>),
+    BinaryProperty(Box<PropertyExprBinaryProperty>),
+    BinarySequence(Box<PropertyExprBinarySequence>),
     If(Box<PropertyExprIf>),
     Case(Box<PropertyExprCase>),
-    FollowedByOverlapped(Box<PropertyExprFollowedByOverlapped>),
-    FollowedByNonoverlapped(Box<PropertyExprFollowedByNonoverlapped>),
     Nexttime(Box<PropertyExprNexttime>),
     SNexttime(Box<PropertyExprSNexttime>),
     Always(Box<PropertyExprAlways>),
@@ -205,17 +202,12 @@ pub struct PropertyExprNot {
 }
 
 #[derive(Clone, Debug, Node)]
-pub struct PropertyExprBinary {
+pub struct PropertyExprBinaryProperty {
     pub nodes: (PropertyExpr, Keyword, PropertyExpr),
 }
 
 #[derive(Clone, Debug, Node)]
-pub struct PropertyExprImplicationOverlapped {
-    pub nodes: (SequenceExpr, Symbol, PropertyExpr),
-}
-
-#[derive(Clone, Debug, Node)]
-pub struct PropertyExprImplicationNonoverlapped {
+pub struct PropertyExprBinarySequence {
     pub nodes: (SequenceExpr, Symbol, PropertyExpr),
 }
 
@@ -238,16 +230,6 @@ pub struct PropertyExprCase {
         Vec<PropertyCaseItem>,
         Keyword,
     ),
-}
-
-#[derive(Clone, Debug, Node)]
-pub struct PropertyExprFollowedByOverlapped {
-    pub nodes: (SequenceExpr, Symbol, PropertyExpr),
-}
-
-#[derive(Clone, Debug, Node)]
-pub struct PropertyExprFollowedByNonoverlapped {
-    pub nodes: (SequenceExpr, Symbol, PropertyExpr),
 }
 
 #[derive(Clone, Debug, Node)]
@@ -386,12 +368,9 @@ pub enum SequenceExpr {
     Expression(Box<SequenceExprExpression>),
     Instance(Box<SequenceExprInstance>),
     Paren(Box<SequenceExprParen>),
-    And(Box<SequenceExprAnd>),
-    Intersect(Box<SequenceExprIntersect>),
-    Or(Box<SequenceExprOr>),
+    Binary(Box<SequenceExprBinary>),
     FirstMatch(Box<SequenceExprFirstMatch>),
     Throughout(Box<SequenceExprThroughout>),
-    Within(Box<SequenceExprWithin>),
     ClockingEvent(Box<SequenceExprClockingEvent>),
 }
 
@@ -433,17 +412,7 @@ pub struct SequenceExprParen {
 }
 
 #[derive(Clone, Debug, Node)]
-pub struct SequenceExprAnd {
-    pub nodes: (SequenceExpr, Keyword, SequenceExpr),
-}
-
-#[derive(Clone, Debug, Node)]
-pub struct SequenceExprIntersect {
-    pub nodes: (SequenceExpr, Keyword, SequenceExpr),
-}
-
-#[derive(Clone, Debug, Node)]
-pub struct SequenceExprOr {
+pub struct SequenceExprBinary {
     pub nodes: (SequenceExpr, Keyword, SequenceExpr),
 }
 
@@ -458,11 +427,6 @@ pub struct SequenceExprFirstMatch {
 #[derive(Clone, Debug, Node)]
 pub struct SequenceExprThroughout {
     pub nodes: (ExpressionOrDist, Keyword, SequenceExpr),
-}
-
-#[derive(Clone, Debug, Node)]
-pub struct SequenceExprWithin {
-    pub nodes: (SequenceExpr, Keyword, SequenceExpr),
 }
 
 #[derive(Clone, Debug, Node)]

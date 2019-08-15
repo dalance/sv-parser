@@ -39,8 +39,8 @@ pub(crate) fn system_timing_check(s: Span) -> IResult<Span, SystemTimingCheck> {
         map(width_timing_check, |x| {
             SystemTimingCheck::WidthTimingCheck(Box::new(x))
         }),
-        map(nocharge_timing_check, |x| {
-            SystemTimingCheck::NochargeTimingCheck(Box::new(x))
+        map(nochange_timing_check, |x| {
+            SystemTimingCheck::NochangeTimingCheck(Box::new(x))
         }),
     ))(s)
 }
@@ -64,7 +64,7 @@ pub(crate) fn setup_timing_check(s: Span) -> IResult<Span, SetupTimingCheck> {
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn hold_timing_check(s: Span) -> IResult<Span, HoldTimingCheck> {
-    let (s, a) = keyword("$setup")(s)?;
+    let (s, a) = keyword("$hold")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
         symbol(","),
@@ -275,8 +275,8 @@ pub(crate) fn width_timing_check(s: Span) -> IResult<Span, WidthTimingCheck> {
 
 #[tracable_parser]
 #[packrat_parser]
-pub(crate) fn nocharge_timing_check(s: Span) -> IResult<Span, NochargeTimingCheck> {
-    let (s, a) = keyword("$nocharge")(s)?;
+pub(crate) fn nochange_timing_check(s: Span) -> IResult<Span, NochangeTimingCheck> {
+    let (s, a) = keyword("$nochange")(s)?;
     let (s, b) = paren(tuple((
         referecne_event,
         symbol(","),
@@ -288,5 +288,5 @@ pub(crate) fn nocharge_timing_check(s: Span) -> IResult<Span, NochargeTimingChec
         opt(pair(symbol(","), opt(notifier))),
     )))(s)?;
     let (s, c) = symbol(";")(s)?;
-    Ok((s, NochargeTimingCheck { nodes: (a, b, c) }))
+    Ok((s, NochangeTimingCheck { nodes: (a, b, c) }))
 }

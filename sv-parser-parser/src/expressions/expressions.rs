@@ -363,14 +363,14 @@ pub(crate) fn module_path_conditional_expression(
 #[packrat_parser]
 pub(crate) fn module_path_expression(s: Span) -> IResult<Span, ModulePathExpression> {
     alt((
-        map(module_path_primary, |x| {
-            ModulePathExpression::ModulePathPrimary(Box::new(x))
-        }),
-        module_path_expression_unary,
         module_path_expression_binary,
         map(module_path_conditional_expression, |x| {
             ModulePathExpression::ModulePathConditionalExpression(Box::new(x))
         }),
+        map(module_path_primary, |x| {
+            ModulePathExpression::ModulePathPrimary(Box::new(x))
+        }),
+        module_path_expression_unary,
     ))(s)
 }
 

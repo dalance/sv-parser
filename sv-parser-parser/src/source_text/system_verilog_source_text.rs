@@ -5,9 +5,10 @@ use crate::*;
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn source_text(s: Span) -> IResult<Span, SourceText> {
-    let (s, a) = opt(timeunits_declaration)(s)?;
-    let (s, b) = many0(description)(s)?;
-    Ok((s, SourceText { nodes: (a, b) }))
+    let (s, a) = many0(white_space)(s)?;
+    let (s, b) = opt(timeunits_declaration)(s)?;
+    let (s, c) = many0(description)(s)?;
+    Ok((s, SourceText { nodes: (a, b, c) }))
 }
 
 #[tracable_parser]

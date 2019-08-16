@@ -2,259 +2,6 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-const KEYWORDS: &[&str] = &[
-    "accept_on",
-    "alias",
-    "always",
-    "always_comb",
-    "always_ff",
-    "always_latch",
-    "and",
-    "assert",
-    "assign",
-    "assume",
-    "automatic",
-    "before",
-    "begin",
-    "bind",
-    "bins",
-    "binsof",
-    "bit",
-    "break",
-    "buf",
-    "bufif0",
-    "bufif1",
-    "byte",
-    "case",
-    "casex",
-    "casez",
-    "cell",
-    "chandle",
-    "checker",
-    "class",
-    "clocking",
-    "cmos",
-    "config",
-    "const",
-    "constraint",
-    "context",
-    "continue",
-    "cover",
-    "covergroup",
-    "coverpoint",
-    "cross",
-    "deassign",
-    "default",
-    "defparam",
-    "design",
-    "disable",
-    "dist",
-    "do",
-    "edge",
-    "else",
-    "end",
-    "endcase",
-    "endchecker",
-    "endclass",
-    "endclocking",
-    "endconfig",
-    "endfunction",
-    "endgenerate",
-    "endgroup",
-    "endinterface",
-    "endmodule",
-    "endpackage",
-    "endprimitive",
-    "endprogram",
-    "endproperty",
-    "endspecify",
-    "endsequence",
-    "endtable",
-    "endtask",
-    "enum",
-    "event",
-    "eventually",
-    "expect",
-    "export",
-    "extends",
-    "extern",
-    "final",
-    "first_match",
-    "for",
-    "force",
-    "foreach",
-    "forever",
-    "fork",
-    "forkjoin",
-    "function",
-    "generate",
-    "genvar",
-    "global",
-    "highz0",
-    "highz1",
-    "if",
-    "iff",
-    "ifnone",
-    "ignore_bins",
-    "illegal_bins",
-    "implements",
-    "implies",
-    "import",
-    "incdir",
-    "include",
-    "initial",
-    "inout",
-    "input",
-    "inside",
-    "instance",
-    "int",
-    "integer",
-    "interconnect",
-    "interface",
-    "intersect",
-    "join",
-    "join_any",
-    "join_none",
-    "large",
-    "let",
-    "liblist",
-    "library",
-    "local",
-    "localparam",
-    "logic",
-    "longint",
-    "macromodule",
-    "matches",
-    "medium",
-    "modport",
-    "module",
-    "nand",
-    "negedge",
-    "nettype",
-    "new",
-    "nexttime",
-    "nmos",
-    "nor",
-    "noshowcancelled",
-    "not",
-    "notif0",
-    "notif1",
-    "null",
-    "or",
-    "output",
-    "package",
-    "packed",
-    "parameter",
-    "pmos",
-    "posedge",
-    "primitive",
-    "priority",
-    "program",
-    "property",
-    "protected",
-    "pull0",
-    "pull1",
-    "pulldown",
-    "pullup",
-    "pulsestyle_ondetect",
-    "pulsestyle_onevent",
-    "pure",
-    "rand",
-    "randc",
-    "randcase",
-    "randsequence",
-    "rcmos",
-    "real",
-    "realtime",
-    "ref",
-    "reg",
-    "reject_on",
-    "release",
-    "repeat",
-    "restrict",
-    "return",
-    "rnmos",
-    "rpmos",
-    "rtran",
-    "rtranif0",
-    "rtranif1",
-    "s_always",
-    "s_eventually",
-    "s_nexttime",
-    "s_until",
-    "s_until_with",
-    "scalared",
-    "sequence",
-    "shortint",
-    "shortreal",
-    "showcancelled",
-    "signed",
-    "small",
-    "soft",
-    "solve",
-    "specify",
-    "specparam",
-    "static",
-    "string",
-    "strong",
-    "strong0",
-    "strong1",
-    "struct",
-    "super",
-    "supply0",
-    "supply1",
-    "sync_accept_on",
-    "sync_reject_on",
-    "table",
-    "tagged",
-    "task",
-    "this",
-    "throughout",
-    "time",
-    "timeprecision",
-    "timeunit",
-    "tran",
-    "tranif0",
-    "tranif1",
-    "tri",
-    "tri0",
-    "tri1",
-    "triand",
-    "trior",
-    "trireg",
-    "type",
-    "typedef",
-    "union",
-    "unique",
-    "unique0",
-    "unsigned",
-    "until",
-    "until_with",
-    "untyped",
-    "use",
-    "uwire",
-    "var",
-    "vectored",
-    "virtual",
-    "void",
-    "wait",
-    "wait_order",
-    "wand",
-    "weak",
-    "weak0",
-    "weak1",
-    "while",
-    "wildcard",
-    "wire",
-    "with",
-    "within",
-    "wor",
-    "xnor",
-    "xor",
-];
-
-// -----------------------------------------------------------------------------
-
 pub(crate) fn ws<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, (O, Vec<WhiteSpace>)>
 where
     F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
@@ -514,7 +261,73 @@ pub(crate) fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
             WhiteSpace::Space(Box::new(into_locate(x)))
         }),
         map(comment, |x| WhiteSpace::Comment(Box::new(x))),
+        map(compiler_directive, |x| {
+            WhiteSpace::CompilerDirective(Box::new(x))
+        }),
     ))(s)
+}
+
+// -----------------------------------------------------------------------------
+
+#[derive(Clone, Copy)]
+pub(crate) enum VersionSpecifier {
+    Ieee1364_1995,
+    Ieee1364_2001,
+    Ieee1364_2001Noconfig,
+    Ieee1364_2005,
+    Ieee1800_2005,
+    Ieee1800_2009,
+    Ieee1800_2012,
+    Ieee1800_2017,
+}
+
+thread_local!(
+    static CURRENT_VERSION: core::cell::RefCell<Vec<VersionSpecifier>> = {
+        core::cell::RefCell::new(Vec::new())
+    }
+);
+
+pub(crate) fn begin_keywords(version: &str) {
+    CURRENT_VERSION.with(|current_version| match version {
+        "1364-1995" => current_version
+            .borrow_mut()
+            .push(VersionSpecifier::Ieee1364_1995),
+        "1364-2001" => current_version
+            .borrow_mut()
+            .push(VersionSpecifier::Ieee1364_2001),
+        "1364-2001-noconfig" => current_version
+            .borrow_mut()
+            .push(VersionSpecifier::Ieee1364_2001Noconfig),
+        "1364-2005" => current_version
+            .borrow_mut()
+            .push(VersionSpecifier::Ieee1364_2005),
+        "1800-2005" => current_version
+            .borrow_mut()
+            .push(VersionSpecifier::Ieee1800_2005),
+        "1800-2009" => current_version
+            .borrow_mut()
+            .push(VersionSpecifier::Ieee1800_2009),
+        "1800-2012" => current_version
+            .borrow_mut()
+            .push(VersionSpecifier::Ieee1800_2012),
+        "1800-2017" => current_version
+            .borrow_mut()
+            .push(VersionSpecifier::Ieee1800_2017),
+        _ => (),
+    });
+}
+
+pub(crate) fn end_keywords() {
+    CURRENT_VERSION.with(|current_version| {
+        current_version.borrow_mut().pop();
+    });
+}
+
+pub(crate) fn current_version() -> Option<VersionSpecifier> {
+    CURRENT_VERSION.with(|current_version| match current_version.borrow().last() {
+        Some(x) => Some(*x),
+        None => None,
+    })
 }
 
 // -----------------------------------------------------------------------------
@@ -534,7 +347,18 @@ pub(crate) fn concat<'a>(a: Span<'a>, b: Span<'a>) -> Option<Span<'a>> {
 }
 
 pub(crate) fn is_keyword(s: &Span) -> bool {
-    for k in KEYWORDS {
+    let keywords = match current_version() {
+        Some(VersionSpecifier::Ieee1364_1995) => KEYWORDS_1364_1995,
+        Some(VersionSpecifier::Ieee1364_2001) => KEYWORDS_1364_2001,
+        Some(VersionSpecifier::Ieee1364_2001Noconfig) => KEYWORDS_1364_2001_NOCONFIG,
+        Some(VersionSpecifier::Ieee1364_2005) => KEYWORDS_1364_2005,
+        Some(VersionSpecifier::Ieee1800_2005) => KEYWORDS_1800_2005,
+        Some(VersionSpecifier::Ieee1800_2009) => KEYWORDS_1800_2009,
+        Some(VersionSpecifier::Ieee1800_2012) => KEYWORDS_1800_2012,
+        Some(VersionSpecifier::Ieee1800_2017) => KEYWORDS_1800_2017,
+        None => KEYWORDS_1800_2017,
+    };
+    for k in keywords {
         if &s.fragment == k {
             return true;
         }

@@ -5,8 +5,9 @@ use crate::*;
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn library_text(s: Span) -> IResult<Span, LibraryText> {
-    let (s, a) = many0(library_description)(s)?;
-    Ok((s, LibraryText { nodes: (a,) }))
+    let (s, a) = many0(white_space)(s)?;
+    let (s, b) = many0(library_description)(s)?;
+    Ok((s, LibraryText { nodes: (a, b) }))
 }
 
 #[tracable_parser]

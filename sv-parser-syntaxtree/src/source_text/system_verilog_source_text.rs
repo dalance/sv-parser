@@ -4,7 +4,11 @@ use crate::*;
 
 #[derive(Clone, Debug, Node)]
 pub struct SourceText {
-    pub nodes: (Option<TimeunitsDeclaration>, Vec<Description>),
+    pub nodes: (
+        Vec<WhiteSpace>,
+        Option<TimeunitsDeclaration>,
+        Vec<Description>,
+    ),
 }
 
 #[derive(Clone, Debug, Node)]

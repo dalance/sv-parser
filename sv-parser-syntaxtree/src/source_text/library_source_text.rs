@@ -4,7 +4,7 @@ use crate::*;
 
 #[derive(Clone, Debug, Node)]
 pub struct LibraryText {
-    pub nodes: (Vec<LibraryDescription>,),
+    pub nodes: (Vec<WhiteSpace>, Vec<LibraryDescription>),
 }
 
 #[derive(Clone, Debug, Node)]

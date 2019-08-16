@@ -9,7 +9,7 @@ macro_rules! test {
         #[cfg(feature = "trace")]
         let info = info.set_tracable_info(
             info.get_tracable_info()
-                .fold("white_space")
+                //.fold("white_space")
                 .fold("number")
                 .fold("binary_operator")
                 .fold("unary_operator"),
@@ -289,6 +289,18 @@ mod unit {
     #[test]
     fn test_expression() {
         test!(expression, "(!a ? 0 : !b : 1 : c ? 0 : 1)", Ok((_, _)));
+    }
+
+    #[test]
+    fn test_text_macro_definition() {
+        test!(text_macro_definition, r##"`define a b c"##, Ok((_, _)));
+        test!(
+            text_macro_definition,
+            r##"`define a b \
+                          c"##,
+            Ok((_, _))
+        );
+        test!(text_macro_definition, r##"`define a"##, Ok((_, _)));
     }
 }
 
@@ -11056,87 +11068,87 @@ mod spec {
 
     #[test]
     fn clause20() {
-        //test!(
-        //    many1(module_item),
-        //    r##"`timescale 10 ns / 1 ns
-        //        module test;
-        //          logic set;
-        //          parameter p = 1.55;
-        //          initial begin
-        //            $monitor($time,,"set=", set);
-        //            #p set = 0;
-        //            #p set = 1;
-        //          end
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"`timescale 10 ns / 1 ns
-        //        module test;
-        //          logic set;
-        //          parameter p = 1.55;
-        //          initial begin
-        //            $monitor($realtime,,"set=", set);
-        //            #p set = 0;
-        //            #p set = 1;
-        //          end
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"`timescale 1 ms / 1 us
-        //        module a_dat;
-        //          initial
-        //            $printtimescale(b_dat.c1);
-        //        endmodule
+        test!(
+            source_text,
+            r##"`timescale 10 ns / 1 ns
+                module test;
+                  logic set;
+                  parameter p = 1.55;
+                  initial begin
+                    $monitor($time,,"set=", set);
+                    #p set = 0;
+                    #p set = 1;
+                  end
+                endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"`timescale 10 ns / 1 ns
+                module test;
+                  logic set;
+                  parameter p = 1.55;
+                  initial begin
+                    $monitor($realtime,,"set=", set);
+                    #p set = 0;
+                    #p set = 1;
+                  end
+                endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"`timescale 1 ms / 1 us
+                module a_dat;
+                  initial
+                    $printtimescale(b_dat.c1);
+                endmodule
 
-        //        `timescale 10 fs / 1 fs
-        //        module b_dat;
-        //          c_dat c1 ();
-        //        endmodule
+                `timescale 10 fs / 1 fs
+                module b_dat;
+                  c_dat c1 ();
+                endmodule
 
-        //        `timescale 1 ns / 1 ns
-        //        module c_dat;
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    many1(module_item),
-        //    r##"`timescale 1 ms / 1 ns
-        //        module cntrl;
-        //          initial
-        //        i    $timeformat(-9, 5, " ns", 10);
-        //        endmodule
+                `timescale 1 ns / 1 ns
+                module c_dat;
+                endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"`timescale 1 ms / 1 ns
+                module cntrl;
+                  initial
+                    $timeformat(-9, 5, " ns", 10);
+                endmodule
 
-        //        `timescale 1 fs / 1 fs
-        //        module a1_dat;
-        //          logic in1;
-        //          integer file;
-        //          buf #10000000 (o1,in1);
-        //          initial begin
-        //            file = $fopen("a1.dat");
-        //            #00000000 $fmonitor(file,"%m: %t in1=%d o1=%h", $realtime,in1,o1);
-        //            #10000000 in1 = 0;
-        //            #10000000 in1 = 1;
-        //          end
-        //        endmodule
+                `timescale 1 fs / 1 fs
+                module a1_dat;
+                  logic in1;
+                  integer file;
+                  buf #10000000 (o1,in1);
+                  initial begin
+                    file = $fopen("a1.dat");
+                    #00000000 $fmonitor(file,"%m: %t in1=%d o1=%h", $realtime,in1,o1);
+                    #10000000 in1 = 0;
+                    #10000000 in1 = 1;
+                  end
+                endmodule
 
-        //        `timescale 1 ps / 1 ps
-        //        module a2_dat;
-        //          logic in2;
-        //          integer file2;
-        //          buf #10000 (o2,in2);
-        //          initial begin
-        //            file2=$fopen("a2.dat");
-        //            #00000 $fmonitor(file2,"%m: %t in2=%d o2=%h",$realtime,in2,o2);
-        //            #10000 in2 = 0;
-        //            #10000 in2 = 1;
-        //          end
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                `timescale 1 ps / 1 ps
+                module a2_dat;
+                  logic in2;
+                  integer file2;
+                  buf #10000 (o2,in2);
+                  initial begin
+                    file2=$fopen("a2.dat");
+                    #00000 $fmonitor(file2,"%m: %t in2=%d o2=%h",$realtime,in2,o2);
+                    #10000 in2 = 0;
+                    #10000 in2 = 1;
+                  end
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module driver (net_r);
@@ -11743,6 +11755,93 @@ mod spec {
                       $dumpports(testbench.DUT, "testoutput.vcd");
                     end
                 endmodule"##,
+            Ok((_, _))
+        );
+    }
+
+    #[test]
+    fn clause22() {
+        test!(
+            source_text,
+            r##"`define D(x,y) initial $display("start", x , y, "end");"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"`define MACRO1(a=5,b="B",c) $display(a,,b,,c);
+                `define MACRO2(a=5, b, c="C") $display(a,,b,,c);
+                `define MACRO3(a=5, b=0, c="C") $display(a,,b,,c);"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"`define wordsize 8
+                `define var_nand(dly) nand #dly"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"`define max(a,b)((a) > (b) ? (a) : (b))"##,
+            Ok((_, _))
+        );
+        test!(source_text, r##"`define TOP(a,b) a + b"##, Ok((_, _)));
+        test!(
+            source_text,
+            r##"`define msg(x,y) `"x: `\`"y`\`"`""##,
+            Ok((_, _))
+        );
+        test!(source_text, r##"`define append(f) f``_master"##, Ok((_, _)));
+        test!(
+            source_text,
+            r##"`define home(filename) `"/home/mydir/filename`""##,
+            Ok((_, _))
+        );
+        test!(source_text, r##"`timescale 1 ns / 1 ps"##, Ok((_, _)));
+        test!(source_text, r##"`timescale 10 us / 100 ns"##, Ok((_, _)));
+        test!(
+            source_text,
+            r##"`timescale 10 ns / 1 ns
+                module test;
+                  logic set;
+                  parameter d = 1.55;
+
+                  initial begin
+                    #d set = 0;
+                    #d set = 1;
+                  end
+                endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"`line 3 "orig.v" 2
+                // This line is line 3 of orig.v after exiting include file"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"`begin_keywords "1364-2001" // use IEEE Std 1364-2001 Verilog keywords
+                module m2;
+                  reg [63:0] logic; // OK: "logic" is not a keyword in 1364-2001
+                endmodule
+                `end_keywords"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"`begin_keywords "1800-2005" // use IEEE Std 1800-2005 SystemVerilog keywords
+                module m2;
+                  reg [63:0] logic; // ERROR: "logic" is a keyword in 1800-2005
+                endmodule
+                `end_keywords"##,
+            Err(_)
+        );
+        test!(
+            source_text,
+            r##"`begin_keywords "1800-2005" // use IEEE Std 1800-2005 SystemVerilog keywords
+                interface if1;
+                endinterface
+                `end_keywords"##,
             Ok((_, _))
         );
     }
@@ -15475,56 +15574,56 @@ mod spec {
 
     #[test]
     fn clause34() {
-        //test!(
-        //    source_text,
-        //    r##"module secret (a, b);
-        //          input a;
-        //          output b;
+        test!(
+            source_text,
+            r##"module secret (a, b);
+                  input a;
+                  output b;
 
-        //          `pragma protect encoding=(enctype="raw")
-        //          `pragma protect data_method="x-caesar", data_keyname="rot13", begin
-        //          `pragma protect
-        //          runtime_license=(library="lic.so",feature="runSecret",entry="chk", match=42)
-        //            logic b;
-        //            initial
-        //              begin
-        //                b = 0;
-        //              end
+                  `pragma protect encoding=(enctype="raw")
+                  `pragma protect data_method="x-caesar", data_keyname="rot13", begin
+                  `pragma protect
+                  runtime_license=(library="lic.so",feature="runSecret",entry="chk", match=42)
+                    logic b;
+                    initial
+                      begin
+                        b = 0;
+                      end
 
-        //            always
-        //              begin
-        //                #5 b = a;
-        //              end
-        //          `pragma protect end
-        //        endmodule // secret"##,
-        //    Ok((_, _))
-        //);
-        //test!(
-        //    source_text,
-        //    r##"module secret (a, b);
-        //          input a;
-        //          output b;
-        //          `pragma protect encoding=(enctype="raw")
-        //          `pragma protect data_method="x-caesar", data_keyname="rot13",
-        //          begin_protected
-        //          `pragma protect encoding=(enctype="raw", bytes=190), data_block
-        //          `centzn cebgrpg ehagvzr_yvprafr=(yvoenel="yvp.fb",srngher="ehaFrperg",
-        //          ragel="pux",zngpu=42)
-        //            ert o;
-        //            vavgvny
-        //              ortva
-        //                o = 0;
-        //              raq
+                    always
+                      begin
+                        #5 b = a;
+                      end
+                  `pragma protect end
+                endmodule // secret"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"module secret (a, b);
+                  input a;
+                  output b;
+                  `pragma protect encoding=(enctype="raw")
+                  `pragma protect data_method="x-caesar", data_keyname="rot13",
+                  begin_protected
+                  `pragma protect encoding=(enctype="raw", bytes=190), data_block
+                  //`centzn cebgrpg ehagvzr_yvprafr=(yvoenel="yvp.fb",srngher="ehaFrperg",
+                  //ragel="pux",zngpu=42)
+                  //  ert o;
+                  //  vavgvny
+                  //    ortva
+                  //      o = 0;
+                  //    raq
 
-        //            nyjnlf
-        //              ortva
-        //                #5 o = n;
-        //              raq
-        //          `pragma protect end_protected
-        //          `pragma reset protect
-        //        endmodule // secret"##,
-        //    Ok((_, _))
-        //);
+                  //  nyjnlf
+                  //    ortva
+                  //      #5 o = n;
+                  //    raq
+                  `pragma protect end_protected
+                  `pragma reset protect
+                endmodule // secret"##,
+            Ok((_, _))
+        );
     }
 
     #[test]
@@ -15603,4 +15702,15 @@ mod spec {
 }
 
 #[test]
-fn debug() {}
+fn debug() {
+    test!(
+        source_text,
+        r##"`pragma protect encoding=(enctype="raw")
+                  `pragma protect data_method="x-caesar", data_keyname="rot13", begin
+                  `pragma protect
+                  runtime_license=(library="lic.so",feature="runSecret",entry="chk", match=42)
+                  `pragma protect end
+                "##,
+        Ok((_, _))
+    );
+}

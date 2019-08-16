@@ -1,5 +1,7 @@
+pub mod keywords;
 #[macro_use]
 pub mod utils;
+pub(crate) use keywords::*;
 pub(crate) use utils::*;
 
 mod tests;
@@ -72,11 +74,6 @@ impl HasTracableInfo for SpanInfo {
     }
 }
 
-//impl HasExtraState<RecursiveInfo> for SpanInfo {
-//    fn get_extra_state(&self) -> RecursiveInfo {
-//        self.recursive_info
-//    }
-//}
 impl HasExtraState<()> for SpanInfo {
     fn get_extra_state(&self) -> () {
         ()
@@ -85,7 +82,6 @@ impl HasExtraState<()> for SpanInfo {
 
 // -----------------------------------------------------------------------------
 
-//nom_packrat::storage!(AnyNode, RecursiveInfo);
 nom_packrat::storage!(AnyNode);
 
 pub fn parse_sv(s: &str) -> Result<SourceText, ()> {

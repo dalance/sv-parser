@@ -283,6 +283,7 @@ mod unit {
     #[test]
     fn test_comment() {
         test!(comment, "// comment", Ok((_, _)));
+        test!(comment, "//", Ok((_, _)));
         test!(comment, "/* comment\n\n */", Ok((_, _)));
     }
 
@@ -15705,12 +15706,8 @@ mod spec {
 fn debug() {
     test!(
         source_text,
-        r##"`pragma protect encoding=(enctype="raw")
-                  `pragma protect data_method="x-caesar", data_keyname="rot13", begin
-                  `pragma protect
-                  runtime_license=(library="lic.so",feature="runSecret",entry="chk", match=42)
-                  `pragma protect end
-                "##,
+        r##"//aaa
+                //bbb"##,
         Ok((_, _))
     );
 }

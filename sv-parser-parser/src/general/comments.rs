@@ -12,8 +12,12 @@ pub(crate) fn comment(s: Span) -> IResult<Span, Comment> {
 #[packrat_parser]
 pub(crate) fn one_line_comment(s: Span) -> IResult<Span, Comment> {
     let (s, a) = tag("//")(s)?;
-    let (s, b) = is_not("\n")(s)?;
-    let a = concat(a, b).unwrap();
+    let (s, b) = opt(is_not("\n"))(s)?;
+    let a = if let Some(b) = b {
+        concat(a, b).unwrap()
+    } else {
+        a
+    };
     Ok((
         s,
         Comment {

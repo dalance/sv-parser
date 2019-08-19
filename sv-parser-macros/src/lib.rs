@@ -92,10 +92,13 @@ fn impl_any_node(ast: &DeriveInput) -> TokenStream {
         _ => unreachable!(),
     };
 
-    let mut items = quote! {};
+    let mut try_froms = quote! {};
+    let mut from_items = quote! {};
     for v in &data.variants {
         let ident = &v.ident;
-        let item = quote! {
+
+        try_froms = quote! {
+            #try_froms
             impl TryFrom<AnyNode> for #ident  {
                 type Error = ();
                 fn try_from(x: AnyNode) -> Result<Self, Self::Error> {
@@ -106,14 +109,23 @@ fn impl_any_node(ast: &DeriveInput) -> TokenStream {
                 }
             }
         };
-        items = quote! {
-            #items
-            #item
+
+        from_items = quote! {
+            #from_items
+            AnyNode::#ident(x) => RefNode::#ident(&x),
         };
     }
 
     let gen = quote! {
-        #items
+        #try_froms
+
+        impl<'a> From<&'a AnyNode> for RefNode<'a>  {
+            fn from(x: &'a AnyNode) -> Self {
+                match x {
+                    #from_items
+                }
+            }
+        }
     };
     gen.into()
 }
@@ -130,15 +142,17 @@ fn impl_ref_node(ast: &DeriveInput) -> TokenStream {
         _ => unreachable!(),
     };
 
-    let mut items = quote! {};
+    let mut next_items = quote! {};
+    let mut into_iter_items = quote! {};
     for v in &data.variants {
         let ident = &v.ident;
-        let item = quote! {
+        next_items = quote! {
+            #next_items
             RefNode::#ident(x) => x.next(),
         };
-        items = quote! {
-            #items
-            #item
+        into_iter_items = quote! {
+            #into_iter_items
+            RefNode::#ident(x) => x.into_iter(),
         };
     }
 
@@ -147,7 +161,18 @@ fn impl_ref_node(ast: &DeriveInput) -> TokenStream {
         impl<'a> #name<'a> {
             fn next(&self) -> RefNodes<'a> {
                 match self {
-                    #items
+                    #next_items
+                }
+            }
+        }
+
+        impl<'a> IntoIterator for #name<'a> {
+            type Item = RefNode<'a>;
+            type IntoIter = Iter<'a>;
+
+            fn into_iter(self) -> Self::IntoIter {
+                match self {
+                    #into_iter_items
                 }
             }
         }

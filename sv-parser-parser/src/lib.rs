@@ -84,18 +84,10 @@ impl HasExtraState<()> for SpanInfo {
 
 nom_packrat::storage!(AnyNode);
 
-pub fn parse_sv(s: &str) -> Result<SourceText, ()> {
-    let s = Span::new_extra(s, SpanInfo::default());
-    match source_text(s) {
-        Ok((_, x)) => Ok(x),
-        Err(_) => Err(()),
-    }
+pub fn sv_parser(s: Span) -> IResult<Span, SourceText> {
+    source_text(s)
 }
 
-pub fn parse_lib(s: &str) -> Result<LibraryText, ()> {
-    let s = Span::new_extra(s, SpanInfo::default());
-    match library_text(s) {
-        Ok((_, x)) => Ok(x),
-        Err(_) => Err(()),
-    }
+pub fn lib_parser(s: Span) -> IResult<Span, LibraryText> {
+    library_text(s)
 }

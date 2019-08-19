@@ -45,3 +45,13 @@ impl<'a> Node<'a> for Locate {
         vec![].into()
     }
 }
+
+impl<'a> IntoIterator for &'a Locate {
+    type Item = RefNode<'a>;
+    type IntoIter = Iter<'a>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        let nodes: RefNodes = self.into();
+        Iter { next: nodes }
+    }
+}

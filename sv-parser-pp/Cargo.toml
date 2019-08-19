@@ -1,0 +1,13 @@
+[package]
+name = "sv-parser-pp"
+version = "0.1.0"
+authors = ["dalance <dalance@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+nom          = "5.0.0"
+nom_locate   = "1.0.0"
+nom-tracable = "0.3.1"
+str-concat   = "0.1.4"

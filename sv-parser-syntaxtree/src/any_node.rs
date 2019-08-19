@@ -412,7 +412,7 @@ where
 {
     fn from(x: &'a Box<T>) -> Self {
         let mut ret = Vec::new();
-        let mut x: RefNodes<'a> = x.into();
+        let mut x: RefNodes<'a> = (&**x).into();
         ret.append(&mut x.0);
         ret.into()
     }

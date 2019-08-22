@@ -218,6 +218,9 @@ pub(crate) fn constant_indexed_range(s: Span) -> IResult<Span, ConstantIndexedRa
 #[packrat_parser]
 pub(crate) fn expression(s: Span) -> IResult<Span, Expression> {
     alt((
+        map(terminated(primary, peek(one_of(",();"))), |x| {
+            Expression::Primary(Box::new(x))
+        }),
         expression_binary,
         map(conditional_expression, |x| {
             Expression::ConditionalExpression(Box::new(x))

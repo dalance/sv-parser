@@ -260,8 +260,10 @@ pub(crate) fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
         map(multispace1, |x: Span| {
             WhiteSpace::Space(Box::new(into_locate(x)))
         }),
-        map(comment, |x| WhiteSpace::Comment(Box::new(x))),
-        map(compiler_directive, |x| {
+        map(preceded(peek(char('/')), comment), |x| {
+            WhiteSpace::Comment(Box::new(x))
+        }),
+        map(preceded(peek(char('`')), compiler_directive), |x| {
             WhiteSpace::CompilerDirective(Box::new(x))
         }),
     ))(s)

@@ -15704,10 +15704,5 @@ mod spec {
 
 #[test]
 fn debug() {
-    test!(
-        source_text,
-        r##"//aaa
-                //bbb"##,
-        Ok((_, _))
-    );
+    nom_tracable::cumulative_histogram();
 }

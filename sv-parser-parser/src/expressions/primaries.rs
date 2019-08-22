@@ -153,18 +153,18 @@ pub(crate) fn module_path_primary_mintypmax_expression(
 #[packrat_parser]
 pub(crate) fn primary(s: Span) -> IResult<Span, Primary> {
     alt((
+        terminated(
+            primary_hierarchical,
+            peek(not(alt((
+                map(one_of("(.'"), |_| ()),
+                map(keyword("with"), |_| ()),
+            )))),
+        ),
         map(assignment_pattern_expression, |x| {
             Primary::AssignmentPatternExpression(Box::new(x))
         }),
         map(primary_literal, |x| Primary::PrimaryLiteral(Box::new(x))),
         map(cast, |x| Primary::Cast(Box::new(x))),
-        terminated(
-            primary_hierarchical,
-            peek(not(alt((
-                map(one_of("(."), |_| ()),
-                map(keyword("with"), |_| ()),
-            )))),
-        ),
         map(empty_unpacked_array_concatenation, |x| {
             Primary::EmptyUnpackedArrayConcatenation(Box::new(x))
         }),

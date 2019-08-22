@@ -82,7 +82,7 @@ impl HasExtraState<()> for SpanInfo {
 
 // -----------------------------------------------------------------------------
 
-nom_packrat::storage!(AnyNode);
+nom_packrat::storage!(AnyNode, 1024);
 
 pub fn sv_parser(s: Span) -> IResult<Span, SourceText> {
     source_text(s)

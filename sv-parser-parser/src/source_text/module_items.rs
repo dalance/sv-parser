@@ -138,10 +138,10 @@ pub(crate) fn module_item(s: Span) -> IResult<Span, ModuleItem> {
 pub(crate) fn module_or_generate_item(s: Span) -> IResult<Span, ModuleOrGenerateItem> {
     alt((
         module_or_generate_item_parameter,
-        module_or_generate_item_gate,
-        module_or_generate_item_udp,
         module_or_generate_item_module,
         module_or_generate_item_module_item,
+        module_or_generate_item_gate,
+        module_or_generate_item_udp,
     ))(s)
 }
 

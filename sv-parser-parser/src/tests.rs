@@ -11797,6 +11797,76 @@ mod spec {
             r##"`define home(filename) `"/home/mydir/filename`""##,
             Ok((_, _))
         );
+        test!(
+            source_text,
+            r##"module and_op (a, b, c);
+                  output a;
+                  input b, c;
+
+                  `ifdef behavioral
+                    wire a = b & c;
+                  `else
+                    and a1 (a,b,c);
+                  `endif
+                endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"module test(out);
+                  output out;
+                  `define wow
+                  `define nest_one
+                  `define second_nest
+                  `define nest_two
+                  `ifdef wow
+                    initial $display("wow is defined");
+                    `ifdef nest_one
+                      initial $display("nest_one is defined");
+                      `ifdef nest_two
+                        initial $display("nest_two is defined");
+                      `else
+                        initial $display("nest_two is not defined");
+                      `endif
+                    `else
+                      initial $display("nest_one is not defined");
+                    `endif
+                  `else
+                    initial $display("wow is not defined");
+                    `ifdef second_nest
+                      initial $display("second_nest is defined");
+                    `else
+                      initial $display("second_nest is not defined");
+                    `endif
+                  `endif
+                endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"module test;
+                  `ifdef first_block
+                    `ifndef second_nest
+                      initial $display("first_block is defined");
+                    `else
+                      initial $display("first_block and second_nest defined");
+                    `endif
+                  `elsif second_block
+                    initial $display("second_block defined, first_block is not");
+                  `else
+                    `ifndef last_result
+                      initial $display("first_block, second_block,",
+                        " last_result not defined.");
+                    `elsif real_last
+                      initial $display("first_block, second_block not defined,",
+                        " last_result and real_last defined.");
+                    `else
+                      initial $display("Only last_result defined!");
+                    `endif
+                  `endif
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(source_text, r##"`timescale 1 ns / 1 ps"##, Ok((_, _)));
         test!(source_text, r##"`timescale 10 us / 100 ns"##, Ok((_, _)));
         test!(
@@ -15704,5 +15774,10 @@ mod spec {
 
 #[test]
 fn debug() {
+    test!(
+        source_text,
+        r##"module secret (a, b); `pragma protect encoding=(enctype="raw") `pragma protect data_method="x-caesar", data_keyname="rot13", begin endmodule"##,
+        Ok((_, _))
+    );
     nom_tracable::cumulative_histogram();
 }

@@ -11,6 +11,7 @@ pub mod declarations;
 pub mod expressions;
 pub mod general;
 pub mod instantiations;
+pub mod preprocessor;
 pub mod primitive_instances;
 pub mod source_text;
 pub mod specify_section;
@@ -20,6 +21,7 @@ pub(crate) use declarations::*;
 pub(crate) use expressions::*;
 pub(crate) use general::*;
 pub(crate) use instantiations::*;
+pub(crate) use preprocessor::*;
 pub(crate) use primitive_instances::*;
 pub(crate) use source_text::*;
 pub(crate) use specify_section::*;
@@ -74,15 +76,15 @@ impl HasTracableInfo for SpanInfo {
     }
 }
 
-impl HasExtraState<()> for SpanInfo {
-    fn get_extra_state(&self) -> () {
-        ()
+impl HasExtraState<bool> for SpanInfo {
+    fn get_extra_state(&self) -> bool {
+        in_directive()
     }
 }
 
 // -----------------------------------------------------------------------------
 
-nom_packrat::storage!(AnyNode, 1024);
+nom_packrat::storage!(AnyNode, bool, 1024);
 
 pub fn sv_parser(s: Span) -> IResult<Span, SourceText> {
     source_text(s)
@@ -90,4 +92,8 @@ pub fn sv_parser(s: Span) -> IResult<Span, SourceText> {
 
 pub fn lib_parser(s: Span) -> IResult<Span, LibraryText> {
     library_text(s)
+}
+
+pub fn pp_parser(s: Span) -> IResult<Span, PreprocessorText> {
+    preprocessor_text(s)
 }

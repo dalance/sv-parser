@@ -5,9 +5,13 @@ use crate::*;
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn compiler_directive(s: Span) -> IResult<Span, CompilerDirective> {
-    alt((
+    begin_directive();
+    let ret = alt((
         map(resetall_compiler_directive, |x| {
             CompilerDirective::ResetallCompilerDirective(Box::new(x))
+        }),
+        map(include_compiler_directive, |x| {
+            CompilerDirective::IncludeCompilerDirective(Box::new(x))
         }),
         map(text_macro_definition, |x| {
             CompilerDirective::TextMacroDefinition(Box::new(x))
@@ -17,6 +21,9 @@ pub(crate) fn compiler_directive(s: Span) -> IResult<Span, CompilerDirective> {
         }),
         map(undefineall_compiler_directive, |x| {
             CompilerDirective::UndefineallCompilerDirective(Box::new(x))
+        }),
+        map(conditional_compiler_directive, |x| {
+            CompilerDirective::ConditionalCompilerDirective(Box::new(x))
         }),
         map(timescale_compiler_directive, |x| {
             CompilerDirective::TimescaleCompilerDirective(Box::new(x))
@@ -40,13 +47,21 @@ pub(crate) fn compiler_directive(s: Span) -> IResult<Span, CompilerDirective> {
         map(line_compiler_directive, |x| {
             CompilerDirective::LineCompilerDirective(Box::new(x))
         }),
+        map(position_compiler_directive, |x| {
+            CompilerDirective::PositionCompilerDirective(Box::new(x))
+        }),
         map(keywords_directive, |x| {
             CompilerDirective::KeywordsDirective(Box::new(x))
         }),
         map(endkeywords_directive, |x| {
             CompilerDirective::EndkeywordsDirective(Box::new(x))
         }),
-    ))(s)
+        map(text_macro_usage, |x| {
+            CompilerDirective::TextMacroUsage(Box::new(x))
+        }),
+    ))(s);
+    end_directive();
+    ret
 }
 
 #[tracable_parser]
@@ -55,6 +70,66 @@ pub(crate) fn resetall_compiler_directive(s: Span) -> IResult<Span, ResetallComp
     let (s, a) = symbol("`")(s)?;
     let (s, b) = keyword("resetall")(s)?;
     Ok((s, ResetallCompilerDirective { nodes: (a, b) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn include_compiler_directive(s: Span) -> IResult<Span, IncludeCompilerDirective> {
+    alt((
+        include_compiler_directive_double_quote,
+        include_compiler_directive_angle_bracket,
+    ))(s)
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn include_compiler_directive_double_quote(
+    s: Span,
+) -> IResult<Span, IncludeCompilerDirective> {
+    let (s, a) = symbol("`")(s)?;
+    let (s, b) = keyword("include")(s)?;
+    let (s, c) = string_literal(s)?;
+    Ok((
+        s,
+        IncludeCompilerDirective::DoubleQuote(Box::new(IncludeCompilerDirectiveDoubleQuote {
+            nodes: (a, b, c),
+        })),
+    ))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn include_compiler_directive_angle_bracket(
+    s: Span,
+) -> IResult<Span, IncludeCompilerDirective> {
+    let (s, a) = symbol("`")(s)?;
+    let (s, b) = keyword("include")(s)?;
+    let (s, c) = angle_bracket_literal(s)?;
+    Ok((
+        s,
+        IncludeCompilerDirective::AngleBracket(Box::new(IncludeCompilerDirectiveAngleBracket {
+            nodes: (a, b, c),
+        })),
+    ))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn angle_bracket_literal(s: Span) -> IResult<Span, AngleBracketLiteral> {
+    let (s, a) = ws(angle_bracket_literal_impl)(s)?;
+    Ok((s, AngleBracketLiteral { nodes: a }))
+}
+
+#[tracable_parser]
+pub(crate) fn angle_bracket_literal_impl(s: Span) -> IResult<Span, Locate> {
+    let (s, a) = tag("<")(s)?;
+    let (s, b) = is_not(">")(s)?;
+    let (s, c) = tag(">")(s)?;
+
+    let a = concat(a, b).unwrap();
+    let a = concat(a, c).unwrap();
+
+    Ok((s, into_locate(a)))
 }
 
 #[tracable_parser]
@@ -138,6 +213,29 @@ pub(crate) fn default_text(s: Span) -> IResult<Span, DefaultText> {
 
 #[tracable_parser]
 #[packrat_parser]
+pub(crate) fn text_macro_usage(s: Span) -> IResult<Span, TextMacroUsage> {
+    let (s, a) = symbol("`")(s)?;
+    let (s, b) = text_macro_identifier(s)?;
+    let (s, c) = opt(paren(list_of_actual_arguments))(s)?;
+    Ok((s, TextMacroUsage { nodes: (a, b, c) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn list_of_actual_arguments(s: Span) -> IResult<Span, ListOfActualArguments> {
+    let (s, a) = list(symbol(","), actual_argument)(s)?;
+    Ok((s, ListOfActualArguments { nodes: (a,) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn actual_argument(s: Span) -> IResult<Span, ActualArgument> {
+    let (s, a) = expression(s)?;
+    Ok((s, ActualArgument { nodes: (a,) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
 pub(crate) fn undefine_compiler_directive(s: Span) -> IResult<Span, UndefineCompilerDirective> {
     let (s, a) = symbol("`")(s)?;
     let (s, b) = keyword("undef")(s)?;
@@ -153,6 +251,143 @@ pub(crate) fn undefineall_compiler_directive(
     let (s, a) = symbol("`")(s)?;
     let (s, b) = keyword("undefineall")(s)?;
     Ok((s, UndefineallCompilerDirective { nodes: (a, b) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn conditional_compiler_directive(
+    s: Span,
+) -> IResult<Span, ConditionalCompilerDirective> {
+    alt((
+        map(ifdef_directive, |x| {
+            ConditionalCompilerDirective::IfdefDirective(Box::new(x))
+        }),
+        map(ifndef_directive, |x| {
+            ConditionalCompilerDirective::IfndefDirective(Box::new(x))
+        }),
+    ))(s)
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn ifdef_directive(s: Span) -> IResult<Span, IfdefDirective> {
+    let (s, a) = symbol("`")(s)?;
+    let (s, b) = keyword("ifdef")(s)?;
+    let (s, c) = text_macro_identifier(s)?;
+    let (s, d) = ifdef_group_of_lines(s)?;
+    let (s, e) = many0(tuple((
+        symbol("`"),
+        keyword("elsif"),
+        text_macro_identifier,
+        elsif_group_of_lines,
+    )))(s)?;
+    let (s, f) = opt(tuple((symbol("`"), keyword("else"), else_group_of_lines)))(s)?;
+    let (s, g) = symbol("`")(s)?;
+    let (s, h) = keyword("endif")(s)?;
+    Ok((
+        s,
+        IfdefDirective {
+            nodes: (a, b, c, d, e, f, g, h),
+        },
+    ))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn ifndef_directive(s: Span) -> IResult<Span, IfndefDirective> {
+    let (s, a) = symbol("`")(s)?;
+    let (s, b) = keyword("ifndef")(s)?;
+    let (s, c) = text_macro_identifier(s)?;
+    let (s, d) = ifndef_group_of_lines(s)?;
+    let (s, e) = many0(tuple((
+        symbol("`"),
+        keyword("elsif"),
+        text_macro_identifier,
+        elsif_group_of_lines,
+    )))(s)?;
+    let (s, f) = opt(tuple((symbol("`"), keyword("else"), else_group_of_lines)))(s)?;
+    let (s, g) = symbol("`")(s)?;
+    let (s, h) = keyword("endif")(s)?;
+    Ok((
+        s,
+        IfndefDirective {
+            nodes: (a, b, c, d, e, f, g, h),
+        },
+    ))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn ifdef_group_of_lines(s: Span) -> IResult<Span, IfdefGroupOfLines> {
+    let (s, a) = many1(preceded(
+        peek(not(alt((tag("`elsif"), tag("`else"), tag("`endif"))))),
+        source_description,
+    ))(s)?;
+    Ok((s, IfdefGroupOfLines { nodes: (a,) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn ifndef_group_of_lines(s: Span) -> IResult<Span, IfndefGroupOfLines> {
+    let (s, a) = many1(preceded(
+        peek(not(alt((tag("`elsif"), tag("`else"), tag("`endif"))))),
+        source_description,
+    ))(s)?;
+    Ok((s, IfndefGroupOfLines { nodes: (a,) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn elsif_group_of_lines(s: Span) -> IResult<Span, ElsifGroupOfLines> {
+    let (s, a) = many1(preceded(
+        peek(not(alt((tag("`elsif"), tag("`else"), tag("`endif"))))),
+        source_description,
+    ))(s)?;
+    Ok((s, ElsifGroupOfLines { nodes: (a,) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn else_group_of_lines(s: Span) -> IResult<Span, ElseGroupOfLines> {
+    let (s, a) = many1(preceded(peek(not(tag("`endif"))), source_description))(s)?;
+    Ok((s, ElseGroupOfLines { nodes: (a,) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn source_description(s: Span) -> IResult<Span, SourceDescription> {
+    alt((
+        map(comment, |x| SourceDescription::Comment(Box::new(x))),
+        source_description_not_directive,
+        map(compiler_directive, |x| {
+            SourceDescription::CompilerDirective(Box::new(x))
+        }),
+    ))(s)
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn source_description_not_directive(s: Span) -> IResult<Span, SourceDescription> {
+    let (s, a) = many1(alt((
+        is_not("`/"),
+        terminated(tag("/"), peek(not(alt((tag("/"), tag("*")))))),
+    )))(s)?;
+
+    let mut ret = None;
+    for x in a {
+        ret = if let Some(ret) = ret {
+            Some(concat(ret, x).unwrap())
+        } else {
+            Some(x)
+        }
+    }
+    let a = ret.unwrap();
+    Ok((
+        s,
+        SourceDescription::NotDirective(Box::new(SourceDescriptionNotDirective {
+            nodes: (into_locate(a),),
+        })),
+    ))
 }
 
 #[tracable_parser]
@@ -362,6 +597,14 @@ pub(crate) fn line_compiler_directive(s: Span) -> IResult<Span, LineCompilerDire
             nodes: (a, b, c, d, e),
         },
     ))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn position_compiler_directive(s: Span) -> IResult<Span, PositionCompilerDirective> {
+    let (s, a) = symbol("`")(s)?;
+    let (s, b) = alt((keyword("__FILE__"), keyword("__LINE__")))(s)?;
+    Ok((s, PositionCompilerDirective { nodes: (a, b) }))
 }
 
 #[tracable_parser]

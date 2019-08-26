@@ -256,17 +256,49 @@ where
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
-    alt((
-        map(multispace1, |x: Span| {
-            WhiteSpace::Space(Box::new(into_locate(x)))
-        }),
-        map(preceded(peek(char('/')), comment), |x| {
-            WhiteSpace::Comment(Box::new(x))
-        }),
-        map(preceded(peek(char('`')), compiler_directive), |x| {
-            WhiteSpace::CompilerDirective(Box::new(x))
-        }),
-    ))(s)
+    if in_directive() {
+        alt((
+            map(multispace1, |x: Span| {
+                WhiteSpace::Space(Box::new(into_locate(x)))
+            }),
+            map(preceded(peek(char('/')), comment), |x| {
+                WhiteSpace::Comment(Box::new(x))
+            }),
+        ))(s)
+    } else {
+        alt((
+            map(multispace1, |x: Span| {
+                WhiteSpace::Space(Box::new(into_locate(x)))
+            }),
+            map(preceded(peek(char('/')), comment), |x| {
+                WhiteSpace::Comment(Box::new(x))
+            }),
+            map(preceded(peek(char('`')), compiler_directive), |x| {
+                WhiteSpace::CompilerDirective(Box::new(x))
+            }),
+        ))(s)
+    }
+}
+
+thread_local!(
+    static IN_DIRECTIVE: core::cell::RefCell<Vec<()>> = {
+        core::cell::RefCell::new(Vec::new())
+    }
+);
+
+pub(crate) fn in_directive() -> bool {
+    IN_DIRECTIVE.with(|x| match x.borrow().last() {
+        Some(_) => true,
+        None => false,
+    })
+}
+
+pub(crate) fn begin_directive() {
+    IN_DIRECTIVE.with(|x| x.borrow_mut().push(()));
+}
+
+pub(crate) fn end_directive() {
+    IN_DIRECTIVE.with(|x| x.borrow_mut().pop());
 }
 
 // -----------------------------------------------------------------------------

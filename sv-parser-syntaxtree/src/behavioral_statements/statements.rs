@@ -2,18 +2,18 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum StatementOrNull {
     Statement(Box<Statement>),
     Attribute(Box<StatementOrNullAttribute>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct StatementOrNullAttribute {
     pub nodes: (Vec<AttributeInstance>, Symbol),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct Statement {
     pub nodes: (
         Option<(BlockIdentifier, Symbol)>,
@@ -22,7 +22,7 @@ pub struct Statement {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum StatementItem {
     BlockingAssignment(Box<(BlockingAssignment, Symbol)>),
     NonblockingAssignment(Box<(NonblockingAssignment, Symbol)>),
@@ -46,23 +46,23 @@ pub enum StatementItem {
     ExpectPropertyStatement(Box<ExpectPropertyStatement>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct FunctionStatement {
     pub nodes: (Statement,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum FunctionStatementOrNull {
     Statement(Box<FunctionStatement>),
     Attribute(Box<FunctionStatementOrNullAttribute>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct FunctionStatementOrNullAttribute {
     pub nodes: (Vec<AttributeInstance>, Symbol),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct VariableIdentifierList {
     pub nodes: (List<Symbol, VariableIdentifier>,),
 }

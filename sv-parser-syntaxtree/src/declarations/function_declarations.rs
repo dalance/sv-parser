@@ -2,24 +2,24 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum FunctionDataTypeOrImplicit {
     DataTypeOrVoid(Box<DataTypeOrVoid>),
     ImplicitDataType(Box<ImplicitDataType>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct FunctionDeclaration {
     pub nodes: (Keyword, Option<Lifetime>, FunctionBodyDeclaration),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum FunctionBodyDeclaration {
     WithoutPort(Box<FunctionBodyDeclarationWithoutPort>),
     WithPort(Box<FunctionBodyDeclarationWithPort>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct FunctionBodyDeclarationWithoutPort {
     pub nodes: (
         FunctionDataTypeOrImplicit,
@@ -33,7 +33,7 @@ pub struct FunctionBodyDeclarationWithoutPort {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct FunctionBodyDeclarationWithPort {
     pub nodes: (
         FunctionDataTypeOrImplicit,
@@ -48,13 +48,13 @@ pub struct FunctionBodyDeclarationWithPort {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum InterfaceIdentifierOrClassScope {
     InterfaceIdentifier(Box<(InterfaceIdentifier, Symbol)>),
     ClassScope(Box<ClassScope>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct FunctionPrototype {
     pub nodes: (
         Keyword,
@@ -64,7 +64,7 @@ pub struct FunctionPrototype {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum DpiImportExport {
     ImportFunction(Box<DpiImportExportImportFunction>),
     ImportTask(Box<DpiImportExportImportTask>),
@@ -72,7 +72,7 @@ pub enum DpiImportExport {
     ExportTask(Box<DpiImportExportExportTask>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct DpiImportExportImportFunction {
     pub nodes: (
         Keyword,
@@ -84,7 +84,7 @@ pub struct DpiImportExportImportFunction {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct DpiImportExportImportTask {
     pub nodes: (
         Keyword,
@@ -96,7 +96,7 @@ pub struct DpiImportExportImportTask {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct DpiImportExportExportFunction {
     pub nodes: (
         Keyword,
@@ -108,7 +108,7 @@ pub struct DpiImportExportExportFunction {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct DpiImportExportExportTask {
     pub nodes: (
         Keyword,
@@ -120,29 +120,29 @@ pub struct DpiImportExportExportTask {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum DpiSpecString {
     DpiC(Box<Keyword>),
     Dpi(Box<Keyword>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum DpiFunctionImportProperty {
     Context(Box<Keyword>),
     Pure(Box<Keyword>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum DpiTaskImportProperty {
     Context(Box<Keyword>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct DpiFunctionProto {
     pub nodes: (FunctionPrototype,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct DpiTaskProto {
     pub nodes: (TaskPrototype,),
 }

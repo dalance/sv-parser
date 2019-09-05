@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum LoopStatement {
     Forever(Box<LoopStatementForever>),
     Repeat(Box<LoopStatementRepeat>),
@@ -12,22 +12,22 @@ pub enum LoopStatement {
     Foreach(Box<LoopStatementForeach>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct LoopStatementForever {
     pub nodes: (Keyword, StatementOrNull),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct LoopStatementRepeat {
     pub nodes: (Keyword, Paren<Expression>, StatementOrNull),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct LoopStatementWhile {
     pub nodes: (Keyword, Paren<Expression>, StatementOrNull),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct LoopStatementFor {
     pub nodes: (
         Keyword,
@@ -42,12 +42,12 @@ pub struct LoopStatementFor {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct LoopStatementDoWhile {
     pub nodes: (Keyword, StatementOrNull, Keyword, Paren<Expression>, Symbol),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct LoopStatementForeach {
     pub nodes: (
         Keyword,
@@ -56,18 +56,18 @@ pub struct LoopStatementForeach {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum ForInitialization {
     ListOfVariableAssignments(Box<ListOfVariableAssignments>),
     Declaration(Box<ForInitializationDeclaration>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ForInitializationDeclaration {
     pub nodes: (List<Symbol, ForVariableDeclaration>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ForVariableDeclaration {
     pub nodes: (
         Option<Var>,
@@ -76,24 +76,24 @@ pub struct ForVariableDeclaration {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct Var {
     pub nodes: (Keyword,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ForStep {
     pub nodes: (List<Symbol, ForStepAssignment>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum ForStepAssignment {
     OperatorAssignment(Box<OperatorAssignment>),
     IncOrDecExpression(Box<IncOrDecExpression>),
     FunctionSubroutineCall(Box<FunctionSubroutineCall>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct LoopVariables {
     pub nodes: (List<Symbol, Option<IndexVariableIdentifier>>,),
 }

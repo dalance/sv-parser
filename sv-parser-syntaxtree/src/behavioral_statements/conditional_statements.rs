@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ConditionalStatement {
     pub nodes: (
         Option<UniquePriority>,
@@ -14,25 +14,25 @@ pub struct ConditionalStatement {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum UniquePriority {
     Unique(Box<Keyword>),
     Unique0(Box<Keyword>),
     Priority(Box<Keyword>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct CondPredicate {
     pub nodes: (List<Symbol, ExpressionOrCondPattern>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum ExpressionOrCondPattern {
     Expression(Box<Expression>),
     CondPattern(Box<CondPattern>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct CondPattern {
     pub nodes: (Expression, Keyword, Pattern),
 }

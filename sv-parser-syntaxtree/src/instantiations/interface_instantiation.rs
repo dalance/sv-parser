@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct InterfaceInstantiation {
     pub nodes: (
         InterfaceIdentifier,

@@ -2,13 +2,13 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum ProgramItem {
     PortDeclaration(Box<(PortDeclaration, Symbol)>),
     NonPortProgramItem(Box<NonPortProgramItem>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum NonPortProgramItem {
     Assign(Box<NonPortProgramItemAssign>),
     Module(Box<NonPortProgramItemModule>),
@@ -19,32 +19,32 @@ pub enum NonPortProgramItem {
     ProgramGenerateItem(Box<ProgramGenerateItem>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct NonPortProgramItemAssign {
     pub nodes: (Vec<AttributeInstance>, ContinuousAssign),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct NonPortProgramItemModule {
     pub nodes: (Vec<AttributeInstance>, ModuleOrGenerateItemDeclaration),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct NonPortProgramItemInitial {
     pub nodes: (Vec<AttributeInstance>, InitialConstruct),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct NonPortProgramItemFinal {
     pub nodes: (Vec<AttributeInstance>, FinalConstruct),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct NonPortProgramItemAssertion {
     pub nodes: (Vec<AttributeInstance>, ConcurrentAssertionItem),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum ProgramGenerateItem {
     LoopGenerateConstruct(Box<LoopGenerateConstruct>),
     ConditionalGenerateConstruct(Box<ConditionalGenerateConstruct>),

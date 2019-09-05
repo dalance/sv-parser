@@ -4,10 +4,11 @@ version = "0.1.0"
 authors = ["dalance <dalance@gmail.com>"]
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+default = []
+trace   = ["sv-parser-parser/trace"]
 
 [dependencies]
-nom          = "5.0.0"
-nom_locate   = "1.0.0"
-nom-tracable = "0.3.1"
-str-concat   = "0.1.4"
+nom                  = "5.0.0"
+sv-parser-parser     = { path = "../sv-parser-parser" }
+sv-parser-syntaxtree = { path = "../sv-parser-syntaxtree" }

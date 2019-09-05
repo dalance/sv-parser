@@ -11,12 +11,12 @@ fn main() {
     let mut out = File::create(&dest).unwrap();
 
     let mut ref_node = String::new();
-    ref_node = format!("{}#[derive(Debug, Clone, RefNode)]\n", ref_node);
+    ref_node = format!("{}#[derive(Clone, Debug, PartialEq, RefNode)]\n", ref_node);
     ref_node = format!("{}pub enum RefNode<'a> {{\n", ref_node);
     ref_node = format!("{}    Locate(&'a Locate),\n", ref_node);
 
     let mut any_node = String::new();
-    any_node = format!("{}#[derive(Debug, Clone, AnyNode)]\n", any_node);
+    any_node = format!("{}#[derive(Clone, Debug, PartialEq, AnyNode)]\n", any_node);
     any_node = format!("{}pub enum AnyNode {{\n", any_node);
     any_node = format!("{}    Locate(Locate),\n", any_node);
 

@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct RandsequenceStatement {
     pub nodes: (
         Keyword,
@@ -13,7 +13,7 @@ pub struct RandsequenceStatement {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct Production {
     pub nodes: (
         Option<DataTypeOrVoid>,
@@ -25,7 +25,7 @@ pub struct Production {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct RsRule {
     pub nodes: (
         RsProductionList,
@@ -33,18 +33,18 @@ pub struct RsRule {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum RsProductionList {
     Prod(Box<RsProductionListProd>),
     Join(Box<RsProductionListJoin>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct RsProductionListProd {
     pub nodes: (RsProd, Vec<RsProd>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct RsProductionListJoin {
     pub nodes: (
         Keyword,
@@ -56,24 +56,24 @@ pub struct RsProductionListJoin {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum WeightSpecification {
     IntegralNumber(Box<IntegralNumber>),
     PsIdentifier(Box<PsIdentifier>),
     Expression(Box<WeightSpecificationExpression>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct WeightSpecificationExpression {
     pub nodes: (Paren<Expression>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct RsCodeBlock {
     pub nodes: (Brace<(Vec<DataDeclaration>, Vec<StatementOrNull>)>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum RsProd {
     ProductionItem(Box<ProductionItem>),
     RsCodeBlock(Box<RsCodeBlock>),
@@ -82,12 +82,12 @@ pub enum RsProd {
     RsCase(Box<RsCase>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ProductionItem {
     pub nodes: (ProductionIdentifier, Option<Paren<ListOfArguments>>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct RsIfElse {
     pub nodes: (
         Keyword,
@@ -97,12 +97,12 @@ pub struct RsIfElse {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct RsRepeat {
     pub nodes: (Keyword, Paren<Expression>, ProductionItem),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct RsCase {
     pub nodes: (
         Keyword,
@@ -113,13 +113,13 @@ pub struct RsCase {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum RsCaseItem {
     NonDefault(Box<RsCaseItemNondefault>),
     Default(Box<RsCaseItemDefault>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct RsCaseItemNondefault {
     pub nodes: (
         List<Symbol, CaseItemExpression>,
@@ -129,7 +129,7 @@ pub struct RsCaseItemNondefault {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct RsCaseItemDefault {
     pub nodes: (Keyword, Option<Symbol>, ProductionItem, Symbol),
 }

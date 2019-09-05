@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct UdpNonansiDeclaration {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -13,7 +13,7 @@ pub struct UdpNonansiDeclaration {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct UdpAnsiDeclaration {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -24,7 +24,7 @@ pub struct UdpAnsiDeclaration {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum UdpDeclaration {
     Nonansi(Box<UdpDeclarationNonansi>),
     Ansi(Box<UdpDeclarationAnsi>),
@@ -33,7 +33,7 @@ pub enum UdpDeclaration {
     Wildcard(Box<UdpDeclarationWildcard>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct UdpDeclarationNonansi {
     pub nodes: (
         UdpNonansiDeclaration,
@@ -45,7 +45,7 @@ pub struct UdpDeclarationNonansi {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct UdpDeclarationAnsi {
     pub nodes: (
         UdpAnsiDeclaration,
@@ -55,17 +55,17 @@ pub struct UdpDeclarationAnsi {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct UdpDeclarationExternNonansi {
     pub nodes: (Keyword, UdpNonansiDeclaration),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct UdpDeclarationExternAnsi {
     pub nodes: (Keyword, UdpAnsiDeclaration),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct UdpDeclarationWildcard {
     pub nodes: (
         Vec<AttributeInstance>,

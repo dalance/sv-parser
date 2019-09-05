@@ -2,12 +2,12 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SpecifyBlock {
     pub nodes: (Keyword, Vec<SpecifyItem>, Keyword),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum SpecifyItem {
     SpecparamDeclaration(Box<SpecparamDeclaration>),
     PulsestyleDeclaration(Box<PulsestyleDeclaration>),
@@ -16,12 +16,12 @@ pub enum SpecifyItem {
     SystemTimingCheck(Box<SystemTimingCheck>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PulsestyleDeclaration {
     pub nodes: (Keyword, ListOfPathOutputs, Symbol),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ShowcancelledDeclaration {
     pub nodes: (Keyword, ListOfPathOutputs, Symbol),
 }

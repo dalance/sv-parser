@@ -137,7 +137,9 @@ pub(crate) fn angle_bracket_literal_impl(s: Span) -> IResult<Span, Locate> {
 pub(crate) fn text_macro_definition(s: Span) -> IResult<Span, TextMacroDefinition> {
     let (s, a) = symbol("`")(s)?;
     let (s, b) = keyword("define")(s)?;
+    begin_lb_not_space();
     let (s, c) = text_macro_name(s)?;
+    end_lb_not_space();
     let (s, d) = opt(macro_text)(s)?;
     Ok((
         s,

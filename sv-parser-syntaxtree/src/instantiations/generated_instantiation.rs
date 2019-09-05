@@ -2,12 +2,12 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct GenerateRegion {
     pub nodes: (Keyword, Vec<GenerateItem>, Keyword),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct LoopGenerateConstruct {
     pub nodes: (
         Keyword,
@@ -22,45 +22,45 @@ pub struct LoopGenerateConstruct {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct GenvarInitialization {
     pub nodes: (Option<Genvar>, GenvarIdentifier, Symbol, ConstantExpression),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct Genvar {
     pub nodes: (Keyword,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum GenvarIteration {
     Assignment(Box<GenvarIterationAssignment>),
     Prefix(Box<GenvarIterationPrefix>),
     Suffix(Box<GenvarIterationSuffix>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct GenvarIterationAssignment {
     pub nodes: (GenvarIdentifier, AssignmentOperator, GenvarExpression),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct GenvarIterationPrefix {
     pub nodes: (IncOrDecOperator, GenvarIdentifier),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct GenvarIterationSuffix {
     pub nodes: (GenvarIdentifier, IncOrDecOperator),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum ConditionalGenerateConstruct {
     If(Box<IfGenerateConstruct>),
     Case(Box<CaseGenerateConstruct>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct IfGenerateConstruct {
     pub nodes: (
         Keyword,
@@ -70,7 +70,7 @@ pub struct IfGenerateConstruct {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct CaseGenerateConstruct {
     pub nodes: (
         Keyword,
@@ -80,29 +80,29 @@ pub struct CaseGenerateConstruct {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum CaseGenerateItem {
     Nondefault(Box<CaseGenerateItemNondefault>),
     Default(Box<CaseGenerateItemDefault>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct CaseGenerateItemNondefault {
     pub nodes: (List<Symbol, ConstantExpression>, Symbol, GenerateBlock),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct CaseGenerateItemDefault {
     pub nodes: (Keyword, Option<Symbol>, GenerateBlock),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum GenerateBlock {
     GenerateItem(Box<GenerateItem>),
     Multiple(Box<GenerateBlockMultiple>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct GenerateBlockMultiple {
     pub nodes: (
         Option<(GenerateBlockIdentifier, Symbol)>,
@@ -114,7 +114,7 @@ pub struct GenerateBlockMultiple {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum GenerateItem {
     ModuleOrGenerateItem(Box<ModuleOrGenerateItem>),
     InterfaceOrGenerateItem(Box<InterfaceOrGenerateItem>),

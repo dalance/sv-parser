@@ -55,15 +55,47 @@ fn impl_node(ast: &DeriveInput) -> TokenStream {
             }
         }
 
-        impl<'a> From<&'a #name> for RefNodes<'a>  {
+        impl<'a> From<&'a #name> for RefNodes<'a> {
             fn from(x: &'a #name) -> Self {
                 vec![RefNode::#name(x)].into()
             }
         }
 
-        impl From<#name> for AnyNode  {
+        impl From<#name> for AnyNode {
             fn from(x: #name) -> Self {
                 AnyNode::#name(x)
+            }
+        }
+
+        impl<'a> From<&'a #name> for RefNode<'a> {
+            fn from(x: &'a #name) -> Self {
+                RefNode::#name(x)
+            }
+        }
+
+        impl core::convert::TryFrom<#name> for Locate {
+            type Error = ();
+            fn try_from(x: #name) -> Result<Self, Self::Error> {
+                Self::try_from(&x)
+            }
+        }
+
+        impl<'a> core::convert::TryFrom<&'a #name> for Locate {
+            type Error = ();
+            fn try_from(x: &'a #name) -> Result<Self, Self::Error> {
+                let mut locate: Option<Locate> = None;
+                for x in x {
+                    match x {
+                        RefNode::Locate(x) => if let Some(loc) = locate {
+                            assert_eq!(x.offset, loc.offset + loc.len);
+                            locate = Some(Locate { offset: loc.offset, line: loc.line, len: loc.len + x.len });
+                        } else {
+                            locate = Some(*x);
+                        },
+                        _ => (),
+                    }
+                }
+                locate.ok_or(())
             }
         }
 

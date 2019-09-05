@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum PackageItem {
     PackageOrGenerateItemDeclaration(Box<PackageOrGenerateItemDeclaration>),
     AnonymousProgram(Box<AnonymousProgram>),
@@ -10,7 +10,7 @@ pub enum PackageItem {
     TimeunitsDeclaration(Box<TimeunitsDeclaration>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum PackageOrGenerateItemDeclaration {
     NetDeclaration(Box<NetDeclaration>),
     DataDeclaration(Box<DataDeclaration>),
@@ -29,12 +29,12 @@ pub enum PackageOrGenerateItemDeclaration {
     Empty(Box<Symbol>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct AnonymousProgram {
     pub nodes: (Keyword, Symbol, Vec<AnonymousProgramItem>, Keyword),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum AnonymousProgramItem {
     TaskDeclaration(Box<TaskDeclaration>),
     FunctionDeclaration(Box<FunctionDeclaration>),

@@ -2,18 +2,18 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum ActionBlock {
     StatementOrNull(Box<StatementOrNull>),
     Else(Box<ActionBlockElse>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ActionBlockElse {
     pub nodes: (Option<Statement>, Keyword, StatementOrNull),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SeqBlock {
     pub nodes: (
         Keyword,
@@ -25,7 +25,7 @@ pub struct SeqBlock {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ParBlock {
     pub nodes: (
         Keyword,
@@ -37,7 +37,7 @@ pub struct ParBlock {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum JoinKeyword {
     Join(Box<Keyword>),
     JoinAny(Box<Keyword>),

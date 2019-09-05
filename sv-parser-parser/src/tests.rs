@@ -302,6 +302,18 @@ mod unit {
             Ok((_, _))
         );
         test!(text_macro_definition, r##"`define a"##, Ok((_, _)));
+        test!(
+            source_text,
+            r##"module test(out);
+                  `define nest_two
+                  `ifdef wow
+                    initial $display("wow is defined");
+                  `else
+                    initial $display("wow is not defined");
+                  `endif
+                endmodule"##,
+            Ok((_, _))
+        );
     }
 }
 

@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum ConstantPrimary {
     PrimaryLiteral(Box<PrimaryLiteral>),
     PsParameter(Box<ConstantPrimaryPsParameter>),
@@ -21,12 +21,12 @@ pub enum ConstantPrimary {
     Null(Box<Keyword>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ConstantPrimaryPsParameter {
     pub nodes: (PsParameterIdentifier, ConstantSelect),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ConstantPrimarySpecparam {
     pub nodes: (
         SpecparamIdentifier,
@@ -34,17 +34,17 @@ pub struct ConstantPrimarySpecparam {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ConstantPrimaryFormalPort {
     pub nodes: (FormalPortIdentifier, ConstantSelect),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ConstantPrimaryEnum {
     pub nodes: (PackageScopeOrClassScope, EnumIdentifier),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ConstantPrimaryConcatenation {
     pub nodes: (
         ConstantConcatenation,
@@ -52,7 +52,7 @@ pub struct ConstantPrimaryConcatenation {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ConstantPrimaryMultipleConcatenation {
     pub nodes: (
         ConstantMultipleConcatenation,
@@ -60,12 +60,12 @@ pub struct ConstantPrimaryMultipleConcatenation {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ConstantPrimaryMintypmaxExpression {
     pub nodes: (Paren<ConstantMintypmaxExpression>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum ModulePathPrimary {
     Number(Box<Number>),
     Identifier(Box<Identifier>),
@@ -75,12 +75,12 @@ pub enum ModulePathPrimary {
     Mintypmax(Box<ModulePathPrimaryMintypmax>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ModulePathPrimaryMintypmax {
     pub nodes: (Paren<ModulePathMintypmaxExpression>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum Primary {
     PrimaryLiteral(Box<PrimaryLiteral>),
     Hierarchical(Box<PrimaryHierarchical>),
@@ -99,7 +99,7 @@ pub enum Primary {
     Null(Box<Keyword>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PrimaryHierarchical {
     pub nodes: (
         Option<ClassQualifierOrPackageScope>,
@@ -108,39 +108,39 @@ pub struct PrimaryHierarchical {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PrimaryConcatenation {
     pub nodes: (Concatenation, Option<Bracket<RangeExpression>>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PrimaryMultipleConcatenation {
     pub nodes: (MultipleConcatenation, Option<Bracket<RangeExpression>>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PrimaryMintypmaxExpression {
     pub nodes: (Paren<MintypmaxExpression>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum ClassQualifierOrPackageScope {
     ClassQualifier(Box<ClassQualifier>),
     PackageScope(Box<PackageScope>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ClassQualifier {
     pub nodes: (Option<Local>, Option<ImplicitClassHandleOrClassScope>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum RangeExpression {
     Expression(Box<Expression>),
     PartSelectRange(Box<PartSelectRange>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum PrimaryLiteral {
     Number(Box<Number>),
     TimeLiteral(Box<TimeLiteral>),
@@ -148,23 +148,23 @@ pub enum PrimaryLiteral {
     StringLiteral(Box<StringLiteral>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum TimeLiteral {
     Unsigned(Box<TimeLiteralUnsigned>),
     FixedPoint(Box<TimeLiteralFixedPoint>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct TimeLiteralUnsigned {
     pub nodes: (UnsignedNumber, TimeUnit),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct TimeLiteralFixedPoint {
     pub nodes: (FixedPointNumber, TimeUnit),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum TimeUnit {
     S(Box<Keyword>),
     MS(Box<Keyword>),
@@ -174,19 +174,19 @@ pub enum TimeUnit {
     FS(Box<Keyword>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum ImplicitClassHandle {
     This(Box<Keyword>),
     Super(Box<Keyword>),
     ThisSuper(Box<(Keyword, Symbol, Keyword)>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct BitSelect {
     pub nodes: (Vec<Bracket<Expression>>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct Select {
     pub nodes: (
         Option<(
@@ -199,7 +199,7 @@ pub struct Select {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct NonrangeSelect {
     pub nodes: (
         Option<(
@@ -211,12 +211,12 @@ pub struct NonrangeSelect {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ConstantBitSelect {
     pub nodes: (Vec<Bracket<ConstantExpression>>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ConstantSelect {
     pub nodes: (
         Option<(
@@ -229,17 +229,17 @@ pub struct ConstantSelect {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ConstantCast {
     pub nodes: (CastingType, Symbol, Paren<ConstantExpression>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ConstantLetExpression {
     pub nodes: (LetExpression,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct Cast {
     pub nodes: (CastingType, Symbol, Paren<Expression>),
 }

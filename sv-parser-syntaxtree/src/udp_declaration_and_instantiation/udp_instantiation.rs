@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct UdpInstantiation {
     pub nodes: (
         UdpIdentifier,
@@ -13,7 +13,7 @@ pub struct UdpInstantiation {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct UdpInstance {
     pub nodes: (
         Option<NameOfInstance>,

@@ -36,6 +36,12 @@ pub struct Locate {
     pub len: usize,
 }
 
+impl Locate {
+    pub fn str<'a, 'b>(&'a self, s: &'b str) -> &'b str {
+        &s[self.offset..self.offset + self.len]
+    }
+}
+
 // -----------------------------------------------------------------------------
 
 pub trait Node<'a> {

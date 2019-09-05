@@ -2,13 +2,13 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum ConcurrentAssertionItem {
     Statement(Box<ConcurrentAssertionItemStatement>),
     CheckerInstantiation(Box<CheckerInstantiation>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ConcurrentAssertionItemStatement {
     pub nodes: (
         Option<(BlockIdentifier, Symbol)>,
@@ -16,7 +16,7 @@ pub struct ConcurrentAssertionItemStatement {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum ConcurrentAssertionStatement {
     AssertPropertyStatement(Box<AssertPropertyStatement>),
     AssumePropertyStatement(Box<AssumePropertyStatement>),
@@ -25,27 +25,27 @@ pub enum ConcurrentAssertionStatement {
     RestrictPropertyStatement(Box<RestrictPropertyStatement>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct AssertPropertyStatement {
     pub nodes: (Keyword, Keyword, Paren<PropertySpec>, ActionBlock),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct AssumePropertyStatement {
     pub nodes: (Keyword, Keyword, Paren<PropertySpec>, ActionBlock),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct CoverPropertyStatement {
     pub nodes: (Keyword, Keyword, Paren<PropertySpec>, StatementOrNull),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ExpectPropertyStatement {
     pub nodes: (Keyword, Paren<PropertySpec>, ActionBlock),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct CoverSequenceStatement {
     pub nodes: (
         Keyword,
@@ -59,12 +59,12 @@ pub struct CoverSequenceStatement {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct RestrictPropertyStatement {
     pub nodes: (Keyword, Keyword, Paren<PropertySpec>, Symbol),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyInstance {
     pub nodes: (
         PsOrHierarchicalPropertyIdentifier,
@@ -72,13 +72,13 @@ pub struct PropertyInstance {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum PropertyListOfArguments {
     Ordered(Box<PropertyListOfArgumentsOrdered>),
     Named(Box<PropertyListOfArgumentsNamed>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyListOfArgumentsOrdered {
     pub nodes: (
         List<Symbol, Option<PropertyActualArg>>,
@@ -86,25 +86,25 @@ pub struct PropertyListOfArgumentsOrdered {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyListOfArgumentsNamed {
     pub nodes: (List<Symbol, (Symbol, Identifier, Paren<Option<PropertyActualArg>>)>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum PropertyActualArg {
     PropertyExpr(Box<PropertyExpr>),
     SequenceActualArg(Box<SequenceActualArg>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum AssertionItemDeclaration {
     PropertyDeclaration(Box<PropertyDeclaration>),
     SequenceDeclaration(Box<SequenceDeclaration>),
     LetDeclaration(Box<LetDeclaration>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyDeclaration {
     pub nodes: (
         Keyword,
@@ -119,12 +119,12 @@ pub struct PropertyDeclaration {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyPortList {
     pub nodes: (List<Symbol, PropertyPortItem>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyPortItem {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -136,18 +136,18 @@ pub struct PropertyPortItem {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum PropertyLvarPortDirection {
     Input(Box<Keyword>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum PropertyFormalType {
     SequenceFormalType(Box<SequenceFormalType>),
     Property(Box<Keyword>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertySpec {
     pub nodes: (
         Option<ClockingEvent>,
@@ -156,7 +156,7 @@ pub struct PropertySpec {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum PropertyExpr {
     SequenceExpr(Box<SequenceExpr>),
     Strong(Box<PropertyExprStrong>),
@@ -181,37 +181,37 @@ pub enum PropertyExpr {
     ClockingEvent(Box<PropertyExprClockingEvent>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprStrong {
     pub nodes: (Keyword, Paren<SequenceExpr>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprWeak {
     pub nodes: (Keyword, Paren<SequenceExpr>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprParen {
     pub nodes: (Paren<PropertyExpr>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprNot {
     pub nodes: (Keyword, PropertyExpr),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprBinaryProperty {
     pub nodes: (PropertyExpr, Keyword, PropertyExpr),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprBinarySequence {
     pub nodes: (SequenceExpr, Symbol, PropertyExpr),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprIf {
     pub nodes: (
         Keyword,
@@ -221,7 +221,7 @@ pub struct PropertyExprIf {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprCase {
     pub nodes: (
         Keyword,
@@ -232,17 +232,17 @@ pub struct PropertyExprCase {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprNexttime {
     pub nodes: (Keyword, Option<Bracket<ConstantExpression>>, PropertyExpr),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprSNexttime {
     pub nodes: (Keyword, Option<Bracket<ConstantExpression>>, PropertyExpr),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprAlways {
     pub nodes: (
         Keyword,
@@ -251,7 +251,7 @@ pub struct PropertyExprAlways {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprSAlways {
     pub nodes: (
         Keyword,
@@ -260,12 +260,12 @@ pub struct PropertyExprSAlways {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprEventually {
     pub nodes: (Keyword, Bracket<ConstantRange>, PropertyExpr),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprSEventually {
     pub nodes: (
         Keyword,
@@ -274,48 +274,48 @@ pub struct PropertyExprSEventually {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprAcceptOn {
     pub nodes: (Keyword, Paren<ExpressionOrDist>, PropertyExpr),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprRejectOn {
     pub nodes: (Keyword, Paren<ExpressionOrDist>, PropertyExpr),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprSyncAcceptOn {
     pub nodes: (Keyword, Paren<ExpressionOrDist>, PropertyExpr),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprSyncRejectOn {
     pub nodes: (Keyword, Paren<ExpressionOrDist>, PropertyExpr),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyExprClockingEvent {
     pub nodes: (ClockingEvent, PropertyExpr),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum PropertyCaseItem {
     Nondefault(Box<PropertyCaseItemNondefault>),
     Default(Box<PropertyCaseItemDefault>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyCaseItemNondefault {
     pub nodes: (List<Symbol, ExpressionOrDist>, Symbol, PropertyExpr, Symbol),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PropertyCaseItemDefault {
     pub nodes: (Keyword, Option<Symbol>, PropertyExpr, Symbol),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SequenceDeclaration {
     pub nodes: (
         Keyword,
@@ -330,12 +330,12 @@ pub struct SequenceDeclaration {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SequencePortList {
     pub nodes: (List<Symbol, SequencePortItem>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SequencePortItem {
     pub nodes: (
         Vec<AttributeInstance>,
@@ -347,21 +347,21 @@ pub struct SequencePortItem {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum SequenceLvarPortDirection {
     Input(Box<Keyword>),
     Inout(Box<Keyword>),
     Output(Box<Keyword>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum SequenceFormalType {
     DataTypeOrImplicit(Box<DataTypeOrImplicit>),
     Sequence(Box<Keyword>),
     Untyped(Box<Keyword>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum SequenceExpr {
     CycleDelayExpr(Box<SequenceExprCycleDelayExpr>),
     ExprCycleDelayExpr(Box<SequenceExprExprCycleDelayExpr>),
@@ -374,7 +374,7 @@ pub enum SequenceExpr {
     ClockingEvent(Box<SequenceExprClockingEvent>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SequenceExprCycleDelayExpr {
     pub nodes: (
         CycleDelayRange,
@@ -383,7 +383,7 @@ pub struct SequenceExprCycleDelayExpr {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SequenceExprExprCycleDelayExpr {
     pub nodes: (
         SequenceExpr,
@@ -393,17 +393,17 @@ pub struct SequenceExprExprCycleDelayExpr {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SequenceExprExpression {
     pub nodes: (ExpressionOrDist, Option<BooleanAbbrev>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SequenceExprInstance {
     pub nodes: (SequenceInstance, Option<SequenceAbbrev>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SequenceExprParen {
     pub nodes: (
         Paren<(SequenceExpr, Vec<(Symbol, SequenceMatchItem)>)>,
@@ -411,12 +411,12 @@ pub struct SequenceExprParen {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SequenceExprBinary {
     pub nodes: (SequenceExpr, Keyword, SequenceExpr),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SequenceExprFirstMatch {
     pub nodes: (
         Keyword,
@@ -424,17 +424,17 @@ pub struct SequenceExprFirstMatch {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SequenceExprThroughout {
     pub nodes: (ExpressionOrDist, Keyword, SequenceExpr),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SequenceExprClockingEvent {
     pub nodes: (ClockingEvent, SequenceExpr),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum CycleDelayRange {
     Primary(Box<CycleDelayRangePrimary>),
     Expression(Box<CycleDelayRangeExpression>),
@@ -442,39 +442,39 @@ pub enum CycleDelayRange {
     Plus(Box<CycleDelayRangePlus>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct CycleDelayRangePrimary {
     pub nodes: (Symbol, ConstantPrimary),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct CycleDelayRangeExpression {
     pub nodes: (Symbol, Bracket<CycleDelayConstRangeExpression>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct CycleDelayRangeAsterisk {
     pub nodes: (Symbol, Bracket<Symbol>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct CycleDelayRangePlus {
     pub nodes: (Symbol, Bracket<Symbol>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SequenceMethodCall {
     pub nodes: (SequenceInstance, Symbol, MethodIdentifier),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum SequenceMatchItem {
     OperatorAssignment(Box<OperatorAssignment>),
     IncOrDecExpression(Box<IncOrDecExpression>),
     SubroutineCall(Box<SubroutineCall>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SequenceInstance {
     pub nodes: (
         PsOrHierarchicalSequenceIdentifier,
@@ -482,13 +482,13 @@ pub struct SequenceInstance {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum SequenceListOfArguments {
     Ordered(Box<SequenceListOfArgumentsOrdered>),
     Named(Box<SequenceListOfArgumentsNamed>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SequenceListOfArgumentsOrdered {
     pub nodes: (
         List<Symbol, Option<SequenceActualArg>>,
@@ -496,89 +496,89 @@ pub struct SequenceListOfArgumentsOrdered {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SequenceListOfArgumentsNamed {
     pub nodes: (List<Symbol, (Symbol, Identifier, Paren<Option<SequenceActualArg>>)>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum SequenceActualArg {
     EventExpression(Box<EventExpression>),
     SequenceExpr(Box<SequenceExpr>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum BooleanAbbrev {
     ConsecutiveRepetition(Box<ConsecutiveRepetition>),
     NonConsecutiveRepetition(Box<NonConsecutiveRepetition>),
     GotoRepetition(Box<GotoRepetition>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SequenceAbbrev {
     pub nodes: (ConsecutiveRepetition,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum ConsecutiveRepetition {
     Expression(Box<ConsecutiveRepetitionExpression>),
     Asterisk(Box<ConsecutiveRepetitionAsterisk>),
     Plus(Box<ConsecutiveRepetitionPlus>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ConsecutiveRepetitionExpression {
     pub nodes: (Bracket<(Symbol, ConstOrRangeExpression)>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ConsecutiveRepetitionAsterisk {
     pub nodes: (Bracket<Symbol>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ConsecutiveRepetitionPlus {
     pub nodes: (Bracket<Symbol>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct NonConsecutiveRepetition {
     pub nodes: (Bracket<(Symbol, ConstOrRangeExpression)>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct GotoRepetition {
     pub nodes: (Bracket<(Symbol, ConstOrRangeExpression)>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum ConstOrRangeExpression {
     ConstantExpression(Box<ConstantExpression>),
     CycleDelayConstRangeExpression(Box<CycleDelayConstRangeExpression>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum CycleDelayConstRangeExpression {
     Binary(Box<CycleDelayConstRangeExpressionBinary>),
     Dollar(Box<CycleDelayConstRangeExpressionDollar>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct CycleDelayConstRangeExpressionBinary {
     pub nodes: (ConstantExpression, Symbol, ConstantExpression),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct CycleDelayConstRangeExpressionDollar {
     pub nodes: (ConstantExpression, Symbol, Symbol),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ExpressionOrDist {
     pub nodes: (Expression, Option<(Keyword, Brace<DistList>)>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct AssertionVariableDeclaration {
     pub nodes: (VarDataType, ListOfVariableDeclAssignments, Symbol),
 }

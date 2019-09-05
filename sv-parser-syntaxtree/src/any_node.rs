@@ -5,12 +5,19 @@ use core::convert::TryFrom;
 
 include!(concat!(env!("OUT_DIR"), "/any_node.rs"));
 
-pub struct RefNodes<'a>(pub Vec<RefNode<'a>>);
-
 // -----------------------------------------------------------------------------
+
+pub struct RefNodes<'a>(pub Vec<RefNode<'a>>);
 
 pub struct Iter<'a> {
     pub(crate) next: RefNodes<'a>,
+}
+
+impl<'a> Iter<'a> {
+    pub fn event(self) -> EventIter<'a> {
+        let next: NodeEvents = self.next.into();
+        EventIter { next }
+    }
 }
 
 impl<'a> Iterator for Iter<'a> {
@@ -28,6 +35,59 @@ impl<'a> Iterator for Iter<'a> {
 }
 
 // -----------------------------------------------------------------------------
+
+#[derive(Debug, Clone)]
+pub enum NodeEvent<'a> {
+    Enter(RefNode<'a>),
+    Leave(RefNode<'a>),
+}
+
+pub struct NodeEvents<'a>(pub Vec<NodeEvent<'a>>);
+
+pub struct EventIter<'a> {
+    pub(crate) next: NodeEvents<'a>,
+}
+
+impl<'a> Iterator for EventIter<'a> {
+    type Item = NodeEvent<'a>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let ret = self.next.0.pop();
+        if let Some(x) = ret.clone() {
+            if let NodeEvent::Enter(x) = x {
+                self.next.0.push(NodeEvent::Leave(x.clone()));
+                let mut x: NodeEvents = x.next().into();
+                x.0.reverse();
+                self.next.0.append(&mut x.0);
+            }
+        }
+        ret
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+impl<'a> From<Iter<'a>> for EventIter<'a> {
+    fn from(x: Iter<'a>) -> Self {
+        let mut ret = Vec::new();
+        for x in x.next.0 {
+            ret.push(NodeEvent::Enter(x));
+        }
+        EventIter {
+            next: NodeEvents(ret),
+        }
+    }
+}
+
+impl<'a> From<RefNodes<'a>> for NodeEvents<'a> {
+    fn from(x: RefNodes<'a>) -> Self {
+        let mut ret = Vec::new();
+        for x in x.0 {
+            ret.push(NodeEvent::Enter(x));
+        }
+        NodeEvents(ret)
+    }
+}
 
 impl<'a> From<Vec<RefNode<'a>>> for RefNodes<'a> {
     fn from(x: Vec<RefNode<'a>>) -> Self {

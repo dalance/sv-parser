@@ -2,12 +2,12 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ConstantFunctionCall {
     pub nodes: (FunctionSubroutineCall,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct TfCall {
     pub nodes: (
         PsOrHierarchicalTfIdentifier,
@@ -16,19 +16,19 @@ pub struct TfCall {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum SystemTfCall {
     ArgOptionl(Box<SystemTfCallArgOptional>),
     ArgDataType(Box<SystemTfCallArgDataType>),
     ArgExpression(Box<SystemTfCallArgExpression>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SystemTfCallArgOptional {
     pub nodes: (SystemTfIdentifier, Option<Paren<ListOfArguments>>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SystemTfCallArgDataType {
     pub nodes: (
         SystemTfIdentifier,
@@ -36,7 +36,7 @@ pub struct SystemTfCallArgDataType {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SystemTfCallArgExpression {
     pub nodes: (
         SystemTfIdentifier,
@@ -47,7 +47,7 @@ pub struct SystemTfCallArgExpression {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum SubroutineCall {
     TfCall(Box<TfCall>),
     SystemTfCall(Box<SystemTfCall>),
@@ -55,23 +55,23 @@ pub enum SubroutineCall {
     Randomize(Box<SubroutineCallRandomize>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct SubroutineCallRandomize {
     pub nodes: (Option<(Keyword, Symbol)>, RandomizeCall),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct FunctionSubroutineCall {
     pub nodes: (SubroutineCall,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum ListOfArguments {
     Ordered(Box<ListOfArgumentsOrdered>),
     Named(Box<ListOfArgumentsNamed>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ListOfArgumentsOrdered {
     pub nodes: (
         List<Symbol, Option<Expression>>,
@@ -79,7 +79,7 @@ pub struct ListOfArgumentsOrdered {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ListOfArgumentsNamed {
     pub nodes: (
         Symbol,
@@ -89,18 +89,18 @@ pub struct ListOfArgumentsNamed {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct MethodCall {
     pub nodes: (MethodCallRoot, Symbol, MethodCallBody),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum MethodCallBody {
     User(Box<MethodCallBodyUser>),
     BuiltInMethodCall(Box<BuiltInMethodCall>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct MethodCallBodyUser {
     pub nodes: (
         MethodIdentifier,
@@ -109,13 +109,13 @@ pub struct MethodCallBodyUser {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum BuiltInMethodCall {
     ArrayManipulationCall(Box<ArrayManipulationCall>),
     RandomizeCall(Box<RandomizeCall>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ArrayManipulationCall {
     pub nodes: (
         ArrayMethodName,
@@ -125,7 +125,7 @@ pub struct ArrayManipulationCall {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct RandomizeCall {
     pub nodes: (
         Keyword,
@@ -139,19 +139,19 @@ pub struct RandomizeCall {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum VariableIdentifierListOrNull {
     VariableIdentifierList(Box<VariableIdentifierList>),
     Null(Box<Keyword>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum MethodCallRoot {
     Primary(Box<Primary>),
     ImplicitClassHandle(Box<ImplicitClassHandle>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum ArrayMethodName {
     MethodIdentifier(Box<MethodIdentifier>),
     Unique(Box<Keyword>),

@@ -258,18 +258,14 @@ where
 pub(crate) fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
     if in_directive() {
         alt((
-            map(multispace1, |x: Span| {
-                WhiteSpace::Space(Box::new(into_locate(x)))
-            }),
+            map(space, |x: Span| WhiteSpace::Space(Box::new(into_locate(x)))),
             map(preceded(peek(char('/')), comment), |x| {
                 WhiteSpace::Comment(Box::new(x))
             }),
         ))(s)
     } else {
         alt((
-            map(multispace1, |x: Span| {
-                WhiteSpace::Space(Box::new(into_locate(x)))
-            }),
+            map(space, |x: Span| WhiteSpace::Space(Box::new(into_locate(x)))),
             map(preceded(peek(char('/')), comment), |x| {
                 WhiteSpace::Comment(Box::new(x))
             }),
@@ -277,6 +273,14 @@ pub(crate) fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
                 WhiteSpace::CompilerDirective(Box::new(x))
             }),
         ))(s)
+    }
+}
+
+pub(crate) fn space(s: Span) -> IResult<Span, Span> {
+    if lb_not_space() {
+        space1(s)
+    } else {
+        multispace1(s)
     }
 }
 
@@ -299,6 +303,27 @@ pub(crate) fn begin_directive() {
 
 pub(crate) fn end_directive() {
     IN_DIRECTIVE.with(|x| x.borrow_mut().pop());
+}
+
+thread_local!(
+    static LB_NOT_SPACE: core::cell::RefCell<Vec<()>> = {
+        core::cell::RefCell::new(Vec::new())
+    }
+);
+
+pub(crate) fn lb_not_space() -> bool {
+    LB_NOT_SPACE.with(|x| match x.borrow().last() {
+        Some(_) => true,
+        None => false,
+    })
+}
+
+pub(crate) fn begin_lb_not_space() {
+    LB_NOT_SPACE.with(|x| x.borrow_mut().push(()));
+}
+
+pub(crate) fn end_lb_not_space() {
+    LB_NOT_SPACE.with(|x| x.borrow_mut().pop());
 }
 
 // -----------------------------------------------------------------------------

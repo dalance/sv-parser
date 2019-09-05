@@ -2,7 +2,7 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum DataDeclaration {
     Variable(Box<DataDeclarationVariable>),
     TypeDeclaration(Box<TypeDeclaration>),
@@ -10,7 +10,7 @@ pub enum DataDeclaration {
     NetTypeDeclaration(Box<NetTypeDeclaration>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct DataDeclarationVariable {
     pub nodes: (
         Option<Const>,
@@ -22,61 +22,61 @@ pub struct DataDeclarationVariable {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct Const {
     pub nodes: (Keyword,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PackageImportDeclaration {
     pub nodes: (Keyword, List<Symbol, PackageImportItem>, Symbol),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum PackageImportItem {
     Identifier(Box<PackageImportItemIdentifier>),
     Asterisk(Box<PackageImportItemAsterisk>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PackageImportItemIdentifier {
     pub nodes: (PackageIdentifier, Symbol, Identifier),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PackageImportItemAsterisk {
     pub nodes: (PackageIdentifier, Symbol, Symbol),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum PackageExportDeclaration {
     Asterisk(Box<PackageExportDeclarationAsterisk>),
     Item(Box<PackageExportDeclarationItem>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PackageExportDeclarationAsterisk {
     pub nodes: (Keyword, Symbol, Symbol),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PackageExportDeclarationItem {
     pub nodes: (Keyword, List<Symbol, PackageImportItem>, Symbol),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct GenvarDeclaration {
     pub nodes: (Keyword, ListOfGenvarIdentifiers, Symbol),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum NetDeclaration {
     NetType(Box<NetDeclarationNetType>),
     NetTypeIdentifier(Box<NetDeclarationNetTypeIdentifier>),
     Interconnect(Box<NetDeclarationInterconnect>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct NetDeclarationNetType {
     pub nodes: (
         NetType,
@@ -89,19 +89,19 @@ pub struct NetDeclarationNetType {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum Strength {
     Drive(Box<DriveStrength>),
     Charge(Box<ChargeStrength>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum VectorScalar {
     Vectored(Box<Keyword>),
     Scalared(Box<Keyword>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct NetDeclarationNetTypeIdentifier {
     pub nodes: (
         NetTypeIdentifier,
@@ -111,7 +111,7 @@ pub struct NetDeclarationNetTypeIdentifier {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct NetDeclarationInterconnect {
     pub nodes: (
         Keyword,
@@ -124,14 +124,14 @@ pub struct NetDeclarationInterconnect {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum TypeDeclaration {
     DataType(Box<TypeDeclarationDataType>),
     Interface(Box<TypeDeclarationInterface>),
     Reserved(Box<TypeDeclarationReserved>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct TypeDeclarationDataType {
     pub nodes: (
         Keyword,
@@ -142,7 +142,7 @@ pub struct TypeDeclarationDataType {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct TypeDeclarationInterface {
     pub nodes: (
         Keyword,
@@ -155,7 +155,7 @@ pub struct TypeDeclarationInterface {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct TypeDeclarationReserved {
     pub nodes: (
         Keyword,
@@ -165,7 +165,7 @@ pub struct TypeDeclarationReserved {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum TypeDeclarationKeyword {
     Enum(Box<Keyword>),
     Struct(Box<Keyword>),
@@ -174,13 +174,13 @@ pub enum TypeDeclarationKeyword {
     InterfaceClass(Box<(Keyword, Keyword)>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum NetTypeDeclaration {
     DataType(Box<NetTypeDeclarationDataType>),
     NetType(Box<NetTypeDeclarationNetType>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct NetTypeDeclarationDataType {
     pub nodes: (
         Keyword,
@@ -191,7 +191,7 @@ pub struct NetTypeDeclarationDataType {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct NetTypeDeclarationNetType {
     pub nodes: (
         Keyword,
@@ -202,7 +202,7 @@ pub struct NetTypeDeclarationNetType {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum Lifetime {
     Static(Box<Keyword>),
     Automatic(Box<Keyword>),

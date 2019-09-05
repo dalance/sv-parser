@@ -2,48 +2,48 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum PathDelayValue {
     ListOfPathDelayExpressions(Box<ListOfPathDelayExpressions>),
     Paren(Box<PathDelayValueParen>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PathDelayValueParen {
     pub nodes: (Paren<ListOfPathDelayExpressions>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ListOfPathDelayExpressions {
     pub nodes: (List<Symbol, TPathDelayExpression>,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct TPathDelayExpression {
     pub nodes: (PathDelayExpression,),
 }
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PathDelayExpression {
     pub nodes: (ConstantMintypmaxExpression,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum EdgeSensitivePathDeclaration {
     Parallel(Box<EdgeSensitivePathDeclarationParallel>),
     Full(Box<EdgeSensitivePathDeclarationFull>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct EdgeSensitivePathDeclarationParallel {
     pub nodes: (ParallelEdgeSensitivePathDescription, Symbol, PathDelayValue),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct EdgeSensitivePathDeclarationFull {
     pub nodes: (FullEdgeSensitivePathDescription, Symbol, PathDelayValue),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct ParallelEdgeSensitivePathDescription {
     pub nodes: (
         Paren<(
@@ -61,7 +61,7 @@ pub struct ParallelEdgeSensitivePathDescription {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct FullEdgeSensitivePathDescription {
     pub nodes: (
         Paren<(
@@ -79,31 +79,31 @@ pub struct FullEdgeSensitivePathDescription {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct DataSourceExpression {
     pub nodes: (Expression,),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum EdgeIdentifier {
     Posedge(Box<Keyword>),
     Negedge(Box<Keyword>),
     Edge(Box<Keyword>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub enum StateDependentPathDeclaration {
     IfSimple(Box<StateDependentPathDeclarationIfSimple>),
     IfEdgeSensitive(Box<StateDependentPathDeclarationIfEdgeSensitive>),
     IfNone(Box<StateDependentPathDeclarationIfNone>),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct StateDependentPathDeclarationIfSimple {
     pub nodes: (Keyword, Paren<ModulePathExpression>, SimplePathDeclaration),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct StateDependentPathDeclarationIfEdgeSensitive {
     pub nodes: (
         Keyword,
@@ -112,12 +112,12 @@ pub struct StateDependentPathDeclarationIfEdgeSensitive {
     ),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct StateDependentPathDeclarationIfNone {
     pub nodes: (Keyword, SimplePathDeclaration),
 }
 
-#[derive(Clone, Debug, Node)]
+#[derive(Clone, Debug, PartialEq, Node)]
 pub struct PolarityOperator {
     pub nodes: (Symbol,),
 }

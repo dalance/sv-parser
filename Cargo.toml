@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "sv-parser",
+    "sv-parser-error",
     "sv-parser-macros",
     "sv-parser-parser",
     "sv-parser-pp",

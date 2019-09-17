@@ -1,3 +1,3 @@
 module and_op (a, b, c);
-`include "test3.sv"
+`include "test2.svh"
 endmodule

@@ -71,7 +71,7 @@ impl PreprocessedText {
 
 pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
     path: T,
-    pre_defines: &HashMap<String, Option<TextMacroDefinition>>,
+    pre_defines: &HashMap<String, Option<(TextMacroDefinition, PathBuf)>>,
     include_paths: &[U],
 ) -> Result<PreprocessedText, Error> {
     let f = File::open(path.as_ref())?;
@@ -171,7 +171,7 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
             NodeEvent::Enter(RefNode::TextMacroDefinition(x)) if !skip => {
                 let (_, _, ref name, _) = x.nodes;
                 let id = identifier((&name.nodes.0).into(), &s).unwrap();
-                defines.insert(id, Some(x.clone()));
+                defines.insert(id, Some((x.clone(), PathBuf::from(path.as_ref()))));
             }
             NodeEvent::Enter(RefNode::IncludeCompilerDirective(x)) if !skip => {
                 let path = match x {
@@ -200,6 +200,86 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
                 }
                 let include = preprocess(path, &defines, include_paths)?;
                 ret.merge(include);
+            }
+            NodeEvent::Enter(RefNode::TextMacroUsage(x)) if !skip => {
+                let (_, ref name, ref args) = x.nodes;
+                let id = identifier((&name.nodes.0).into(), &s).unwrap();
+
+                let mut actual_args = Vec::new();
+                if let Some(args) = args {
+                    let (_, ref args, _) = args.nodes;
+                    let (ref args,) = args.nodes;
+                    for arg in args.contents() {
+                        let (ref arg,) = arg.nodes;
+                        let arg: Locate = arg.try_into().unwrap();
+                        let arg = arg.str(&s);
+                        actual_args.push(arg);
+                    }
+                }
+
+                let define = defines.get(&id);
+                if let Some(Some((define, define_path))) = define {
+                    let (_, _, ref proto, ref text) = define.nodes;
+
+                    let mut arg_names = Vec::new();
+                    let mut defaults = Vec::new();
+                    let (_, ref args) = proto.nodes;
+                    if let Some(args) = args {
+                        let (_, ref args, _) = args.nodes;
+                        let (ref args,) = args.nodes;
+                        for arg in args.contents() {
+                            let (ref arg, ref default) = arg.nodes;
+                            let (ref arg, _) = arg.nodes;
+                            let arg = arg.str(&s);
+
+                            let default = if let Some((_, x)) = default {
+                                let x: Locate = x.try_into().unwrap();
+                                let x = x.str(&s);
+                                Some(x)
+                            } else {
+                                None
+                            };
+
+                            arg_names.push(arg);
+                            defaults.push(default);
+                        }
+                    }
+
+                    let mut arg_map = HashMap::new();
+                    for (i, arg) in arg_names.iter().enumerate() {
+                        let value = if let Some(actual_arg) = actual_args.get(i) {
+                            actual_arg
+                        } else {
+                            if let Some(default) = defaults.get(i).unwrap() {
+                                default
+                            } else {
+                                unimplemented!();
+                            }
+                        };
+                        arg_map.insert(String::from(*arg), value);
+                    }
+
+                    if let Some(text) = text {
+                        let text: Locate = text.try_into().unwrap();
+                        let range = Range::new(text.offset, text.offset + text.len);
+                        let text = text.str(&s);
+                        let mut replaced = String::from("");
+                        for text in split_text(text) {
+                            if let Some(value) = arg_map.get(&text) {
+                                replaced.push_str(**value);
+                            } else {
+                                replaced.push_str(&text.replace("``", ""));
+                            }
+                        }
+                        ret.push(&replaced, define_path, range);
+                    } else {
+                        unimplemented!();
+                    }
+                } else if let Some(_) = define {
+                    unimplemented!();
+                } else {
+                    unimplemented!();
+                }
             }
             NodeEvent::Enter(x) => {
                 if skip_nodes.contains(&x) {
@@ -232,6 +312,25 @@ fn identifier(node: RefNode, s: &str) -> Option<String> {
         }
     }
     None
+}
+
+fn split_text(s: &str) -> Vec<String> {
+    let mut is_ident = false;
+    let mut is_ident_prev;
+    let mut x = String::from("");
+    let mut ret = vec![];
+    for c in s.chars() {
+        is_ident_prev = is_ident;
+        is_ident = c.is_ascii_alphanumeric() | (c == '_');
+
+        if is_ident != is_ident_prev {
+            ret.push(x);
+            x = String::from("");
+        }
+
+        x.push(c);
+    }
+    ret
 }
 
 #[cfg(test)]
@@ -290,7 +389,6 @@ endmodule
     fn test2() {
         let include_paths = [get_testcase("")];
         let ret = preprocess(get_testcase("test2.sv"), &HashMap::new(), &include_paths).unwrap();
-        let ret = dbg!(ret);
         assert_eq!(
             ret.text(),
             r##"module and_op (a, b, c);
@@ -308,13 +406,34 @@ endmodule
         assert_eq!(ret.origin(10).unwrap().1, 10);
         assert_eq!(
             ret.origin(50).unwrap().0,
-            &PathBuf::from(get_testcase("test3.sv"))
+            &PathBuf::from(get_testcase("test2.svh"))
         );
         assert_eq!(ret.origin(50).unwrap().1, 73);
         assert_eq!(
             ret.origin(70).unwrap().0,
             &PathBuf::from(get_testcase("test2.sv"))
         );
-        assert_eq!(ret.origin(70).unwrap().1, 51);
+        assert_eq!(ret.origin(70).unwrap().1, 52);
+    }
+
+    #[test]
+    fn test3() {
+        let ret = preprocess(get_testcase("test3.sv"), &HashMap::new(), &[] as &[String]).unwrap();
+        assert_eq!(
+            ret.text(),
+            r##"
+
+module a ();
+
+  \
+  assign a_0__x = a[0].x; \
+  assign a_0__y = a[0].y;
+  \
+  assign a_1__x = a[1].x; \
+  assign a_1__y = a[1].y;
+
+endmodule
+"##
+        );
     }
 }

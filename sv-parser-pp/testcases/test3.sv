@@ -1,8 +1,10 @@
-output a;
-input b, c;
+`define connect(NAME, INDEX = 0) \
+  assign NAME``_``INDEX``__x = NAME[INDEX].x; \
+  assign NAME``_``INDEX``__y = NAME[INDEX].y;
 
-`ifdef behavioral
-    wire a = b & c;
-`else
-    and a1 (a,b,c);
-`endif
+module a ();
+
+  `connect(a);
+  `connect(a, 1);
+
+endmodule

@@ -2,6 +2,7 @@ use failure::{Backtrace, Context, Fail};
 use std::fmt;
 use std::fmt::Display;
 use std::io::Error as IOError;
+use std::path::PathBuf;
 
 // -----------------------------------------------------------------------------
 
@@ -9,8 +10,14 @@ use std::io::Error as IOError;
 pub enum ErrorKind {
     #[fail(display = "IO error")]
     Io,
+    #[fail(display = "File error: {:?}", _0)]
+    File(PathBuf),
+    #[fail(display = "Include error")]
+    Include,
     #[fail(display = "Parse error")]
     Parse,
+    #[fail(display = "Preprocess error")]
+    Preprocess,
 }
 
 // -----------------------------------------------------------------------------

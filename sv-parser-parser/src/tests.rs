@@ -285,6 +285,7 @@ mod unit {
         test!(comment, "// comment", Ok((_, _)));
         test!(comment, "//", Ok((_, _)));
         test!(comment, "/* comment\n\n */", Ok((_, _)));
+        test!(comment, "/* comment\n//aaa\n */", Ok((_, _)));
     }
 
     #[test]
@@ -15786,10 +15787,6 @@ mod spec {
 
 #[test]
 fn debug() {
-    test!(
-        source_text,
-        r##"module secret (a, b); `pragma protect encoding=(enctype="raw") `pragma protect data_method="x-caesar", data_keyname="rot13", begin endmodule"##,
-        Ok((_, _))
-    );
+    test!(source_text, r##"/* comment\n//aaa\n */"##, Ok((_, _)));
     nom_tracable::cumulative_histogram();
 }

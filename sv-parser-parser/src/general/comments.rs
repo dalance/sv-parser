@@ -30,9 +30,12 @@ pub(crate) fn one_line_comment(s: Span) -> IResult<Span, Comment> {
 #[packrat_parser]
 pub(crate) fn block_comment(s: Span) -> IResult<Span, Comment> {
     let (s, a) = tag("/*")(s)?;
-    let (s, b) = is_not("*/")(s)?;
+    let (s, b) = many0(alt((is_not("*"), terminated(tag("*"), is_not("/")))))(s)?;
     let (s, c) = tag("*/")(s)?;
-    let a = concat(a, b).unwrap();
+    let mut a = a;
+    for b in b {
+        a = concat(a, b).unwrap();
+    }
     let a = concat(a, c).unwrap();
     Ok((
         s,

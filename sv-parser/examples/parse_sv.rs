@@ -1,27 +1,35 @@
-use std::env;
-use std::fs::File;
-use std::io::Read;
-use sv_parser::{parse_sv, RefNode};
+use std::collections::HashMap;
+use std::path::PathBuf;
+use structopt::StructOpt;
+use sv_parser::parse_sv;
+
+#[derive(StructOpt)]
+struct Opt {
+    pub files: Vec<PathBuf>,
+
+    #[structopt(short = "I", long = "include", multiple = true, number_of_values = 1)]
+    pub includes: Vec<PathBuf>,
+
+    /// Show syntax tree
+    #[structopt(short = "t", long = "tree")]
+    pub tree: bool,
+}
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    let mut f = File::open(&args[1]).unwrap();
-    let mut buf = String::new();
-    let _ = f.read_to_string(&mut buf);
+    let opt = Opt::from_args();
+    for path in &opt.files {
+        let syntax_tree = parse_sv(&path, &HashMap::new(), &opt.includes);
 
-    let syntax_tree = parse_sv(&buf);
-
-    if let Ok(syntax_tree) = syntax_tree {
-        //for node in &syntax_tree {
-        //    match node {
-        //        RefNode::Locate(x) => {
-        //            dbg!(syntax_tree.get_str(x));
-        //        }
-        //        _ => (),
-        //    }
-        //}
-        println!("parse succeeded");
-    } else {
-        println!("parse failed");
+        match syntax_tree {
+            Ok(x) => {
+                if opt.tree {
+                    println!("{}", x);
+                }
+                println!("parse succeeded: {:?}", path);
+            }
+            Err(x) => {
+                println!("parse failed: {:?} ({})", path, x);
+            }
+        }
     }
 }

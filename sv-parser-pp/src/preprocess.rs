@@ -1,4 +1,5 @@
 use crate::range::Range;
+use failure::ResultExt;
 use std::collections::{BTreeMap, HashMap};
 use std::convert::TryInto;
 use std::fs::File;
@@ -6,9 +7,7 @@ use std::io::{BufReader, Read};
 use std::path::{Path, PathBuf};
 use sv_parser_error::{Error, ErrorKind};
 use sv_parser_parser::{pp_parser, Span, SpanInfo};
-use sv_parser_syntaxtree::{
-    IncludeCompilerDirective, Locate, NodeEvent, RefNode, TextMacroDefinition,
-};
+use sv_parser_syntaxtree::{IncludeCompilerDirective, Locate, NodeEvent, RefNode};
 
 #[derive(Debug)]
 pub struct PreprocessedText {
@@ -69,12 +68,23 @@ impl PreprocessedText {
     }
 }
 
+#[derive(Clone, Debug)]
+pub struct Define {
+    identifier: String,
+    arguments: Vec<(String, Option<String>)>,
+    text: Option<(String, Range)>,
+    path: PathBuf,
+}
+
+type Defines = HashMap<String, Option<Define>>;
+
 pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
     path: T,
-    pre_defines: &HashMap<String, Option<(TextMacroDefinition, PathBuf)>>,
+    pre_defines: &Defines,
     include_paths: &[U],
-) -> Result<PreprocessedText, Error> {
-    let f = File::open(path.as_ref())?;
+) -> Result<(PreprocessedText, Defines), Error> {
+    let f =
+        File::open(path.as_ref()).context(ErrorKind::File(PathBuf::from(path.as_ref())).into())?;
     let mut reader = BufReader::new(f);
     let mut s = String::new();
     reader.read_to_string(&mut s)?;
@@ -84,7 +94,7 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
     let mut defines = HashMap::new();
 
     for (k, v) in pre_defines {
-        defines.insert(k.clone(), v.clone());
+        defines.insert(k.clone(), (*v).clone());
     }
 
     let span = Span::new_extra(&s, SpanInfo::default());
@@ -169,9 +179,48 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
                 }
             }
             NodeEvent::Enter(RefNode::TextMacroDefinition(x)) if !skip => {
-                let (_, _, ref name, _) = x.nodes;
-                let id = identifier((&name.nodes.0).into(), &s).unwrap();
-                defines.insert(id, Some((x.clone(), PathBuf::from(path.as_ref()))));
+                let (_, _, ref proto, ref text) = x.nodes;
+                let (ref name, ref args) = proto.nodes;
+                let id = identifier(name.into(), &s).unwrap();
+
+                let mut define_args = Vec::new();
+                if let Some(args) = args {
+                    let (_, ref args, _) = args.nodes;
+                    let (ref args,) = args.nodes;
+                    for arg in args.contents() {
+                        let (ref arg, ref default) = arg.nodes;
+                        let (ref arg, _) = arg.nodes;
+                        let arg = String::from(arg.str(&s));
+
+                        let default = if let Some((_, x)) = default {
+                            let x: Locate = x.try_into().unwrap();
+                            let x = String::from(x.str(&s));
+                            Some(x)
+                        } else {
+                            None
+                        };
+
+                        define_args.push((arg, default));
+                    }
+                }
+
+                let define_text = if let Some(text) = text {
+                    let text: Locate = text.try_into().unwrap();
+                    let range = Range::new(text.offset, text.offset + text.len);
+                    let text = String::from(text.str(&s));
+                    Some((text, range))
+                } else {
+                    None
+                };
+
+                let define = Define {
+                    identifier: id.clone(),
+                    arguments: define_args,
+                    text: define_text,
+                    path: PathBuf::from(path.as_ref()),
+                };
+
+                defines.insert(id, Some(define));
             }
             NodeEvent::Enter(RefNode::IncludeCompilerDirective(x)) if !skip => {
                 let path = match x {
@@ -198,7 +247,9 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
                         }
                     }
                 }
-                let include = preprocess(path, &defines, include_paths)?;
+                let (include, new_defines) =
+                    preprocess(path, &defines, include_paths).context(ErrorKind::Include)?;
+                defines = new_defines;
                 ret.merge(include);
             }
             NodeEvent::Enter(RefNode::TextMacroUsage(x)) if !skip => {
@@ -218,67 +269,38 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
                 }
 
                 let define = defines.get(&id);
-                if let Some(Some((define, define_path))) = define {
-                    let (_, _, ref proto, ref text) = define.nodes;
-
-                    let mut arg_names = Vec::new();
-                    let mut defaults = Vec::new();
-                    let (_, ref args) = proto.nodes;
-                    if let Some(args) = args {
-                        let (_, ref args, _) = args.nodes;
-                        let (ref args,) = args.nodes;
-                        for arg in args.contents() {
-                            let (ref arg, ref default) = arg.nodes;
-                            let (ref arg, _) = arg.nodes;
-                            let arg = arg.str(&s);
-
-                            let default = if let Some((_, x)) = default {
-                                let x: Locate = x.try_into().unwrap();
-                                let x = x.str(&s);
-                                Some(x)
-                            } else {
-                                None
-                            };
-
-                            arg_names.push(arg);
-                            defaults.push(default);
-                        }
-                    }
-
+                if let Some(Some(define)) = define {
                     let mut arg_map = HashMap::new();
-                    for (i, arg) in arg_names.iter().enumerate() {
+                    for (i, (arg, default)) in define.arguments.iter().enumerate() {
                         let value = if let Some(actual_arg) = actual_args.get(i) {
-                            actual_arg
+                            *actual_arg
                         } else {
-                            if let Some(default) = defaults.get(i).unwrap() {
+                            if let Some(default) = default {
                                 default
                             } else {
-                                unimplemented!();
+                                return Err(ErrorKind::Preprocess.into());
                             }
                         };
-                        arg_map.insert(String::from(*arg), value);
+                        arg_map.insert(String::from(arg), value);
                     }
 
-                    if let Some(text) = text {
-                        let text: Locate = text.try_into().unwrap();
-                        let range = Range::new(text.offset, text.offset + text.len);
-                        let text = text.str(&s);
+                    if let Some((ref text, ref range)) = define.text {
                         let mut replaced = String::from("");
-                        for text in split_text(text) {
+                        for text in split_text(&text) {
                             if let Some(value) = arg_map.get(&text) {
-                                replaced.push_str(**value);
+                                replaced.push_str(*value);
                             } else {
-                                replaced.push_str(&text.replace("``", ""));
+                                replaced.push_str(&text.replace("``", "").replace("\\\n", ""));
                             }
                         }
-                        ret.push(&replaced, define_path, range);
+                        ret.push(&replaced, define.path.clone(), *range);
                     } else {
-                        unimplemented!();
+                        return Err(ErrorKind::Preprocess.into());
                     }
                 } else if let Some(_) = define {
-                    unimplemented!();
+                    return Err(ErrorKind::Preprocess.into());
                 } else {
-                    unimplemented!();
+                    return Err(ErrorKind::Preprocess.into());
                 }
             }
             NodeEvent::Enter(x) => {
@@ -294,7 +316,7 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
         }
     }
 
-    Ok(ret)
+    Ok((ret, defines))
 }
 
 fn identifier(node: RefNode, s: &str) -> Option<String> {
@@ -348,7 +370,8 @@ mod tests {
 
     #[test]
     fn test1() {
-        let ret = preprocess(get_testcase("test1.sv"), &HashMap::new(), &[] as &[String]).unwrap();
+        let (ret, _) =
+            preprocess(get_testcase("test1.sv"), &HashMap::new(), &[] as &[String]).unwrap();
         assert_eq!(
             ret.text(),
             r##"module and_op (a, b, c);
@@ -372,7 +395,7 @@ endmodule
     fn test1_predefine() {
         let mut defines = HashMap::new();
         defines.insert(String::from("behavioral"), None);
-        let ret = preprocess(get_testcase("test1.sv"), &defines, &[] as &[String]).unwrap();
+        let (ret, _) = preprocess(get_testcase("test1.sv"), &defines, &[] as &[String]).unwrap();
         assert_eq!(
             ret.text(),
             r##"module and_op (a, b, c);
@@ -388,7 +411,8 @@ endmodule
     #[test]
     fn test2() {
         let include_paths = [get_testcase("")];
-        let ret = preprocess(get_testcase("test2.sv"), &HashMap::new(), &include_paths).unwrap();
+        let (ret, _) =
+            preprocess(get_testcase("test2.sv"), &HashMap::new(), &include_paths).unwrap();
         assert_eq!(
             ret.text(),
             r##"module and_op (a, b, c);
@@ -418,19 +442,16 @@ endmodule
 
     #[test]
     fn test3() {
-        let ret = preprocess(get_testcase("test3.sv"), &HashMap::new(), &[] as &[String]).unwrap();
+        let (ret, _) =
+            preprocess(get_testcase("test3.sv"), &HashMap::new(), &[] as &[String]).unwrap();
         assert_eq!(
             ret.text(),
             r##"
 
 module a ();
 
-  \
-  assign a_0__x = a[0].x; \
-  assign a_0__y = a[0].y;
-  \
-  assign a_1__x = a[1].x; \
-  assign a_1__y = a[1].y;
+    assign a_0__x = a[0].x;   assign a_0__y = a[0].y;
+    assign a_1__x = a[1].x;   assign a_1__y = a[1].y;
 
 endmodule
 "##

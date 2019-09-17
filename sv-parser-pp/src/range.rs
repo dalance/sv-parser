@@ -8,7 +8,7 @@ pub struct Range {
 
 impl Range {
     pub fn new(begin: usize, end: usize) -> Self {
-        assert!(begin < end);
+        assert!(begin <= end);
         Range { begin, end }
     }
 

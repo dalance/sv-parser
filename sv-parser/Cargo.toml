@@ -3,11 +3,11 @@ name = "sv-parser"
 version = "0.1.0"
 authors = ["dalance@gmail.com"]
 repository = "https://github.com/dalance/sv-parser"
-keywords = []
-categories = []
-license = "MIT"
+keywords = ["parser", "verilog", "systemverilog"]
+categories = ["parsing"]
+license = "MIT OR Apache-2.0"
 readme = "../README.md"
-description = ""
+description = "Parser library for SystemVerilog"
 edition = "2018"
 
 [features]
@@ -22,4 +22,4 @@ sv-parser-pp         = { path = "../sv-parser-pp" }
 sv-parser-syntaxtree = { path = "../sv-parser-syntaxtree" }
 
 [dev-dependencies]
-structopt = "*"
+structopt = "0.3.2"

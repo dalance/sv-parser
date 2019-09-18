@@ -7,7 +7,7 @@ use std::io::{BufReader, Read};
 use std::path::{Path, PathBuf};
 use sv_parser_error::{Error, ErrorKind};
 use sv_parser_parser::{pp_parser, Span, SpanInfo};
-use sv_parser_syntaxtree::{IncludeCompilerDirective, Locate, NodeEvent, RefNode};
+use sv_parser_syntaxtree::{IncludeCompilerDirective, Locate, NodeEvent, RefNode, TextMacroUsage};
 
 #[derive(Debug)]
 pub struct PreprocessedText {
@@ -76,7 +76,7 @@ pub struct Define {
     path: PathBuf,
 }
 
-type Defines = HashMap<String, Option<Define>>;
+pub type Defines = HashMap<String, Option<Define>>;
 
 pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
     path: T,
@@ -89,6 +89,15 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
     let mut s = String::new();
     reader.read_to_string(&mut s)?;
 
+    preprocess_str(&s, path, pre_defines, include_paths)
+}
+
+fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
+    s: &str,
+    path: T,
+    pre_defines: &Defines,
+    include_paths: &[U],
+) -> Result<(PreprocessedText, Defines), Error> {
     let mut skip = false;
     let mut skip_nodes = vec![];
     let mut defines = HashMap::new();
@@ -223,19 +232,26 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
                 defines.insert(id, Some(define));
             }
             NodeEvent::Enter(RefNode::IncludeCompilerDirective(x)) if !skip => {
-                let path = match x {
+                let mut path = match x {
                     IncludeCompilerDirective::DoubleQuote(x) => {
                         let (_, _, ref literal) = x.nodes;
                         let (locate, _) = literal.nodes;
-                        locate.str(&s).trim_matches('"')
+                        let p = locate.str(&s).trim_matches('"');
+                        PathBuf::from(p)
                     }
                     IncludeCompilerDirective::AngleBracket(x) => {
                         let (_, _, ref literal) = x.nodes;
                         let (locate, _) = literal.nodes;
-                        locate.str(&s).trim_start_matches('<').trim_end_matches('>')
+                        let p = locate.str(&s).trim_start_matches('<').trim_end_matches('>');
+                        PathBuf::from(p)
+                    }
+                    IncludeCompilerDirective::TextMacroUsage(x) => {
+                        let (_, _, ref x) = x.nodes;
+                        let (p, _, _, _) =
+                            resolve_text_macro_usage(x, s, path.as_ref(), &defines, include_paths)?;
+                        PathBuf::from(p)
                     }
                 };
-                let mut path = PathBuf::from(path);
                 if path.is_relative() {
                     if !path.exists() {
                         for include_path in include_paths {
@@ -253,55 +269,10 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
                 ret.merge(include);
             }
             NodeEvent::Enter(RefNode::TextMacroUsage(x)) if !skip => {
-                let (_, ref name, ref args) = x.nodes;
-                let id = identifier((&name.nodes.0).into(), &s).unwrap();
-
-                let mut actual_args = Vec::new();
-                if let Some(args) = args {
-                    let (_, ref args, _) = args.nodes;
-                    let (ref args,) = args.nodes;
-                    for arg in args.contents() {
-                        let (ref arg,) = arg.nodes;
-                        let arg: Locate = arg.try_into().unwrap();
-                        let arg = arg.str(&s);
-                        actual_args.push(arg);
-                    }
-                }
-
-                let define = defines.get(&id);
-                if let Some(Some(define)) = define {
-                    let mut arg_map = HashMap::new();
-                    for (i, (arg, default)) in define.arguments.iter().enumerate() {
-                        let value = if let Some(actual_arg) = actual_args.get(i) {
-                            *actual_arg
-                        } else {
-                            if let Some(default) = default {
-                                default
-                            } else {
-                                return Err(ErrorKind::Preprocess.into());
-                            }
-                        };
-                        arg_map.insert(String::from(arg), value);
-                    }
-
-                    if let Some((ref text, ref range)) = define.text {
-                        let mut replaced = String::from("");
-                        for text in split_text(&text) {
-                            if let Some(value) = arg_map.get(&text) {
-                                replaced.push_str(*value);
-                            } else {
-                                replaced.push_str(&text.replace("``", "").replace("\\\n", ""));
-                            }
-                        }
-                        ret.push(&replaced, define.path.clone(), *range);
-                    } else {
-                        return Err(ErrorKind::Preprocess.into());
-                    }
-                } else if let Some(_) = define {
-                    return Err(ErrorKind::Preprocess.into());
-                } else {
-                    return Err(ErrorKind::Preprocess.into());
-                }
+                let (text, path, range, new_defines) =
+                    resolve_text_macro_usage(x, s, path.as_ref(), &defines, include_paths)?;
+                ret.push(&text, path, range);
+                defines = new_defines;
             }
             NodeEvent::Enter(x) => {
                 if skip_nodes.contains(&x) {
@@ -352,7 +323,75 @@ fn split_text(s: &str) -> Vec<String> {
 
         x.push(c);
     }
+    ret.push(x);
     ret
+}
+
+fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
+    x: &TextMacroUsage,
+    s: &str,
+    path: T,
+    defines: &Defines,
+    include_paths: &[U],
+) -> Result<(String, PathBuf, Range, Defines), Error> {
+    let (_, ref name, ref args) = x.nodes;
+    let id = identifier((&name.nodes.0).into(), &s).unwrap();
+
+    let mut actual_args = Vec::new();
+    if let Some(args) = args {
+        let (_, ref args, _) = args.nodes;
+        let (ref args,) = args.nodes;
+        for arg in args.contents() {
+            let (ref arg,) = arg.nodes;
+            let arg = arg.str(&s);
+            actual_args.push(arg);
+        }
+    }
+
+    let define = defines.get(&id);
+    if let Some(Some(define)) = define {
+        let mut arg_map = HashMap::new();
+        for (i, (arg, default)) in define.arguments.iter().enumerate() {
+            let value = if let Some(actual_arg) = actual_args.get(i) {
+                *actual_arg
+            } else {
+                if let Some(default) = default {
+                    default
+                } else {
+                    return Err(ErrorKind::DefineArgNotFound(String::from(arg)).into());
+                }
+            };
+            arg_map.insert(String::from(arg), value);
+        }
+
+        if let Some((ref text, ref range)) = define.text {
+            let mut replaced = String::from("");
+            for text in split_text(&text) {
+                if let Some(value) = arg_map.get(&text) {
+                    replaced.push_str(*value);
+                } else {
+                    replaced.push_str(&text.replace("``", "").replace("\\\n", ""));
+                }
+            }
+            // separator is required
+            replaced.push_str(" ");
+
+            let (replaced, new_defines) =
+                preprocess_str(&replaced, path.as_ref(), &defines, include_paths)?;
+            return Ok((
+                String::from(replaced.text()),
+                define.path.clone(),
+                *range,
+                new_defines,
+            ));
+        } else {
+            return Err(ErrorKind::DefineTextNotFound(String::from(id)).into());
+        }
+    } else if let Some(_) = define {
+        return Err(ErrorKind::DefineTextNotFound(String::from(id)).into());
+    } else {
+        return Err(ErrorKind::DefineNotFound(String::from(id)).into());
+    }
 }
 
 #[cfg(test)]

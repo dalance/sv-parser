@@ -286,6 +286,7 @@ mod unit {
         test!(comment, "//", Ok((_, _)));
         test!(comment, "/* comment\n\n */", Ok((_, _)));
         test!(comment, "/* comment\n//aaa\n */", Ok((_, _)));
+        test!(comment, "/*! comment\n * aaa\n */", Ok((_, _)));
     }
 
     #[test]
@@ -315,6 +316,22 @@ mod unit {
                 endmodule"##,
             Ok((_, _))
         );
+    }
+
+    #[test]
+    fn test_regression() {
+        test!(
+            source_text,
+            r##"package pkg; localparam [5:0] RES = RES5[0]; endpackage"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"interface intf (); localparam TYPE DEFAULT = TYPE'(0); endinterface"##,
+            Ok((_, _))
+        );
+        test!(source_text, r##"`macro(A, B, logic, C)"##, Ok((_, _)));
+        test!(source_text, r##"`macro(A, B, logic, a())"##, Ok((_, _)));
     }
 }
 
@@ -15787,6 +15804,10 @@ mod spec {
 
 #[test]
 fn debug() {
-    test!(source_text, r##"/* comment\n//aaa\n */"##, Ok((_, _)));
+    test!(
+        source_text,
+        r##"interface intf (); localparam TYPE DEFAULT = TYPE'(0); endinterface"##,
+        Ok((_, _))
+    );
     nom_tracable::cumulative_histogram();
 }

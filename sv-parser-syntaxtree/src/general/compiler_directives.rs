@@ -33,6 +33,7 @@ pub struct ResetallCompilerDirective {
 pub enum IncludeCompilerDirective {
     DoubleQuote(Box<IncludeCompilerDirectiveDoubleQuote>),
     AngleBracket(Box<IncludeCompilerDirectiveAngleBracket>),
+    TextMacroUsage(Box<IncludeCompilerDirectiveTextMacroUsage>),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]
@@ -43,6 +44,11 @@ pub struct IncludeCompilerDirectiveDoubleQuote {
 #[derive(Clone, Debug, PartialEq, Node)]
 pub struct IncludeCompilerDirectiveAngleBracket {
     pub nodes: (Symbol, Keyword, AngleBracketLiteral),
+}
+
+#[derive(Clone, Debug, PartialEq, Node)]
+pub struct IncludeCompilerDirectiveTextMacroUsage {
+    pub nodes: (Symbol, Keyword, TextMacroUsage),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]
@@ -101,7 +107,7 @@ pub struct ListOfActualArguments {
 
 #[derive(Clone, Debug, PartialEq, Node)]
 pub struct ActualArgument {
-    pub nodes: (Expression,),
+    pub nodes: (Locate,),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]

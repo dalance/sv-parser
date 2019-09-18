@@ -78,6 +78,7 @@ pub(crate) fn include_compiler_directive(s: Span) -> IResult<Span, IncludeCompil
     alt((
         include_compiler_directive_double_quote,
         include_compiler_directive_angle_bracket,
+        include_compiler_directive_text_macro_usage,
     ))(s)
 }
 
@@ -110,6 +111,22 @@ pub(crate) fn include_compiler_directive_angle_bracket(
         IncludeCompilerDirective::AngleBracket(Box::new(IncludeCompilerDirectiveAngleBracket {
             nodes: (a, b, c),
         })),
+    ))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn include_compiler_directive_text_macro_usage(
+    s: Span,
+) -> IResult<Span, IncludeCompilerDirective> {
+    let (s, a) = symbol("`")(s)?;
+    let (s, b) = keyword("include")(s)?;
+    let (s, c) = text_macro_usage(s)?;
+    Ok((
+        s,
+        IncludeCompilerDirective::TextMacroUsage(Box::new(
+            IncludeCompilerDirectiveTextMacroUsage { nodes: (a, b, c) },
+        )),
     ))
 }
 

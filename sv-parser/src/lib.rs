@@ -6,7 +6,7 @@ use std::fmt;
 use std::path::Path;
 use sv_parser_error::{Error, ErrorKind};
 use sv_parser_parser::{lib_parser, sv_parser, Span, SpanInfo};
-use sv_parser_pp::preprocess::{preprocess, Define, PreprocessedText};
+use sv_parser_pp::preprocess::{preprocess, Define, Defines, PreprocessedText};
 pub use sv_parser_syntaxtree::*;
 
 pub struct SyntaxTree {
@@ -67,15 +67,18 @@ pub fn parse_sv<T: AsRef<Path>, U: AsRef<Path>>(
     path: T,
     pre_defines: &HashMap<String, Option<Define>>,
     include_paths: &[U],
-) -> Result<SyntaxTree, Error> {
-    let (text, _) = preprocess(path, pre_defines, include_paths)?;
+) -> Result<(SyntaxTree, Defines), Error> {
+    let (text, defines) = preprocess(path, pre_defines, include_paths)?;
     let span = Span::new_extra(text.text(), SpanInfo::default());
     let result = all_consuming(sv_parser)(span);
     match result {
-        Ok((_, x)) => Ok(SyntaxTree {
-            node: x.into(),
-            text,
-        }),
+        Ok((_, x)) => Ok((
+            SyntaxTree {
+                node: x.into(),
+                text,
+            },
+            defines,
+        )),
         Err(_) => Err(ErrorKind::Parse.into()),
     }
 }
@@ -84,15 +87,18 @@ pub fn parse_lib<T: AsRef<Path>, U: AsRef<Path>>(
     path: T,
     pre_defines: &HashMap<String, Option<Define>>,
     include_paths: &[U],
-) -> Result<SyntaxTree, Error> {
-    let (text, _) = preprocess(path, pre_defines, include_paths)?;
+) -> Result<(SyntaxTree, Defines), Error> {
+    let (text, defines) = preprocess(path, pre_defines, include_paths)?;
     let span = Span::new_extra(text.text(), SpanInfo::default());
     let result = all_consuming(lib_parser)(span);
     match result {
-        Ok((_, x)) => Ok(SyntaxTree {
-            node: x.into(),
-            text,
-        }),
+        Ok((_, x)) => Ok((
+            SyntaxTree {
+                node: x.into(),
+                text,
+            },
+            defines,
+        )),
         Err(_) => Err(ErrorKind::Parse.into()),
     }
 }

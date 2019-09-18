@@ -321,7 +321,7 @@ pub(crate) fn ifndef_directive(s: Span) -> IResult<Span, IfndefDirective> {
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn ifdef_group_of_lines(s: Span) -> IResult<Span, IfdefGroupOfLines> {
-    let (s, a) = many1(preceded(
+    let (s, a) = many0(preceded(
         peek(not(alt((tag("`elsif"), tag("`else"), tag("`endif"))))),
         source_description,
     ))(s)?;
@@ -331,7 +331,7 @@ pub(crate) fn ifdef_group_of_lines(s: Span) -> IResult<Span, IfdefGroupOfLines> 
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn ifndef_group_of_lines(s: Span) -> IResult<Span, IfndefGroupOfLines> {
-    let (s, a) = many1(preceded(
+    let (s, a) = many0(preceded(
         peek(not(alt((tag("`elsif"), tag("`else"), tag("`endif"))))),
         source_description,
     ))(s)?;
@@ -341,7 +341,7 @@ pub(crate) fn ifndef_group_of_lines(s: Span) -> IResult<Span, IfndefGroupOfLines
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn elsif_group_of_lines(s: Span) -> IResult<Span, ElsifGroupOfLines> {
-    let (s, a) = many1(preceded(
+    let (s, a) = many0(preceded(
         peek(not(alt((tag("`elsif"), tag("`else"), tag("`endif"))))),
         source_description,
     ))(s)?;
@@ -351,7 +351,7 @@ pub(crate) fn elsif_group_of_lines(s: Span) -> IResult<Span, ElsifGroupOfLines> 
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn else_group_of_lines(s: Span) -> IResult<Span, ElseGroupOfLines> {
-    let (s, a) = many1(preceded(peek(not(tag("`endif"))), source_description))(s)?;
+    let (s, a) = many0(preceded(peek(not(tag("`endif"))), source_description))(s)?;
     Ok((s, ElseGroupOfLines { nodes: (a,) }))
 }
 

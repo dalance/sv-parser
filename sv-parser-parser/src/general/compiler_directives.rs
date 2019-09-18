@@ -204,7 +204,49 @@ pub(crate) fn macro_text(s: Span) -> IResult<Span, MacroText> {
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn default_text(s: Span) -> IResult<Span, DefaultText> {
-    let (s, a) = is_not(",)")(s)?;
+    let (s, a) = many1(alt((
+        is_not(",)([{\""),
+        map(triple(tag("("), opt(is_not(")")), tag(")")), |(x, y, z)| {
+            if let Some(y) = y {
+                concat(concat(x, y).unwrap(), z).unwrap()
+            } else {
+                concat(x, z).unwrap()
+            }
+        }),
+        map(triple(tag("["), opt(is_not("]")), tag("]")), |(x, y, z)| {
+            if let Some(y) = y {
+                concat(concat(x, y).unwrap(), z).unwrap()
+            } else {
+                concat(x, z).unwrap()
+            }
+        }),
+        map(triple(tag("{"), opt(is_not("}")), tag("}")), |(x, y, z)| {
+            if let Some(y) = y {
+                concat(concat(x, y).unwrap(), z).unwrap()
+            } else {
+                concat(x, z).unwrap()
+            }
+        }),
+        map(
+            triple(tag("\""), opt(is_not("\"")), tag("\"")),
+            |(x, y, z)| {
+                if let Some(y) = y {
+                    concat(concat(x, y).unwrap(), z).unwrap()
+                } else {
+                    concat(x, z).unwrap()
+                }
+            },
+        ),
+    )))(s)?;
+    let mut ret = None;
+    for x in a {
+        ret = if let Some(ret) = ret {
+            Some(concat(ret, x).unwrap())
+        } else {
+            Some(x)
+        }
+    }
+    let a = ret.unwrap();
     Ok((
         s,
         DefaultText {
@@ -232,8 +274,55 @@ pub(crate) fn list_of_actual_arguments(s: Span) -> IResult<Span, ListOfActualArg
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn actual_argument(s: Span) -> IResult<Span, ActualArgument> {
-    let (s, a) = expression(s)?;
-    Ok((s, ActualArgument { nodes: (a,) }))
+    let (s, a) = many1(alt((
+        is_not(",)([{\""),
+        map(triple(tag("("), opt(is_not(")")), tag(")")), |(x, y, z)| {
+            if let Some(y) = y {
+                concat(concat(x, y).unwrap(), z).unwrap()
+            } else {
+                concat(x, z).unwrap()
+            }
+        }),
+        map(triple(tag("["), opt(is_not("]")), tag("]")), |(x, y, z)| {
+            if let Some(y) = y {
+                concat(concat(x, y).unwrap(), z).unwrap()
+            } else {
+                concat(x, z).unwrap()
+            }
+        }),
+        map(triple(tag("{"), opt(is_not("}")), tag("}")), |(x, y, z)| {
+            if let Some(y) = y {
+                concat(concat(x, y).unwrap(), z).unwrap()
+            } else {
+                concat(x, z).unwrap()
+            }
+        }),
+        map(
+            triple(tag("\""), opt(is_not("\"")), tag("\"")),
+            |(x, y, z)| {
+                if let Some(y) = y {
+                    concat(concat(x, y).unwrap(), z).unwrap()
+                } else {
+                    concat(x, z).unwrap()
+                }
+            },
+        ),
+    )))(s)?;
+    let mut ret = None;
+    for x in a {
+        ret = if let Some(ret) = ret {
+            Some(concat(ret, x).unwrap())
+        } else {
+            Some(x)
+        }
+    }
+    let a = ret.unwrap();
+    Ok((
+        s,
+        ActualArgument {
+            nodes: (into_locate(a),),
+        },
+    ))
 }
 
 #[tracable_parser]

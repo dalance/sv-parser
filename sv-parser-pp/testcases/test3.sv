@@ -4,7 +4,7 @@
 
 module a ();
 
-  `connect(a);
-  `connect(a, 1);
+  `connect(a)
+  `connect(a, 1)
 
 endmodule

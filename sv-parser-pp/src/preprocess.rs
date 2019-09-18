@@ -489,10 +489,7 @@ endmodule
 
 module a ();
 
-    assign a_0__x = a[0].x;   assign a_0__y = a[0].y;
-    assign a_1__x = a[1].x;   assign a_1__y = a[1].y;
-
-endmodule
+    assign a_0__x = a[0].x;   assign a_0__y = a[0].y;   assign a_1__x = a[1].x;   assign a_1__y = a[1].y; endmodule
 "##
         );
     }

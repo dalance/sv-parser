@@ -18,6 +18,12 @@ pub enum ErrorKind {
     Parse,
     #[fail(display = "Preprocess error")]
     Preprocess,
+    #[fail(display = "Define argument not found: {}", _0)]
+    DefineArgNotFound(String),
+    #[fail(display = "Define text not found: {}", _0)]
+    DefineTextNotFound(String),
+    #[fail(display = "Define text not found: {}", _0)]
+    DefineNotFound(String),
 }
 
 // -----------------------------------------------------------------------------

@@ -12,7 +12,7 @@ edition = "2018"
 build = "build.rs"
 
 [dependencies]
-sv-parser-macros = { path = "../sv-parser-macros" }
+sv-parser-macros = {version = "0.1.0", path = "../sv-parser-macros"}
 
 [build-dependencies]
 regex   = "1"

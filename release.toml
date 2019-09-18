@@ -1,0 +1,7 @@
+no-dev-version             = true
+dev-version-ext            = "pre"
+pre-release-commit-message = "Prepare to v{{version}} of {{crate_name}}"
+pro-release-commit-message = "Start next development iteration v{{next_version}} of {{crate_name}}"
+tag-message                = "Bump version to v{{version}}"
+tag-prefix                 = ""
+

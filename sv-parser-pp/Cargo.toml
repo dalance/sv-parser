@@ -10,6 +10,9 @@ readme = "../README.md"
 description = "Helper crate of sv-parser"
 edition = "2018"
 
+[package.metadata.release]
+disable-tag = true
+
 [features]
 default = []
 trace   = ["sv-parser-parser/trace"]

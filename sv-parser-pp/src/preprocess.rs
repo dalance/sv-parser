@@ -112,6 +112,18 @@ fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
     let mut ret = PreprocessedText::new();
 
     for n in pp_text.into_iter().event() {
+        match n.clone() {
+            NodeEvent::Enter(x) => {
+                if skip_nodes.contains(&x) {
+                    skip = true;
+                }
+            }
+            NodeEvent::Leave(x) => {
+                if skip_nodes.contains(&x) {
+                    skip = false;
+                }
+            }
+        }
         match n {
             NodeEvent::Enter(RefNode::ResetallCompilerDirective(_)) if !skip => {
                 defines.clear();
@@ -247,8 +259,10 @@ fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                     }
                     IncludeCompilerDirective::TextMacroUsage(x) => {
                         let (_, _, ref x) = x.nodes;
+                        skip_nodes.push(x.into());
                         let (p, _, _, _) =
                             resolve_text_macro_usage(x, s, path.as_ref(), &defines, include_paths)?;
+                        let p = p.trim().trim_matches('"');
                         PathBuf::from(p)
                     }
                 };
@@ -274,16 +288,7 @@ fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                 ret.push(&text, path, range);
                 defines = new_defines;
             }
-            NodeEvent::Enter(x) => {
-                if skip_nodes.contains(&x) {
-                    skip = true;
-                }
-            }
-            NodeEvent::Leave(x) => {
-                if skip_nodes.contains(&x) {
-                    skip = false;
-                }
-            }
+            _ => (),
         }
     }
 

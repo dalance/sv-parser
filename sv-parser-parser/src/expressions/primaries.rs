@@ -13,9 +13,13 @@ pub(crate) fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
         map(primary_literal, |x| {
             ConstantPrimary::PrimaryLiteral(Box::new(x))
         }),
-        map(constant_function_call, |x| {
-            ConstantPrimary::ConstantFunctionCall(Box::new(x))
+        map(constant_cast, |x| {
+            ConstantPrimary::ConstantCast(Box::new(x))
         }),
+        map(
+            terminated(constant_function_call, peek(not(one_of("[")))),
+            |x| ConstantPrimary::ConstantFunctionCall(Box::new(x)),
+        ),
         constant_primary_ps_parameter,
         constant_primary_specparam,
         map(genvar_identifier, |x| {
@@ -29,9 +33,6 @@ pub(crate) fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
             ConstantPrimary::ConstantLetExpression(Box::new(x))
         }),
         constant_primary_mintypmax_expression,
-        map(constant_cast, |x| {
-            ConstantPrimary::ConstantCast(Box::new(x))
-        }),
         map(type_reference, |x| {
             ConstantPrimary::TypeReference(Box::new(x))
         }),

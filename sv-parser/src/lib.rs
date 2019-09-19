@@ -102,3 +102,19 @@ pub fn parse_lib<T: AsRef<Path>, U: AsRef<Path>>(
         Err(_) => Err(ErrorKind::Parse.into()),
     }
 }
+
+#[macro_export]
+macro_rules! unwrap_node {
+    ($n:expr, $( $ty:tt ),+) => {{
+        let unwrap = || {
+            for x in $n {
+                match x {
+                    $(RefNode::$ty(x) => return Some(RefNode::$ty(x)),)*
+                    _ => (),
+                }
+            }
+            None
+        };
+        unwrap()
+    }};
+}

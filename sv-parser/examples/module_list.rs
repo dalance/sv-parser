@@ -1,8 +1,7 @@
 use std::collections::HashMap;
-use std::convert::TryInto;
 use std::env;
 use std::path::PathBuf;
-use sv_parser::{parse_sv, Locate, RefNode};
+use sv_parser::{parse_sv, unwrap_node, Locate, RefNode};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -14,31 +13,27 @@ fn main() {
     // The list of include paths
     let includes: Vec<PathBuf> = Vec::new();
 
-    // Do parse
+    // Parse
     let result = parse_sv(&path, &defines, &includes);
 
     if let Ok((syntax_tree, _)) = result {
-        // SyntexTree is iterable
+        // &SyntexTree is iterable
         for node in &syntax_tree {
-            // The type of Each node is RefNode
+            // The type of each node is RefNode
             match node {
                 RefNode::ModuleDeclarationNonansi(x) => {
-                    // The type of header is ModuleNonansiHeader
-                    let (ref header, _, _, _, _) = x.nodes;
-                    // The type of name is ModuleIdentifier
-                    let (_, _, _, ref name, _, _, _, _) = header.nodes;
+                    // unwrap_node! gets the nearest ModuleIdentifier from x
+                    let id = unwrap_node!(x, ModuleIdentifier).unwrap();
 
-                    // Any type included in SyntaxTree can be convert RefNode by into()
-                    let id = get_identifier(name.into()).unwrap();
+                    let id = get_identifier(id).unwrap();
 
                     // Original string can be got by SyntexTree::get_str(self, locate: &Locate)
                     let id = syntax_tree.get_str(&id);
                     println!("module: {}", id);
                 }
                 RefNode::ModuleDeclarationAnsi(x) => {
-                    let (ref header, _, _, _, _) = x.nodes;
-                    let (_, _, _, ref name, _, _, _, _) = header.nodes;
-                    let id = get_identifier(name.into()).unwrap();
+                    let id = unwrap_node!(x, ModuleIdentifier).unwrap();
+                    let id = get_identifier(id).unwrap();
                     let id = syntax_tree.get_str(&id);
                     println!("module: {}", id);
                 }
@@ -51,18 +46,14 @@ fn main() {
 }
 
 fn get_identifier(node: RefNode) -> Option<Locate> {
-    for n in node {
-        match n {
-            RefNode::SimpleIdentifier(x) => {
-                let x: Locate = x.nodes.0.try_into().unwrap();
-                return Some(x);
-            }
-            RefNode::EscapedIdentifier(x) => {
-                let x: Locate = x.nodes.0.try_into().unwrap();
-                return Some(x);
-            }
-            _ => (),
+    // unwrap_node! can take multiple types
+    match unwrap_node!(node, SimpleIdentifier, EscapedIdentifier) {
+        Some(RefNode::SimpleIdentifier(x)) => {
+            return Some(x.nodes.0);
         }
+        Some(RefNode::EscapedIdentifier(x)) => {
+            return Some(x.nodes.0);
+        }
+        _ => None,
     }
-    None
 }

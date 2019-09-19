@@ -12,14 +12,15 @@ Parser library for SystemVerilog ([IEEE 1800-2017](https://standards.ieee.org/st
 sv-parser = "0.1.0"
 ```
 
-sv-parser provides `parse_sv` function which returns `SyntexTree`.
+sv-parser provides [`parse_sv`](https://docs.rs/sv-parser/latest/sv_parser/fn.parse_sv.html) function which returns [`SyntaxTree`](https://docs.rs/sv-parser/latest/sv_parser/struct.SyntaxTree.html).
 `SyntaxTree` shows Concrete Syntax Tree. It has the preprocessed string and the parsed tree.
 
-`RefNode` shows a reference to any node of `SyntaxTree`.
+[`RefNode`](https://docs.rs/sv-parser/latest/sv_parser/any_node/enum.RefNode.html) shows a reference to any node of `SyntaxTree`.
 You can get `RefNode` through an iterator of `SyntaxTree`.
+Variant names of `RefNode` follows "Annex A Formal syntax" of IEEE 1800-2017.
 
-`Locate` shows a position of token. All leaf node of `SyntaxTree` is `Locate`.
-You can get string from `Locate` by `SyntaxTree::get_str(self, locate: &Locate)`.
+[`Locate`](https://docs.rs/sv-parser/latest/sv_parser/struct.Locate.html) shows a position of token. All leaf node of `SyntaxTree` is `Locate`.
+You can get string from `Locate` by [`get_str`](https://docs.rs/sv-parser/latest/sv_parser/struct.SyntaxTree.html#method.get_str).
 
 ## Example
 

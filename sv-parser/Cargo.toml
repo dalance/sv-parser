@@ -7,7 +7,7 @@ keywords = ["parser", "verilog", "systemverilog"]
 categories = ["parsing"]
 license = "MIT OR Apache-2.0"
 readme = "../README.md"
-description = "Parser library for SystemVerilog"
+description = "SystemVerilog parser library fully complient with IEEE 1800-2017"
 edition = "2018"
 
 [features]

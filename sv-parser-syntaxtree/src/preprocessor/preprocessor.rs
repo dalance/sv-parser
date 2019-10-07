@@ -6,4 +6,3 @@ use crate::*;
 pub struct PreprocessorText {
     pub nodes: (Vec<SourceDescription>,),
 }
-

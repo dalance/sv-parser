@@ -10,11 +10,11 @@ pub(crate) fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
         map(constant_assignment_pattern_expression, |x| {
             ConstantPrimary::ConstantAssignmentPatternExpression(Box::new(x))
         }),
-        map(primary_literal, |x| {
-            ConstantPrimary::PrimaryLiteral(Box::new(x))
-        }),
         map(constant_cast, |x| {
             ConstantPrimary::ConstantCast(Box::new(x))
+        }),
+        map(primary_literal, |x| {
+            ConstantPrimary::PrimaryLiteral(Box::new(x))
         }),
         map(
             terminated(constant_function_call, peek(not(one_of("[")))),
@@ -164,8 +164,8 @@ pub(crate) fn primary(s: Span) -> IResult<Span, Primary> {
         map(assignment_pattern_expression, |x| {
             Primary::AssignmentPatternExpression(Box::new(x))
         }),
-        map(primary_literal, |x| Primary::PrimaryLiteral(Box::new(x))),
         map(cast, |x| Primary::Cast(Box::new(x))),
+        map(primary_literal, |x| Primary::PrimaryLiteral(Box::new(x))),
         map(empty_unpacked_array_concatenation, |x| {
             Primary::EmptyUnpackedArrayConcatenation(Box::new(x))
         }),

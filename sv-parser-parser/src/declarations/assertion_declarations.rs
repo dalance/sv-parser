@@ -710,12 +710,12 @@ pub(crate) fn data_type_or_implicit_sequence_formal_type(
 #[packrat_parser]
 pub(crate) fn sequence_expr(s: Span) -> IResult<Span, SequenceExpr> {
     alt((
-        sequence_expr_cycle_delay_expr,
+        sequence_expr_binary,
         sequence_expr_expr_cycle_delay_expr,
+        sequence_expr_cycle_delay_expr,
         sequence_expr_throughout,
         terminated(sequence_expr_expression, peek(not(symbol("(")))),
         sequence_expr_instance,
-        sequence_expr_binary,
         sequence_expr_paren,
         sequence_expr_first_match,
         sequence_expr_clocking_event,

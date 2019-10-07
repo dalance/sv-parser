@@ -339,6 +339,13 @@ mod unit {
                                endmodule"##,
             Ok((_, _))
         );
+        test!(
+            source_text,
+            r##"module ibex_cs_registers;
+                                 localparam logic [31:0] MISA_VALUE = (32'(RV32E));
+                               endmodule"##,
+            Ok((_, _))
+        );
     }
 }
 
@@ -15812,9 +15819,9 @@ mod spec {
 #[test]
 fn debug() {
     test!(
-        many1(module_item),
-        r##"sequence t2; (a ##[2:3] b) or (c ##[1:2] d); endsequence"##,
-        Ok((_, _))
-    );
+            source_text,
+            r##"module ibex_cs_registers; localparam logic [31:0] MISA_VALUE = (32'(RV32E)); endmodule"##,
+            Ok((_, _))
+        );
     nom_tracable::cumulative_histogram();
 }

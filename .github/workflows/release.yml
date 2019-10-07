@@ -7,13 +7,13 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    #steps:
-    #- uses: actions/checkout@v1
-    #- name: Build
-    #  run: cargo build --release --example parse_sv
-
     steps:
-    - uses: davidgraeff/rust-musl-action@master
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v1
     - name: Build
-      run: cargo build --target x86_64-unknown-linux-musl --release --example parse_sv
+      run: cargo build --release --example parse_sv
+
+    #steps:
+    #- uses: davidgraeff/rust-musl-action@master
+    #- uses: actions/checkout@master
+    #- name: Build
+    #  run: cargo build --target x86_64-unknown-linux-musl --release --example parse_sv

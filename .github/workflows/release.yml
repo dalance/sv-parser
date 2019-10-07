@@ -10,4 +10,4 @@ jobs:
     steps:
     - uses: juankaram/rust-musl-action@master
     - name: Build
-      run: cargo build --manifest-path sv-parser/sv-parser/Cargo.toml --target x86_64-unknown-linux-musl --release --example parse_sv
+      run: cargo build --manifest-path sv-parser/Cargo.toml --target x86_64-unknown-linux-musl --release --example parse_sv

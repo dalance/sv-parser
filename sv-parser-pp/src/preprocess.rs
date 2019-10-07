@@ -141,6 +141,16 @@ fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), path.as_ref(), range);
             }
+            NodeEvent::Enter(RefNode::KeywordsDirective(x)) if !skip => {
+                let locate: Locate = x.try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), path.as_ref(), range);
+            }
+            NodeEvent::Enter(RefNode::EndkeywordsDirective(x)) if !skip => {
+                let locate: Locate = x.try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), path.as_ref(), range);
+            }
             NodeEvent::Enter(RefNode::IfdefDirective(x)) if !skip => {
                 let (_, _, ref ifid, ref ifbody, ref elsif, ref elsebody, _, _) = x.nodes;
                 let ifid = identifier(ifid.into(), &s).unwrap();

@@ -8,7 +8,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: juankaram/rust-musl-action@master
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v1
     - name: Build
       run: cargo build --target x86_64-unknown-linux-musl --release --example parse_sv

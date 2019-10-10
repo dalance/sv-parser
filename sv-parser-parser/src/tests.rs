@@ -346,6 +346,23 @@ mod unit {
                                endmodule"##,
             Ok((_, _))
         );
+        test!(
+            source_text,
+            r##"module a; always_comb if ( a ? b : c ) begin end endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"module SimDTM; assign #0.1 debug_req_valid = __debug_req_valid; endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"`define LONG_MACRO(
+                  a,
+                  b, c) text goes here"##,
+            Ok((_, _))
+        );
     }
 }
 
@@ -15818,10 +15835,6 @@ mod spec {
 
 #[test]
 fn debug() {
-    test!(
-            source_text,
-            r##"module ibex_cs_registers; localparam logic [31:0] MISA_VALUE = (32'(RV32E)); endmodule"##,
-            Ok((_, _))
-        );
+    test!(source_text, r##"module top (); endmodule"##, Ok((_, _)));
     nom_tracable::cumulative_histogram();
 }

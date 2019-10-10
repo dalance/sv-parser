@@ -154,9 +154,7 @@ pub(crate) fn angle_bracket_literal_impl(s: Span) -> IResult<Span, Locate> {
 pub(crate) fn text_macro_definition(s: Span) -> IResult<Span, TextMacroDefinition> {
     let (s, a) = symbol("`")(s)?;
     let (s, b) = keyword("define")(s)?;
-    begin_lb_not_space();
     let (s, c) = text_macro_name(s)?;
-    end_lb_not_space();
     let (s, d) = opt(macro_text)(s)?;
     Ok((
         s,
@@ -169,8 +167,8 @@ pub(crate) fn text_macro_definition(s: Span) -> IResult<Span, TextMacroDefinitio
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn text_macro_name(s: Span) -> IResult<Span, TextMacroName> {
-    let (s, a) = text_macro_identifier(s)?;
-    let (s, b) = opt(paren(list_of_formal_arguments))(s)?;
+    let (s, a) = text_macro_identifier_exact(s)?;
+    let (s, b) = opt(paren_exact(list_of_formal_arguments))(s)?;
     Ok((s, TextMacroName { nodes: (a, b) }))
 }
 
@@ -193,6 +191,13 @@ pub(crate) fn formal_argument(s: Span) -> IResult<Span, FormalArgument> {
 #[packrat_parser]
 pub(crate) fn text_macro_identifier(s: Span) -> IResult<Span, TextMacroIdentifier> {
     let (s, a) = identifier(s)?;
+    Ok((s, TextMacroIdentifier { nodes: (a,) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn text_macro_identifier_exact(s: Span) -> IResult<Span, TextMacroIdentifier> {
+    let (s, a) = identifier_exact(s)?;
     Ok((s, TextMacroIdentifier { nodes: (a,) }))
 }
 
@@ -276,7 +281,7 @@ pub(crate) fn default_text(s: Span) -> IResult<Span, DefaultText> {
 #[packrat_parser]
 pub(crate) fn text_macro_usage(s: Span) -> IResult<Span, TextMacroUsage> {
     let (s, a) = symbol("`")(s)?;
-    let (s, b) = text_macro_identifier(s)?;
+    let (s, b) = text_macro_identifier_exact(s)?;
     let (s, c) = opt(paren(list_of_actual_arguments))(s)?;
     Ok((s, TextMacroUsage { nodes: (a, b, c) }))
 }

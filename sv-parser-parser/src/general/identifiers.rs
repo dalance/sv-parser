@@ -145,6 +145,12 @@ pub(crate) fn escaped_identifier(s: Span) -> IResult<Span, EscapedIdentifier> {
 }
 
 #[tracable_parser]
+pub(crate) fn escaped_identifier_exact(s: Span) -> IResult<Span, EscapedIdentifier> {
+    let (s, a) = no_ws(escaped_identifier_impl)(s)?;
+    Ok((s, EscapedIdentifier { nodes: a }))
+}
+
+#[tracable_parser]
 pub(crate) fn escaped_identifier_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = tag("\\")(s)?;
     let (s, b) = is_not(" \t\r\n")(s)?;
@@ -279,6 +285,19 @@ pub(crate) fn identifier(s: Span) -> IResult<Span, Identifier> {
             Identifier::EscapedIdentifier(Box::new(x))
         }),
         map(simple_identifier, |x| {
+            Identifier::SimpleIdentifier(Box::new(x))
+        }),
+    ))(s)
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn identifier_exact(s: Span) -> IResult<Span, Identifier> {
+    alt((
+        map(escaped_identifier_exact, |x| {
+            Identifier::EscapedIdentifier(Box::new(x))
+        }),
+        map(simple_identifier_exact, |x| {
             Identifier::SimpleIdentifier(Box::new(x))
         }),
     ))(s)
@@ -648,6 +667,13 @@ pub(crate) fn signal_identifier(s: Span) -> IResult<Span, SignalIdentifier> {
 #[packrat_parser]
 pub(crate) fn simple_identifier(s: Span) -> IResult<Span, SimpleIdentifier> {
     let (s, a) = ws(simple_identifier_impl)(s)?;
+    Ok((s, SimpleIdentifier { nodes: a }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn simple_identifier_exact(s: Span) -> IResult<Span, SimpleIdentifier> {
+    let (s, a) = no_ws(simple_identifier_impl)(s)?;
     Ok((s, SimpleIdentifier { nodes: a }))
 }
 

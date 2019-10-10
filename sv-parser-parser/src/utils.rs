@@ -13,6 +13,16 @@ where
     }
 }
 
+pub(crate) fn no_ws<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, (O, Vec<WhiteSpace>)>
+where
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+{
+    move |s: Span<'a>| {
+        let (s, x) = f(s)?;
+        Ok((s, (x, vec![])))
+    }
+}
+
 #[cfg(not(feature = "trace"))]
 pub(crate) fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol> {
     move |s: Span<'a>| {
@@ -29,6 +39,31 @@ pub(crate) fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, S
         let (depth, s) = nom_tracable::forward_trace(s, &format!("symbol(\"{}\")", t));
         let body = || {
             let (s, x) = map(ws(map(tag(t.clone()), |x: Span| into_locate(x))), |x| {
+                Symbol { nodes: x }
+            })(s)?;
+            Ok((s, x))
+        };
+        let ret = body();
+        nom_tracable::backward_trace(ret, &format!("symbol(\"{}\")", t), depth)
+    }
+}
+
+#[cfg(not(feature = "trace"))]
+pub(crate) fn symbol_exact<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol> {
+    move |s: Span<'a>| {
+        let (s, x) = map(no_ws(map(tag(t.clone()), |x: Span| into_locate(x))), |x| {
+            Symbol { nodes: x }
+        })(s)?;
+        Ok((s, x))
+    }
+}
+
+#[cfg(feature = "trace")]
+pub(crate) fn symbol_exact<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol> {
+    move |s: Span<'a>| {
+        let (depth, s) = nom_tracable::forward_trace(s, &format!("symbol(\"{}\")", t));
+        let body = || {
+            let (s, x) = map(no_ws(map(tag(t.clone()), |x: Span| into_locate(x))), |x| {
                 Symbol { nodes: x }
             })(s)?;
             Ok((s, x))
@@ -101,6 +136,37 @@ where
             let (s, a) = symbol("(")(s)?;
             let (s, b) = f(s)?;
             let (s, c) = symbol(")")(s)?;
+            Ok((s, Paren { nodes: (a, b, c) }))
+        };
+        let ret = body();
+        nom_tracable::backward_trace(ret, "paren", depth)
+    }
+}
+
+#[cfg(not(feature = "trace"))]
+pub(crate) fn paren_exact<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Paren<O>>
+where
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+{
+    move |s: Span<'a>| {
+        let (s, a) = symbol("(")(s)?;
+        let (s, b) = f(s)?;
+        let (s, c) = symbol_exact(")")(s)?;
+        Ok((s, Paren { nodes: (a, b, c) }))
+    }
+}
+
+#[cfg(feature = "trace")]
+pub(crate) fn paren_exact<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Paren<O>>
+where
+    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+{
+    move |s: Span<'a>| {
+        let (depth, s) = nom_tracable::forward_trace(s, "paren");
+        let body = || {
+            let (s, a) = symbol("(")(s)?;
+            let (s, b) = f(s)?;
+            let (s, c) = symbol_exact(")")(s)?;
             Ok((s, Paren { nodes: (a, b, c) }))
         };
         let ret = body();
@@ -258,14 +324,18 @@ where
 pub(crate) fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
     if in_directive() {
         alt((
-            map(space, |x: Span| WhiteSpace::Space(Box::new(into_locate(x)))),
+            map(multispace1, |x: Span| {
+                WhiteSpace::Space(Box::new(into_locate(x)))
+            }),
             map(preceded(peek(char('/')), comment), |x| {
                 WhiteSpace::Comment(Box::new(x))
             }),
         ))(s)
     } else {
         alt((
-            map(space, |x: Span| WhiteSpace::Space(Box::new(into_locate(x)))),
+            map(multispace1, |x: Span| {
+                WhiteSpace::Space(Box::new(into_locate(x)))
+            }),
             map(preceded(peek(char('/')), comment), |x| {
                 WhiteSpace::Comment(Box::new(x))
             }),
@@ -273,14 +343,6 @@ pub(crate) fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
                 WhiteSpace::CompilerDirective(Box::new(x))
             }),
         ))(s)
-    }
-}
-
-pub(crate) fn space(s: Span) -> IResult<Span, Span> {
-    if lb_not_space() {
-        space1(s)
-    } else {
-        multispace1(s)
     }
 }
 
@@ -303,27 +365,6 @@ pub(crate) fn begin_directive() {
 
 pub(crate) fn end_directive() {
     IN_DIRECTIVE.with(|x| x.borrow_mut().pop());
-}
-
-thread_local!(
-    static LB_NOT_SPACE: core::cell::RefCell<Vec<()>> = {
-        core::cell::RefCell::new(Vec::new())
-    }
-);
-
-pub(crate) fn lb_not_space() -> bool {
-    LB_NOT_SPACE.with(|x| match x.borrow().last() {
-        Some(_) => true,
-        None => false,
-    })
-}
-
-pub(crate) fn begin_lb_not_space() {
-    LB_NOT_SPACE.with(|x| x.borrow_mut().push(()));
-}
-
-pub(crate) fn end_lb_not_space() {
-    LB_NOT_SPACE.with(|x| x.borrow_mut().pop());
 }
 
 // -----------------------------------------------------------------------------

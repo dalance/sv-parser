@@ -393,19 +393,19 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
 
             let (replaced, new_defines) =
                 preprocess_str(&replaced, path.as_ref(), &defines, include_paths)?;
-            return Ok((
+            Ok((
                 String::from(replaced.text()),
                 define.path.clone(),
                 *range,
                 new_defines,
-            ));
+            ))
         } else {
-            return Err(ErrorKind::DefineTextNotFound(String::from(id)).into());
+            Err(ErrorKind::DefineTextNotFound(String::from(id)).into())
         }
     } else if let Some(_) = define {
-        return Err(ErrorKind::DefineTextNotFound(String::from(id)).into());
+        Err(ErrorKind::DefineTextNotFound(String::from(id)).into())
     } else {
-        return Err(ErrorKind::DefineNotFound(String::from(id)).into());
+        Err(ErrorKind::DefineNotFound(String::from(id)).into())
     }
 }
 

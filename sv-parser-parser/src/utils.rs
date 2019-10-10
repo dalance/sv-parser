@@ -51,7 +51,7 @@ pub(crate) fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, S
 #[cfg(not(feature = "trace"))]
 pub(crate) fn symbol_exact<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol> {
     move |s: Span<'a>| {
-        let (s, x) = map(no_ws(map(tag(t.clone()), |x: Span| into_locate(x))), |x| {
+        let (s, x) = map(no_ws(map(tag(t.clone()), into_locate)), |x| {
             Symbol { nodes: x }
         })(s)?;
         Ok((s, x))
@@ -63,7 +63,7 @@ pub(crate) fn symbol_exact<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<
     move |s: Span<'a>| {
         let (depth, s) = nom_tracable::forward_trace(s, &format!("symbol(\"{}\")", t));
         let body = || {
-            let (s, x) = map(no_ws(map(tag(t.clone()), |x: Span| into_locate(x))), |x| {
+            let (s, x) = map(no_ws(map(tag(t.clone()), into_locate)), |x| {
                 Symbol { nodes: x }
             })(s)?;
             Ok((s, x))
@@ -78,9 +78,9 @@ pub(crate) fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, 
     move |s: Span<'a>| {
         let (s, x) = map(
             ws(alt((
-                all_consuming(map(tag(t.clone()), |x: Span| into_locate(x))),
+                all_consuming(map(tag(t.clone()), into_locate)),
                 terminated(
-                    map(tag(t.clone()), |x: Span| into_locate(x)),
+                    map(tag(t.clone()), into_locate),
                     peek(none_of(AZ09_)),
                 ),
             ))),
@@ -97,9 +97,9 @@ pub(crate) fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, 
         let body = || {
             let (s, x) = map(
                 ws(alt((
-                    all_consuming(map(tag(t.clone()), |x: Span| into_locate(x))),
+                    all_consuming(map(tag(t.clone()), into_locate)),
                     terminated(
-                        map(tag(t.clone()), |x: Span| into_locate(x)),
+                        map(tag(t.clone()), into_locate),
                         peek(none_of(AZ09_)),
                     ),
                 ))),
@@ -281,16 +281,12 @@ where
 {
     move |s: Span<'a>| {
         let (s, a) = g(s)?;
-        let mut s = s.clone();
+        let mut s = s;
         let mut ret = Vec::new();
-        loop {
-            if let Ok((t, b)) = f(s) {
-                if let Ok((u, c)) = g(t) {
-                    s = u;
-                    ret.push((b, c));
-                } else {
-                    break;
-                }
+        while let Ok((t, b)) = f(s) {
+            if let Ok((u, c)) = g(t) {
+                s = u;
+                ret.push((b, c));
             } else {
                 break;
             }
@@ -353,10 +349,7 @@ thread_local!(
 );
 
 pub(crate) fn in_directive() -> bool {
-    IN_DIRECTIVE.with(|x| match x.borrow().last() {
-        Some(_) => true,
-        None => false,
-    })
+    IN_DIRECTIVE.with(|x| x.borrow().last().is_some())
 }
 
 pub(crate) fn begin_directive() {

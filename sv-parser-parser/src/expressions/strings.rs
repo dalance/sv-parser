@@ -31,11 +31,9 @@ pub(crate) fn string_literal_impl(s: Span) -> IResult<Span, Locate> {
 
     let a = if let Some(b) = ret {
         let a = concat(a, b).unwrap();
-        let a = concat(a, c).unwrap();
-        a
+        concat(a, c).unwrap()
     } else {
-        let a = concat(a, c).unwrap();
-        a
+        concat(a, c).unwrap()
     };
 
     Ok((s, into_locate(a)))

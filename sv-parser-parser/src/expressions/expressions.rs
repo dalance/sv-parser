@@ -37,7 +37,7 @@ pub(crate) fn inc_or_dec_expression_suffix(s: Span) -> IResult<Span, IncOrDecExp
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn conditional_expression(s: Span) -> IResult<Span, ConditionalExpression> {
-    let (s, a) = cond_predicate(s)?;
+    let (s, a) = cond_predicate_ternary(s)?;
     let (s, b) = symbol("?")(s)?;
     let (s, c) = many0(attribute_instance)(s)?;
     let (s, d) = expression(s)?;
@@ -49,6 +49,29 @@ pub(crate) fn conditional_expression(s: Span) -> IResult<Span, ConditionalExpres
             nodes: (a, b, c, d, e, f),
         },
     ))
+}
+
+#[recursive_parser]
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn cond_predicate_ternary(s: Span) -> IResult<Span, CondPredicate> {
+    let (s, a) = list(symbol("&&&"), expression_or_cond_pattern_ternary)(s)?;
+    Ok((s, CondPredicate { nodes: (a,) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn expression_or_cond_pattern_ternary(
+    s: Span,
+) -> IResult<Span, ExpressionOrCondPattern> {
+    alt((
+        map(cond_pattern, |x| {
+            ExpressionOrCondPattern::CondPattern(Box::new(x))
+        }),
+        map(expression, |x| {
+            ExpressionOrCondPattern::Expression(Box::new(x))
+        }),
+    ))(s)
 }
 
 #[tracable_parser]

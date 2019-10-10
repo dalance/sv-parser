@@ -1,6 +1,9 @@
 name: Release
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -24,9 +27,3 @@ jobs:
         pattern: "*"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    #steps:
-    #- uses: davidgraeff/rust-musl-action@master
-    #- uses: actions/checkout@master
-    #- name: Build
-    #  run: cargo build --target x86_64-unknown-linux-musl --release --example parse_sv

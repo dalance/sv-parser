@@ -51,8 +51,8 @@ pub(crate) fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, S
 #[cfg(not(feature = "trace"))]
 pub(crate) fn symbol_exact<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol> {
     move |s: Span<'a>| {
-        let (s, x) = map(no_ws(map(tag(t.clone()), into_locate)), |x| {
-            Symbol { nodes: x }
+        let (s, x) = map(no_ws(map(tag(t.clone()), into_locate)), |x| Symbol {
+            nodes: x,
         })(s)?;
         Ok((s, x))
     }
@@ -63,8 +63,8 @@ pub(crate) fn symbol_exact<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<
     move |s: Span<'a>| {
         let (depth, s) = nom_tracable::forward_trace(s, &format!("symbol(\"{}\")", t));
         let body = || {
-            let (s, x) = map(no_ws(map(tag(t.clone()), into_locate)), |x| {
-                Symbol { nodes: x }
+            let (s, x) = map(no_ws(map(tag(t.clone()), into_locate)), |x| Symbol {
+                nodes: x,
             })(s)?;
             Ok((s, x))
         };
@@ -79,10 +79,7 @@ pub(crate) fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, 
         let (s, x) = map(
             ws(alt((
                 all_consuming(map(tag(t.clone()), into_locate)),
-                terminated(
-                    map(tag(t.clone()), into_locate),
-                    peek(none_of(AZ09_)),
-                ),
+                terminated(map(tag(t.clone()), into_locate), peek(none_of(AZ09_))),
             ))),
             |x| Keyword { nodes: x },
         )(s)?;
@@ -98,10 +95,7 @@ pub(crate) fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, 
             let (s, x) = map(
                 ws(alt((
                     all_consuming(map(tag(t.clone()), into_locate)),
-                    terminated(
-                        map(tag(t.clone()), into_locate),
-                        peek(none_of(AZ09_)),
-                    ),
+                    terminated(map(tag(t.clone()), into_locate), peek(none_of(AZ09_))),
                 ))),
                 |x| Keyword { nodes: x },
             )(s)?;
@@ -314,6 +308,16 @@ where
 }
 
 // -----------------------------------------------------------------------------
+
+pub(crate) fn eof(s: Span) -> IResult<Span, Span> {
+    use nom::InputLength;
+
+    if s.input_len() == 0 {
+        Ok((s, s))
+    } else {
+        Err(Err::Error(make_error(s, ErrorKind::Eof)))
+    }
+}
 
 #[tracable_parser]
 #[packrat_parser]

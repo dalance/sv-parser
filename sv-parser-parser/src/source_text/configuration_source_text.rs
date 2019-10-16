@@ -5,7 +5,7 @@ use crate::*;
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn config_declaration(s: Span) -> IResult<Span, ConfigDeclaration> {
-    let (s, a) = keyword("config")(s)?;
+    let (s, a) = context("config", keyword("config"))(s)?;
     let (s, b) = config_identifier(s)?;
     let (s, c) = symbol(";")(s)?;
     let (s, d) = many0(pair(local_parameter_declaration, symbol(";")))(s)?;

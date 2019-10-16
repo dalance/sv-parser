@@ -1,6 +1,7 @@
 #![recursion_limit = "256"]
 
 use nom::combinator::all_consuming;
+use nom_greedyerror::error_position;
 use std::collections::HashMap;
 use std::fmt;
 use std::path::Path;
@@ -79,7 +80,14 @@ pub fn parse_sv<T: AsRef<Path>, U: AsRef<Path>>(
             },
             defines,
         )),
-        Err(_) => Err(ErrorKind::Parse.into()),
+        Err(x) => {
+            let pos = match x {
+                nom::Err::Incomplete(_) => None,
+                nom::Err::Error(e) => error_position(&e),
+                nom::Err::Failure(e) => error_position(&e),
+            };
+            Err(ErrorKind::Parse(pos).into())
+        }
     }
 }
 
@@ -99,7 +107,14 @@ pub fn parse_lib<T: AsRef<Path>, U: AsRef<Path>>(
             },
             defines,
         )),
-        Err(_) => Err(ErrorKind::Parse.into()),
+        Err(x) => {
+            let pos = match x {
+                nom::Err::Incomplete(_) => None,
+                nom::Err::Error(e) => error_position(&e),
+                nom::Err::Failure(e) => error_position(&e),
+            };
+            Err(ErrorKind::Parse(pos).into())
+        }
     }
 }
 

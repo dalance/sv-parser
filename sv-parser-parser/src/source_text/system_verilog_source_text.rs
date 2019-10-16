@@ -7,8 +7,8 @@ use crate::*;
 pub(crate) fn source_text(s: Span) -> IResult<Span, SourceText> {
     let (s, a) = many0(white_space)(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
-    let (s, c) = many0(description)(s)?;
-    Ok((s, SourceText { nodes: (a, b, c) }))
+    let (s, c) = many_till(description, eof)(s)?;
+    Ok((s, SourceText { nodes: (a, b, c.0) }))
 }
 
 #[tracable_parser]

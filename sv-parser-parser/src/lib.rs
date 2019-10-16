@@ -31,10 +31,12 @@ pub(crate) use nom::branch::*;
 pub(crate) use nom::bytes::complete::*;
 pub(crate) use nom::character::complete::*;
 pub(crate) use nom::combinator::*;
-pub(crate) use nom::error::{make_error, ErrorKind};
+pub(crate) use nom::error::{context, make_error, ErrorKind};
 pub(crate) use nom::multi::*;
 pub(crate) use nom::sequence::*;
-pub(crate) use nom::{Err, IResult};
+//pub(crate) use nom::{Err, IResult};
+pub(crate) use nom::Err;
+pub(crate) use nom_greedyerror::GreedyError;
 pub(crate) use nom_packrat::{self, packrat_parser, HasExtraState};
 pub(crate) use nom_recursive::{recursive_parser, HasRecursiveInfo, RecursiveInfo};
 pub(crate) use nom_tracable::tracable_parser;
@@ -52,6 +54,7 @@ pub struct SpanInfo {
 }
 
 pub type Span<'a> = nom_locate::LocatedSpanEx<&'a str, SpanInfo>;
+pub type IResult<T, U> = nom::IResult<T, U, GreedyError<T>>;
 
 impl HasRecursiveInfo for SpanInfo {
     fn get_recursive_info(&self) -> RecursiveInfo {

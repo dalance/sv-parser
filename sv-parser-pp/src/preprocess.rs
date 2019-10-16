@@ -1,5 +1,6 @@
 use crate::range::Range;
 use failure::ResultExt;
+use nom_greedyerror::error_position;
 use std::collections::{BTreeMap, HashMap};
 use std::convert::TryInto;
 use std::fs::File;
@@ -107,7 +108,11 @@ fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
     }
 
     let span = Span::new_extra(&s, SpanInfo::default());
-    let (_, pp_text) = pp_parser(span).map_err(|_| ErrorKind::Parse)?;
+    let (_, pp_text) = pp_parser(span).map_err(|x| match x {
+        nom::Err::Incomplete(_) => ErrorKind::Parse(None),
+        nom::Err::Error(e) => ErrorKind::Parse(error_position(&e)),
+        nom::Err::Failure(e) => ErrorKind::Parse(error_position(&e)),
+    })?;
 
     let mut ret = PreprocessedText::new();
 

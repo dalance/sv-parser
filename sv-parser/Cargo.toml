@@ -26,7 +26,7 @@ trace   = ["sv-parser-parser/trace"]
 nom                  = "5.0.0"
 nom-greedyerror      = "0.1.0"
 sv-parser-error      = {version = "^0.2.0", path = "../sv-parser-error"}
-sv-parser-parser     = {version = "0.1.0", path = "../sv-parser-parser"}
+sv-parser-parser     = {version = "^0.2.0", path = "../sv-parser-parser"}
 sv-parser-pp         = {version = "0.1.0", path = "../sv-parser-pp"}
 sv-parser-syntaxtree = {version = "^0.2.0", path = "../sv-parser-syntaxtree"}
 

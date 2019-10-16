@@ -12,7 +12,8 @@ edition = "2018"
 build = "build.rs"
 
 [package.metadata.release]
-disable-tag = true
+disable-push = true
+disable-tag  = true
 
 [dependencies]
 sv-parser-macros = {version = "^0.2.0", path = "../sv-parser-macros"}

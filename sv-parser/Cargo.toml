@@ -10,10 +10,6 @@ readme = "../README.md"
 description = "SystemVerilog parser library fully complient with IEEE 1800-2017"
 edition = "2018"
 
-[features]
-default = []
-trace   = ["sv-parser-parser/trace"]
-
 [package.metadata.release]
 pre-release-replacements = [
     {file = "../README.md", search = "sv-parser = \"[a-z0-9\\.-]+\"", replace = "sv-parser = \"{{version}}\""},
@@ -22,10 +18,14 @@ pre-release-replacements = [
     {file = "../CHANGELOG.md", search = "Change Log", replace = "Change Log\n\n## [Unreleased](https://github.com/dalance/sv-parser/compare/v{{version}}...Unreleased) - ReleaseDate"},
 ]
 
+[features]
+default = []
+trace   = ["sv-parser-parser/trace"]
+
 [dependencies]
 nom                  = "5.0.0"
 nom-greedyerror      = "0.1.0"
-sv-parser-error      = {version = "0.1.0", path = "../sv-parser-error"}
+sv-parser-error      = {version = "^0.2.0", path = "../sv-parser-error"}
 sv-parser-parser     = {version = "0.1.0", path = "../sv-parser-parser"}
 sv-parser-pp         = {version = "0.1.0", path = "../sv-parser-pp"}
 sv-parser-syntaxtree = {version = "0.1.0", path = "../sv-parser-syntaxtree"}

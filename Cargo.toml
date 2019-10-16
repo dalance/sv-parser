@@ -8,6 +8,7 @@ members = [
     "sv-parser-syntaxtree",
 ]
 
-#[patch.crates-io]
+[patch.crates-io]
 #nom = {path = "../nom"}
 #nom_locate = {path = "../nom_locate"}
+criterion = {path = "../criterion.rs"}

@@ -25,5 +25,5 @@ nom-packrat          = "0.3.0"
 nom-recursive        = {version = "0.1.1", features = ["tracer128"]}
 nom-tracable         = "0.4.1"
 str-concat           = "0.1.4"
-sv-parser-macros     = {version = "0.1.0", path = "../sv-parser-macros"}
+sv-parser-macros     = {version = "^0.2.0", path = "../sv-parser-macros"}
 sv-parser-syntaxtree = {version = "0.1.0", path = "../sv-parser-syntaxtree"}

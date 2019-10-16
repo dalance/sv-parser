@@ -15,7 +15,7 @@ pub enum ErrorKind {
     #[fail(display = "Include error")]
     Include,
     #[fail(display = "Parse error: {:?}", _0)]
-    Parse(Option<usize>),
+    Parse(Option<(PathBuf, usize)>),
     #[fail(display = "Preprocess error")]
     Preprocess,
     #[fail(display = "Define argument not found: {}", _0)]

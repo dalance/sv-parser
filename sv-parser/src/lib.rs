@@ -86,7 +86,16 @@ pub fn parse_sv<T: AsRef<Path>, U: AsRef<Path>>(
                 nom::Err::Error(e) => error_position(&e),
                 nom::Err::Failure(e) => error_position(&e),
             };
-            Err(ErrorKind::Parse(pos).into())
+            let origin = if let Some(pos) = pos {
+                if let Some(origin) = text.origin(pos) {
+                    Some((origin.0.clone(), origin.1))
+                } else {
+                    None
+                }
+            } else {
+                None
+            };
+            Err(ErrorKind::Parse(origin).into())
         }
     }
 }
@@ -113,7 +122,16 @@ pub fn parse_lib<T: AsRef<Path>, U: AsRef<Path>>(
                 nom::Err::Error(e) => error_position(&e),
                 nom::Err::Failure(e) => error_position(&e),
             };
-            Err(ErrorKind::Parse(pos).into())
+            let origin = if let Some(pos) = pos {
+                if let Some(origin) = text.origin(pos) {
+                    Some((origin.0.clone(), origin.1))
+                } else {
+                    None
+                }
+            } else {
+                None
+            };
+            Err(ErrorKind::Parse(origin).into())
         }
     }
 }

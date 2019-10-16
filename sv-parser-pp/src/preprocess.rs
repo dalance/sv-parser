@@ -110,8 +110,20 @@ fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
     let span = Span::new_extra(&s, SpanInfo::default());
     let (_, pp_text) = pp_parser(span).map_err(|x| match x {
         nom::Err::Incomplete(_) => ErrorKind::Parse(None),
-        nom::Err::Error(e) => ErrorKind::Parse(error_position(&e)),
-        nom::Err::Failure(e) => ErrorKind::Parse(error_position(&e)),
+        nom::Err::Error(e) => {
+            if let Some(pos) = error_position(&e) {
+                ErrorKind::Parse(Some((PathBuf::from(path.as_ref()), pos)))
+            } else {
+                ErrorKind::Parse(None)
+            }
+        }
+        nom::Err::Failure(e) => {
+            if let Some(pos) = error_position(&e) {
+                ErrorKind::Parse(Some((PathBuf::from(path.as_ref()), pos)))
+            } else {
+                ErrorKind::Parse(None)
+            }
+        }
     })?;
 
     let mut ret = PreprocessedText::new();

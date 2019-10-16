@@ -11,4 +11,4 @@ members = [
 [patch.crates-io]
 #nom = {path = "../nom"}
 #nom_locate = {path = "../nom_locate"}
-criterion = {path = "../criterion.rs"}
+#criterion = {path = "../criterion.rs"}

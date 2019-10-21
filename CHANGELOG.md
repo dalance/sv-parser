@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.2.0...Unreleased) - ReleaseDate
 
+* [Added] get_origin to SyntaxTree
+
 ## [v0.2.0](https://github.com/dalance/sv-parser/compare/v0.1.4...v0.2.0) - 2019-10-16
 
 * [Added] parse error position

@@ -4,7 +4,7 @@ use nom::combinator::all_consuming;
 use nom_greedyerror::error_position;
 use std::collections::HashMap;
 use std::fmt;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use sv_parser_error::{Error, ErrorKind};
 use sv_parser_parser::{lib_parser, sv_parser, Span, SpanInfo};
 use sv_parser_pp::preprocess::{preprocess, Define, Defines, PreprocessedText};
@@ -22,6 +22,10 @@ impl SyntaxTree {
                 .text()
                 .get_unchecked(locate.offset..locate.offset + locate.len)
         }
+    }
+
+    pub fn get_origin(&self, locate: &Locate) -> Option<(&PathBuf, usize)> {
+        self.text.origin(locate.offset)
     }
 }
 

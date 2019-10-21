@@ -146,7 +146,7 @@ macro_rules! unwrap_node {
         let unwrap = || {
             for x in $n {
                 match x {
-                    $(RefNode::$ty(x) => return Some(RefNode::$ty(x)),)*
+                    $(sv_parser::RefNode::$ty(x) => return Some(sv_parser::RefNode::$ty(x)),)*
                     _ => (),
                 }
             }

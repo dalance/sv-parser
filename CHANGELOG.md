@@ -3,6 +3,7 @@
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.2.0...Unreleased) - ReleaseDate
 
 * [Added] get_origin to SyntaxTree
+* [Added] re-export Error/ErrorKind
 * [Fixed] unwrap_node import
 * [Fixed] spacing of text macro usage
 

@@ -4,6 +4,7 @@
 
 * [Added] get_origin to SyntaxTree
 * [Fixed] unwrap_node import
+* [Fixed] spacing of text macro usage
 
 ## [v0.2.0](https://github.com/dalance/sv-parser/compare/v0.1.4...v0.2.0) - 2019-10-16
 

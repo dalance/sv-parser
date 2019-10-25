@@ -281,7 +281,7 @@ pub(crate) fn default_text(s: Span) -> IResult<Span, DefaultText> {
 #[packrat_parser]
 pub(crate) fn text_macro_usage(s: Span) -> IResult<Span, TextMacroUsage> {
     let (s, a) = symbol("`")(s)?;
-    let (s, b) = text_macro_identifier_exact(s)?;
+    let (s, b) = text_macro_identifier(s)?;
     let (s, c) = opt(paren(list_of_actual_arguments))(s)?;
     Ok((s, TextMacroUsage { nodes: (a, b, c) }))
 }

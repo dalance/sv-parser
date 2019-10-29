@@ -104,7 +104,8 @@ fn impl_node(ast: &DeriveInput) -> TokenStream {
             type IntoIter = Iter<'a>;
 
             fn into_iter(self) -> Self::IntoIter {
-                let nodes: RefNodes = self.into();
+                let mut nodes: RefNodes = self.into();
+                nodes.0.reverse();
                 Iter { next: nodes }
             }
         }

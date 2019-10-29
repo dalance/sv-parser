@@ -14,6 +14,11 @@ pub struct Iter<'a> {
 }
 
 impl<'a> Iter<'a> {
+    pub fn new(mut next: RefNodes<'a>) -> Self {
+        next.0.reverse();
+        Iter { next }
+    }
+
     pub fn event(self) -> EventIter<'a> {
         let next: NodeEvents = self.next.into();
         EventIter { next }

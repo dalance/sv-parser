@@ -27,14 +27,14 @@ fn main() {
 
                     let id = get_identifier(id).unwrap();
 
-                    // Original string can be got by SyntexTree::get_str(self, locate: &Locate)
-                    let id = syntax_tree.get_str(&id);
+                    // Original string can be got by SyntexTree::get_str(self, node: &RefNode)
+                    let id = syntax_tree.get_str(&id).unwrap();
                     println!("module: {}", id);
                 }
                 RefNode::ModuleDeclarationAnsi(x) => {
                     let id = unwrap_node!(x, ModuleIdentifier).unwrap();
                     let id = get_identifier(id).unwrap();
-                    let id = syntax_tree.get_str(&id);
+                    let id = syntax_tree.get_str(&id).unwrap();
                     println!("module: {}", id);
                 }
                 _ => (),

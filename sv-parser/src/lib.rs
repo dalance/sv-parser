@@ -16,11 +16,25 @@ pub struct SyntaxTree {
 }
 
 impl SyntaxTree {
-    pub fn get_str(&self, locate: &Locate) -> &str {
-        unsafe {
-            self.text
-                .text()
-                .get_unchecked(locate.offset..locate.offset + locate.len)
+    pub fn get_str<'a, T: Into<RefNodes<'a>>>(&self, nodes: T) -> Option<&str> {
+        let mut beg = None;
+        let mut end = 0;
+        for n in Iter::new(nodes.into()) {
+            match n {
+                RefNode::Locate(x) => {
+                    if beg.is_none() {
+                        beg = Some(x.offset);
+                    }
+                    end = x.offset + x.len;
+                }
+                _ => (),
+            }
+        }
+        if let Some(beg) = beg {
+            let ret = unsafe { self.text.text().get_unchecked(beg..end) };
+            Some(ret)
+        } else {
+            None
         }
     }
 
@@ -37,7 +51,11 @@ impl fmt::Display for SyntaxTree {
         for node in self.into_iter().event() {
             match node {
                 NodeEvent::Enter(RefNode::Locate(locate)) if !skip => {
-                    ret.push_str(&format!("{}{}\n", " ".repeat(depth), self.get_str(locate)));
+                    ret.push_str(&format!(
+                        "{}{}\n",
+                        " ".repeat(depth),
+                        self.get_str(locate).unwrap()
+                    ));
                     depth += 1;
                 }
                 NodeEvent::Enter(RefNode::WhiteSpace(_)) => {

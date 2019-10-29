@@ -22,7 +22,7 @@ pub enum ErrorKind {
     DefineArgNotFound(String),
     #[fail(display = "Define text not found: {}", _0)]
     DefineTextNotFound(String),
-    #[fail(display = "Define text not found: {}", _0)]
+    #[fail(display = "Define not found: {}", _0)]
     DefineNotFound(String),
 }
 

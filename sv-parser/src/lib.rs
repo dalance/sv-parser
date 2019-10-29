@@ -155,3 +155,19 @@ macro_rules! unwrap_node {
         unwrap()
     }};
 }
+
+#[macro_export]
+macro_rules! unwrap_locate {
+    ($n:expr) => {{
+        let unwrap = || {
+            for x in $n {
+                match x {
+                    sv_parser::RefNode::Locate(x) => return Some(x),
+                    _ => (),
+                }
+            }
+            None
+        };
+        unwrap()
+    }};
+}

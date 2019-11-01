@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.3.2...Unreleased) - ReleaseDate
 
+* [Fixed] define arument
+
 ## [v0.3.2](https://github.com/dalance/sv-parser/compare/v0.2.1...v0.3.2) - 2019-10-29
 
 * [Changed] SyntaxTree::get_str can take &RefNode

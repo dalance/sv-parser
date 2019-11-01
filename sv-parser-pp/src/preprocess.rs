@@ -525,4 +525,21 @@ module a ();
 "##
         );
     }
+
+    #[test]
+    fn test4() {
+        let (ret, _) =
+            preprocess(get_testcase("test4.sv"), &HashMap::new(), &[] as &[String]).unwrap();
+        assert_eq!(
+            ret.text(),
+            r##"
+module a ();
+
+     always @(posedge clk) begin         if (!(!(a[i].b && c[i]))) begin             $display ("xxx(()[]]{}}}", a[i].b, c[i])
+;         end     end  ;
+
+endmodule
+"##
+        );
+    }
 }

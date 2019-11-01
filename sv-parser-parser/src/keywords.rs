@@ -1444,3 +1444,28 @@ pub(crate) const KEYWORDS_1800_2017: &[&str] = &[
     "xnor",
     "xor",
 ];
+
+pub(crate) const KEYWORDS_DIRECTIVE: &[&str] = &[
+    "__FILE__",
+    "__LINE__",
+    "begin_keywords",
+    "celldefine",
+    "default_nettype",
+    "define",
+    "else",
+    "elsif",
+    "end_keywords",
+    "endcelldefine",
+    "endif",
+    "ifdef",
+    "ifndef",
+    "include",
+    "line",
+    "nounconnected_drive",
+    "pragma",
+    "resetall",
+    "timescale",
+    "unconnected_drive",
+    "undef",
+    "undefineall",
+];

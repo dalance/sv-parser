@@ -376,6 +376,7 @@ pub(crate) enum VersionSpecifier {
     Ieee1800_2009,
     Ieee1800_2012,
     Ieee1800_2017,
+    Directive,
 }
 
 thread_local!(
@@ -410,6 +411,9 @@ pub(crate) fn begin_keywords(version: &str) {
         "1800-2017" => current_version
             .borrow_mut()
             .push(VersionSpecifier::Ieee1800_2017),
+        "directive" => current_version
+            .borrow_mut()
+            .push(VersionSpecifier::Directive),
         _ => (),
     });
 }
@@ -453,6 +457,7 @@ pub(crate) fn is_keyword(s: &Span) -> bool {
         Some(VersionSpecifier::Ieee1800_2009) => KEYWORDS_1800_2009,
         Some(VersionSpecifier::Ieee1800_2012) => KEYWORDS_1800_2012,
         Some(VersionSpecifier::Ieee1800_2017) => KEYWORDS_1800_2017,
+        Some(VersionSpecifier::Directive) => KEYWORDS_DIRECTIVE,
         None => KEYWORDS_1800_2017,
     };
     for k in keywords {

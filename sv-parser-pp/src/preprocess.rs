@@ -437,7 +437,9 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
                             .replace("``", "")
                             .replace("`\\`\"", "\\\"")
                             .replace("`\"", "\"")
-                            .replace("\\\n", ""),
+                            .replace("\\\n", "")
+                            .replace("\\\r\n", "")
+                            .replace("\\\r", ""),
                     );
                 }
             }

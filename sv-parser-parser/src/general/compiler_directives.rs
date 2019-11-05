@@ -204,7 +204,13 @@ pub(crate) fn text_macro_identifier_exact(s: Span) -> IResult<Span, TextMacroIde
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn macro_text(s: Span) -> IResult<Span, MacroText> {
-    let (s, a) = many1(alt((tag("\\\n"), tag("\\"), is_not("\\\n"))))(s)?;
+    let (s, a) = many1(alt((
+        tag("\\\n"),
+        tag("\\\r\n"),
+        tag("\\\r"),
+        tag("\\"),
+        is_not("\\\r\n"),
+    )))(s)?;
 
     let mut ret = None;
     for x in a {

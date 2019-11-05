@@ -3,6 +3,7 @@
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.3.4...Unreleased) - ReleaseDate
 
 * [Added] LF/CR+LF support
+* [Added] empty define support
 
 ## [v0.3.4](https://github.com/dalance/sv-parser/compare/v0.3.3...v0.3.4) - 2019-11-05
 

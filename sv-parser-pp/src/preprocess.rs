@@ -296,10 +296,14 @@ fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                     IncludeCompilerDirective::TextMacroUsage(x) => {
                         let (_, _, ref x) = x.nodes;
                         skip_nodes.push(x.into());
-                        let (p, _, _, _) =
-                            resolve_text_macro_usage(x, s, path.as_ref(), &defines, include_paths)?;
-                        let p = p.trim().trim_matches('"');
-                        PathBuf::from(p)
+                        if let Some((p, _, _, _)) =
+                            resolve_text_macro_usage(x, s, path.as_ref(), &defines, include_paths)?
+                        {
+                            let p = p.trim().trim_matches('"');
+                            PathBuf::from(p)
+                        } else {
+                            PathBuf::from("")
+                        }
                     }
                 };
                 if path.is_relative() {
@@ -319,10 +323,12 @@ fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                 ret.merge(include);
             }
             NodeEvent::Enter(RefNode::TextMacroUsage(x)) if !skip => {
-                let (text, path, range, new_defines) =
-                    resolve_text_macro_usage(x, s, path.as_ref(), &defines, include_paths)?;
-                ret.push(&text, path, range);
-                defines = new_defines;
+                if let Some((text, path, range, new_defines)) =
+                    resolve_text_macro_usage(x, s, path.as_ref(), &defines, include_paths)?
+                {
+                    ret.push(&text, path, range);
+                    defines = new_defines;
+                }
             }
             _ => (),
         }
@@ -395,7 +401,7 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
     path: T,
     defines: &Defines,
     include_paths: &[U],
-) -> Result<(String, PathBuf, Range, Defines), Error> {
+) -> Result<Option<(String, PathBuf, Range, Defines)>, Error> {
     let (_, ref name, ref args) = x.nodes;
     let id = identifier((&name.nodes.0).into(), &s).unwrap();
 
@@ -448,17 +454,17 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
 
             let (replaced, new_defines) =
                 preprocess_str(&replaced, path.as_ref(), &defines, include_paths)?;
-            Ok((
+            Ok(Some((
                 String::from(replaced.text()),
                 define.path.clone(),
                 *range,
                 new_defines,
-            ))
+            )))
         } else {
-            Err(ErrorKind::DefineTextNotFound(String::from(id)).into())
+            Ok(None)
         }
     } else if let Some(_) = define {
-        Err(ErrorKind::DefineTextNotFound(String::from(id)).into())
+        Ok(None)
     } else {
         Err(ErrorKind::DefineNotFound(String::from(id)).into())
     }

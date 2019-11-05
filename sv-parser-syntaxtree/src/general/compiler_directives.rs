@@ -177,6 +177,7 @@ pub struct ElseGroupOfLines {
 #[derive(Clone, Debug, PartialEq, Node)]
 pub enum SourceDescription {
     Comment(Box<Comment>),
+    StringLiteral(Box<StringLiteral>),
     NotDirective(Box<SourceDescriptionNotDirective>),
     CompilerDirective(Box<CompilerDirective>),
 }

@@ -7,7 +7,7 @@ use std::fmt;
 use std::path::{Path, PathBuf};
 pub use sv_parser_error::{Error, ErrorKind};
 use sv_parser_parser::{lib_parser, sv_parser, Span, SpanInfo};
-use sv_parser_pp::preprocess::{preprocess, Define, Defines, PreprocessedText};
+pub use sv_parser_pp::preprocess::{preprocess, Define, Defines, PreprocessedText};
 pub use sv_parser_syntaxtree::*;
 
 pub struct SyntaxTree {

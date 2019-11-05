@@ -8,7 +8,9 @@ use std::io::{BufReader, Read};
 use std::path::{Path, PathBuf};
 use sv_parser_error::{Error, ErrorKind};
 use sv_parser_parser::{pp_parser, Span, SpanInfo};
-use sv_parser_syntaxtree::{IncludeCompilerDirective, Locate, NodeEvent, RefNode, TextMacroUsage};
+use sv_parser_syntaxtree::{
+    IncludeCompilerDirective, Locate, NodeEvent, RefNode, SourceDescription, TextMacroUsage,
+};
 
 #[derive(Debug)]
 pub struct PreprocessedText {
@@ -155,6 +157,13 @@ fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
             }
             NodeEvent::Enter(RefNode::SourceDescriptionNotDirective(x)) if !skip => {
                 let locate: Locate = x.try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), path.as_ref(), range);
+            }
+            NodeEvent::Enter(RefNode::SourceDescription(SourceDescription::StringLiteral(x)))
+                if !skip =>
+            {
+                let locate: Locate = (&**x).try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), path.as_ref(), range);
             }
@@ -340,7 +349,9 @@ fn identifier(node: RefNode, s: &str) -> Option<String> {
 }
 
 fn split_text(s: &str) -> Vec<String> {
+    let mut is_string = false;
     let mut is_ident = false;
+    let mut is_backquote_prev = false;
     let mut is_ident_prev;
     let mut x = String::from("");
     let mut ret = vec![];
@@ -348,12 +359,31 @@ fn split_text(s: &str) -> Vec<String> {
         is_ident_prev = is_ident;
         is_ident = c.is_ascii_alphanumeric() | (c == '_');
 
-        if is_ident != is_ident_prev {
+        if c == '"' && is_backquote_prev {
+            x.push(c);
             ret.push(x);
             x = String::from("");
+        } else if c == '"' && !is_string {
+            ret.push(x);
+            x = String::from("");
+            x.push(c);
+            is_string = true;
+        } else if c == '"' && is_string {
+            x.push(c);
+            ret.push(x);
+            x = String::from("");
+            is_string = false;
+        } else if !is_string {
+            if is_ident != is_ident_prev {
+                ret.push(x);
+                x = String::from("");
+            }
+            x.push(c);
+        } else {
+            x.push(c);
         }
 
-        x.push(c);
+        is_backquote_prev = c == '`';
     }
     ret.push(x);
     ret
@@ -402,7 +432,13 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
                 if let Some(value) = arg_map.get(&text) {
                     replaced.push_str(*value);
                 } else {
-                    replaced.push_str(&text.replace("``", "").replace("\\\n", ""));
+                    replaced.push_str(
+                        &text
+                            .replace("``", "")
+                            .replace("`\\`\"", "\\\"")
+                            .replace("`\"", "\"")
+                            .replace("\\\n", ""),
+                    );
                 }
             }
             // separator is required
@@ -538,6 +574,43 @@ module a ();
      always @(posedge clk) begin         if (!(!(a[i].b && c[i]))) begin             $display ("xxx(()[]]{}}}", a[i].b, c[i])
 ;         end     end  ;
 
+endmodule
+"##
+        );
+    }
+
+    #[test]
+    fn test5() {
+        let (ret, _) =
+            preprocess(get_testcase("test5.sv"), &HashMap::new(), &[] as &[String]).unwrap();
+        assert_eq!(
+            ret.text(),
+            r##"module a;
+
+
+
+initial begin
+$display("`HI, world");
+$display( "`HI, world" );
+$display( "Hello, x" );
+end
+endmodule
+"##
+        );
+    }
+
+    #[test]
+    fn test6() {
+        let (ret, _) =
+            preprocess(get_testcase("test6.sv"), &HashMap::new(), &[] as &[String]).unwrap();
+        assert_eq!(
+            ret.text(),
+            r##"
+
+module a;
+initial begin
+$display( "left side: \"right side\"" );
+end
 endmodule
 "##
         );

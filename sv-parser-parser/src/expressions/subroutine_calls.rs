@@ -181,11 +181,11 @@ pub(crate) fn method_call_body_user(s: Span) -> IResult<Span, MethodCallBody> {
 #[packrat_parser]
 pub(crate) fn built_in_method_call(s: Span) -> IResult<Span, BuiltInMethodCall> {
     alt((
-        map(array_manipulation_call, |x| {
-            BuiltInMethodCall::ArrayManipulationCall(Box::new(x))
-        }),
         map(randomize_call, |x| {
             BuiltInMethodCall::RandomizeCall(Box::new(x))
+        }),
+        map(array_manipulation_call, |x| {
+            BuiltInMethodCall::ArrayManipulationCall(Box::new(x))
         }),
     ))(s)
 }

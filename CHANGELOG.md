@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.3.6...Unreleased) - ReleaseDate
 
+* [Fixed] randomize_call bug
+
 ## [v0.3.6](https://github.com/dalance/sv-parser/compare/v0.3.5...v0.3.6) - 2019-11-05
 
 ## [v0.3.5](https://github.com/dalance/sv-parser/compare/v0.3.4...v0.3.5) - 2019-11-05

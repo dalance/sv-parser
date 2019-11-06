@@ -9716,44 +9716,40 @@ mod spec {
                 endclass"##,
             Ok((_, _))
         );
-        // TODO
-        // randomize is not keyword
-        //test!(
-        //    many1(module_item),
-        //    r##"task exercise_bus (MyBus bus);
-        //          int res;
+        test!(
+            many1(module_item),
+            r##"task exercise_bus (MyBus bus);
+                  int res;
 
-        //          // EXAMPLE 1: restrict to low addresses
-        //          res = bus.randomize() with {atype == low;};
+                  // EXAMPLE 1: restrict to low addresses
+                  res = bus.randomize() with {atype == low;};
 
-        //          // EXAMPLE 2: restrict to address between 10 and 20
-        //          res = bus.randomize() with {10 <= addr && addr <= 20;};
+                  // EXAMPLE 2: restrict to address between 10 and 20
+                  res = bus.randomize() with {10 <= addr && addr <= 20;};
 
-        //          // EXAMPLE 3: restrict data values to powers-of-two
-        //          res = bus.randomize() with {(data & (data - 1)) == 0;};
-        //        endtask"##,
-        //    Ok((_, _))
-        //);
-        // TODO
-        // randomize is not keyword
-        //test!(
-        //    many1(module_item),
-        //    r##"task exercise_illegal(MyBus bus, int cycles);
-        //          int res;
+                  // EXAMPLE 3: restrict data values to powers-of-two
+                  res = bus.randomize() with {(data & (data - 1)) == 0;};
+                endtask"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"task exercise_illegal(MyBus bus, int cycles);
+                  int res;
 
-        //          // Disable word alignment constraint.
-        //          bus.word_align.constraint_mode(0);
+                  // Disable word alignment constraint.
+                  bus.word_align.constraint_mode(0);
 
-        //          repeat (cycles) begin
-        //            // CASE 1: restrict to small addresses.
-        //            res = bus.randomize() with {addr[0] || addr[1];};
-        //          end
+                  repeat (cycles) begin
+                    // CASE 1: restrict to small addresses.
+                    res = bus.randomize() with {addr[0] || addr[1];};
+                  end
 
-        //          // Reenable word alignment constraint
-        //          bus.word_align.constraint_mode(1);
-        //        endtask"##,
-        //    Ok((_, _))
-        //);
+                  // Reenable word alignment constraint
+                  bus.word_align.constraint_mode(1);
+                endtask"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"class XYPair;
@@ -9976,59 +9972,55 @@ mod spec {
                 endclass"##,
             Ok((_, _))
         );
-        // TODO
-        // randomize is not keyword
-        //test!(
-        //    many1(module_item),
-        //    r##"class Packet;
-        //          rand bit mode;
-        //          rand int length;
-        //          constraint deflt {
-        //            soft length inside {32,1024};
-        //            soft mode -> length == 1024;
-        //            // Note: soft mode -> {length == 1024;} is not legal syntax,
-        //            // as soft must be followed by an expression
-        //          }
-        //        endclass
+        test!(
+            many1(module_item),
+            r##"class Packet;
+                  rand bit mode;
+                  rand int length;
+                  constraint deflt {
+                    soft length inside {32,1024};
+                    soft mode -> length == 1024;
+                    // Note: soft mode -> {length == 1024;} is not legal syntax,
+                    // as soft must be followed by an expression
+                  }
+                endclass
 
-        //        initial begin
-        //          Packet p = new();
-        //          p.randomize() with { length == 1512;}            // mode will randomize to 0
-        //          p.randomize() with { length == 1512; mode == 1;} // mode will randomize to 1
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        // TODO
-        // randomize is not keyword
-        //test!(
-        //    many1(module_item),
-        //    r##"class B1;
-        //          rand int x;
-        //          constraint a { soft x > 10 ; soft x < 100 ; }
-        //        endclass /* a1 */ /* a2 */
-        //        class D1 extends B1;
-        //          constraint b { soft x inside {[5:9]} ; }
-        //        endclass /* b1 */
-        //        class B2;
-        //          rand int y;
-        //          constraint c { soft y > 10 ; }
-        //        endclass /* c1 */
-        //        class D2 extends B2;
-        //          constraint d { soft y inside {[5:9]} ; }
-        //          constraint e ; /* d1 */
-        //          rand D1 p1;
-        //          rand B1 p2;
-        //          rand D1 p3;
-        //          constraint f { soft p1.x < p2.x ; }
-        //        endclass /* f1 */
-        //        constraint D2::e { soft y > 100 ; }
-        //        /* e1 */
-        //        D2 d = new();
-        //        initial begin
-        //          d.randomize() with { soft y inside {10,20,30} ; soft y < p1.x ; };
-        //        end /* i1 */ /* i2 */"##,
-        //    Ok((_, _))
-        //);
+                initial begin
+                  Packet p = new();
+                  p.randomize() with { length == 1512;};            // mode will randomize to 0
+                  p.randomize() with { length == 1512; mode == 1;}; // mode will randomize to 1
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"class B1;
+                  rand int x;
+                  constraint a { soft x > 10 ; soft x < 100 ; }
+                endclass /* a1 */ /* a2 */
+                class D1 extends B1;
+                  constraint b { soft x inside {[5:9]} ; }
+                endclass /* b1 */
+                class B2;
+                  rand int y;
+                  constraint c { soft y > 10 ; }
+                endclass /* c1 */
+                class D2 extends B2;
+                  constraint d { soft y inside {[5:9]} ; }
+                  constraint e ; /* d1 */
+                  rand D1 p1;
+                  rand B1 p2;
+                  rand D1 p3;
+                  constraint f { soft p1.x < p2.x ; }
+                endclass /* f1 */
+                constraint D2::e { soft y > 100 ; }
+                /* e1 */
+                D2 d = new();
+                initial begin
+                  d.randomize() with { soft y inside {10,20,30} ; soft y < p1.x ; };
+                end /* i1 */ /* i2 */"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"class A;
@@ -10080,66 +10072,58 @@ mod spec {
                 endclass"##,
             Ok((_, _))
         );
-        // TODO
-        // randomize is not keyword
-        //test!(
-        //    many1(module_item),
-        //    r##"class SimpleSum;
-        //          rand bit [7:0] x, y, z;
-        //          constraint c {z == x + y;}
-        //        endclass
+        test!(
+            many1(module_item),
+            r##"class SimpleSum;
+                  rand bit [7:0] x, y, z;
+                  constraint c {z == x + y;}
+                endclass
 
-        //        task InlineConstraintDemo(SimpleSum p);
-        //          int success;
-        //          success = p.randomize() with {x < y;};
-        //        endtask"##,
-        //    Ok((_, _))
-        //);
-        // TODO
-        // randomize is not keyword
-        //test!(
-        //    many1(module_item),
-        //    r##"class C1;
-        //          rand integer x;
-        //        endclass
+                task InlineConstraintDemo(SimpleSum p);
+                  int success;
+                  success = p.randomize() with {x < y;};
+                endtask"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"class C1;
+                  rand integer x;
+                endclass
 
-        //        class C2;
-        //          integer x;
-        //          integer y;
+                class C2;
+                  integer x;
+                  integer y;
 
-        //          task doit(C1 f, integer x, integer z);
-        //            int result;
-        //            result = f.randomize() with {x < y + z;};
-        //          endtask
-        //        endclass"##,
-        //    Ok((_, _))
-        //);
-        // TODO
-        // randomize is not keyword
-        //test!(
-        //    many1(module_item),
-        //    r##"class C;
-        //          rand integer x;
-        //        endclass
+                  task doit(C1 f, integer x, integer z);
+                    int result;
+                    result = f.randomize() with {x < y + z;};
+                  endtask
+                endclass"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"class C;
+                  rand integer x;
+                endclass
 
-        //        function int F(C obj, integer y);
-        //          F = obj.randomize() with (x) { x < y; };
-        //        endfunction"##,
-        //    Ok((_, _))
-        //);
-        // TODO
-        // randomize is not keyword
-        //test!(
-        //    many1(module_item),
-        //    r##"class C;
-        //          rand integer x;
-        //        endclass
+                function int F(C obj, integer y);
+                  F = obj.randomize() with (x) { x < y; };
+                endfunction"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"class C;
+                  rand integer x;
+                endclass
 
-        //        function int F(C obj, integer x);
-        //          F = obj.randomize() with { x < local::x; };
-        //        endfunction"##,
-        //    Ok((_, _))
-        //);
+                function int F(C obj, integer x);
+                  F = obj.randomize() with { x < local::x; };
+                endfunction"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"class Packet;
@@ -15835,6 +15819,10 @@ mod spec {
 
 #[test]
 fn debug() {
-    test!(source_text, r##"module top (); endmodule"##, Ok((_, _)));
+    test!(
+        source_text,
+        r##"module top (); initial begin p.randomize() with { length == 1512;}; end endmodule"##,
+        Ok((_, _))
+    );
     nom_tracable::cumulative_histogram();
 }

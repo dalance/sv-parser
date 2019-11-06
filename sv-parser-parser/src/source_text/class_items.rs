@@ -100,7 +100,9 @@ pub(crate) fn class_property_const(s: Span) -> IResult<Span, ClassProperty> {
     let (s, b) = many0(class_item_qualifier)(s)?;
     let (s, c) = data_type(s)?;
     let (s, d) = const_identifier(s)?;
-    let (s, e) = opt(pair(symbol("="), constant_expression))(s)?;
+    // BNF-WA
+    //let (s, e) = opt(pair(symbol("="), constant_expression))(s)?;
+    let (s, e) = opt(pair(symbol("="), class_property_const_expression))(s)?;
     let (s, f) = symbol(";")(s)?;
     Ok((
         s,
@@ -108,6 +110,21 @@ pub(crate) fn class_property_const(s: Span) -> IResult<Span, ClassProperty> {
             nodes: (a, b, c, d, e, f),
         })),
     ))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn class_property_const_expression(
+    s: Span,
+) -> IResult<Span, ClassPropertyConstExpression> {
+    alt((
+        map(constant_expression, |x| {
+            ClassPropertyConstExpression::ConstantExpression(Box::new(x))
+        }),
+        map(class_new, |x| {
+            ClassPropertyConstExpression::ClassNew(Box::new(x))
+        }),
+    ))(s)
 }
 
 #[tracable_parser]

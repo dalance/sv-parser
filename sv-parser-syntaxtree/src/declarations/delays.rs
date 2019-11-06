@@ -52,6 +52,7 @@ pub enum DelayValue {
     UnsignedNumber(Box<UnsignedNumber>),
     RealNumber(Box<RealNumber>),
     PsIdentifier(Box<PsIdentifier>),
+    HierarchicalIdentifier(Box<HierarchicalIdentifier>),
     TimeLiteral(Box<TimeLiteral>),
     Step1(Box<Keyword>),
 }

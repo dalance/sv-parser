@@ -70,6 +70,10 @@ pub(crate) fn delay_value(s: Span) -> IResult<Span, DelayValue> {
         map(time_literal, |x| DelayValue::TimeLiteral(Box::new(x))),
         map(real_number, |x| DelayValue::RealNumber(Box::new(x))),
         map(unsigned_number, |x| DelayValue::UnsignedNumber(Box::new(x))),
+        // BNF-WA
+        map(hierarchical_identifier, |x| {
+            DelayValue::HierarchicalIdentifier(Box::new(x))
+        }),
         map(ps_identifier, |x| DelayValue::PsIdentifier(Box::new(x))),
     ))(s)
 }

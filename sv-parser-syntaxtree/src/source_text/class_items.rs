@@ -57,9 +57,15 @@ pub struct ClassPropertyConst {
         Vec<ClassItemQualifier>,
         DataType,
         ConstIdentifier,
-        Option<(Symbol, ConstantExpression)>,
+        Option<(Symbol, ClassPropertyConstExpression)>,
         Symbol,
     ),
+}
+
+#[derive(Clone, Debug, PartialEq, Node)]
+pub enum ClassPropertyConstExpression {
+    ConstantExpression(Box<ConstantExpression>),
+    ClassNew(Box<ClassNew>),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]

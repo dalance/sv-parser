@@ -378,6 +378,16 @@ mod unit {
             r##"class a; function a b(); return this.a.b(); endfunction endclass"##,
             Ok((_, _))
         );
+        test!(
+            source_text,
+            r##"class a; const local a b = new("a"); endclass"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"module a; initial begin #a.b; end endmodule"##,
+            Ok((_, _))
+        );
     }
 }
 
@@ -15838,7 +15848,7 @@ mod spec {
 fn debug() {
     test!(
         source_text,
-        r##"module a; initial begin this.a.b(); end endmodule"##,
+        r##"module a; initial begin #a.b; end endmodule"##,
         Ok((_, _))
     );
     nom_tracable::cumulative_histogram();

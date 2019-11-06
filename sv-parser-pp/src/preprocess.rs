@@ -1,5 +1,6 @@
 use crate::range::Range;
 use failure::ResultExt;
+use nom::combinator::all_consuming;
 use nom_greedyerror::error_position;
 use std::collections::{BTreeMap, HashMap};
 use std::convert::TryInto;
@@ -110,7 +111,7 @@ fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
     }
 
     let span = Span::new_extra(&s, SpanInfo::default());
-    let (_, pp_text) = pp_parser(span).map_err(|x| match x {
+    let (_, pp_text) = all_consuming(pp_parser)(span).map_err(|x| match x {
         nom::Err::Incomplete(_) => ErrorKind::Parse(None),
         nom::Err::Error(e) => {
             if let Some(pos) = error_position(&e) {
@@ -406,27 +407,45 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
     let id = identifier((&name.nodes.0).into(), &s).unwrap();
 
     let mut actual_args = Vec::new();
+    let no_args = args.is_none();
     if let Some(args) = args {
         let (_, ref args, _) = args.nodes;
         let (ref args,) = args.nodes;
         for arg in args.contents() {
-            let (ref arg,) = arg.nodes;
-            let arg = arg.str(&s);
-            actual_args.push(arg);
+            if let Some(arg) = arg {
+                let (ref arg,) = arg.nodes;
+                let arg = arg.str(&s);
+                actual_args.push(Some(arg));
+            } else {
+                actual_args.push(None);
+            }
         }
     }
 
     let define = defines.get(&id);
     if let Some(Some(define)) = define {
         let mut arg_map = HashMap::new();
+
+        if !define.arguments.is_empty() && no_args {
+            return Err(ErrorKind::DefineNoArgs.into());
+        }
+
         for (i, (arg, default)) in define.arguments.iter().enumerate() {
-            let value = if let Some(actual_arg) = actual_args.get(i) {
-                *actual_arg
-            } else {
-                if let Some(default) = default {
-                    default
-                } else {
-                    return Err(ErrorKind::DefineArgNotFound(String::from(arg)).into());
+            let value = match actual_args.get(i) {
+                Some(Some(actual_arg)) => *actual_arg,
+                Some(None) => {
+                    if let Some(default) = default {
+                        default
+                    } else {
+                        ""
+                    }
+                }
+                None => {
+                    if let Some(default) = default {
+                        default
+                    } else {
+                        return Err(ErrorKind::DefineArgNotFound(String::from(arg)).into());
+                    }
                 }
             };
             arg_map.insert(String::from(arg), value);

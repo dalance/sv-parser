@@ -6,6 +6,8 @@ use crate::*;
 #[packrat_parser]
 pub(crate) fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
     alt((
+        // BNF-WA
+        map(keyword("$"), |x| ConstantPrimary::Dollar(Box::new(x))),
         map(keyword("null"), |x| ConstantPrimary::Null(Box::new(x))),
         map(constant_assignment_pattern_expression, |x| {
             ConstantPrimary::ConstantAssignmentPatternExpression(Box::new(x))

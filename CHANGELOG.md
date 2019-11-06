@@ -8,6 +8,9 @@
 * [Fixed] hierarchical this bug
 * [Fixed] hierarchical delay value bug
 * [Fixed] const class new bug
+* [Fixed] missing all_consuming of pp_parser
+* [Fixed] typo 'triwand'
+* [Fixed] arguments of text_macro_usage
 
 ## [v0.3.6](https://github.com/dalance/sv-parser/compare/v0.3.5...v0.3.6) - 2019-11-05
 

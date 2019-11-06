@@ -19,6 +19,7 @@ pub enum ConstantPrimary {
     ConstantAssignmentPatternExpression(Box<ConstantAssignmentPatternExpression>),
     TypeReference(Box<TypeReference>),
     Null(Box<Keyword>),
+    Dollar(Box<Keyword>),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]

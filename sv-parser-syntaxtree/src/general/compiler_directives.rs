@@ -102,7 +102,7 @@ pub struct TextMacroUsage {
 
 #[derive(Clone, Debug, PartialEq, Node)]
 pub struct ListOfActualArguments {
-    pub nodes: (List<Symbol, ActualArgument>,),
+    pub nodes: (List<Symbol, Option<ActualArgument>>,),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]

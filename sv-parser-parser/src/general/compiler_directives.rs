@@ -154,7 +154,9 @@ pub(crate) fn angle_bracket_literal_impl(s: Span) -> IResult<Span, Locate> {
 pub(crate) fn text_macro_definition(s: Span) -> IResult<Span, TextMacroDefinition> {
     let (s, a) = symbol("`")(s)?;
     let (s, b) = keyword("define")(s)?;
+    begin_keywords("directive");
     let (s, c) = text_macro_name(s)?;
+    end_keywords();
     let (s, d) = opt(macro_text)(s)?;
     Ok((
         s,
@@ -255,7 +257,7 @@ pub(crate) fn text_macro_usage(s: Span) -> IResult<Span, TextMacroUsage> {
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn list_of_actual_arguments(s: Span) -> IResult<Span, ListOfActualArguments> {
-    let (s, a) = list(symbol(","), actual_argument)(s)?;
+    let (s, a) = list(symbol(","), opt(actual_argument))(s)?;
     Ok((s, ListOfActualArguments { nodes: (a,) }))
 }
 
@@ -555,7 +557,7 @@ pub(crate) fn default_nettype_value(s: Span) -> IResult<Span, DefaultNettypeValu
         keyword("tri1"),
         keyword("trior"),
         keyword("trireg"),
-        keyword("triwand"),
+        keyword("triand"),
         keyword("tri"),
         keyword("uwire"),
         keyword("wand"),

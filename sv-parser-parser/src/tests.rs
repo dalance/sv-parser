@@ -388,6 +388,11 @@ mod unit {
             r##"module a; initial begin #a.b; end endmodule"##,
             Ok((_, _))
         );
+        test!(
+            source_text,
+            r##"module a; b #( .a(a+1)) a (); endmodule"##,
+            Ok((_, _))
+        );
     }
 }
 
@@ -1780,21 +1785,21 @@ mod spec {
                 channel = {channel, channel_type'(genPkt())};"##,
             Ok((_, _))
         );
-        // TODO
+        // BNF-WA
         // $ can't be parsed because it is not constant_primary
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          Packet p;
-        //          int size;
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  Packet p;
+                  int size;
 
-        //          size = channel[0] + 4;
-        //          p = Packet'( channel[0 : size - 1] ); // convert stream to Packet
-        //          channel = channel[ size : $ ];        // update the stream so it now
-        //                                                // lacks that packet
-        //        end"##,
-        //    Ok((_, _))
-        //);
+                  size = channel[0] + 4;
+                  p = Packet'( channel[0 : size - 1] ); // convert stream to Packet
+                  channel = channel[ size : $ ];        // update the stream so it now
+                                                        // lacks that packet
+                end"##,
+            Ok((_, _))
+        );
         test!(
             source_text,
             r##"virtual class C#(parameter type T = logic, parameter SIZE = 1);
@@ -2380,37 +2385,37 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        // TODO
+        // BNF-WA
         // $ can't be parsed because it is not constant_primary
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          int q[$] = { 2, 4, 8 };
-        //          int e, pos;
-        //          // assignment                    // method call yielding the
-        //          //                               // same value in variable q
-        //          // ----------------------------- // -------------------------
-        //          q = { q, 6 };                    // q.push_back(6)
-        //          q = { e, q };                    // q.push_front(e)
-        //          q = q[1:$];                      // void'(q.pop_front()) or q.delete(0)
-        //          q = q[0:$-1];                    // void'(q.pop_back()) or
-        //                                           // q.delete(q.size-1)
-        //          q = { q[0:pos-1], e, q[pos:$] }; // q.insert(pos, e)
-        //          q = { q[0:pos], e, q[pos+1:$] }; // q.insert(pos+1, e)
-        //          q = {};                          // q.delete()
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        // TODO
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  int q[$] = { 2, 4, 8 };
+                  int e, pos;
+                  // assignment                    // method call yielding the
+                  //                               // same value in variable q
+                  // ----------------------------- // -------------------------
+                  q = { q, 6 };                    // q.push_back(6)
+                  q = { e, q };                    // q.push_front(e)
+                  q = q[1:$];                      // void'(q.pop_front()) or q.delete(0)
+                  q = q[0:$-1];                    // void'(q.pop_back()) or
+                                                   // q.delete(q.size-1)
+                  q = { q[0:pos-1], e, q[pos:$] }; // q.insert(pos, e)
+                  q = { q[0:pos], e, q[pos+1:$] }; // q.insert(pos+1, e)
+                  q = {};                          // q.delete()
+                end"##,
+            Ok((_, _))
+        );
+        // BNF-WA
         // $ can't be parsed because it is not constant_primary
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          q = q[2:$];   // a new queue lacking the first two items
-        //          q = q[1:$-1]; // a new queue lacking the first and last items
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  q = q[2:$];   // a new queue lacking the first two items
+                  q = q[1:$-1]; // a new queue lacking the first and last items
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -5009,41 +5014,41 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        // TODO
+        // BNF-WA
         // $ can't be parsed because it is not constant_primary
-        //test!(
-        //    many1(module_item),
-        //    r##"byte stream[$]; // byte stream
+        test!(
+            many1(module_item),
+            r##"byte stream[$]; // byte stream
 
-        //        class Packet;
-        //          rand int header;
-        //          rand int len;
-        //          rand byte payload[];
-        //          int crc;
+                class Packet;
+                  rand int header;
+                  rand int len;
+                  rand byte payload[];
+                  int crc;
 
-        //          constraint G { len > 1; payload.size == len ; }
+                  constraint G { len > 1; payload.size == len ; }
 
-        //          function void post_randomize; crc = payload.sum; endfunction
-        //        endclass
+                  function void post_randomize; crc = payload.sum; endfunction
+                endclass
 
-        //        initial begin
-        //          send: begin // Create random packet and transmit
-        //            byte q[$];
-        //            Packet p = new;
-        //            void'(p.randomize());
-        //            q = {<< byte{p.header, p.len, p.payload, p.crc}}; // pack
-        //            stream = {stream, q};                             // append to stream
-        //          end
+                initial begin
+                  send: begin // Create random packet and transmit
+                    byte q[$];
+                    Packet p = new;
+                    void'(p.randomize());
+                    q = {<< byte{p.header, p.len, p.payload, p.crc}}; // pack
+                    stream = {stream, q};                             // append to stream
+                  end
 
-        //          receive: begin // Receive packet, unpack, and remove
-        //            byte q[$];
-        //            Packet p = new;
-        //            {<< byte{ p.header, p.len, p.payload with [0 +: p.len], p.crc }} = stream;
-        //            stream = stream[ $bits(p) / 8 : $ ]; // remove packet
-        //          end
-        //        end"##,
-        //    Ok((_, _))
-        //);
+                  receive: begin // Receive packet, unpack, and remove
+                    byte q[$];
+                    Packet p = new;
+                    {<< byte{ p.header, p.len, p.payload with [0 +: p.len], p.crc }} = stream;
+                    stream = stream[ $bits(p) / 8 : $ ]; // remove packet
+                  end
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin
@@ -15848,7 +15853,7 @@ mod spec {
 fn debug() {
     test!(
         source_text,
-        r##"module a; initial begin #a.b; end endmodule"##,
+        r##"module a; b #( .a(a+1)) a (); endmodule"##,
         Ok((_, _))
     );
     nom_tracable::cumulative_histogram();

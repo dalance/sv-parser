@@ -183,10 +183,10 @@ pub(crate) fn constant_param_expression(s: Span) -> IResult<Span, ConstantParamE
 #[packrat_parser]
 pub(crate) fn param_expression(s: Span) -> IResult<Span, ParamExpression> {
     alt((
-        map(data_type, |x| ParamExpression::DataType(Box::new(x))),
-        map(mintypmax_expression, |x| {
+        map(terminated(mintypmax_expression, peek(none_of("#"))), |x| {
             ParamExpression::MintypmaxExpression(Box::new(x))
         }),
+        map(data_type, |x| ParamExpression::DataType(Box::new(x))),
         map(symbol("$"), |x| ParamExpression::Dollar(Box::new(x))),
     ))(s)
 }

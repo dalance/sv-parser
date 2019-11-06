@@ -22,6 +22,8 @@ pub enum ErrorKind {
     DefineArgNotFound(String),
     #[fail(display = "Define not found: {}", _0)]
     DefineNotFound(String),
+    #[fail(display = "Define must have argument")]
+    DefineNoArgs,
 }
 
 // -----------------------------------------------------------------------------

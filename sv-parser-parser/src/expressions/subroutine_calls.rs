@@ -256,7 +256,6 @@ pub(crate) fn method_call_root(s: Span) -> IResult<Span, MethodCallRoot> {
 #[packrat_parser]
 pub(crate) fn primary_method_call_root(s: Span) -> IResult<Span, Primary> {
     alt((
-        map(keyword("this"), |x| Primary::This(Box::new(x))),
         map(keyword("$"), |x| Primary::Dollar(Box::new(x))),
         map(keyword("null"), |x| Primary::Null(Box::new(x))),
         map(assignment_pattern_expression, |x| {
@@ -265,6 +264,7 @@ pub(crate) fn primary_method_call_root(s: Span) -> IResult<Span, Primary> {
         map(primary_literal, |x| Primary::PrimaryLiteral(Box::new(x))),
         map(cast, |x| Primary::Cast(Box::new(x))),
         terminated(primary_hierarchical_method_call_root, peek(none_of("("))),
+        map(keyword("this"), |x| Primary::This(Box::new(x))),
         map(empty_unpacked_array_concatenation, |x| {
             Primary::EmptyUnpackedArrayConcatenation(Box::new(x))
         }),
@@ -322,7 +322,7 @@ pub(crate) fn select_method_call_root(s: Span) -> IResult<Span, Select> {
             symbol("."),
             member_identifier,
         ),
-        peek(symbol(".")),
+        peek(one_of(".[")),
     ))(s)?;
     let (s, b) = bit_select(s)?;
     let (s, c) = opt(bracket(part_select_range))(s)?;

@@ -4,6 +4,8 @@
 
 * [Fixed] apply workaround for static class method call
 * [Fixed] randomize_call bug
+* [Fixed] parameter override by class type bug
+* [Fixed] hierarchical this bug
 
 ## [v0.3.6](https://github.com/dalance/sv-parser/compare/v0.3.5...v0.3.6) - 2019-11-05
 

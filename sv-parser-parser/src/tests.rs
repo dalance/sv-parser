@@ -363,6 +363,21 @@ mod unit {
                   b, c) text goes here"##,
             Ok((_, _))
         );
+        test!(
+            source_text,
+            r##"class A; static uvm_pool#(string,uvm_resource#(T)) m_rsc[uvm_component]; endclass"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"module a; initial begin elements.push_back(urme_container.elements[i].clone()); end endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"class a; function a b(); return this.a.b(); endfunction endclass"##,
+            Ok((_, _))
+        );
     }
 }
 
@@ -6449,34 +6464,35 @@ mod spec {
                 endclass"##,
             Ok((_, _))
         );
-        // TODO
+        // BNF-WA
+        // reported at https://accellera.mantishub.io/view.php?id=1642
         // class static method is denied because ps_or_hierarchical_tf_identifier doesn't have class_scope.
-        //test!(
-        //    many1(module_item),
-        //    r##"module top ();
-        //          logic [7:0] encoder_in;
-        //          logic [2:0] encoder_out;
-        //          logic [1:0] decoder_in;
-        //          logic [3:0] decoder_out;
+        test!(
+            many1(module_item),
+            r##"module top ();
+                  logic [7:0] encoder_in;
+                  logic [2:0] encoder_out;
+                  logic [1:0] decoder_in;
+                  logic [3:0] decoder_out;
 
-        //          // Encoder and Decoder Input Assignments
-        //          assign encoder_in = 8'b0100_0000;
-        //          assign decoder_in = 2'b11;
+                  // Encoder and Decoder Input Assignments
+                  assign encoder_in = 8'b0100_0000;
+                  assign decoder_in = 2'b11;
 
-        //          // Encoder and Decoder Function calls
-        //          assign encoder_out = C#(8)::ENCODER_f(encoder_in);
-        //          assign decoder_out = C#(4)::DECODER_f(decoder_in);
+                  // Encoder and Decoder Function calls
+                  assign encoder_out = C#(8)::ENCODER_f(encoder_in);
+                  assign decoder_out = C#(4)::DECODER_f(decoder_in);
 
-        //          initial begin
-        //            #50;
-        //            $display("Encoder input = %b Encoder output = %b\n",
-        //              encoder_in, encoder_out );
-        //            $display("Decoder input = %b Decoder output = %b\n",
-        //              decoder_in, decoder_out );
-        //          end
-        //        endmodule"##,
-        //    Ok((_, _))
-        //);
+                  initial begin
+                    #50;
+                    $display("Encoder input = %b Encoder output = %b\n",
+                      encoder_in, encoder_out );
+                    $display("Decoder input = %b Decoder output = %b\n",
+                      decoder_in, decoder_out );
+                  end
+                endmodule"##,
+            Ok((_, _))
+        );
     }
 
     #[test]
@@ -15822,7 +15838,7 @@ mod spec {
 fn debug() {
     test!(
         source_text,
-        r##"module top (); initial begin p.randomize() with { length == 1512;}; end endmodule"##,
+        r##"module a; initial begin this.a.b(); end endmodule"##,
         Ok((_, _))
     );
     nom_tracable::cumulative_histogram();

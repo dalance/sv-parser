@@ -3177,21 +3177,22 @@ mod spec {
                 bit arr[obj.q];   // illegal: local parameter is not a constant expression"##,
             Ok((_, _))
         );
-        // TODO
+        // BNF-WA
+        // reported at https://accellera.mantishub.io/view.php?id=1642
         // class static method is denied because ps_or_hierarchical_tf_identifier doesn't have class_scope.
-        //test!(
-        //    many1(module_item),
-        //    r##"class C #(int p = 1, type T = int);
-        //          extern static function T f();
-        //        endclass
+        test!(
+            many1(module_item),
+            r##"class C #(int p = 1, type T = int);
+                  extern static function T f();
+                endclass
 
-        //        function C::T C::f();
-        //          return p + C::p;
-        //        endfunction
+                function C::T C::f();
+                  return p + C::p;
+                endfunction
 
-        //        initial $display("%0d %0d", C#()::f(),C#(5)::f()); // output is "2 10""##,
-        //    Ok((_, _))
-        //);
+                initial $display("%0d %0d", C#()::f(),C#(5)::f()); // output is "2 10""##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"interface class A;

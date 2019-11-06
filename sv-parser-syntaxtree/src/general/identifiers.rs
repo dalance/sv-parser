@@ -392,7 +392,10 @@ pub enum PsOrHierarchicalTfIdentifier {
 
 #[derive(Clone, Debug, PartialEq, Node)]
 pub struct PsOrHierarchicalTfIdentifierPackageScope {
-    pub nodes: (Option<PackageScope>, TfIdentifier),
+    pub nodes: (
+        Option<ImplicitClassHandleOrClassScopeOrPackageScope>,
+        TfIdentifier,
+    ),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]

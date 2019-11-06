@@ -2,6 +2,7 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.3.6...Unreleased) - ReleaseDate
 
+* [Fixed] apply workaround for static class method call
 * [Fixed] randomize_call bug
 
 ## [v0.3.6](https://github.com/dalance/sv-parser/compare/v0.3.5...v0.3.6) - 2019-11-05

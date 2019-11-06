@@ -595,7 +595,10 @@ pub(crate) fn ps_or_hierarchical_tf_identifier(
 pub(crate) fn ps_or_hierarchical_tf_identifier_package_scope(
     s: Span,
 ) -> IResult<Span, PsOrHierarchicalTfIdentifier> {
-    let (s, a) = opt(package_scope)(s)?;
+    // BNF-WA
+    // reported at https://accellera.mantishub.io/view.php?id=1642
+    //let (s, a) = opt(package_scope)(s)?;
+    let (s, a) = opt(implicit_class_handle_or_class_scope_or_package_scope)(s)?;
     let (s, b) = tf_identifier(s)?;
     Ok((
         s,

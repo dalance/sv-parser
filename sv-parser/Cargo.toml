@@ -35,5 +35,5 @@ structopt = "0.3.2"
 criterion = "0.3"
 
 [[bench]]
-name = "parse_sv"
+name = "parse_sv_criterion"
 harness = false

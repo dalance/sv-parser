@@ -349,7 +349,7 @@ pub struct PsOrHierarchicalNetIdentifierPackageScope {
 
 #[derive(Clone, Debug, PartialEq, Node)]
 pub struct PsOrHierarchicalNetIdentifierHierarchical {
-    pub nodes: (HierarchicalNetIdentifier),
+    pub nodes: (HierarchicalNetIdentifier,),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]
@@ -365,7 +365,7 @@ pub struct PsOrHierarchicalPropertyIdentifierPackageScope {
 
 #[derive(Clone, Debug, PartialEq, Node)]
 pub struct PsOrHierarchicalPropertyIdentifierHierarchical {
-    pub nodes: (HierarchicalPropertyIdentifier),
+    pub nodes: (HierarchicalPropertyIdentifier,),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]
@@ -381,7 +381,7 @@ pub struct PsOrHierarchicalSequenceIdentifierPackageScope {
 
 #[derive(Clone, Debug, PartialEq, Node)]
 pub struct PsOrHierarchicalSequenceIdentifierHierarchical {
-    pub nodes: (HierarchicalSequenceIdentifier),
+    pub nodes: (HierarchicalSequenceIdentifier,),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]
@@ -400,7 +400,7 @@ pub struct PsOrHierarchicalTfIdentifierPackageScope {
 
 #[derive(Clone, Debug, PartialEq, Node)]
 pub struct PsOrHierarchicalTfIdentifierHierarchical {
-    pub nodes: (HierarchicalTfIdentifier),
+    pub nodes: (HierarchicalTfIdentifier,),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]

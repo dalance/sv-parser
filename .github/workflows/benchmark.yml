@@ -23,7 +23,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v1
     - name: Run benchmark
-      run: cargo +nightly test | tee output.txt
+      run: cargo +nightly bench | tee output.txt
     - name: Fetch gh-pages for avoiding conflict
       run: git fetch 'https://dalance:${{ secrets.GITHUB_TOKEN }}@github.com/dalance/sv-parser.git' gh-pages:gh-pages
     - name: Store benchmark result

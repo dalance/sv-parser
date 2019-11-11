@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        rust: [stable]
+        rust: [nightly]
 
     runs-on: ${{ matrix.os }}
 

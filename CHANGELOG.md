@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.3.7...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.0...Unreleased) - ReleaseDate
+
+## [v0.4.0](https://github.com/dalance/sv-parser/compare/v0.3.7...v0.4.0) - 2019-11-12
 
 * [Changed] origin of define to optional
 

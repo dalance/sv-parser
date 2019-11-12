@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1573454640660,
+  "lastUpdate": 1573554601131,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -35,6 +35,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 31250741,
             "range": "+/- 4,593,208",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "e20d42b1dbd9417f9a6d8db7a40e185382f181a7",
+          "message": "Change origin of define to optional",
+          "timestamp": "2019-11-12T19:05:38+09:00",
+          "tree_id": "8d9d85379180b567def478f15a510ca0eca08bdf",
+          "url": "https://github.com/dalance/sv-parser/commit/e20d42b1dbd9417f9a6d8db7a40e185382f181a7"
+        },
+        "date": 1573554601104,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 27095047,
+            "range": "+/- 3,579,479",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 27595277,
+            "range": "+/- 3,707,259",
             "unit": "ns/iter"
           }
         ]

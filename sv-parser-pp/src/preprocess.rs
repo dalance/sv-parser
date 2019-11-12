@@ -22,8 +22,7 @@ pub struct PreprocessedText {
 #[derive(Debug)]
 pub struct Origin {
     range: Range,
-    origin_path: PathBuf,
-    origin_range: Range,
+    origin: Option<(PathBuf, Range)>,
 }
 
 impl PreprocessedText {
@@ -34,16 +33,19 @@ impl PreprocessedText {
         }
     }
 
-    fn push<T: AsRef<Path>>(&mut self, s: &str, origin_path: T, origin_range: Range) {
+    fn push<T: AsRef<Path>>(&mut self, s: &str, origin: Option<(T, Range)>) {
         let base = self.text.len();
         self.text.push_str(s);
 
-        let range = Range::new(base, base + s.len());
-        let origin = Origin {
-            range,
-            origin_path: PathBuf::from(origin_path.as_ref()),
-            origin_range,
+        let origin = if let Some((origin_path, origin_range)) = origin {
+            let origin_path = PathBuf::from(origin_path.as_ref());
+            Some((origin_path, origin_range))
+        } else {
+            None
         };
+
+        let range = Range::new(base, base + s.len());
+        let origin = Origin { range, origin };
         self.origins.insert(range, origin);
     }
 
@@ -64,8 +66,12 @@ impl PreprocessedText {
     pub fn origin(&self, pos: usize) -> Option<(&PathBuf, usize)> {
         let origin = self.origins.get(&Range::new(pos, pos + 1));
         if let Some(origin) = origin {
-            let ret_pos = pos - origin.range.begin + origin.origin_range.begin;
-            Some((&origin.origin_path, ret_pos))
+            if let Some((ref origin_path, ref origin_range)) = origin.origin {
+                let ret_pos = pos - origin.range.begin + origin_range.begin;
+                Some((&origin_path, ret_pos))
+            } else {
+                None
+            }
         } else {
             None
         }
@@ -76,8 +82,33 @@ impl PreprocessedText {
 pub struct Define {
     identifier: String,
     arguments: Vec<(String, Option<String>)>,
-    text: Option<(String, Range)>,
-    path: PathBuf,
+    text: Option<DefineText>,
+}
+
+#[derive(Clone, Debug)]
+pub struct DefineText {
+    text: String,
+    origin: Option<(PathBuf, Range)>,
+}
+
+impl Define {
+    pub fn new(
+        ident: String,
+        args: Vec<(String, Option<String>)>,
+        text: Option<DefineText>,
+    ) -> Self {
+        Define {
+            identifier: ident,
+            arguments: args,
+            text,
+        }
+    }
+}
+
+impl DefineText {
+    pub fn new(text: String, origin: Option<(PathBuf, Range)>) -> Self {
+        DefineText { text, origin }
+    }
 }
 
 pub type Defines = HashMap<String, Option<Define>>;
@@ -159,24 +190,24 @@ fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
             NodeEvent::Enter(RefNode::SourceDescriptionNotDirective(x)) if !skip => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
-                ret.push(locate.str(&s), path.as_ref(), range);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
             }
             NodeEvent::Enter(RefNode::SourceDescription(SourceDescription::StringLiteral(x)))
                 if !skip =>
             {
                 let locate: Locate = (&**x).try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
-                ret.push(locate.str(&s), path.as_ref(), range);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
             }
             NodeEvent::Enter(RefNode::KeywordsDirective(x)) if !skip => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
-                ret.push(locate.str(&s), path.as_ref(), range);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
             }
             NodeEvent::Enter(RefNode::EndkeywordsDirective(x)) if !skip => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
-                ret.push(locate.str(&s), path.as_ref(), range);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
             }
             NodeEvent::Enter(RefNode::IfdefDirective(x)) if !skip => {
                 let (_, _, ref ifid, ref ifbody, ref elsif, ref elsebody, _, _) = x.nodes;
@@ -266,7 +297,10 @@ fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                     let text: Locate = text.try_into().unwrap();
                     let range = Range::new(text.offset, text.offset + text.len);
                     let text = String::from(text.str(&s));
-                    Some((text, range))
+                    Some(DefineText {
+                        text,
+                        origin: Some((PathBuf::from(path.as_ref()), range)),
+                    })
                 } else {
                     None
                 };
@@ -275,7 +309,6 @@ fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                     identifier: id.clone(),
                     arguments: define_args,
                     text: define_text,
-                    path: PathBuf::from(path.as_ref()),
                 };
 
                 defines.insert(id, Some(define));
@@ -297,7 +330,7 @@ fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                     IncludeCompilerDirective::TextMacroUsage(x) => {
                         let (_, _, ref x) = x.nodes;
                         skip_nodes.push(x.into());
-                        if let Some((p, _, _, _)) =
+                        if let Some((p, _, _)) =
                             resolve_text_macro_usage(x, s, path.as_ref(), &defines, include_paths)?
                         {
                             let p = p.trim().trim_matches('"');
@@ -324,10 +357,10 @@ fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                 ret.merge(include);
             }
             NodeEvent::Enter(RefNode::TextMacroUsage(x)) if !skip => {
-                if let Some((text, path, range, new_defines)) =
+                if let Some((text, origin, new_defines)) =
                     resolve_text_macro_usage(x, s, path.as_ref(), &defines, include_paths)?
                 {
-                    ret.push(&text, path, range);
+                    ret.push(&text, origin);
                     defines = new_defines;
                 }
             }
@@ -402,7 +435,7 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
     path: T,
     defines: &Defines,
     include_paths: &[U],
-) -> Result<Option<(String, PathBuf, Range, Defines)>, Error> {
+) -> Result<Option<(String, Option<(PathBuf, Range)>, Defines)>, Error> {
     let (_, ref name, ref args) = x.nodes;
     let id = identifier((&name.nodes.0).into(), &s).unwrap();
 
@@ -451,9 +484,9 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
             arg_map.insert(String::from(arg), value);
         }
 
-        if let Some((ref text, ref range)) = define.text {
+        if let Some(ref text) = define.text {
             let mut replaced = String::from("");
-            for text in split_text(&text) {
+            for text in split_text(&text.text) {
                 if let Some(value) = arg_map.get(&text) {
                     replaced.push_str(*value);
                 } else {
@@ -475,8 +508,7 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
                 preprocess_str(&replaced, path.as_ref(), &defines, include_paths)?;
             Ok(Some((
                 String::from(replaced.text()),
-                define.path.clone(),
-                *range,
+                text.origin.clone(),
                 new_defines,
             )))
         } else {

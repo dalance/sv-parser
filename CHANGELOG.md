@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.3.7...Unreleased) - ReleaseDate
+
+* [Changed] origin of define to optional
+
 ## [v0.3.7](https://github.com/dalance/sv-parser/compare/v0.3.6...v0.3.7) - 2019-11-06
 
 * [Fixed] apply workaround for static class method call

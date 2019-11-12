@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1573557128903,
+  "lastUpdate": 1573557950768,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -107,6 +107,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 31218410,
             "range": "+/- 2,176,989",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "f3da223becfc9a55fb5b646f51b97e00e5864d62",
+          "message": "Re-export DefineText",
+          "timestamp": "2019-11-12T20:01:08+09:00",
+          "tree_id": "8951443d9449ed2e1ef2003dee6785d400946387",
+          "url": "https://github.com/dalance/sv-parser/commit/f3da223becfc9a55fb5b646f51b97e00e5864d62"
+        },
+        "date": 1573557950739,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 28609769,
+            "range": "+/- 3,362,579",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 29092715,
+            "range": "+/- 3,532,838",
             "unit": "ns/iter"
           }
         ]

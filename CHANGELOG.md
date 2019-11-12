@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.1...Unreleased) - ReleaseDate
 
+* [Added] re-export DefineText
+
 ## [v0.4.1](https://github.com/dalance/sv-parser/compare/v0.4.0...v0.4.1) - 2019-11-12
 
 ## [v0.4.0](https://github.com/dalance/sv-parser/compare/v0.3.7...v0.4.0) - 2019-11-12

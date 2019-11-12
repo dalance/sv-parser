@@ -33,4 +33,4 @@ jobs:
         tool: 'cargo'
         output-file-path: output.txt
     - name: Push benchmark result
-      run: git push 'https://dalance:${{ secrets.GITHUB_TOKEN }}@github.com/dalance/sv-parser.git' gh-pages:gh-pages
+      run: git push 'https://x-access-token:${{ secrets.PERSONAL_TOKEN }}@github.com/dalance/sv-parser.git' gh-pages:gh-pages

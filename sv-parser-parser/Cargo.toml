@@ -1,6 +1,6 @@
 [package]
 name = "sv-parser-parser"
-version = "0.4.0"
+version = "0.4.1"
 authors = ["dalance@gmail.com"]
 repository = "https://github.com/dalance/sv-parser"
 keywords = ["parser", "verilog", "systemverilog"]

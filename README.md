@@ -5,6 +5,10 @@ SystemVerilog parser library fully complient with [IEEE 1800-2017](https://stand
 [![Crates.io](https://img.shields.io/crates/v/sv-parser.svg)](https://crates.io/crates/sv-parser)
 [![Docs.rs](https://docs.rs/sv-parser/badge.svg)](https://docs.rs/sv-parser)
 
+## Tools using sv-parser
+
+* [svlint](https://github.com/dalance/svlint): SystemVerilog linter
+
 ## Usage
 
 ```Cargo.toml

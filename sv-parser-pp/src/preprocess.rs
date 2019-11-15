@@ -127,7 +127,7 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
     preprocess_str(&s, path, pre_defines, include_paths)
 }
 
-fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
+pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
     s: &str,
     path: T,
     pre_defines: &Defines,

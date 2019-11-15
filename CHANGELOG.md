@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.2...Unreleased) - ReleaseDate
 
+* [Added] parse_sv_str/parse_lib_str
+
 ## [v0.4.2](https://github.com/dalance/sv-parser/compare/v0.4.1...v0.4.2) - 2019-11-12
 
 * [Added] re-export DefineText

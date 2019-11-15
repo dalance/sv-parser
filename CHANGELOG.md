@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.2...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.3...Unreleased) - ReleaseDate
+
+## [v0.4.3](https://github.com/dalance/sv-parser/compare/v0.4.2...v0.4.3) - 2019-11-15
 
 * [Added] parse_sv_str/parse_lib_str
 

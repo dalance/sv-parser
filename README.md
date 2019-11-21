@@ -8,6 +8,7 @@ SystemVerilog parser library fully complient with [IEEE 1800-2017](https://stand
 ## Tools using sv-parser
 
 * [svlint](https://github.com/dalance/svlint): SystemVerilog linter
+* [svls](https://github.com/dalance/svls): SystemVerilog language server
 
 ## Usage
 

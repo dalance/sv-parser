@@ -176,9 +176,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
             }
         }
         match n {
-            NodeEvent::Enter(RefNode::ResetallCompilerDirective(_)) if !skip => {
-                defines.clear();
-            }
+            NodeEvent::Enter(RefNode::ResetallCompilerDirective(_)) if !skip => {}
             NodeEvent::Enter(RefNode::UndefineCompilerDirective(x)) if !skip => {
                 let (_, _, ref name) = x.nodes;
                 let id = identifier((&name.nodes.0).into(), &s).unwrap();

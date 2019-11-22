@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1574338978586,
+  "lastUpdate": 1574421352146,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -359,6 +359,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 29134153,
             "range": "+/- 3,055,358",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "7b54b36c8c98d0316a1004711fd312af15b5e7e3",
+          "message": "Fix resetall wrongly clear define list",
+          "timestamp": "2019-11-22T19:51:20+09:00",
+          "tree_id": "9de6c38002ec64e13b5b129dffcbde794425511b",
+          "url": "https://github.com/dalance/sv-parser/commit/7b54b36c8c98d0316a1004711fd312af15b5e7e3"
+        },
+        "date": 1574421351988,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 28145954,
+            "range": "+/- 3,090,278",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 29357252,
+            "range": "+/- 3,433,190",
             "unit": "ns/iter"
           }
         ]

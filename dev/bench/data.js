@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1574422631564,
+  "lastUpdate": 1574936377049,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -431,6 +431,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 29385229,
             "range": "+/- 2,929,281",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "048e39755f001cf1db9369d927c101f853b69bdc",
+          "message": "Fix wrong space at define macro usage",
+          "timestamp": "2019-11-28T18:55:26+09:00",
+          "tree_id": "4798b839a794e8396e4fb94528610666542b0511",
+          "url": "https://github.com/dalance/sv-parser/commit/048e39755f001cf1db9369d927c101f853b69bdc"
+        },
+        "date": 1574936376864,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 28800666,
+            "range": "+/- 1,846,407",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 29181216,
+            "range": "+/- 1,968,261",
             "unit": "ns/iter"
           }
         ]

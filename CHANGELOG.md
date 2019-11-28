@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.4...Unreleased) - ReleaseDate
 
+* [Fix] wrong space at define macro usage
+
 ## [v0.4.4](https://github.com/dalance/sv-parser/compare/v0.4.3...v0.4.4) - 2019-11-22
 
 * [Fix] \`resetall wrongly clear define list

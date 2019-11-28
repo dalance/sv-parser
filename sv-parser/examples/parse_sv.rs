@@ -6,6 +6,7 @@ use std::{cmp, process};
 use structopt::StructOpt;
 use sv_parser::parse_sv;
 use sv_parser_error::ErrorKind;
+use sv_parser_pp::preprocess::preprocess;
 
 #[derive(StructOpt)]
 struct Opt {
@@ -19,6 +20,10 @@ struct Opt {
     #[structopt(short = "t", long = "tree")]
     pub tree: bool,
 
+    /// Show preprocesed text
+    #[structopt(short = "p", long = "pp")]
+    pub pp: bool,
+
     /// Quiet
     #[structopt(short = "q", long = "quiet")]
     pub quiet: bool,
@@ -29,27 +34,37 @@ fn main() {
     let mut defines = HashMap::new();
     let mut exit = 0;
     for path in &opt.files {
-        match parse_sv(&path, &defines, &opt.includes) {
-            Ok((syntax_tree, new_defines)) => {
-                if opt.tree {
-                    println!("{}", syntax_tree);
+        if opt.pp {
+            match preprocess(&path, &defines, &opt.includes) {
+                Ok((preprocessed_text, new_defines)) => {
+                    println!("{}", preprocessed_text.text());
+                    defines = new_defines;
                 }
-                defines = new_defines;
-                if !opt.quiet {
-                    println!("parse succeeded: {:?}", path);
-                }
+                _ => (),
             }
-            Err(x) => {
-                match x.kind() {
-                    ErrorKind::Parse(Some((origin_path, origin_pos))) => {
-                        println!("parse failed: {:?}", path);
-                        print_parse_error(origin_path, origin_pos);
+        } else {
+            match parse_sv(&path, &defines, &opt.includes) {
+                Ok((syntax_tree, new_defines)) => {
+                    if opt.tree {
+                        println!("{}", syntax_tree);
                     }
-                    x => {
-                        println!("parse failed: {:?} ({})", path, x);
+                    defines = new_defines;
+                    if !opt.quiet {
+                        println!("parse succeeded: {:?}", path);
                     }
                 }
-                exit = 1;
+                Err(x) => {
+                    match x.kind() {
+                        ErrorKind::Parse(Some((origin_path, origin_pos))) => {
+                            println!("parse failed: {:?}", path);
+                            print_parse_error(origin_path, origin_pos);
+                        }
+                        x => {
+                            println!("parse failed: {:?} ({})", path, x);
+                        }
+                    }
+                    exit = 1;
+                }
             }
         }
     }

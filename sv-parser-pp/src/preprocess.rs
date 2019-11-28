@@ -501,6 +501,8 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
             }
             // separator is required
             replaced.push_str(" ");
+            // remove leading whitespace
+            replaced = String::from(replaced.trim_start());
 
             let (replaced, new_defines) =
                 preprocess_str(&replaced, path.as_ref(), &defines, include_paths)?;
@@ -614,7 +616,7 @@ endmodule
 
 module a ();
 
-     assign a_0__x = a[0].x;   assign a_0__y = a[0].y;    assign a_1__x = a[1].x;   assign a_1__y = a[1].y; endmodule
+  assign a_0__x = a[0].x;   assign a_0__y = a[0].y; assign a_1__x = a[1].x;   assign a_1__y = a[1].y; endmodule
 "##
         );
     }
@@ -628,7 +630,7 @@ module a ();
             r##"
 module a ();
 
-     always @(posedge clk) begin         if (!(!(a[i].b && c[i]))) begin             $display ("xxx(()[]]{}}}", a[i].b, c[i])
+always @(posedge clk) begin         if (!(!(a[i].b && c[i]))) begin             $display ("xxx(()[]]{}}}", a[i].b, c[i])
 ;         end     end  ;
 
 endmodule
@@ -648,8 +650,8 @@ endmodule
 
 initial begin
 $display("`HI, world");
-$display( "`HI, world" );
-$display( "Hello, x" );
+$display("`HI, world" );
+$display("Hello, x" );
 end
 endmodule
 "##
@@ -666,7 +668,7 @@ endmodule
 
 module a;
 initial begin
-$display( "left side: \"right side\"" );
+$display("left side: \"right side\"" );
 end
 endmodule
 "##

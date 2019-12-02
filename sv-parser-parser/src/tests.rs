@@ -393,6 +393,11 @@ mod unit {
             r##"module a; b #( .a(a+1)) a (); endmodule"##,
             Ok((_, _))
         );
+        test!(
+            source_text,
+            r##"module A; always begin a[ a_a[i] ].b <= c; end endmodule"##,
+            Ok((_, _))
+        );
     }
 }
 
@@ -15853,7 +15858,7 @@ mod spec {
 fn debug() {
     test!(
         source_text,
-        r##"module a; b #( .a(a+1)) a (); endmodule"##,
+        r##"module A; always begin a[ a_a[i] ].b <= c; end endmodule"##,
         Ok((_, _))
     );
     nom_tracable::cumulative_histogram();

@@ -20,7 +20,7 @@ pub(crate) fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
         }),
         constant_primary_mintypmax_expression,
         map(
-            terminated(constant_function_call, peek(not(one_of("[")))),
+            terminated(constant_function_call, peek(not(one_of("[.")))),
             |x| ConstantPrimary::ConstantFunctionCall(Box::new(x)),
         ),
         constant_primary_ps_parameter,

@@ -493,9 +493,9 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
                             .replace("``", "")
                             .replace("`\\`\"", "\\\"")
                             .replace("`\"", "\"")
-                            .replace("\\\n", "")
-                            .replace("\\\r\n", "")
-                            .replace("\\\r", ""),
+                            .replace("\\\n", "\n")
+                            .replace("\\\r\n", "\r\n")
+                            .replace("\\\r", "\r"),
                     );
                 }
             }
@@ -616,7 +616,9 @@ endmodule
 
 module a ();
 
-  assign a_0__x = a[0].x;   assign a_0__y = a[0].y; assign a_1__x = a[1].x;   assign a_1__y = a[1].y; endmodule
+  assign a_0__x = a[0].x; 
+  assign a_0__y = a[0].y; assign a_1__x = a[1].x; 
+  assign a_1__y = a[1].y; endmodule
 "##
         );
     }
@@ -630,8 +632,13 @@ module a ();
             r##"
 module a ();
 
-always @(posedge clk) begin         if (!(!(a[i].b && c[i]))) begin             $display ("xxx(()[]]{}}}", a[i].b, c[i])
-;         end     end  ;
+always @(posedge clk) begin 
+        if (!(!(a[i].b && c[i]))) begin 
+            $display ("xxx(()[]]{}}}", a[i].b, c[i])
+; 
+        end 
+    end 
+ ;
 
 endmodule
 "##

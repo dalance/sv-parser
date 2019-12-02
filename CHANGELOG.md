@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.5...Unreleased) - ReleaseDate
 
+* [Fix] wrong linebreak at define macro usage
+
 ## [v0.4.5](https://github.com/dalance/sv-parser/compare/v0.4.4...v0.4.5) - 2019-11-28
 
 * [Fix] wrong space at define macro usage

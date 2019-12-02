@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.5...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.6...Unreleased) - ReleaseDate
+
+## [v0.4.6](https://github.com/dalance/sv-parser/compare/v0.4.5...v0.4.6) - 2019-12-02
 
 * [Fix] constant_bit_select
 * [Fix] wrong linebreak at define macro usage

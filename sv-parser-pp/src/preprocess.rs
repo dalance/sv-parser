@@ -124,7 +124,7 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
     let mut s = String::new();
     reader.read_to_string(&mut s)?;
 
-    preprocess_str(&s, path, pre_defines, include_paths)
+    preprocess_str(&s, path, pre_defines, include_paths, vec![])
 }
 
 pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
@@ -132,6 +132,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
     path: T,
     pre_defines: &Defines,
     include_paths: &[U],
+    resolved_defines: Vec<String>,
 ) -> Result<(PreprocessedText, Defines), Error> {
     let mut skip = false;
     let mut skip_nodes = vec![];
@@ -328,9 +329,14 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                     IncludeCompilerDirective::TextMacroUsage(x) => {
                         let (_, _, ref x) = x.nodes;
                         skip_nodes.push(x.into());
-                        if let Some((p, _, _)) =
-                            resolve_text_macro_usage(x, s, path.as_ref(), &defines, include_paths)?
-                        {
+                        if let Some((p, _, _)) = resolve_text_macro_usage(
+                            x,
+                            s,
+                            path.as_ref(),
+                            &defines,
+                            include_paths,
+                            resolved_defines.clone(),
+                        )? {
                             let p = p.trim().trim_matches('"');
                             PathBuf::from(p)
                         } else {
@@ -355,9 +361,14 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                 ret.merge(include);
             }
             NodeEvent::Enter(RefNode::TextMacroUsage(x)) if !skip => {
-                if let Some((text, origin, new_defines)) =
-                    resolve_text_macro_usage(x, s, path.as_ref(), &defines, include_paths)?
-                {
+                if let Some((text, origin, new_defines)) = resolve_text_macro_usage(
+                    x,
+                    s,
+                    path.as_ref(),
+                    &defines,
+                    include_paths,
+                    resolved_defines.clone(),
+                )? {
                     ret.push(&text, origin);
                     defines = new_defines;
                 }
@@ -433,9 +444,15 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
     path: T,
     defines: &Defines,
     include_paths: &[U],
+    mut resolved_defines: Vec<String>,
 ) -> Result<Option<(String, Option<(PathBuf, Range)>, Defines)>, Error> {
     let (_, ref name, ref args) = x.nodes;
     let id = identifier((&name.nodes.0).into(), &s).unwrap();
+
+    if resolved_defines.contains(&id) {
+        return Err(ErrorKind::DefineRecursive(id).into());
+    }
+    resolved_defines.push(id.clone());
 
     let mut actual_args = Vec::new();
     let no_args = args.is_none();
@@ -504,8 +521,13 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
             // remove leading whitespace
             replaced = String::from(replaced.trim_start());
 
-            let (replaced, new_defines) =
-                preprocess_str(&replaced, path.as_ref(), &defines, include_paths)?;
+            let (replaced, new_defines) = preprocess_str(
+                &replaced,
+                path.as_ref(),
+                &defines,
+                include_paths,
+                resolved_defines,
+            )?;
             Ok(Some((
                 String::from(replaced.text()),
                 text.origin.clone(),
@@ -679,6 +701,24 @@ $display("left side: \"right side\"" );
 end
 endmodule
 "##
+        );
+    }
+
+    #[test]
+    fn test7() {
+        let ret = preprocess(get_testcase("test7.sv"), &HashMap::new(), &[] as &[String]);
+        assert_eq!(
+            format!("{:?}", ret),
+            "Err(Error { inner: \n\nRecursive define is detected: a })"
+        );
+    }
+
+    #[test]
+    fn test8() {
+        let ret = preprocess(get_testcase("test8.sv"), &HashMap::new(), &[] as &[String]);
+        assert_eq!(
+            format!("{:?}", ret),
+            "Err(Error { inner: \n\nRecursive define is detected: b })"
         );
     }
 }

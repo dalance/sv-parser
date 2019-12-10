@@ -2,18 +2,20 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.6...Unreleased) - ReleaseDate
 
+* [Added] recursive define detection
+
 ## [v0.4.6](https://github.com/dalance/sv-parser/compare/v0.4.5...v0.4.6) - 2019-12-02
 
-* [Fix] constant_bit_select
-* [Fix] wrong linebreak at define macro usage
+* [Fixed] constant_bit_select
+* [Fixed] wrong linebreak at define macro usage
 
 ## [v0.4.5](https://github.com/dalance/sv-parser/compare/v0.4.4...v0.4.5) - 2019-11-28
 
-* [Fix] wrong space at define macro usage
+* [Fixed] wrong space at define macro usage
 
 ## [v0.4.4](https://github.com/dalance/sv-parser/compare/v0.4.3...v0.4.4) - 2019-11-22
 
-* [Fix] \`resetall wrongly clear define list
+* [Fixed] \`resetall wrongly clear define list
 
 ## [v0.4.3](https://github.com/dalance/sv-parser/compare/v0.4.2...v0.4.3) - 2019-11-15
 

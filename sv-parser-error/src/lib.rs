@@ -24,6 +24,8 @@ pub enum ErrorKind {
     DefineNotFound(String),
     #[fail(display = "Define must have argument")]
     DefineNoArgs,
+    #[fail(display = "Recursive define is detected: {}", _0)]
+    DefineRecursive(String),
 }
 
 // -----------------------------------------------------------------------------

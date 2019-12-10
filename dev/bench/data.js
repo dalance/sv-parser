@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1575257374842,
+  "lastUpdate": 1575947919211,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -575,6 +575,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 30132256,
             "range": "+/- 3,369,818",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "2ed9e552348162235d801edf4d3add4c394ce7c0",
+          "message": "Add recursive define detection",
+          "timestamp": "2019-12-10T11:54:38+09:00",
+          "tree_id": "2e262e6b5509d379db96900d87880225ac633995",
+          "url": "https://github.com/dalance/sv-parser/commit/2ed9e552348162235d801edf4d3add4c394ce7c0"
+        },
+        "date": 1575947919027,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 28547799,
+            "range": "+/- 2,016,834",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 29226192,
+            "range": "+/- 2,617,145",
             "unit": "ns/iter"
           }
         ]

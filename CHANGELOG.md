@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.6...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.7...Unreleased) - ReleaseDate
+
+## [v0.4.7](https://github.com/dalance/sv-parser/compare/v0.4.6...v0.4.7) - 2019-12-10
 
 * [Added] recursive define detection
 

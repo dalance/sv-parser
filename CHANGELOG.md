@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.7...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.8...Unreleased) - ReleaseDate
+
+## [v0.4.8](https://github.com/dalance/sv-parser/compare/v0.4.7...v0.4.8) - 2019-12-12
 
 * [Fixed] allow recursive define until limit
 

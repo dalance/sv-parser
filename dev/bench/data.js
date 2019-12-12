@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1576116861029,
+  "lastUpdate": 1576124165108,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -791,6 +791,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 28060274,
             "range": "+/- 1,911,459",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "fa4d204a68acd3a786e65ed0cee86df7f9b4a3e5",
+          "message": "Update cargo-release setting",
+          "timestamp": "2019-12-12T12:52:03+09:00",
+          "tree_id": "6acd64c3ffd335970134af76949e5143c40c1794",
+          "url": "https://github.com/dalance/sv-parser/commit/fa4d204a68acd3a786e65ed0cee86df7f9b4a3e5"
+        },
+        "date": 1576124164824,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 27764538,
+            "range": "+/- 4,151,859",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 28146783,
+            "range": "+/- 3,595,195",
             "unit": "ns/iter"
           }
         ]

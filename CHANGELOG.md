@@ -3,6 +3,7 @@
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.18...Unreleased) - ReleaseDate
 
 * [Added] include line check
+* [Fixed] resetall directive in design element
 
 ## [v0.4.18](https://github.com/dalance/sv-parser/compare/v0.4.17...v0.4.18) - 2019-12-12
 

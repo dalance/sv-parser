@@ -339,9 +339,10 @@ pub(crate) fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
             map(preceded(peek(char('/')), comment), |x| {
                 WhiteSpace::Comment(Box::new(x))
             }),
-            map(preceded(peek(char('`')), compiler_directive), |x| {
-                WhiteSpace::CompilerDirective(Box::new(x))
-            }),
+            map(
+                preceded(peek(char('`')), compiler_directive_without_resetall),
+                |x| WhiteSpace::CompilerDirective(Box::new(x)),
+            ),
         ))(s)
     }
 }

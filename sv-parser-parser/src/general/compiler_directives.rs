@@ -66,6 +66,65 @@ pub(crate) fn compiler_directive(s: Span) -> IResult<Span, CompilerDirective> {
 
 #[tracable_parser]
 #[packrat_parser]
+pub(crate) fn compiler_directive_without_resetall(s: Span) -> IResult<Span, CompilerDirective> {
+    begin_directive();
+    let ret = alt((
+        map(include_compiler_directive, |x| {
+            CompilerDirective::IncludeCompilerDirective(Box::new(x))
+        }),
+        map(text_macro_definition, |x| {
+            CompilerDirective::TextMacroDefinition(Box::new(x))
+        }),
+        map(undefine_compiler_directive, |x| {
+            CompilerDirective::UndefineCompilerDirective(Box::new(x))
+        }),
+        map(undefineall_compiler_directive, |x| {
+            CompilerDirective::UndefineallCompilerDirective(Box::new(x))
+        }),
+        map(conditional_compiler_directive, |x| {
+            CompilerDirective::ConditionalCompilerDirective(Box::new(x))
+        }),
+        map(timescale_compiler_directive, |x| {
+            CompilerDirective::TimescaleCompilerDirective(Box::new(x))
+        }),
+        map(default_nettype_compiler_directive, |x| {
+            CompilerDirective::DefaultNettypeCompilerDirective(Box::new(x))
+        }),
+        map(unconnected_drive_compiler_directive, |x| {
+            CompilerDirective::UnconnectedDriveCompilerDirective(Box::new(x))
+        }),
+        map(nounconnected_drive_compiler_directive, |x| {
+            CompilerDirective::NounconnectedDriveCompilerDirective(Box::new(x))
+        }),
+        map(celldefine_compiler_directive, |x| {
+            CompilerDirective::CelldefineDriveCompilerDirective(Box::new(x))
+        }),
+        map(endcelldefine_compiler_directive, |x| {
+            CompilerDirective::EndcelldefineDriveCompilerDirective(Box::new(x))
+        }),
+        map(pragma, |x| CompilerDirective::Pragma(Box::new(x))),
+        map(line_compiler_directive, |x| {
+            CompilerDirective::LineCompilerDirective(Box::new(x))
+        }),
+        map(position_compiler_directive, |x| {
+            CompilerDirective::PositionCompilerDirective(Box::new(x))
+        }),
+        map(keywords_directive, |x| {
+            CompilerDirective::KeywordsDirective(Box::new(x))
+        }),
+        map(endkeywords_directive, |x| {
+            CompilerDirective::EndkeywordsDirective(Box::new(x))
+        }),
+        map(text_macro_usage, |x| {
+            CompilerDirective::TextMacroUsage(Box::new(x))
+        }),
+    ))(s);
+    end_directive();
+    ret
+}
+
+#[tracable_parser]
+#[packrat_parser]
 pub(crate) fn resetall_compiler_directive(s: Span) -> IResult<Span, ResetallCompilerDirective> {
     let (s, a) = symbol("`")(s)?;
     let (s, b) = keyword("resetall")(s)?;

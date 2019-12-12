@@ -13,6 +13,7 @@ pub struct SourceText {
 
 #[derive(Clone, Debug, PartialEq, Node)]
 pub enum Description {
+    ResetallCompilerDirective(Box<ResetallCompilerDirective>),
     ModuleDeclaration(Box<ModuleDeclaration>),
     UdpDeclaration(Box<UdpDeclaration>),
     InterfaceDeclaration(Box<InterfaceDeclaration>),

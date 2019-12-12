@@ -15,6 +15,9 @@ pub(crate) fn source_text(s: Span) -> IResult<Span, SourceText> {
 #[packrat_parser]
 pub(crate) fn description(s: Span) -> IResult<Span, Description> {
     alt((
+        map(resetall_compiler_directive, |x| {
+            Description::ResetallCompilerDirective(Box::new(x))
+        }),
         map(module_declaration, |x| {
             Description::ModuleDeclaration(Box::new(x))
         }),

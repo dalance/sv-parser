@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.7...Unreleased) - ReleaseDate
 
+* [Fixed] allow recursive define until limit
+
 ## [v0.4.7](https://github.com/dalance/sv-parser/compare/v0.4.6...v0.4.7) - 2019-12-10
 
 * [Added] recursive define detection

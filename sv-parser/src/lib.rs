@@ -130,7 +130,7 @@ pub fn parse_sv_str<T: AsRef<Path>, U: AsRef<Path>>(
     pre_defines: &HashMap<String, Option<Define>>,
     include_paths: &[U],
 ) -> Result<(SyntaxTree, Defines), Error> {
-    let (text, defines) = preprocess_str(s, path, pre_defines, include_paths, vec![])?;
+    let (text, defines) = preprocess_str(s, path, pre_defines, include_paths, 0)?;
     let span = Span::new_extra(text.text(), SpanInfo::default());
     let result = all_consuming(sv_parser)(span);
     match result {
@@ -203,7 +203,7 @@ pub fn parse_lib_str<T: AsRef<Path>, U: AsRef<Path>>(
     pre_defines: &HashMap<String, Option<Define>>,
     include_paths: &[U],
 ) -> Result<(SyntaxTree, Defines), Error> {
-    let (text, defines) = preprocess_str(s, path, pre_defines, include_paths, vec![])?;
+    let (text, defines) = preprocess_str(s, path, pre_defines, include_paths, 0)?;
     let span = Span::new_extra(text.text(), SpanInfo::default());
     let result = all_consuming(lib_parser)(span);
     match result {

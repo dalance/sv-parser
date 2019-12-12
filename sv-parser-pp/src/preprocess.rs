@@ -13,6 +13,8 @@ use sv_parser_syntaxtree::{
     IncludeCompilerDirective, Locate, NodeEvent, RefNode, SourceDescription, TextMacroUsage,
 };
 
+const RECURSIVE_LIMIT: usize = 128;
+
 #[derive(Debug)]
 pub struct PreprocessedText {
     text: String,
@@ -124,7 +126,7 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
     let mut s = String::new();
     reader.read_to_string(&mut s)?;
 
-    preprocess_str(&s, path, pre_defines, include_paths, vec![])
+    preprocess_str(&s, path, pre_defines, include_paths, 0)
 }
 
 pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
@@ -132,7 +134,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
     path: T,
     pre_defines: &Defines,
     include_paths: &[U],
-    resolved_defines: Vec<String>,
+    resolve_depth: usize,
 ) -> Result<(PreprocessedText, Defines), Error> {
     let mut skip = false;
     let mut skip_nodes = vec![];
@@ -335,7 +337,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                             path.as_ref(),
                             &defines,
                             include_paths,
-                            resolved_defines.clone(),
+                            resolve_depth + 1,
                         )? {
                             let p = p.trim().trim_matches('"');
                             PathBuf::from(p)
@@ -367,7 +369,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                     path.as_ref(),
                     &defines,
                     include_paths,
-                    resolved_defines.clone(),
+                    resolve_depth + 1,
                 )? {
                     ret.push(&text, origin);
                     defines = new_defines;
@@ -444,15 +446,14 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
     path: T,
     defines: &Defines,
     include_paths: &[U],
-    mut resolved_defines: Vec<String>,
+    resolve_depth: usize,
 ) -> Result<Option<(String, Option<(PathBuf, Range)>, Defines)>, Error> {
     let (_, ref name, ref args) = x.nodes;
     let id = identifier((&name.nodes.0).into(), &s).unwrap();
 
-    if resolved_defines.contains(&id) {
-        return Err(ErrorKind::DefineRecursive(id).into());
+    if resolve_depth > RECURSIVE_LIMIT {
+        return Err(ErrorKind::ExceedRecursiveLimit.into());
     }
-    resolved_defines.push(id.clone());
 
     let mut actual_args = Vec::new();
     let no_args = args.is_none();
@@ -526,7 +527,7 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
                 path.as_ref(),
                 &defines,
                 include_paths,
-                resolved_defines,
+                resolve_depth,
             )?;
             Ok(Some((
                 String::from(replaced.text()),
@@ -709,7 +710,7 @@ endmodule
         let ret = preprocess(get_testcase("test7.sv"), &HashMap::new(), &[] as &[String]);
         assert_eq!(
             format!("{:?}", ret),
-            "Err(Error { inner: \n\nRecursive define is detected: a })"
+            "Err(Error { inner: \n\nExceed recursive limit })"
         );
     }
 
@@ -718,7 +719,7 @@ endmodule
         let ret = preprocess(get_testcase("test8.sv"), &HashMap::new(), &[] as &[String]);
         assert_eq!(
             format!("{:?}", ret),
-            "Err(Error { inner: \n\nRecursive define is detected: b })"
+            "Err(Error { inner: \n\nExceed recursive limit })"
         );
     }
 }

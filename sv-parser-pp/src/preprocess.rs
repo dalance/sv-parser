@@ -140,6 +140,9 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
     let mut skip_nodes = vec![];
     let mut defines = HashMap::new();
 
+    let mut last_item_line = None;
+    let mut last_include_line = None;
+
     for (k, v) in pre_defines {
         defines.insert(k.clone(), (*v).clone());
     }
@@ -177,6 +180,33 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                     skip = false;
                 }
             }
+        }
+        match n.clone() {
+            NodeEvent::Enter(RefNode::SourceDescriptionNotDirective(x)) => {
+                let locate: Locate = x.try_into().unwrap();
+                if let Some(last_include_line) = last_include_line {
+                    if last_include_line == locate.line {
+                        return Err(ErrorKind::IncludeLine.into());
+                    }
+                }
+            }
+            NodeEvent::Enter(RefNode::CompilerDirective(x)) => {
+                let locate: Locate = x.try_into().unwrap();
+                if let Some(last_include_line) = last_include_line {
+                    if last_include_line == locate.line {
+                        return Err(ErrorKind::IncludeLine.into());
+                    }
+                }
+            }
+            NodeEvent::Leave(RefNode::SourceDescriptionNotDirective(x)) => {
+                let locate: Locate = x.try_into().unwrap();
+                last_item_line = Some(locate.line);
+            }
+            NodeEvent::Leave(RefNode::CompilerDirective(x)) => {
+                let locate: Locate = x.try_into().unwrap();
+                last_item_line = Some(locate.line);
+            }
+            _ => (),
         }
         match n {
             NodeEvent::Enter(RefNode::ResetallCompilerDirective(_)) if !skip => {}
@@ -315,6 +345,15 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                 defines.insert(id, Some(define));
             }
             NodeEvent::Enter(RefNode::IncludeCompilerDirective(x)) if !skip => {
+                let locate: Locate = x.try_into().unwrap();
+                last_include_line = Some(locate.line);
+
+                if let Some(last_item_line) = last_item_line {
+                    if last_item_line == locate.line {
+                        return Err(ErrorKind::IncludeLine.into());
+                    }
+                }
+
                 let mut path = match x {
                     IncludeCompilerDirective::DoubleQuote(x) => {
                         let (_, _, ref literal) = x.nodes;
@@ -720,6 +759,26 @@ endmodule
         assert_eq!(
             format!("{:?}", ret),
             "Err(Error { inner: \n\nExceed recursive limit })"
+        );
+    }
+
+    #[test]
+    fn test9() {
+        let include_paths = [get_testcase("")];
+        let ret = preprocess(get_testcase("test9.sv"), &HashMap::new(), &include_paths);
+        assert_eq!(
+            format!("{:?}", ret),
+            "Err(Error { inner: \n\nInclude line can\'t have other items })"
+        );
+    }
+
+    #[test]
+    fn test10() {
+        let include_paths = [get_testcase("")];
+        let ret = preprocess(get_testcase("test10.sv"), &HashMap::new(), &include_paths);
+        assert_eq!(
+            format!("{:?}", ret),
+            "Err(Error { inner: \n\nInclude line can\'t have other items })"
         );
     }
 }

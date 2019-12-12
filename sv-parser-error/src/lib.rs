@@ -26,6 +26,8 @@ pub enum ErrorKind {
     DefineNoArgs,
     #[fail(display = "Exceed recursive limit")]
     ExceedRecursiveLimit,
+    #[fail(display = "Include line can't have other items")]
+    IncludeLine,
 }
 
 // -----------------------------------------------------------------------------

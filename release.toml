@@ -1,7 +1,13 @@
-no-dev-version             = true
-dev-version-ext            = "pre"
-pre-release-commit-message = "Prepare to v{{version}} of {{crate_name}}"
-pro-release-commit-message = "Start next development iteration v{{next_version}} of {{crate_name}}"
-tag-message                = "Bump version to v{{version}}"
-tag-prefix                 = ""
-
+no-dev-version              = true
+consolidate-commits         = true
+dev-version-ext             = "pre"
+pre-release-commit-message  = "Prepare to v{{version}} of {{crate_name}}"
+post-release-commit-message = "Start next development iteration v{{next_version}} of {{crate_name}}"
+tag-message                 = "Bump version to v{{version}}"
+tag-prefix                  = ""
+pre-release-replacements = [
+    {file = "README.md", search = "sv-parser = \"[a-z0-9\\.-]+\"", replace = "sv-parser = \"{{version}}\""},
+    {file = "CHANGELOG.md", search = "Unreleased", replace = "v{{version}}"},
+    {file = "CHANGELOG.md", search = "ReleaseDate", replace = "{{date}}"},
+    {file = "CHANGELOG.md", search = "Change Log", replace = "Change Log\n\n## [Unreleased](https://github.com/dalance/sv-parser/compare/v{{version}}...Unreleased) - ReleaseDate"},
+]

@@ -10,10 +10,6 @@ readme = "../README.md"
 description = "Helper crate of sv-parser"
 edition = "2018"
 
-[package.metadata.release]
-disable-push = true
-disable-tag  = true
-
 [features]
 default = []
 trace   = ["sv-parser-parser/trace"]
@@ -22,6 +18,6 @@ trace   = ["sv-parser-parser/trace"]
 failure              = "0.1.5"
 nom                  = "5.0.0"
 nom-greedyerror      = "0.1.0"
-sv-parser-error      = {version = "^0.4.0", path = "../sv-parser-error"}
-sv-parser-parser     = {version = "^0.4.0", path = "../sv-parser-parser"}
-sv-parser-syntaxtree = {version = "^0.4.0", path = "../sv-parser-syntaxtree"}
+sv-parser-error      = {version = "0.4.7", path = "../sv-parser-error"}
+sv-parser-parser     = {version = "0.4.7", path = "../sv-parser-parser"}
+sv-parser-syntaxtree = {version = "0.4.7", path = "../sv-parser-syntaxtree"}

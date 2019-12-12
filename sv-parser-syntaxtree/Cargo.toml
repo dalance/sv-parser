@@ -11,6 +11,9 @@ description = "Helper crate of sv-parser"
 edition = "2018"
 build = "build.rs"
 
+[package.metadata.release]
+disable-tag = true
+
 [dependencies]
 sv-parser-macros = {version = "^0.4.14", path = "../sv-parser-macros"}
 

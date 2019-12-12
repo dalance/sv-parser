@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1576145477044,
+  "lastUpdate": 1576147728372,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -1007,6 +1007,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 26105204,
             "range": "+/- 4,659,319",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "1e1a5834f1ddba3aff3f158023b0f2eec1099aa4",
+          "message": "Fix resetall in design element",
+          "timestamp": "2019-12-12T19:23:39+09:00",
+          "tree_id": "e8441d0e141bed3c9e6dafdbda17405f1f4ac455",
+          "url": "https://github.com/dalance/sv-parser/commit/1e1a5834f1ddba3aff3f158023b0f2eec1099aa4"
+        },
+        "date": 1576147728176,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 30565008,
+            "range": "+/- 2,203,788",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 30735858,
+            "range": "+/- 1,682,741",
             "unit": "ns/iter"
           }
         ]

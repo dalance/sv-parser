@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1576148239755,
+  "lastUpdate": 1579690308968,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -1079,6 +1079,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 27660072,
             "range": "+/- 1,488,948",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "56a13e45c43ceac817744499eb0d5f9cb375e986",
+          "message": "Fix macro arguments spacing",
+          "timestamp": "2020-01-22T19:26:00+09:00",
+          "tree_id": "e92f5294e26657a6bc80a259c76dd44d2ea4d614",
+          "url": "https://github.com/dalance/sv-parser/commit/56a13e45c43ceac817744499eb0d5f9cb375e986"
+        },
+        "date": 1579690308582,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 29469251,
+            "range": "+/- 4,011,174",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 29774358,
+            "range": "+/- 4,001,370",
             "unit": "ns/iter"
           }
         ]

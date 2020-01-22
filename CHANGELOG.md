@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.19...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.20...Unreleased) - ReleaseDate
+
+## [v0.4.20](https://github.com/dalance/sv-parser/compare/v0.4.19...v0.4.20) - 2020-01-22
 
 * [Fixed] macro arguments spacing
 * [Added] `` `__LINE__`` and `` `__FILE__`` are preprocessed

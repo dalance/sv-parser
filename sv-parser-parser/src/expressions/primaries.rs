@@ -293,7 +293,7 @@ pub(crate) fn time_literal(s: Span) -> IResult<Span, TimeLiteral> {
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn time_literal_unsigned(s: Span) -> IResult<Span, TimeLiteral> {
-    let (s, a) = unsigned_number(s)?;
+    let (s, a) = unsigned_number_exact(s)?;
     let (s, b) = time_unit(s)?;
     Ok((
         s,
@@ -304,7 +304,7 @@ pub(crate) fn time_literal_unsigned(s: Span) -> IResult<Span, TimeLiteral> {
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn time_literal_fixed_point(s: Span) -> IResult<Span, TimeLiteral> {
-    let (s, a) = fixed_point_number(s)?;
+    let (s, a) = fixed_point_number_exact(s)?;
     let (s, b) = time_unit(s)?;
     Ok((
         s,

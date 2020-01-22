@@ -189,7 +189,15 @@ pub struct SourceDescriptionNotDirective {
 
 #[derive(Clone, Debug, PartialEq, Node)]
 pub struct TimescaleCompilerDirective {
-    pub nodes: (Symbol, Keyword, TimeLiteral, Symbol, TimeLiteral),
+    pub nodes: (
+        Symbol,
+        Keyword,
+        UnsignedNumber,
+        TimeUnit,
+        Symbol,
+        UnsignedNumber,
+        TimeUnit,
+    ),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]

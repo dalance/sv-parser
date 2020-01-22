@@ -398,6 +398,11 @@ mod unit {
             r##"module A; always begin a[ a_a[i] ].b <= c; end endmodule"##,
             Ok((_, _))
         );
+        test!(
+            source_text,
+            r##"module a; initial begin #1 ps[idx] = 1'b1; end endmodule"##,
+            Ok((_, _))
+        );
     }
 }
 
@@ -609,7 +614,7 @@ mod spec {
         test!(number, "4.E3", Err(_));
         test!(number, ".2e-7", Err(_));
         test!(primary, "2.1ns ", Ok((_, Primary::PrimaryLiteral(_))));
-        test!(primary, "40 ps ", Ok((_, Primary::PrimaryLiteral(_))));
+        test!(primary, "40ps ", Ok((_, Primary::PrimaryLiteral(_))));
         test!(
             subroutine_call_statement,
             r##"$display("Humpty Dumpty sat on a wall. \
@@ -15858,7 +15863,7 @@ mod spec {
 fn debug() {
     test!(
         source_text,
-        r##"module A; always begin a[ a_a[i] ].b <= c; end endmodule"##,
+        r##"module a; initial begin #1 ps[idx] = 1'b1; end endmodule"##,
         Ok((_, _))
     );
     nom_tracable::cumulative_histogram();

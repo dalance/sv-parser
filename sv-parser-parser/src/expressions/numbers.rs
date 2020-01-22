@@ -187,6 +187,17 @@ pub(crate) fn fixed_point_number(s: Span) -> IResult<Span, FixedPointNumber> {
 
 #[tracable_parser]
 #[packrat_parser]
+pub(crate) fn fixed_point_number_exact(s: Span) -> IResult<Span, FixedPointNumber> {
+    let (s, a) = unsigned_number_without_ws(s)?;
+    let (s, b) = map(tag("."), |x: Span| Symbol {
+        nodes: (into_locate(x), vec![]),
+    })(s)?;
+    let (s, c) = unsigned_number_exact(s)?;
+    Ok((s, FixedPointNumber { nodes: (a, b, c) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
 pub(crate) fn exp(s: Span) -> IResult<Span, Exp> {
     let (s, a) = alt((
         map(tag("e"), |x: Span| Symbol {
@@ -210,6 +221,13 @@ pub(crate) fn unsigned_number_without_ws(s: Span) -> IResult<Span, UnsignedNumbe
 #[packrat_parser]
 pub(crate) fn unsigned_number(s: Span) -> IResult<Span, UnsignedNumber> {
     let (s, a) = ws(unsigned_number_impl)(s)?;
+    Ok((s, UnsignedNumber { nodes: a }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn unsigned_number_exact(s: Span) -> IResult<Span, UnsignedNumber> {
+    let (s, a) = no_ws(unsigned_number_impl)(s)?;
     Ok((s, UnsignedNumber { nodes: a }))
 }
 

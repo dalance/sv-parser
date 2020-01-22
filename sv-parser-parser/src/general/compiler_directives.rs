@@ -585,13 +585,15 @@ pub(crate) fn source_description_not_directive(s: Span) -> IResult<Span, SourceD
 pub(crate) fn timescale_compiler_directive(s: Span) -> IResult<Span, TimescaleCompilerDirective> {
     let (s, a) = symbol("`")(s)?;
     let (s, b) = keyword("timescale")(s)?;
-    let (s, c) = time_literal(s)?;
-    let (s, d) = symbol("/")(s)?;
-    let (s, e) = time_literal(s)?;
+    let (s, c) = unsigned_number(s)?;
+    let (s, d) = time_unit(s)?;
+    let (s, e) = symbol("/")(s)?;
+    let (s, f) = unsigned_number(s)?;
+    let (s, g) = time_unit(s)?;
     Ok((
         s,
         TimescaleCompilerDirective {
-            nodes: (a, b, c, d, e),
+            nodes: (a, b, c, d, e, f, g),
         },
     ))
 }

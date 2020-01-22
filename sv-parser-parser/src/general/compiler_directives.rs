@@ -548,6 +548,9 @@ pub(crate) fn source_description(s: Span) -> IResult<Span, SourceDescription> {
         map(string_literal, |x| {
             SourceDescription::StringLiteral(Box::new(x))
         }),
+        map(escaped_identifier, |x| {
+            SourceDescription::EscapedIdentifier(Box::new(x))
+        }),
         source_description_not_directive,
         map(compiler_directive, |x| {
             SourceDescription::CompilerDirective(Box::new(x))
@@ -559,7 +562,7 @@ pub(crate) fn source_description(s: Span) -> IResult<Span, SourceDescription> {
 #[packrat_parser]
 pub(crate) fn source_description_not_directive(s: Span) -> IResult<Span, SourceDescription> {
     let (s, a) = many1(alt((
-        is_not("`/\""),
+        is_not("`/\"\\"),
         terminated(tag("/"), peek(not(alt((tag("/"), tag("*")))))),
     )))(s)?;
 

@@ -234,6 +234,13 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
             }
+            NodeEvent::Enter(RefNode::SourceDescription(SourceDescription::EscapedIdentifier(
+                x,
+            ))) if !skip => {
+                let locate: Locate = (&**x).try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
+            }
             NodeEvent::Enter(RefNode::KeywordsDirective(x)) if !skip => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
@@ -783,6 +790,19 @@ endmodule
         assert_eq!(
             format!("{:?}", ret),
             "Err(Error { inner: \n\nInclude line can\'t have other items })"
+        );
+    }
+
+    #[test]
+    fn test12() {
+        let (ret, _) =
+            preprocess(get_testcase("test12.sv"), &HashMap::new(), &[] as &[String]).unwrap();
+        assert_eq!(
+            ret.text(),
+            r##"module a;
+reg \`~!-_=+\|[]{};:'"",./<>? ;
+endmodule
+"##
         );
     }
 }

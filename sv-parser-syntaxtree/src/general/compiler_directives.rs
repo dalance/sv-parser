@@ -180,6 +180,7 @@ pub enum SourceDescription {
     StringLiteral(Box<StringLiteral>),
     NotDirective(Box<SourceDescriptionNotDirective>),
     CompilerDirective(Box<CompilerDirective>),
+    EscapedIdentifier(Box<EscapedIdentifier>),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]

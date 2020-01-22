@@ -2,6 +2,7 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.19...Unreleased) - ReleaseDate
 
+* [Fixed] escaped_ideitifier including `` ` ``
 * [Fixed] time_literal spacing
 
 ## [v0.4.19](https://github.com/dalance/sv-parser/compare/v0.4.18...v0.4.19) - 2019-12-12

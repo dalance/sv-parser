@@ -403,6 +403,11 @@ mod unit {
             r##"module a; initial begin #1 ps[idx] = 1'b1; end endmodule"##,
             Ok((_, _))
         );
+        test!(
+            source_text,
+            r##"module a; reg \`~!-_=+\|[]{};:'"",./<>? ; endmodule"##,
+            Ok((_, _))
+        );
     }
 }
 

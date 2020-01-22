@@ -425,6 +425,22 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                     defines = new_defines;
                 }
             }
+            NodeEvent::Enter(RefNode::PositionCompilerDirective(x)) if !skip => {
+                let (_, ref x) = x.nodes;
+                let locate: Locate = x.try_into().unwrap();
+                let x = locate.str(s);
+                if x.starts_with("__FILE__") {
+                    ret.push::<PathBuf>(
+                        &x.replace(
+                            "__FILE__",
+                            &format!("\"{}\"", path.as_ref().to_string_lossy()),
+                        ),
+                        None,
+                    );
+                } else if x.starts_with("__LINE__") {
+                    ret.push::<PathBuf>(&x.replace("__LINE__", &format!("{}", locate.line)), None);
+                }
+            }
             _ => (),
         }
     }
@@ -790,6 +806,22 @@ endmodule
         assert_eq!(
             format!("{:?}", ret),
             "Err(Error { inner: \n\nInclude line can\'t have other items })"
+        );
+    }
+
+    #[test]
+    fn test11() {
+        let (ret, _) =
+            preprocess(get_testcase("test11.sv"), &HashMap::new(), &[] as &[String]).unwrap();
+        assert_eq!(
+            ret.text(),
+            r##"module a;
+initial begin
+    if (3 == 0) begin
+    end
+end
+endmodule
+"##
         );
     }
 

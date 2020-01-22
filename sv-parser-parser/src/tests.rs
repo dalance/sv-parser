@@ -408,6 +408,16 @@ mod unit {
             r##"module a; reg \`~!-_=+\|[]{};:'"",./<>? ; endmodule"##,
             Ok((_, _))
         );
+        test!(
+            source_text,
+            r##"module test(); specify $setuphold(posedge A &&& B, BL_0 , 0, 0, C,,,D, BL_X[0]); endspecify endmodule"##,
+            Ok((_, _))
+        );
+        test!(
+            source_text,
+            r##"module test(); specify $setup(posedge CSB, edge[01,0x,x1,1x] CL, tps, a); endspecify endmodule"##,
+            Ok((_, _))
+        );
     }
 }
 

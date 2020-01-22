@@ -27,10 +27,10 @@ pub(crate) fn data_event(s: Span) -> IResult<Span, DataEvent> {
 #[packrat_parser]
 pub(crate) fn delayed_data(s: Span) -> IResult<Span, DelayedData> {
     alt((
+        delayed_data_with_mintypmax,
         map(terminal_identifier, |x| {
             DelayedData::TerminalIdentifier(Box::new(x))
         }),
-        delayed_data_with_mintypmax,
     ))(s)
 }
 
@@ -49,10 +49,10 @@ pub(crate) fn delayed_data_with_mintypmax(s: Span) -> IResult<Span, DelayedData>
 #[packrat_parser]
 pub(crate) fn delayed_reference(s: Span) -> IResult<Span, DelayedReference> {
     alt((
+        delayed_reference_with_mintypmax,
         map(terminal_identifier, |x| {
             DelayedReference::TerminalIdentifier(Box::new(x))
         }),
-        delayed_reference_with_mintypmax,
     ))(s)
 }
 

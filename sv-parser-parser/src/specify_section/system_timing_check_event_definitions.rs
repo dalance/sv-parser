@@ -30,11 +30,11 @@ pub(crate) fn timing_check_event_control(s: Span) -> IResult<Span, TimingCheckEv
         map(keyword("negedge"), |x| {
             TimingCheckEventControl::Negedge(Box::new(x))
         }),
-        map(keyword("edge"), |x| {
-            TimingCheckEventControl::Edge(Box::new(x))
-        }),
         map(edge_control_specifier, |x| {
             TimingCheckEventControl::EdgeControlSpecifier(Box::new(x))
+        }),
+        map(keyword("edge"), |x| {
+            TimingCheckEventControl::Edge(Box::new(x))
         }),
     ))(s)
 }

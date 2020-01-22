@@ -529,7 +529,7 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
         for arg in args.contents() {
             if let Some(arg) = arg {
                 let (ref arg,) = arg.nodes;
-                let arg = arg.str(&s);
+                let arg = arg.str(&s).trim_end();
                 actual_args.push(Some(arg));
             } else {
                 actual_args.push(None);
@@ -723,8 +723,7 @@ module a ();
 
 always @(posedge clk) begin 
         if (!(!(a[i].b && c[i]))) begin 
-            $display ("xxx(()[]]{}}}", a[i].b, c[i])
-; 
+            $display ("xxx(()[]]{}}}", a[i].b, c[i]); 
         end 
     end 
  ;

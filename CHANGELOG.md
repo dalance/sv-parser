@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.20...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.5.0...Unreleased) - ReleaseDate
+
+## [v0.5.0](https://github.com/dalance/sv-parser/compare/v0.4.20...v0.5.0) - 2020-01-23
 
 * [Changed] from `sv-parser-error::ErrorKind` to `sv-parser-error::Error`
 * [Changed] Refine parse_sv -t option

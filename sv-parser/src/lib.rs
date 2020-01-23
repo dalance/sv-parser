@@ -52,12 +52,15 @@ impl fmt::Display for SyntaxTree {
         let mut depth = 0;
         for node in self.into_iter().event() {
             match node {
-                NodeEvent::Enter(RefNode::Locate(locate)) if !skip => {
-                    ret.push_str(&format!(
-                        "{}{}\n",
-                        " ".repeat(depth),
-                        self.get_str(locate).unwrap()
-                    ));
+                NodeEvent::Enter(RefNode::Locate(locate)) => {
+                    if !skip {
+                        ret.push_str(&format!(
+                            "{}Token: '{}' @ line:{}\n",
+                            " ".repeat(depth),
+                            self.get_str(locate).unwrap(),
+                            locate.line,
+                        ));
+                    }
                     depth += 1;
                 }
                 NodeEvent::Enter(RefNode::WhiteSpace(_)) => {
@@ -66,7 +69,10 @@ impl fmt::Display for SyntaxTree {
                 NodeEvent::Leave(RefNode::WhiteSpace(_)) => {
                     skip = false;
                 }
-                NodeEvent::Enter(_) => {
+                NodeEvent::Enter(x) => {
+                    if !skip {
+                        ret.push_str(&format!("{}{}\n", " ".repeat(depth), x));
+                    }
                     depth += 1;
                 }
                 NodeEvent::Leave(_) => {

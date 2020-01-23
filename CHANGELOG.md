@@ -2,6 +2,9 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.20...Unreleased) - ReleaseDate
 
+* [Changed] Refine parse_sv -t option
+* [Added] Display trait of SyntaxTree
+
 ## [v0.4.20](https://github.com/dalance/sv-parser/compare/v0.4.19...v0.4.20) - 2020-01-22
 
 * [Fixed] macro arguments spacing

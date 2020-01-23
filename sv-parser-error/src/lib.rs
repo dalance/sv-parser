@@ -1,88 +1,35 @@
-use failure::{Backtrace, Context, Fail};
-use std::fmt;
-use std::fmt::Display;
-use std::io::Error as IOError;
 use std::path::PathBuf;
+use thiserror::Error;
 
 // -----------------------------------------------------------------------------
 
-#[derive(Fail, Debug)]
-pub enum ErrorKind {
-    #[fail(display = "IO error")]
-    Io,
-    #[fail(display = "File error: {:?}", _0)]
-    File(PathBuf),
-    #[fail(display = "Include error")]
-    Include,
-    #[fail(display = "Parse error: {:?}", _0)]
+#[derive(Error, Debug)]
+pub enum Error {
+    #[error("IO error")]
+    Io(#[from] std::io::Error),
+    #[error("File error: {path:?}")]
+    File {
+        #[source]
+        source: std::io::Error,
+        path: PathBuf,
+    },
+    #[error("Include error")]
+    Include {
+        #[from]
+        source: Box<Error>,
+    },
+    #[error("Parse error: {0:?}")]
     Parse(Option<(PathBuf, usize)>),
-    #[fail(display = "Preprocess error")]
+    #[error("Preprocess error")]
     Preprocess,
-    #[fail(display = "Define argument not found: {}", _0)]
+    #[error("Define argument not found: {0}")]
     DefineArgNotFound(String),
-    #[fail(display = "Define not found: {}", _0)]
+    #[error("Define not found: {0}")]
     DefineNotFound(String),
-    #[fail(display = "Define must have argument")]
+    #[error("Define must have argument")]
     DefineNoArgs,
-    #[fail(display = "Exceed recursive limit")]
+    #[error("Exceed recursive limit")]
     ExceedRecursiveLimit,
-    #[fail(display = "Include line can't have other items")]
+    #[error("Include line can't have other items")]
     IncludeLine,
-}
-
-// -----------------------------------------------------------------------------
-
-#[derive(Debug)]
-pub struct Error {
-    inner: Context<ErrorKind>,
-}
-
-impl Fail for Error {
-    fn cause(&self) -> Option<&dyn Fail> {
-        self.inner.cause()
-    }
-
-    fn backtrace(&self) -> Option<&Backtrace> {
-        self.inner.backtrace()
-    }
-}
-
-impl Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        Display::fmt(&self.inner, f)
-    }
-}
-
-impl Error {
-    pub fn new(inner: Context<ErrorKind>) -> Error {
-        Error { inner }
-    }
-
-    pub fn kind(&self) -> &ErrorKind {
-        self.inner.get_context()
-    }
-}
-
-impl From<ErrorKind> for Error {
-    fn from(kind: ErrorKind) -> Error {
-        Error {
-            inner: Context::new(kind),
-        }
-    }
-}
-
-impl From<Context<ErrorKind>> for Error {
-    fn from(inner: Context<ErrorKind>) -> Error {
-        Error { inner }
-    }
-}
-
-// -----------------------------------------------------------------------------
-
-impl From<IOError> for Error {
-    fn from(error: IOError) -> Error {
-        Error {
-            inner: error.context(ErrorKind::Io),
-        }
-    }
 }

@@ -5,7 +5,7 @@ use nom_greedyerror::error_position;
 use std::collections::HashMap;
 use std::fmt;
 use std::path::{Path, PathBuf};
-pub use sv_parser_error::{Error, ErrorKind};
+pub use sv_parser_error::Error;
 use sv_parser_parser::{lib_parser, sv_parser, Span, SpanInfo};
 pub use sv_parser_pp::preprocess::{
     preprocess, preprocess_str, Define, DefineText, Defines, PreprocessedText,
@@ -125,7 +125,7 @@ pub fn parse_sv<T: AsRef<Path>, U: AsRef<Path>>(
             } else {
                 None
             };
-            Err(ErrorKind::Parse(origin).into())
+            Err(Error::Parse(origin))
         }
     }
 }
@@ -162,7 +162,7 @@ pub fn parse_sv_str<T: AsRef<Path>, U: AsRef<Path>>(
             } else {
                 None
             };
-            Err(ErrorKind::Parse(origin).into())
+            Err(Error::Parse(origin))
         }
     }
 }
@@ -198,7 +198,7 @@ pub fn parse_lib<T: AsRef<Path>, U: AsRef<Path>>(
             } else {
                 None
             };
-            Err(ErrorKind::Parse(origin).into())
+            Err(Error::Parse(origin))
         }
     }
 }
@@ -235,7 +235,7 @@ pub fn parse_lib_str<T: AsRef<Path>, U: AsRef<Path>>(
             } else {
                 None
             };
-            Err(ErrorKind::Parse(origin).into())
+            Err(Error::Parse(origin))
         }
     }
 }

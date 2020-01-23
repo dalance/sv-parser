@@ -1,11 +1,12 @@
 use std::collections::HashMap;
+use std::error::Error as StdError;
 use std::fs::File;
 use std::io::Read;
 use std::path::PathBuf;
 use std::{cmp, process};
 use structopt::StructOpt;
 use sv_parser::parse_sv;
-use sv_parser_error::ErrorKind;
+use sv_parser_error::Error;
 use sv_parser_pp::preprocess::preprocess;
 
 #[derive(StructOpt)]
@@ -54,13 +55,18 @@ fn main() {
                     }
                 }
                 Err(x) => {
-                    match x.kind() {
-                        ErrorKind::Parse(Some((origin_path, origin_pos))) => {
+                    match x {
+                        Error::Parse(Some((origin_path, origin_pos))) => {
                             println!("parse failed: {:?}", path);
-                            print_parse_error(origin_path, origin_pos);
+                            print_parse_error(&origin_path, &origin_pos);
                         }
                         x => {
                             println!("parse failed: {:?} ({})", path, x);
+                            let mut err = x.source();
+                            while let Some(x) = err {
+                                println!("  Caused by {}", x);
+                                err = x.source();
+                            }
                         }
                     }
                     exit = 1;

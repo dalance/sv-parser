@@ -2,6 +2,7 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.4.20...Unreleased) - ReleaseDate
 
+* [Changed] from `sv-parser-error::ErrorKind` to `sv-parser-error::Error`
 * [Changed] Refine parse_sv -t option
 * [Added] Display trait of SyntaxTree
 

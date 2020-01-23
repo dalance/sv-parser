@@ -1,5 +1,4 @@
 use crate::range::Range;
-use failure::ResultExt;
 use nom::combinator::all_consuming;
 use nom_greedyerror::error_position;
 use std::collections::{BTreeMap, HashMap};
@@ -7,7 +6,7 @@ use std::convert::TryInto;
 use std::fs::File;
 use std::io::{BufReader, Read};
 use std::path::{Path, PathBuf};
-use sv_parser_error::{Error, ErrorKind};
+use sv_parser_error::Error;
 use sv_parser_parser::{pp_parser, Span, SpanInfo};
 use sv_parser_syntaxtree::{
     IncludeCompilerDirective, Locate, NodeEvent, RefNode, SourceDescription, TextMacroUsage,
@@ -120,8 +119,10 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
     pre_defines: &Defines,
     include_paths: &[U],
 ) -> Result<(PreprocessedText, Defines), Error> {
-    let f =
-        File::open(path.as_ref()).context(ErrorKind::File(PathBuf::from(path.as_ref())).into())?;
+    let f = File::open(path.as_ref()).map_err(|x| Error::File {
+        source: x,
+        path: PathBuf::from(path.as_ref()),
+    })?;
     let mut reader = BufReader::new(f);
     let mut s = String::new();
     reader.read_to_string(&mut s)?;
@@ -149,19 +150,19 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
 
     let span = Span::new_extra(&s, SpanInfo::default());
     let (_, pp_text) = all_consuming(pp_parser)(span).map_err(|x| match x {
-        nom::Err::Incomplete(_) => ErrorKind::Parse(None),
+        nom::Err::Incomplete(_) => Error::Parse(None),
         nom::Err::Error(e) => {
             if let Some(pos) = error_position(&e) {
-                ErrorKind::Parse(Some((PathBuf::from(path.as_ref()), pos)))
+                Error::Parse(Some((PathBuf::from(path.as_ref()), pos)))
             } else {
-                ErrorKind::Parse(None)
+                Error::Parse(None)
             }
         }
         nom::Err::Failure(e) => {
             if let Some(pos) = error_position(&e) {
-                ErrorKind::Parse(Some((PathBuf::from(path.as_ref()), pos)))
+                Error::Parse(Some((PathBuf::from(path.as_ref()), pos)))
             } else {
-                ErrorKind::Parse(None)
+                Error::Parse(None)
             }
         }
     })?;
@@ -186,7 +187,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                 let locate: Locate = x.try_into().unwrap();
                 if let Some(last_include_line) = last_include_line {
                     if last_include_line == locate.line {
-                        return Err(ErrorKind::IncludeLine.into());
+                        return Err(Error::IncludeLine);
                     }
                 }
             }
@@ -194,7 +195,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                 let locate: Locate = x.try_into().unwrap();
                 if let Some(last_include_line) = last_include_line {
                     if last_include_line == locate.line {
-                        return Err(ErrorKind::IncludeLine.into());
+                        return Err(Error::IncludeLine);
                     }
                 }
             }
@@ -361,7 +362,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
 
                 if let Some(last_item_line) = last_item_line {
                     if last_item_line == locate.line {
-                        return Err(ErrorKind::IncludeLine.into());
+                        return Err(Error::IncludeLine);
                     }
                 }
 
@@ -408,7 +409,9 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                     }
                 }
                 let (include, new_defines) =
-                    preprocess(path, &defines, include_paths).context(ErrorKind::Include)?;
+                    preprocess(path, &defines, include_paths).map_err(|x| Error::Include {
+                        source: Box::new(x),
+                    })?;
                 defines = new_defines;
                 ret.merge(include);
             }
@@ -518,7 +521,7 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
     let id = identifier((&name.nodes.0).into(), &s).unwrap();
 
     if resolve_depth > RECURSIVE_LIMIT {
-        return Err(ErrorKind::ExceedRecursiveLimit.into());
+        return Err(Error::ExceedRecursiveLimit);
     }
 
     let mut actual_args = Vec::new();
@@ -542,7 +545,7 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
         let mut arg_map = HashMap::new();
 
         if !define.arguments.is_empty() && no_args {
-            return Err(ErrorKind::DefineNoArgs.into());
+            return Err(Error::DefineNoArgs);
         }
 
         for (i, (arg, default)) in define.arguments.iter().enumerate() {
@@ -559,7 +562,7 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
                     if let Some(default) = default {
                         default
                     } else {
-                        return Err(ErrorKind::DefineArgNotFound(String::from(arg)).into());
+                        return Err(Error::DefineArgNotFound(String::from(arg)));
                     }
                 }
             };
@@ -606,7 +609,7 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
     } else if let Some(_) = define {
         Ok(None)
     } else {
-        Err(ErrorKind::DefineNotFound(String::from(id)).into())
+        Err(Error::DefineNotFound(String::from(id)))
     }
 }
 
@@ -773,39 +776,27 @@ endmodule
     #[test]
     fn test7() {
         let ret = preprocess(get_testcase("test7.sv"), &HashMap::new(), &[] as &[String]);
-        assert_eq!(
-            format!("{:?}", ret),
-            "Err(Error { inner: \n\nExceed recursive limit })"
-        );
+        assert_eq!(format!("{:?}", ret), "Err(ExceedRecursiveLimit)");
     }
 
     #[test]
     fn test8() {
         let ret = preprocess(get_testcase("test8.sv"), &HashMap::new(), &[] as &[String]);
-        assert_eq!(
-            format!("{:?}", ret),
-            "Err(Error { inner: \n\nExceed recursive limit })"
-        );
+        assert_eq!(format!("{:?}", ret), "Err(ExceedRecursiveLimit)");
     }
 
     #[test]
     fn test9() {
         let include_paths = [get_testcase("")];
         let ret = preprocess(get_testcase("test9.sv"), &HashMap::new(), &include_paths);
-        assert_eq!(
-            format!("{:?}", ret),
-            "Err(Error { inner: \n\nInclude line can\'t have other items })"
-        );
+        assert_eq!(format!("{:?}", ret), "Err(IncludeLine)");
     }
 
     #[test]
     fn test10() {
         let include_paths = [get_testcase("")];
         let ret = preprocess(get_testcase("test10.sv"), &HashMap::new(), &include_paths);
-        assert_eq!(
-            format!("{:?}", ret),
-            "Err(Error { inner: \n\nInclude line can\'t have other items })"
-        );
+        assert_eq!(format!("{:?}", ret), "Err(IncludeLine)");
     }
 
     #[test]

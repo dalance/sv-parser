@@ -118,6 +118,7 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
     path: T,
     pre_defines: &Defines,
     include_paths: &[U],
+    ignore_include: bool,
 ) -> Result<(PreprocessedText, Defines), Error> {
     let f = File::open(path.as_ref()).map_err(|x| Error::File {
         source: x,
@@ -127,7 +128,7 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
     let mut s = String::new();
     reader.read_to_string(&mut s)?;
 
-    preprocess_str(&s, path, pre_defines, include_paths, 0)
+    preprocess_str(&s, path, pre_defines, include_paths, ignore_include, 0)
 }
 
 pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
@@ -135,6 +136,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
     path: T,
     pre_defines: &Defines,
     include_paths: &[U],
+    ignore_include: bool,
     resolve_depth: usize,
 ) -> Result<(PreprocessedText, Defines), Error> {
     let mut skip = false;
@@ -356,7 +358,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
 
                 defines.insert(id, Some(define));
             }
-            NodeEvent::Enter(RefNode::IncludeCompilerDirective(x)) if !skip => {
+            NodeEvent::Enter(RefNode::IncludeCompilerDirective(x)) if !skip && !ignore_include => {
                 let locate: Locate = x.try_into().unwrap();
                 last_include_line = Some(locate.line);
 
@@ -408,8 +410,8 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                         }
                     }
                 }
-                let (include, new_defines) =
-                    preprocess(path, &defines, include_paths).map_err(|x| Error::Include {
+                let (include, new_defines) = preprocess(path, &defines, include_paths, false)
+                    .map_err(|x| Error::Include {
                         source: Box::new(x),
                     })?;
                 defines = new_defines;
@@ -596,6 +598,7 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
                 path.as_ref(),
                 &defines,
                 include_paths,
+                false,
                 resolve_depth,
             )?;
             Ok(Some((
@@ -628,8 +631,13 @@ mod tests {
 
     #[test]
     fn test1() {
-        let (ret, _) =
-            preprocess(get_testcase("test1.sv"), &HashMap::new(), &[] as &[String]).unwrap();
+        let (ret, _) = preprocess(
+            get_testcase("test1.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+        )
+        .unwrap();
         assert_eq!(
             ret.text(),
             r##"module and_op (a, b, c);
@@ -653,7 +661,8 @@ endmodule
     fn test1_predefine() {
         let mut defines = HashMap::new();
         defines.insert(String::from("behavioral"), None);
-        let (ret, _) = preprocess(get_testcase("test1.sv"), &defines, &[] as &[String]).unwrap();
+        let (ret, _) =
+            preprocess(get_testcase("test1.sv"), &defines, &[] as &[String], false).unwrap();
         assert_eq!(
             ret.text(),
             r##"module and_op (a, b, c);
@@ -669,8 +678,13 @@ endmodule
     #[test]
     fn test2() {
         let include_paths = [get_testcase("")];
-        let (ret, _) =
-            preprocess(get_testcase("test2.sv"), &HashMap::new(), &include_paths).unwrap();
+        let (ret, _) = preprocess(
+            get_testcase("test2.sv"),
+            &HashMap::new(),
+            &include_paths,
+            false,
+        )
+        .unwrap();
         assert_eq!(
             ret.text(),
             r##"module and_op (a, b, c);
@@ -699,9 +713,32 @@ endmodule
     }
 
     #[test]
+    fn test2_ignore_include() {
+        let include_paths = [get_testcase("")];
+        let (ret, _) = preprocess(
+            get_testcase("test2.sv"),
+            &HashMap::new(),
+            &include_paths,
+            true,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            r##"module and_op (a, b, c);
+endmodule
+"##
+        );
+    }
+
+    #[test]
     fn test3() {
-        let (ret, _) =
-            preprocess(get_testcase("test3.sv"), &HashMap::new(), &[] as &[String]).unwrap();
+        let (ret, _) = preprocess(
+            get_testcase("test3.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+        )
+        .unwrap();
         assert_eq!(
             ret.text(),
             r##"
@@ -717,8 +754,13 @@ module a ();
 
     #[test]
     fn test4() {
-        let (ret, _) =
-            preprocess(get_testcase("test4.sv"), &HashMap::new(), &[] as &[String]).unwrap();
+        let (ret, _) = preprocess(
+            get_testcase("test4.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+        )
+        .unwrap();
         assert_eq!(
             ret.text(),
             r##"
@@ -738,8 +780,13 @@ endmodule
 
     #[test]
     fn test5() {
-        let (ret, _) =
-            preprocess(get_testcase("test5.sv"), &HashMap::new(), &[] as &[String]).unwrap();
+        let (ret, _) = preprocess(
+            get_testcase("test5.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+        )
+        .unwrap();
         assert_eq!(
             ret.text(),
             r##"module a;
@@ -758,8 +805,13 @@ endmodule
 
     #[test]
     fn test6() {
-        let (ret, _) =
-            preprocess(get_testcase("test6.sv"), &HashMap::new(), &[] as &[String]).unwrap();
+        let (ret, _) = preprocess(
+            get_testcase("test6.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+        )
+        .unwrap();
         assert_eq!(
             ret.text(),
             r##"
@@ -775,34 +827,59 @@ endmodule
 
     #[test]
     fn test7() {
-        let ret = preprocess(get_testcase("test7.sv"), &HashMap::new(), &[] as &[String]);
+        let ret = preprocess(
+            get_testcase("test7.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+        );
         assert_eq!(format!("{:?}", ret), "Err(ExceedRecursiveLimit)");
     }
 
     #[test]
     fn test8() {
-        let ret = preprocess(get_testcase("test8.sv"), &HashMap::new(), &[] as &[String]);
+        let ret = preprocess(
+            get_testcase("test8.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+        );
         assert_eq!(format!("{:?}", ret), "Err(ExceedRecursiveLimit)");
     }
 
     #[test]
     fn test9() {
         let include_paths = [get_testcase("")];
-        let ret = preprocess(get_testcase("test9.sv"), &HashMap::new(), &include_paths);
+        let ret = preprocess(
+            get_testcase("test9.sv"),
+            &HashMap::new(),
+            &include_paths,
+            false,
+        );
         assert_eq!(format!("{:?}", ret), "Err(IncludeLine)");
     }
 
     #[test]
     fn test10() {
         let include_paths = [get_testcase("")];
-        let ret = preprocess(get_testcase("test10.sv"), &HashMap::new(), &include_paths);
+        let ret = preprocess(
+            get_testcase("test10.sv"),
+            &HashMap::new(),
+            &include_paths,
+            false,
+        );
         assert_eq!(format!("{:?}", ret), "Err(IncludeLine)");
     }
 
     #[test]
     fn test11() {
-        let (ret, _) =
-            preprocess(get_testcase("test11.sv"), &HashMap::new(), &[] as &[String]).unwrap();
+        let (ret, _) = preprocess(
+            get_testcase("test11.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+        )
+        .unwrap();
         assert_eq!(
             ret.text(),
             r##"module a;
@@ -817,8 +894,13 @@ endmodule
 
     #[test]
     fn test12() {
-        let (ret, _) =
-            preprocess(get_testcase("test12.sv"), &HashMap::new(), &[] as &[String]).unwrap();
+        let (ret, _) = preprocess(
+            get_testcase("test12.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+        )
+        .unwrap();
         assert_eq!(
             ret.text(),
             r##"module a;

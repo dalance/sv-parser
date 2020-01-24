@@ -36,7 +36,7 @@ fn main() {
     let mut exit = 0;
     for path in &opt.files {
         if opt.pp {
-            match preprocess(&path, &defines, &opt.includes) {
+            match preprocess(&path, &defines, &opt.includes, false) {
                 Ok((preprocessed_text, new_defines)) => {
                     println!("{}", preprocessed_text.text());
                     defines = new_defines;
@@ -44,7 +44,7 @@ fn main() {
                 _ => (),
             }
         } else {
-            match parse_sv(&path, &defines, &opt.includes) {
+            match parse_sv(&path, &defines, &opt.includes, false) {
                 Ok((syntax_tree, new_defines)) => {
                     if opt.tree {
                         println!("{}", syntax_tree);

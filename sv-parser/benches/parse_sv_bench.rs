@@ -22,7 +22,7 @@ fn test1(b: &mut Bencher) {
     let includes: Vec<PathBuf> = Vec::new();
     let path = get_path("test1.sv");
     b.iter(|| {
-        let _ = parse_sv(&path, &defines, &includes);
+        let _ = parse_sv(&path, &defines, &includes, false);
     });
 }
 
@@ -32,6 +32,6 @@ fn test2(b: &mut Bencher) {
     let includes: Vec<PathBuf> = Vec::new();
     let path = get_path("test2.sv");
     b.iter(|| {
-        let _ = parse_sv(&path, &defines, &includes);
+        let _ = parse_sv(&path, &defines, &includes, false);
     });
 }

@@ -26,7 +26,7 @@ fn gen_benchmark_group(c: &mut Criterion, s: &str) {
     let mut group = c.benchmark_group(s);
     group.throughput(Throughput::Bytes(size));
     group.bench_function(s, |b| {
-        b.iter_with_large_drop(|| parse_sv(&path, &defines, &includes))
+        b.iter_with_large_drop(|| parse_sv(&path, &defines, &includes, false))
     });
     group.finish();
 }

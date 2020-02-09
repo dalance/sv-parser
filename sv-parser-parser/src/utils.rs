@@ -435,7 +435,7 @@ pub(crate) fn current_version() -> Option<VersionSpecifier> {
 // -----------------------------------------------------------------------------
 
 pub(crate) fn concat<'a>(a: Span<'a>, b: Span<'a>) -> Option<Span<'a>> {
-    let c = str_concat::concat(a.fragment, b.fragment);
+    let c = unsafe { str_concat::concat(a.fragment, b.fragment) };
     if let Ok(c) = c {
         Some(Span {
             offset: a.offset,

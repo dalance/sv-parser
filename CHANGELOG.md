@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.6.0...Unreleased) - ReleaseDate
 
+* [Changed] update str-concat
+
 ## [v0.6.0](https://github.com/dalance/sv-parser/compare/v0.5.0...v0.6.0) - 2020-01-24
 
 * [Added] ignore_include option

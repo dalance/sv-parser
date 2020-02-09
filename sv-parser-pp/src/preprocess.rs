@@ -4,6 +4,7 @@ use nom_greedyerror::error_position;
 use std::collections::{BTreeMap, HashMap};
 use std::convert::TryInto;
 use std::fs::File;
+use std::hash::BuildHasher;
 use std::io::{BufReader, Read};
 use std::path::{Path, PathBuf};
 use sv_parser_error::Error;
@@ -114,9 +115,9 @@ impl DefineText {
 
 pub type Defines = HashMap<String, Option<Define>>;
 
-pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
+pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     path: T,
-    pre_defines: &Defines,
+    pre_defines: &HashMap<String, Option<Define>, V>,
     include_paths: &[U],
     ignore_include: bool,
 ) -> Result<(PreprocessedText, Defines), Error> {
@@ -131,10 +132,10 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>>(
     preprocess_str(&s, path, pre_defines, include_paths, ignore_include, 0)
 }
 
-pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
+pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     s: &str,
     path: T,
-    pre_defines: &Defines,
+    pre_defines: &HashMap<String, Option<Define>, V>,
     include_paths: &[U],
     ignore_include: bool,
     resolve_depth: usize,
@@ -399,14 +400,12 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>>(
                         }
                     }
                 };
-                if path.is_relative() {
-                    if !path.exists() {
-                        for include_path in include_paths {
-                            let new_path = include_path.as_ref().join(&path);
-                            if new_path.exists() {
-                                path = new_path;
-                                break;
-                            }
+                if path.is_relative() && !path.exists() {
+                    for include_path in include_paths {
+                        let new_path = include_path.as_ref().join(&path);
+                        if new_path.exists() {
+                            path = new_path;
+                            break;
                         }
                     }
                 }
@@ -609,10 +608,10 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
         } else {
             Ok(None)
         }
-    } else if let Some(_) = define {
+    } else if define.is_some() {
         Ok(None)
     } else {
-        Err(Error::DefineNotFound(String::from(id)))
+        Err(Error::DefineNotFound(id))
     }
 }
 

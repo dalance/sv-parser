@@ -1,3 +1,5 @@
+#![allow(clippy::many_single_char_names, clippy::module_inception)]
+
 pub mod keywords;
 #[macro_use]
 pub mod utils;
@@ -34,7 +36,6 @@ pub(crate) use nom::combinator::*;
 pub(crate) use nom::error::{context, make_error, ErrorKind};
 pub(crate) use nom::multi::*;
 pub(crate) use nom::sequence::*;
-//pub(crate) use nom::{Err, IResult};
 pub(crate) use nom::Err;
 pub(crate) use nom_greedyerror::GreedyError;
 pub(crate) use nom_packrat::{self, packrat_parser, HasExtraState};

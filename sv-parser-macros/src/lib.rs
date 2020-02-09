@@ -120,7 +120,7 @@ pub fn any_node_derive(input: TokenStream) -> TokenStream {
 }
 
 fn impl_any_node(ast: &DeriveInput) -> TokenStream {
-    let ref data = match ast.data {
+    let data = &match ast.data {
         Enum(ref data) => data,
         _ => unreachable!(),
     };
@@ -170,7 +170,7 @@ pub fn ref_node_derive(input: TokenStream) -> TokenStream {
 }
 
 fn impl_ref_node(ast: &DeriveInput) -> TokenStream {
-    let ref data = match ast.data {
+    let data = &match ast.data {
         Enum(ref data) => data,
         _ => unreachable!(),
     };

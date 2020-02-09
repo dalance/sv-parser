@@ -1,4 +1,9 @@
 #![recursion_limit = "256"]
+#![allow(
+    clippy::module_inception,
+    clippy::large_enum_variant,
+    clippy::type_complexity
+)]
 
 pub mod any_node;
 pub mod behavioral_statements;

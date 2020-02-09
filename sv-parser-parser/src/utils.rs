@@ -26,9 +26,7 @@ where
 #[cfg(not(feature = "trace"))]
 pub(crate) fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol> {
     move |s: Span<'a>| {
-        let (s, x) = map(ws(map(tag(t.clone()), |x: Span| into_locate(x))), |x| {
-            Symbol { nodes: x }
-        })(s)?;
+        let (s, x) = map(ws(map(tag(t), into_locate)), |x| Symbol { nodes: x })(s)?;
         Ok((s, x))
     }
 }
@@ -38,9 +36,7 @@ pub(crate) fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, S
     move |s: Span<'a>| {
         let (depth, s) = nom_tracable::forward_trace(s, &format!("symbol(\"{}\")", t));
         let body = || {
-            let (s, x) = map(ws(map(tag(t.clone()), |x: Span| into_locate(x))), |x| {
-                Symbol { nodes: x }
-            })(s)?;
+            let (s, x) = map(ws(map(tag(t), into_locate)), |x| Symbol { nodes: x })(s)?;
             Ok((s, x))
         };
         let ret = body();
@@ -51,9 +47,7 @@ pub(crate) fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, S
 #[cfg(not(feature = "trace"))]
 pub(crate) fn symbol_exact<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol> {
     move |s: Span<'a>| {
-        let (s, x) = map(no_ws(map(tag(t.clone()), into_locate)), |x| Symbol {
-            nodes: x,
-        })(s)?;
+        let (s, x) = map(no_ws(map(tag(t), into_locate)), |x| Symbol { nodes: x })(s)?;
         Ok((s, x))
     }
 }
@@ -63,9 +57,7 @@ pub(crate) fn symbol_exact<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<
     move |s: Span<'a>| {
         let (depth, s) = nom_tracable::forward_trace(s, &format!("symbol(\"{}\")", t));
         let body = || {
-            let (s, x) = map(no_ws(map(tag(t.clone()), into_locate)), |x| Symbol {
-                nodes: x,
-            })(s)?;
+            let (s, x) = map(no_ws(map(tag(t), into_locate)), |x| Symbol { nodes: x })(s)?;
             Ok((s, x))
         };
         let ret = body();
@@ -78,8 +70,8 @@ pub(crate) fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, 
     move |s: Span<'a>| {
         let (s, x) = map(
             ws(alt((
-                all_consuming(map(tag(t.clone()), into_locate)),
-                terminated(map(tag(t.clone()), into_locate), peek(none_of(AZ09_))),
+                all_consuming(map(tag(t), into_locate)),
+                terminated(map(tag(t), into_locate), peek(none_of(AZ09_))),
             ))),
             |x| Keyword { nodes: x },
         )(s)?;
@@ -94,8 +86,8 @@ pub(crate) fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, 
         let body = || {
             let (s, x) = map(
                 ws(alt((
-                    all_consuming(map(tag(t.clone()), into_locate)),
-                    terminated(map(tag(t.clone()), into_locate), peek(none_of(AZ09_))),
+                    all_consuming(map(tag(t), into_locate)),
+                    terminated(map(tag(t), into_locate), peek(none_of(AZ09_))),
                 ))),
                 |x| Keyword { nodes: x },
             )(s)?;

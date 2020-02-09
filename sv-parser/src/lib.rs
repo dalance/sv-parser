@@ -4,6 +4,7 @@ use nom::combinator::all_consuming;
 use nom_greedyerror::error_position;
 use std::collections::HashMap;
 use std::fmt;
+use std::hash::BuildHasher;
 use std::path::{Path, PathBuf};
 pub use sv_parser_error::Error;
 use sv_parser_parser::{lib_parser, sv_parser, Span, SpanInfo};
@@ -22,14 +23,11 @@ impl SyntaxTree {
         let mut beg = None;
         let mut end = 0;
         for n in Iter::new(nodes.into()) {
-            match n {
-                RefNode::Locate(x) => {
-                    if beg.is_none() {
-                        beg = Some(x.offset);
-                    }
-                    end = x.offset + x.len;
+            if let RefNode::Locate(x) = n {
+                if beg.is_none() {
+                    beg = Some(x.offset);
                 }
-                _ => (),
+                end = x.offset + x.len;
             }
         }
         if let Some(beg) = beg {
@@ -94,9 +92,9 @@ impl<'a> IntoIterator for &'a SyntaxTree {
     }
 }
 
-pub fn parse_sv<T: AsRef<Path>, U: AsRef<Path>>(
+pub fn parse_sv<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     path: T,
-    pre_defines: &HashMap<String, Option<Define>>,
+    pre_defines: &HashMap<String, Option<Define>, V>,
     include_paths: &[U],
     ignore_include: bool,
 ) -> Result<(SyntaxTree, Defines), Error> {
@@ -131,10 +129,10 @@ pub fn parse_sv<T: AsRef<Path>, U: AsRef<Path>>(
     }
 }
 
-pub fn parse_sv_str<T: AsRef<Path>, U: AsRef<Path>>(
+pub fn parse_sv_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     s: &str,
     path: T,
-    pre_defines: &HashMap<String, Option<Define>>,
+    pre_defines: &HashMap<String, Option<Define>, V>,
     include_paths: &[U],
     ignore_include: bool,
 ) -> Result<(SyntaxTree, Defines), Error> {
@@ -169,9 +167,9 @@ pub fn parse_sv_str<T: AsRef<Path>, U: AsRef<Path>>(
     }
 }
 
-pub fn parse_lib<T: AsRef<Path>, U: AsRef<Path>>(
+pub fn parse_lib<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     path: T,
-    pre_defines: &HashMap<String, Option<Define>>,
+    pre_defines: &HashMap<String, Option<Define>, V>,
     include_paths: &[U],
     ignore_include: bool,
 ) -> Result<(SyntaxTree, Defines), Error> {
@@ -206,10 +204,10 @@ pub fn parse_lib<T: AsRef<Path>, U: AsRef<Path>>(
     }
 }
 
-pub fn parse_lib_str<T: AsRef<Path>, U: AsRef<Path>>(
+pub fn parse_lib_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     s: &str,
     path: T,
-    pre_defines: &HashMap<String, Option<Define>>,
+    pre_defines: &HashMap<String, Option<Define>, V>,
     include_paths: &[U],
     ignore_include: bool,
 ) -> Result<(SyntaxTree, Defines), Error> {

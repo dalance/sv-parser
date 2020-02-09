@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1579834920548,
+  "lastUpdate": 1581254125820,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -1295,6 +1295,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 24693346,
             "range": "+/- 3,106,466",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "7f24c6b66d397bf015483f04007e99e0edc3b58a",
+          "message": "Apply clippy",
+          "timestamp": "2020-02-09T21:54:16+09:00",
+          "tree_id": "af8a488b5ed7df0288d7d98d171ec0d5549ebf46",
+          "url": "https://github.com/dalance/sv-parser/commit/7f24c6b66d397bf015483f04007e99e0edc3b58a"
+        },
+        "date": 1581254125528,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 23875232,
+            "range": "+/- 1,371,162",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 24364521,
+            "range": "+/- 1,958,228",
             "unit": "ns/iter"
           }
         ]

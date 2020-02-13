@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.6.1...Unreleased) - ReleaseDate
 
+* [Fixed] parse error of cast
+
 ## [v0.6.1](https://github.com/dalance/sv-parser/compare/v0.6.0...v0.6.1) - 2020-02-09
 
 * [Changed] update str-concat

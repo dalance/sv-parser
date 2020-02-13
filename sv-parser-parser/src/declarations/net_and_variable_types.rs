@@ -12,7 +12,23 @@ pub(crate) fn casting_type(s: Span) -> IResult<Span, CastingType> {
         map(signing, |x| CastingType::Signing(Box::new(x))),
         map(keyword("string"), |x| CastingType::String(Box::new(x))),
         map(keyword("const"), |x| CastingType::Const(Box::new(x))),
-        map(constant_primary, |x| {
+        map(constant_primary_without_cast, |x| {
+            CastingType::ConstantPrimary(Box::new(x))
+        }),
+    ))(s)
+}
+
+#[recursive_parser]
+#[packrat_parser]
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn constant_casting_type(s: Span) -> IResult<Span, CastingType> {
+    alt((
+        map(simple_type, |x| CastingType::SimpleType(Box::new(x))),
+        map(signing, |x| CastingType::Signing(Box::new(x))),
+        map(keyword("string"), |x| CastingType::String(Box::new(x))),
+        map(keyword("const"), |x| CastingType::Const(Box::new(x))),
+        map(constant_primary_without_cast, |x| {
             CastingType::ConstantPrimary(Box::new(x))
         }),
     ))(s)

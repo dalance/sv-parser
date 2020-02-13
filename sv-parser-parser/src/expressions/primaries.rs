@@ -43,6 +43,42 @@ pub(crate) fn constant_primary(s: Span) -> IResult<Span, ConstantPrimary> {
 
 #[tracable_parser]
 #[packrat_parser]
+pub(crate) fn constant_primary_without_cast(s: Span) -> IResult<Span, ConstantPrimary> {
+    alt((
+        // BNF-WA
+        map(keyword("$"), |x| ConstantPrimary::Dollar(Box::new(x))),
+        map(keyword("null"), |x| ConstantPrimary::Null(Box::new(x))),
+        map(constant_assignment_pattern_expression, |x| {
+            ConstantPrimary::ConstantAssignmentPatternExpression(Box::new(x))
+        }),
+        map(primary_literal, |x| {
+            ConstantPrimary::PrimaryLiteral(Box::new(x))
+        }),
+        constant_primary_mintypmax_expression,
+        map(
+            terminated(constant_function_call, peek(not(one_of("[.")))),
+            |x| ConstantPrimary::ConstantFunctionCall(Box::new(x)),
+        ),
+        constant_primary_ps_parameter,
+        constant_primary_specparam,
+        map(genvar_identifier, |x| {
+            ConstantPrimary::GenvarIdentifier(Box::new(x))
+        }),
+        constant_primary_formal_port,
+        constant_primary_enum,
+        constant_primary_concatenation,
+        constant_primary_multiple_concatenation,
+        map(constant_let_expression, |x| {
+            ConstantPrimary::ConstantLetExpression(Box::new(x))
+        }),
+        map(type_reference, |x| {
+            ConstantPrimary::TypeReference(Box::new(x))
+        }),
+    ))(s)
+}
+
+#[tracable_parser]
+#[packrat_parser]
 pub(crate) fn constant_primary_ps_parameter(s: Span) -> IResult<Span, ConstantPrimary> {
     let (s, a) = ps_parameter_identifier(s)?;
     let (s, b) = constant_select(s)?;
@@ -402,7 +438,7 @@ pub(crate) fn constant_select(s: Span) -> IResult<Span, ConstantSelect> {
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn constant_cast(s: Span) -> IResult<Span, ConstantCast> {
-    let (s, a) = casting_type(s)?;
+    let (s, a) = constant_casting_type(s)?;
     let (s, b) = symbol("'")(s)?;
     let (s, c) = paren(constant_expression)(s)?;
     Ok((s, ConstantCast { nodes: (a, b, c) }))

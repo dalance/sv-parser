@@ -418,6 +418,11 @@ mod unit {
             r##"module test(); specify $setup(posedge CSB, edge[01,0x,x1,1x] CL, tps, a); endspecify endmodule"##,
             Ok((_, _))
         );
+        test!(
+            source_text,
+            r##"module a; assign a = a[$clog2(a)'(a)]; endmodule"##,
+            Ok((_, _))
+        );
     }
 }
 
@@ -15876,10 +15881,6 @@ mod spec {
 
 #[test]
 fn debug() {
-    test!(
-        source_text,
-        r##"module a; initial begin #1 ps[idx] = 1'b1; end endmodule"##,
-        Ok((_, _))
-    );
+    test!(expression, r##"a[$clog2(a)'(a)]"##, Ok((_, _)));
     nom_tracable::cumulative_histogram();
 }

@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.6.1...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.6.2...Unreleased) - ReleaseDate
+
+## [v0.6.2](https://github.com/dalance/sv-parser/compare/v0.6.1...v0.6.2) - 2020-02-13
 
 * [Fixed] parse error of cast
 

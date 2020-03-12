@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.6.3...Unreleased) - ReleaseDate
 
+* [Changed] error message of Error::Io
+
 ## [v0.6.3](https://github.com/dalance/sv-parser/compare/v0.6.2...v0.6.3) - 2020-02-13
 
 ## [v0.6.2](https://github.com/dalance/sv-parser/compare/v0.6.1...v0.6.2) - 2020-02-13

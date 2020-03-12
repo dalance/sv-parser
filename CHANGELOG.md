@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.6.3...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.6.4...Unreleased) - ReleaseDate
+
+## [v0.6.4](https://github.com/dalance/sv-parser/compare/v0.6.3...v0.6.4) - 2020-03-12
 
 * [Changed] error message of Error::Io
 

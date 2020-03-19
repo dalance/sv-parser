@@ -11,6 +11,7 @@ use sv_parser_error::Error;
 use sv_parser_parser::{pp_parser, Span, SpanInfo};
 use sv_parser_syntaxtree::{
     IncludeCompilerDirective, Locate, NodeEvent, RefNode, SourceDescription, TextMacroUsage,
+    WhiteSpace,
 };
 
 const RECURSIVE_LIMIT: usize = 128;
@@ -119,6 +120,7 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     path: T,
     pre_defines: &HashMap<String, Option<Define>, V>,
     include_paths: &[U],
+    strip_comments: bool,
     ignore_include: bool,
 ) -> Result<(PreprocessedText, Defines), Error> {
     let f = File::open(path.as_ref()).map_err(|x| Error::File {
@@ -129,7 +131,15 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     let mut s = String::new();
     reader.read_to_string(&mut s)?;
 
-    preprocess_str(&s, path, pre_defines, include_paths, ignore_include, 0)
+    preprocess_str(
+        &s,
+        path,
+        pre_defines,
+        include_paths,
+        ignore_include,
+        strip_comments,
+        0,
+    )
 }
 
 pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
@@ -138,6 +148,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     pre_defines: &HashMap<String, Option<Define>, V>,
     include_paths: &[U],
     ignore_include: bool,
+    strip_comments: bool,
     resolve_depth: usize,
 ) -> Result<(PreprocessedText, Defines), Error> {
     let mut skip = false;
@@ -284,6 +295,18 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                     }
                 }
             }
+            NodeEvent::Enter(RefNode::WhiteSpace(x)) if !skip && !strip_comments => {
+                if let WhiteSpace::Space(_) = x {
+                    let locate: Locate = x.try_into().unwrap();
+                    let range = Range::new(locate.offset + locate.len, locate.offset + locate.len);
+                    ret.push(locate.str(&s), Some((path.as_ref(), range)));
+                }
+            }
+            NodeEvent::Enter(RefNode::Comment(x)) if !skip && !strip_comments => {
+                let locate: Locate = x.try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
+            }
             NodeEvent::Enter(RefNode::IfndefDirective(x)) if !skip => {
                 let (_, _, ref ifid, ref ifbody, ref elsif, ref elsebody, _, _) = x.nodes;
                 let ifid = identifier(ifid.into(), &s).unwrap();
@@ -391,6 +414,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                             path.as_ref(),
                             &defines,
                             include_paths,
+                            strip_comments,
                             resolve_depth + 1,
                         )? {
                             let p = p.trim().trim_matches('"');
@@ -409,10 +433,12 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                         }
                     }
                 }
-                let (include, new_defines) = preprocess(path, &defines, include_paths, false)
-                    .map_err(|x| Error::Include {
-                        source: Box::new(x),
-                    })?;
+                let (include, new_defines) =
+                    preprocess(path, &defines, include_paths, strip_comments, false).map_err(
+                        |x| Error::Include {
+                            source: Box::new(x),
+                        },
+                    )?;
                 defines = new_defines;
                 ret.merge(include);
             }
@@ -423,6 +449,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                     path.as_ref(),
                     &defines,
                     include_paths,
+                    strip_comments,
                     resolve_depth + 1,
                 )? {
                     ret.push(&text, origin);
@@ -516,6 +543,7 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
     path: T,
     defines: &Defines,
     include_paths: &[U],
+    strip_comments: bool,
     resolve_depth: usize,
 ) -> Result<Option<(String, Option<(PathBuf, Range)>, Defines)>, Error> {
     let (_, ref name, ref args) = x.nodes;
@@ -591,13 +619,13 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
             replaced.push_str(" ");
             // remove leading whitespace
             replaced = String::from(replaced.trim_start());
-
             let (replaced, new_defines) = preprocess_str(
                 &replaced,
                 path.as_ref(),
                 &defines,
                 include_paths,
                 false,
+                strip_comments,
                 resolve_depth,
             )?;
             Ok(Some((
@@ -634,6 +662,7 @@ mod tests {
             get_testcase("test1.sv"),
             &HashMap::new(),
             &[] as &[String],
+            true,
             false,
         )
         .unwrap();
@@ -660,8 +689,14 @@ endmodule
     fn test1_predefine() {
         let mut defines = HashMap::new();
         defines.insert(String::from("behavioral"), None);
-        let (ret, _) =
-            preprocess(get_testcase("test1.sv"), &defines, &[] as &[String], false).unwrap();
+        let (ret, _) = preprocess(
+            get_testcase("test1.sv"),
+            &defines,
+            &[] as &[String],
+            true,
+            false,
+        )
+        .unwrap();
         assert_eq!(
             ret.text(),
             r##"module and_op (a, b, c);
@@ -681,6 +716,7 @@ endmodule
             get_testcase("test2.sv"),
             &HashMap::new(),
             &include_paths,
+            true,
             false,
         )
         .unwrap();
@@ -719,6 +755,7 @@ endmodule
             &HashMap::new(),
             &include_paths,
             true,
+            true,
         )
         .unwrap();
         assert_eq!(
@@ -735,6 +772,7 @@ endmodule
             get_testcase("test3.sv"),
             &HashMap::new(),
             &[] as &[String],
+            true,
             false,
         )
         .unwrap();
@@ -757,6 +795,7 @@ module a ();
             get_testcase("test4.sv"),
             &HashMap::new(),
             &[] as &[String],
+            true,
             false,
         )
         .unwrap();
@@ -783,6 +822,7 @@ endmodule
             get_testcase("test5.sv"),
             &HashMap::new(),
             &[] as &[String],
+            true,
             false,
         )
         .unwrap();
@@ -808,6 +848,7 @@ endmodule
             get_testcase("test6.sv"),
             &HashMap::new(),
             &[] as &[String],
+            true,
             false,
         )
         .unwrap();
@@ -830,6 +871,7 @@ endmodule
             get_testcase("test7.sv"),
             &HashMap::new(),
             &[] as &[String],
+            true,
             false,
         );
         assert_eq!(format!("{:?}", ret), "Err(ExceedRecursiveLimit)");
@@ -841,6 +883,7 @@ endmodule
             get_testcase("test8.sv"),
             &HashMap::new(),
             &[] as &[String],
+            true,
             false,
         );
         assert_eq!(format!("{:?}", ret), "Err(ExceedRecursiveLimit)");
@@ -853,6 +896,7 @@ endmodule
             get_testcase("test9.sv"),
             &HashMap::new(),
             &include_paths,
+            true,
             false,
         );
         assert_eq!(format!("{:?}", ret), "Err(IncludeLine)");
@@ -865,6 +909,7 @@ endmodule
             get_testcase("test10.sv"),
             &HashMap::new(),
             &include_paths,
+            true,
             false,
         );
         assert_eq!(format!("{:?}", ret), "Err(IncludeLine)");
@@ -876,6 +921,7 @@ endmodule
             get_testcase("test11.sv"),
             &HashMap::new(),
             &[] as &[String],
+            true,
             false,
         )
         .unwrap();
@@ -897,6 +943,7 @@ endmodule
             get_testcase("test12.sv"),
             &HashMap::new(),
             &[] as &[String],
+            true,
             false,
         )
         .unwrap();

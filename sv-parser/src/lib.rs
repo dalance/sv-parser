@@ -98,7 +98,7 @@ pub fn parse_sv<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     include_paths: &[U],
     ignore_include: bool,
 ) -> Result<(SyntaxTree, Defines), Error> {
-    let (text, defines) = preprocess(path, pre_defines, include_paths, ignore_include)?;
+    let (text, defines) = preprocess(path, pre_defines, include_paths, false, ignore_include)?;
     let span = Span::new_extra(text.text(), SpanInfo::default());
     let result = all_consuming(sv_parser)(span);
     match result {
@@ -136,7 +136,15 @@ pub fn parse_sv_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     include_paths: &[U],
     ignore_include: bool,
 ) -> Result<(SyntaxTree, Defines), Error> {
-    let (text, defines) = preprocess_str(s, path, pre_defines, include_paths, ignore_include, 0)?;
+    let (text, defines) = preprocess_str(
+        s,
+        path,
+        pre_defines,
+        include_paths,
+        ignore_include,
+        false,
+        0,
+    )?;
     let span = Span::new_extra(text.text(), SpanInfo::default());
     let result = all_consuming(sv_parser)(span);
     match result {
@@ -171,9 +179,16 @@ pub fn parse_lib<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     path: T,
     pre_defines: &HashMap<String, Option<Define>, V>,
     include_paths: &[U],
+    strip_comments: bool,
     ignore_include: bool,
 ) -> Result<(SyntaxTree, Defines), Error> {
-    let (text, defines) = preprocess(path, pre_defines, include_paths, ignore_include)?;
+    let (text, defines) = preprocess(
+        path,
+        pre_defines,
+        include_paths,
+        strip_comments,
+        ignore_include,
+    )?;
     let span = Span::new_extra(text.text(), SpanInfo::default());
     let result = all_consuming(lib_parser)(span);
     match result {
@@ -211,7 +226,15 @@ pub fn parse_lib_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     include_paths: &[U],
     ignore_include: bool,
 ) -> Result<(SyntaxTree, Defines), Error> {
-    let (text, defines) = preprocess_str(s, path, pre_defines, include_paths, ignore_include, 0)?;
+    let (text, defines) = preprocess_str(
+        s,
+        path,
+        pre_defines,
+        include_paths,
+        ignore_include,
+        false,
+        0,
+    )?;
     let span = Span::new_extra(text.text(), SpanInfo::default());
     let result = all_consuming(lib_parser)(span);
     match result {

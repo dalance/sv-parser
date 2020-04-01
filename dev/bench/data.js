@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1584017117821,
+  "lastUpdate": 1585711149291,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -1475,6 +1475,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 23964000,
             "range": "+/- 2,193,177",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b02656a88f1eb70aed1fb6db8426b7fc53390309",
+          "message": "Merge pull request #3 from rfdonnelly/patch-1\n\nFix README example",
+          "timestamp": "2020-04-01T11:57:15+09:00",
+          "tree_id": "703399cafd883024272e84672cddbb6dccc853b4",
+          "url": "https://github.com/dalance/sv-parser/commit/b02656a88f1eb70aed1fb6db8426b7fc53390309"
+        },
+        "date": 1585711149044,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 26504820,
+            "range": "± 2402683",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 26005803,
+            "range": "± 1949594",
             "unit": "ns/iter"
           }
         ]

@@ -48,7 +48,7 @@ fn main() {
     let includes: Vec<PathBuf> = Vec::new();
 
     // Parse
-    let result = parse_sv(&path, &defines, &includes);
+    let result = parse_sv(&path, &defines, &includes, false);
 
     if let Ok((syntax_tree, _)) = result {
         // &SyntaxTree is iterable
@@ -62,13 +62,13 @@ fn main() {
                     let id = get_identifier(id).unwrap();
 
                     // Original string can be got by SyntaxTree::get_str(self, locate: &Locate)
-                    let id = syntax_tree.get_str(&id);
+                    let id = syntax_tree.get_str(&id).unwrap();
                     println!("module: {}", id);
                 }
                 RefNode::ModuleDeclarationAnsi(x) => {
                     let id = unwrap_node!(x, ModuleIdentifier).unwrap();
                     let id = get_identifier(id).unwrap();
-                    let id = syntax_tree.get_str(&id);
+                    let id = syntax_tree.get_str(&id).unwrap();
                     println!("module: {}", id);
                 }
                 _ => (),

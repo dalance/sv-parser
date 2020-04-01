@@ -23,8 +23,8 @@ default = []
 trace   = ["sv-parser-parser/trace"]
 
 [dependencies]
-nom                  = "5.0.0"
-nom-greedyerror      = "0.1.0"
+nom                  = "5"
+nom-greedyerror      = "0.2"
 sv-parser-error      = {version = "^0.6.4", path = "../sv-parser-error"}
 sv-parser-parser     = {version = "^0.6.4", path = "../sv-parser-parser"}
 sv-parser-pp         = {version = "^0.6.4", path = "../sv-parser-pp"}

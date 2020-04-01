@@ -427,14 +427,12 @@ pub(crate) fn current_version() -> Option<VersionSpecifier> {
 // -----------------------------------------------------------------------------
 
 pub(crate) fn concat<'a>(a: Span<'a>, b: Span<'a>) -> Option<Span<'a>> {
-    let c = unsafe { str_concat::concat(a.fragment, b.fragment) };
+    let c = unsafe { str_concat::concat(a.fragment(), b.fragment()) };
     if let Ok(c) = c {
-        Some(Span {
-            offset: a.offset,
-            line: a.line,
-            fragment: c,
-            extra: a.extra,
-        })
+        let ret = unsafe {
+            Span::new_from_raw_offset(a.location_offset(), a.location_line(), c, a.extra)
+        };
+        Some(ret)
     } else {
         None
     }
@@ -454,7 +452,7 @@ pub(crate) fn is_keyword(s: &Span) -> bool {
         None => KEYWORDS_1800_2017,
     };
     for k in keywords {
-        if &s.fragment == k {
+        if s.fragment() == k {
             return true;
         }
     }
@@ -463,8 +461,8 @@ pub(crate) fn is_keyword(s: &Span) -> bool {
 
 pub(crate) fn into_locate(s: Span) -> Locate {
     Locate {
-        offset: s.offset,
-        line: s.line,
-        len: s.fragment.len(),
+        offset: s.location_offset(),
+        line: s.location_line(),
+        len: s.fragment().len(),
     }
 }

@@ -3,6 +3,7 @@
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.6.4...Unreleased) - ReleaseDate
 
 * [Fixed] casting parse error [#8](https://github.com/dalance/sv-parser/issues/8)
+* [Changed] update nom_locate to 2.0.0
 
 ## [v0.6.4](https://github.com/dalance/sv-parser/compare/v0.6.3...v0.6.4) - 2020-03-12
 

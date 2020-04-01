@@ -423,6 +423,11 @@ mod unit {
             r##"module a; assign a = a[$clog2(a)'(a)]; endmodule"##,
             Ok((_, _))
         );
+        test!(
+            source_text,
+            r##"module a; always begin a = b.c'(0); end endmodule"##,
+            Ok((_, _))
+        );
     }
 }
 
@@ -15881,6 +15886,10 @@ mod spec {
 
 #[test]
 fn debug() {
-    test!(expression, r##"a[$clog2(a)'(a)]"##, Ok((_, _)));
+    test!(
+        source_text,
+        r##"module a; always begin a = b.c'(0); end endmodule"##,
+        Ok((_, _))
+    );
     nom_tracable::cumulative_histogram();
 }

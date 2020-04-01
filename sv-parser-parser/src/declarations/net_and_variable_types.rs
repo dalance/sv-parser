@@ -8,7 +8,9 @@ use crate::*;
 #[packrat_parser]
 pub(crate) fn casting_type(s: Span) -> IResult<Span, CastingType> {
     alt((
-        map(simple_type, |x| CastingType::SimpleType(Box::new(x))),
+        map(terminated(simple_type, peek(tag("'"))), |x| {
+            CastingType::SimpleType(Box::new(x))
+        }),
         map(signing, |x| CastingType::Signing(Box::new(x))),
         map(keyword("string"), |x| CastingType::String(Box::new(x))),
         map(keyword("const"), |x| CastingType::Const(Box::new(x))),
@@ -24,7 +26,9 @@ pub(crate) fn casting_type(s: Span) -> IResult<Span, CastingType> {
 #[packrat_parser]
 pub(crate) fn constant_casting_type(s: Span) -> IResult<Span, CastingType> {
     alt((
-        map(simple_type, |x| CastingType::SimpleType(Box::new(x))),
+        map(terminated(simple_type, peek(tag("'"))), |x| {
+            CastingType::SimpleType(Box::new(x))
+        }),
         map(signing, |x| CastingType::Signing(Box::new(x))),
         map(keyword("string"), |x| CastingType::String(Box::new(x))),
         map(keyword("const"), |x| CastingType::Const(Box::new(x))),

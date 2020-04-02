@@ -99,6 +99,13 @@ pub fn parse_sv<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     ignore_include: bool,
 ) -> Result<(SyntaxTree, Defines), Error> {
     let (text, defines) = preprocess(path, pre_defines, include_paths, false, ignore_include)?;
+    parse_sv_pp(text, defines)
+}
+
+pub fn parse_sv_pp(
+    text: PreprocessedText,
+    defines: Defines,
+) -> Result<(SyntaxTree, Defines), Error> {
     let span = Span::new_extra(text.text(), SpanInfo::default());
     let result = all_consuming(sv_parser)(span);
     match result {
@@ -145,78 +152,17 @@ pub fn parse_sv_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
         false,
         0,
     )?;
-    let span = Span::new_extra(text.text(), SpanInfo::default());
-    let result = all_consuming(sv_parser)(span);
-    match result {
-        Ok((_, x)) => Ok((
-            SyntaxTree {
-                node: x.into(),
-                text,
-            },
-            defines,
-        )),
-        Err(x) => {
-            let pos = match x {
-                nom::Err::Incomplete(_) => None,
-                nom::Err::Error(e) => error_position(&e),
-                nom::Err::Failure(e) => error_position(&e),
-            };
-            let origin = if let Some(pos) = pos {
-                if let Some(origin) = text.origin(pos) {
-                    Some((origin.0.clone(), origin.1))
-                } else {
-                    None
-                }
-            } else {
-                None
-            };
-            Err(Error::Parse(origin))
-        }
-    }
+    parse_sv_pp(text, defines)
 }
 
 pub fn parse_lib<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     path: T,
     pre_defines: &HashMap<String, Option<Define>, V>,
     include_paths: &[U],
-    strip_comments: bool,
     ignore_include: bool,
 ) -> Result<(SyntaxTree, Defines), Error> {
-    let (text, defines) = preprocess(
-        path,
-        pre_defines,
-        include_paths,
-        strip_comments,
-        ignore_include,
-    )?;
-    let span = Span::new_extra(text.text(), SpanInfo::default());
-    let result = all_consuming(lib_parser)(span);
-    match result {
-        Ok((_, x)) => Ok((
-            SyntaxTree {
-                node: x.into(),
-                text,
-            },
-            defines,
-        )),
-        Err(x) => {
-            let pos = match x {
-                nom::Err::Incomplete(_) => None,
-                nom::Err::Error(e) => error_position(&e),
-                nom::Err::Failure(e) => error_position(&e),
-            };
-            let origin = if let Some(pos) = pos {
-                if let Some(origin) = text.origin(pos) {
-                    Some((origin.0.clone(), origin.1))
-                } else {
-                    None
-                }
-            } else {
-                None
-            };
-            Err(Error::Parse(origin))
-        }
-    }
+    let (text, defines) = preprocess(path, pre_defines, include_paths, false, ignore_include)?;
+    parse_lib_pp(text, defines)
 }
 
 pub fn parse_lib_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
@@ -235,6 +181,13 @@ pub fn parse_lib_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
         false,
         0,
     )?;
+    parse_lib_pp(text, defines)
+}
+
+pub fn parse_lib_pp(
+    text: PreprocessedText,
+    defines: Defines,
+) -> Result<(SyntaxTree, Defines), Error> {
     let span = Span::new_extra(text.text(), SpanInfo::default());
     let result = all_consuming(lib_parser)(span);
     match result {

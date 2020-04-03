@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.6.4...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.6.5...Unreleased) - ReleaseDate
+
+## [v0.6.5](https://github.com/dalance/sv-parser/compare/v0.6.4...v0.6.5) - 2020-04-03
 
 * [Fixed] casting parse error [#8](https://github.com/dalance/sv-parser/issues/8)
 * [Changed] update nom_locate to 2.0.0

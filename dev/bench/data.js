@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1585905849754,
+  "lastUpdate": 1586519966025,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -1619,6 +1619,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 24685990,
             "range": "± 4716493",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8fdd33191c377c0f397645837afe86795a702967",
+          "message": "Merge pull request #6 from zarubaf/master\n\nMake comment stripping optional",
+          "timestamp": "2020-04-10T20:34:32+09:00",
+          "tree_id": "775c154b8c2c1afd6d03d161f1371cb261f7d69c",
+          "url": "https://github.com/dalance/sv-parser/commit/8fdd33191c377c0f397645837afe86795a702967"
+        },
+        "date": 1586519965626,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 29626308,
+            "range": "± 4495492",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 28838417,
+            "range": "± 3518392",
             "unit": "ns/iter"
           }
         ]

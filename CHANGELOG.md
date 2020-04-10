@@ -4,6 +4,8 @@
 
 ## [v0.7.0](https://github.com/dalance/sv-parser/compare/v0.6.5...v0.7.0) - 2020-04-10
 
+* [Changed] make comment stripping optional [#6](https://github.com/dalance/sv-parser/pull/6)
+
 ## [v0.6.5](https://github.com/dalance/sv-parser/compare/v0.6.4...v0.6.5) - 2020-04-03
 
 * [Fixed] casting parse error [#8](https://github.com/dalance/sv-parser/issues/8)

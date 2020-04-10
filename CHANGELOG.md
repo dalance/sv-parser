@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.6.5...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.7.0...Unreleased) - ReleaseDate
+
+## [v0.7.0](https://github.com/dalance/sv-parser/compare/v0.6.5...v0.7.0) - 2020-04-10
 
 ## [v0.6.5](https://github.com/dalance/sv-parser/compare/v0.6.4...v0.6.5) - 2020-04-03
 

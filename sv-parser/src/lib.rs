@@ -249,3 +249,17 @@ macro_rules! unwrap_locate {
         unwrap()
     }};
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test() {
+        let src = "/* comment */";
+        let (syntax_tree, _) =
+            parse_sv_str(src, PathBuf::from(""), &HashMap::new(), &[""], false).unwrap();
+        let comment = unwrap_node!(&syntax_tree, Comment);
+        assert!(comment.is_some());
+    }
+}

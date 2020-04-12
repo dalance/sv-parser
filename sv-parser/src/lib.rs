@@ -224,7 +224,7 @@ macro_rules! unwrap_node {
         let unwrap = || {
             for x in $n {
                 match x {
-                    $(sv_parser::RefNode::$ty(x) => return Some(sv_parser::RefNode::$ty(x)),)*
+                    $($crate::RefNode::$ty(x) => return Some($crate::RefNode::$ty(x)),)*
                     _ => (),
                 }
             }
@@ -240,7 +240,7 @@ macro_rules! unwrap_locate {
         let unwrap = || {
             for x in $n {
                 match x {
-                    sv_parser::RefNode::Locate(x) => return Some(x),
+                    $crate::RefNode::Locate(x) => return Some(x),
                     _ => (),
                 }
             }

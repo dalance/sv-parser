@@ -7,6 +7,8 @@ SystemVerilog parser library fully complient with [IEEE 1800-2017](https://stand
 
 ## Tools using sv-parser
 
+* [morty](https://github.com/zarubaf/morty): A SystemVerilog source file pickler
+* [svinst](https://github.com/sgherbst/svinst): Determines the modules declared and instantiated in a SystemVerilog file
 * [svlint](https://github.com/dalance/svlint): SystemVerilog linter
 * [svls](https://github.com/dalance/svls): SystemVerilog language server
 

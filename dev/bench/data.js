@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1593694063680,
+  "lastUpdate": 1594721451927,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -1799,6 +1799,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 23716975,
             "range": "± 3764898",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8ff5c1d5e3502a6ba6ea75a37fa7a63f838ad964",
+          "message": "Merge pull request #15 from ShashankVM/master\n\nUpdated README.md to fix a typing mistake",
+          "timestamp": "2020-07-14T18:45:39+09:00",
+          "tree_id": "504001375b175f973c6e24a4e2caa13692dfdf05",
+          "url": "https://github.com/dalance/sv-parser/commit/8ff5c1d5e3502a6ba6ea75a37fa7a63f838ad964"
+        },
+        "date": 1594721451597,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 24840367,
+            "range": "± 1685794",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 24745164,
+            "range": "± 2542010",
             "unit": "ns/iter"
           }
         ]

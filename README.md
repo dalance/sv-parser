@@ -1,5 +1,5 @@
 # sv-parser
-SystemVerilog parser library fully complient with [IEEE 1800-2017](https://standards.ieee.org/standard/1800-2017.html).
+SystemVerilog parser library fully compliant with [IEEE 1800-2017](https://standards.ieee.org/standard/1800-2017.html).
 
 [![Actions Status](https://github.com/dalance/sv-parser/workflows/Rust/badge.svg)](https://github.com/dalance/sv-parser/actions)
 [![Crates.io](https://img.shields.io/crates/v/sv-parser.svg)](https://crates.io/crates/sv-parser)

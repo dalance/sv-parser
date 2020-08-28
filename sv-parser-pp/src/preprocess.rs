@@ -14,7 +14,7 @@ use sv_parser_syntaxtree::{
     WhiteSpace,
 };
 
-const RECURSIVE_LIMIT: usize = 128;
+const RECURSIVE_LIMIT: usize = 64;
 
 #[derive(Debug)]
 pub struct PreprocessedText {
@@ -230,11 +230,17 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
             }
             NodeEvent::Enter(RefNode::UndefineCompilerDirective(x)) if !skip => {
+                skip_nodes.push(x.into());
+                skip = true;
+
                 let (_, _, ref name) = x.nodes;
                 let id = identifier((&name.nodes.0).into(), &s).unwrap();
                 defines.remove(&id);
             }
-            NodeEvent::Enter(RefNode::UndefineallCompilerDirective(_)) if !skip => {
+            NodeEvent::Enter(RefNode::UndefineallCompilerDirective(x)) if !skip => {
+                skip_nodes.push(x.into());
+                skip = true;
+
                 defines.clear();
             }
             NodeEvent::Enter(RefNode::SourceDescriptionNotDirective(x)) if !skip => {
@@ -267,7 +273,10 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
             }
             NodeEvent::Enter(RefNode::IfdefDirective(x)) if !skip => {
-                let (_, _, ref ifid, ref ifbody, ref elsif, ref elsebody, _, _) = x.nodes;
+                let (_, ref keyword, ref ifid, ref ifbody, ref elsif, ref elsebody, _, _) = x.nodes;
+                skip_nodes.push(keyword.into());
+                skip_nodes.push(ifid.into());
+
                 let ifid = identifier(ifid.into(), &s).unwrap();
                 let mut hit = false;
                 if defines.contains_key(&ifid) {
@@ -277,7 +286,10 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 }
 
                 for x in elsif {
-                    let (_, _, ref elsifid, ref elsifbody) = x;
+                    let (_, ref keyword, ref elsifid, ref elsifbody) = x;
+                    skip_nodes.push(keyword.into());
+                    skip_nodes.push(elsifid.into());
+
                     let elsifid = identifier(elsifid.into(), &s).unwrap();
                     if hit {
                         skip_nodes.push(elsifbody.into());
@@ -289,7 +301,8 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 }
 
                 if let Some(elsebody) = elsebody {
-                    let (_, _, ref elsebody) = elsebody;
+                    let (_, ref keyword, ref elsebody) = elsebody;
+                    skip_nodes.push(keyword.into());
                     if hit {
                         skip_nodes.push(elsebody.into());
                     }
@@ -308,7 +321,10 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
             }
             NodeEvent::Enter(RefNode::IfndefDirective(x)) if !skip => {
-                let (_, _, ref ifid, ref ifbody, ref elsif, ref elsebody, _, _) = x.nodes;
+                let (_, ref keyword, ref ifid, ref ifbody, ref elsif, ref elsebody, _, _) = x.nodes;
+                skip_nodes.push(keyword.into());
+                skip_nodes.push(ifid.into());
+
                 let ifid = identifier(ifid.into(), &s).unwrap();
                 let mut hit = false;
                 if !defines.contains_key(&ifid) {
@@ -318,7 +334,10 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 }
 
                 for x in elsif {
-                    let (_, _, ref elsifid, ref elsifbody) = x;
+                    let (_, ref keyword, ref elsifid, ref elsifbody) = x;
+                    skip_nodes.push(keyword.into());
+                    skip_nodes.push(elsifid.into());
+
                     let elsifid = identifier(elsifid.into(), &s).unwrap();
                     if hit {
                         skip_nodes.push(elsifbody.into());
@@ -330,13 +349,17 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 }
 
                 if let Some(elsebody) = elsebody {
-                    let (_, _, ref elsebody) = elsebody;
+                    let (_, ref keyword, ref elsebody) = elsebody;
+                    skip_nodes.push(keyword.into());
                     if hit {
                         skip_nodes.push(elsebody.into());
                     }
                 }
             }
             NodeEvent::Enter(RefNode::TextMacroDefinition(x)) if !skip => {
+                skip_nodes.push(x.into());
+                skip = true;
+
                 let (_, _, ref proto, ref text) = x.nodes;
                 let (ref name, ref args) = proto.nodes;
                 let id = identifier(name.into(), &s).unwrap();
@@ -383,6 +406,9 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 defines.insert(id, Some(define));
             }
             NodeEvent::Enter(RefNode::IncludeCompilerDirective(x)) if !skip && !ignore_include => {
+                skip_nodes.push(x.into());
+                skip = true;
+
                 let locate: Locate = x.try_into().unwrap();
                 last_include_line = Some(locate.line);
 
@@ -394,20 +420,26 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
 
                 let mut path = match x {
                     IncludeCompilerDirective::DoubleQuote(x) => {
-                        let (_, _, ref literal) = x.nodes;
+                        let (_, ref keyword, ref literal) = x.nodes;
+                        skip_nodes.push(keyword.into());
+
                         let (locate, _) = literal.nodes;
                         let p = locate.str(&s).trim_matches('"');
                         PathBuf::from(p)
                     }
                     IncludeCompilerDirective::AngleBracket(x) => {
-                        let (_, _, ref literal) = x.nodes;
+                        let (_, ref keyword, ref literal) = x.nodes;
+                        skip_nodes.push(keyword.into());
+
                         let (locate, _) = literal.nodes;
                         let p = locate.str(&s).trim_start_matches('<').trim_end_matches('>');
                         PathBuf::from(p)
                     }
                     IncludeCompilerDirective::TextMacroUsage(x) => {
-                        let (_, _, ref x) = x.nodes;
+                        let (_, ref keyword, ref x) = x.nodes;
+                        skip_nodes.push(keyword.into());
                         skip_nodes.push(x.into());
+
                         if let Some((p, _, _)) = resolve_text_macro_usage(
                             x,
                             s,
@@ -443,6 +475,9 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 ret.merge(include);
             }
             NodeEvent::Enter(RefNode::TextMacroUsage(x)) if !skip => {
+                skip_nodes.push(x.into());
+                skip = true;
+
                 if let Some((text, origin, new_defines)) = resolve_text_macro_usage(
                     x,
                     s,
@@ -457,6 +492,9 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 }
             }
             NodeEvent::Enter(RefNode::PositionCompilerDirective(x)) if !skip => {
+                skip_nodes.push(x.into());
+                skip = true;
+
                 let (_, ref x) = x.nodes;
                 let locate: Locate = x.try_into().unwrap();
                 let x = locate.str(s);
@@ -503,7 +541,9 @@ fn split_text(s: &str) -> Vec<String> {
     let mut is_ident_prev;
     let mut x = String::from("");
     let mut ret = vec![];
-    for c in s.chars() {
+
+    let mut iter = s.chars().peekable();
+    while let Some(c) = iter.next() {
         is_ident_prev = is_ident;
         is_ident = c.is_ascii_alphanumeric() | (c == '_');
 
@@ -521,6 +561,8 @@ fn split_text(s: &str) -> Vec<String> {
             ret.push(x);
             x = String::from("");
             is_string = false;
+        } else if c == '/' && iter.peek() == Some(&'/') && !is_string {
+            break;
         } else if !is_string {
             if is_ident != is_ident_prev {
                 ret.push(x);
@@ -662,7 +704,7 @@ mod tests {
             get_testcase("test1.sv"),
             &HashMap::new(),
             &[] as &[String],
-            true,
+            false,
             false,
         )
         .unwrap();
@@ -673,6 +715,7 @@ output a;
 input b, c;
 
 and a1 (a,b,c);
+
 endmodule
 "##
         );
@@ -682,7 +725,7 @@ endmodule
         );
         assert_eq!(ret.origin(10).unwrap().1, 10);
         assert_eq!(ret.origin(50).unwrap().1, 98);
-        assert_eq!(ret.origin(70).unwrap().1, 125);
+        assert_eq!(ret.origin(70).unwrap().1, 124);
     }
 
     #[test]
@@ -693,7 +736,7 @@ endmodule
             get_testcase("test1.sv"),
             &defines,
             &[] as &[String],
-            true,
+            false,
             false,
         )
         .unwrap();
@@ -704,6 +747,7 @@ output a;
 input b, c;
 
 wire a = b & c;
+
 endmodule
 "##
         )
@@ -716,7 +760,7 @@ endmodule
             get_testcase("test2.sv"),
             &HashMap::new(),
             &include_paths,
-            true,
+            false,
             false,
         )
         .unwrap();
@@ -727,6 +771,8 @@ output a;
 input b, c;
 
 and a1 (a,b,c);
+
+
 endmodule
 "##
         );
@@ -744,7 +790,7 @@ endmodule
             ret.origin(70).unwrap().0,
             &PathBuf::from(get_testcase("test2.sv"))
         );
-        assert_eq!(ret.origin(70).unwrap().1, 52);
+        assert_eq!(ret.origin(70).unwrap().1, 50);
     }
 
     #[test]
@@ -754,13 +800,14 @@ endmodule
             get_testcase("test2.sv"),
             &HashMap::new(),
             &include_paths,
-            true,
+            false,
             true,
         )
         .unwrap();
         assert_eq!(
             ret.text(),
             r##"module and_op (a, b, c);
+ 
 endmodule
 "##
         );
@@ -772,7 +819,7 @@ endmodule
             get_testcase("test3.sv"),
             &HashMap::new(),
             &[] as &[String],
-            true,
+            false,
             false,
         )
         .unwrap();
@@ -795,7 +842,7 @@ module a ();
             get_testcase("test4.sv"),
             &HashMap::new(),
             &[] as &[String],
-            true,
+            false,
             false,
         )
         .unwrap();
@@ -822,7 +869,7 @@ endmodule
             get_testcase("test5.sv"),
             &HashMap::new(),
             &[] as &[String],
-            true,
+            false,
             false,
         )
         .unwrap();
@@ -834,8 +881,8 @@ endmodule
 
 initial begin
 $display("`HI, world");
-$display("`HI, world" );
-$display("Hello, x" );
+$display("`HI, world"  );
+$display("Hello, x"  );
 end
 endmodule
 "##
@@ -848,7 +895,7 @@ endmodule
             get_testcase("test6.sv"),
             &HashMap::new(),
             &[] as &[String],
-            true,
+            false,
             false,
         )
         .unwrap();
@@ -858,7 +905,7 @@ endmodule
 
 module a;
 initial begin
-$display("left side: \"right side\"" );
+$display("left side: \"right side\""  );
 end
 endmodule
 "##
@@ -871,7 +918,7 @@ endmodule
             get_testcase("test7.sv"),
             &HashMap::new(),
             &[] as &[String],
-            true,
+            false,
             false,
         );
         assert_eq!(format!("{:?}", ret), "Err(ExceedRecursiveLimit)");
@@ -883,7 +930,7 @@ endmodule
             get_testcase("test8.sv"),
             &HashMap::new(),
             &[] as &[String],
-            true,
+            false,
             false,
         );
         assert_eq!(format!("{:?}", ret), "Err(ExceedRecursiveLimit)");
@@ -896,7 +943,7 @@ endmodule
             get_testcase("test9.sv"),
             &HashMap::new(),
             &include_paths,
-            true,
+            false,
             false,
         );
         assert_eq!(format!("{:?}", ret), "Err(IncludeLine)");
@@ -909,7 +956,7 @@ endmodule
             get_testcase("test10.sv"),
             &HashMap::new(),
             &include_paths,
-            true,
+            false,
             false,
         );
         assert_eq!(format!("{:?}", ret), "Err(IncludeLine)");
@@ -921,7 +968,7 @@ endmodule
             get_testcase("test11.sv"),
             &HashMap::new(),
             &[] as &[String],
-            true,
+            false,
             false,
         )
         .unwrap();
@@ -943,15 +990,34 @@ endmodule
             get_testcase("test12.sv"),
             &HashMap::new(),
             &[] as &[String],
-            true,
+            false,
             false,
         )
         .unwrap();
         assert_eq!(
             ret.text(),
             r##"module a;
-reg \`~!-_=+\|[]{};:'"",./<>? ;
+reg \`~!-_=+\|[]{};:'"",./<>?  ;
 endmodule
+"##
+        );
+    }
+
+    #[test]
+    fn test13() {
+        let (ret, _) = preprocess(
+            get_testcase("test13.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            r##"
+interface foo #(WIDTH = 42  ) ();
+endinterface
 "##
         );
     }

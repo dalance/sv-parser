@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.8.0...Unreleased) - ReleaseDate
 
+* [Fixed] text macro with single line comment [#12](https://github.com/dalance/sv-parser/issues/12)
+
 ## [v0.8.0](https://github.com/dalance/sv-parser/compare/v0.7.0...v0.8.0) - 2020-08-28
 
 * [Fixed] 'Declaraton' typo [#18](https://github.com/dalance/sv-parser/issues/18)

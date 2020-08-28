@@ -142,6 +142,34 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     )
 }
 
+struct SkipNodes<'a> {
+    nodes: Vec<RefNode<'a>>,
+}
+
+impl<'a> SkipNodes<'a> {
+    fn new() -> Self {
+        Self { nodes: vec![] }
+    }
+
+    fn push(&mut self, node: RefNode<'a>) {
+        // if a node doesn't have locate, the node should be ignored
+        // because the node can be identified in tree.
+        let mut have_locate = false;
+        for x in node.clone() {
+            if let RefNode::Locate(_) = x {
+                have_locate = true;
+            }
+        }
+        if have_locate {
+            self.nodes.push(node);
+        }
+    }
+
+    fn contains(&self, node: &RefNode<'a>) -> bool {
+        self.nodes.contains(node)
+    }
+}
+
 pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     s: &str,
     path: T,
@@ -152,7 +180,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     resolve_depth: usize,
 ) -> Result<(PreprocessedText, Defines), Error> {
     let mut skip = false;
-    let mut skip_nodes = vec![];
+    let mut skip_nodes = SkipNodes::new();
     let mut defines = HashMap::new();
 
     let mut last_item_line = None;
@@ -196,6 +224,10 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 }
             }
         }
+        if skip {
+            continue;
+        }
+
         match n.clone() {
             NodeEvent::Enter(RefNode::SourceDescriptionNotDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
@@ -224,12 +256,12 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
             _ => (),
         }
         match n {
-            NodeEvent::Enter(RefNode::ResetallCompilerDirective(x)) if !skip => {
+            NodeEvent::Enter(RefNode::ResetallCompilerDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
             }
-            NodeEvent::Enter(RefNode::UndefineCompilerDirective(x)) if !skip => {
+            NodeEvent::Enter(RefNode::UndefineCompilerDirective(x)) => {
                 skip_nodes.push(x.into());
                 skip = true;
 
@@ -237,42 +269,40 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 let id = identifier((&name.nodes.0).into(), &s).unwrap();
                 defines.remove(&id);
             }
-            NodeEvent::Enter(RefNode::UndefineallCompilerDirective(x)) if !skip => {
+            NodeEvent::Enter(RefNode::UndefineallCompilerDirective(x)) => {
                 skip_nodes.push(x.into());
                 skip = true;
 
                 defines.clear();
             }
-            NodeEvent::Enter(RefNode::SourceDescriptionNotDirective(x)) if !skip => {
+            NodeEvent::Enter(RefNode::SourceDescriptionNotDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
             }
-            NodeEvent::Enter(RefNode::SourceDescription(SourceDescription::StringLiteral(x)))
-                if !skip =>
-            {
+            NodeEvent::Enter(RefNode::SourceDescription(SourceDescription::StringLiteral(x))) => {
                 let locate: Locate = (&**x).try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
             }
             NodeEvent::Enter(RefNode::SourceDescription(SourceDescription::EscapedIdentifier(
                 x,
-            ))) if !skip => {
+            ))) => {
                 let locate: Locate = (&**x).try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
             }
-            NodeEvent::Enter(RefNode::KeywordsDirective(x)) if !skip => {
+            NodeEvent::Enter(RefNode::KeywordsDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
             }
-            NodeEvent::Enter(RefNode::EndkeywordsDirective(x)) if !skip => {
+            NodeEvent::Enter(RefNode::EndkeywordsDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
             }
-            NodeEvent::Enter(RefNode::IfdefDirective(x)) if !skip => {
+            NodeEvent::Enter(RefNode::IfdefDirective(x)) => {
                 let (_, ref keyword, ref ifid, ref ifbody, ref elsif, ref elsebody, _, _) = x.nodes;
                 skip_nodes.push(keyword.into());
                 skip_nodes.push(ifid.into());
@@ -308,19 +338,19 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                     }
                 }
             }
-            NodeEvent::Enter(RefNode::WhiteSpace(x)) if !skip && !strip_comments => {
+            NodeEvent::Enter(RefNode::WhiteSpace(x)) if !strip_comments => {
                 if let WhiteSpace::Space(_) = x {
                     let locate: Locate = x.try_into().unwrap();
                     let range = Range::new(locate.offset + locate.len, locate.offset + locate.len);
                     ret.push(locate.str(&s), Some((path.as_ref(), range)));
                 }
             }
-            NodeEvent::Enter(RefNode::Comment(x)) if !skip && !strip_comments => {
+            NodeEvent::Enter(RefNode::Comment(x)) if !strip_comments => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
             }
-            NodeEvent::Enter(RefNode::IfndefDirective(x)) if !skip => {
+            NodeEvent::Enter(RefNode::IfndefDirective(x)) => {
                 let (_, ref keyword, ref ifid, ref ifbody, ref elsif, ref elsebody, _, _) = x.nodes;
                 skip_nodes.push(keyword.into());
                 skip_nodes.push(ifid.into());
@@ -356,7 +386,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                     }
                 }
             }
-            NodeEvent::Enter(RefNode::TextMacroDefinition(x)) if !skip => {
+            NodeEvent::Enter(RefNode::TextMacroDefinition(x)) => {
                 skip_nodes.push(x.into());
                 skip = true;
 
@@ -405,7 +435,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
 
                 defines.insert(id, Some(define));
             }
-            NodeEvent::Enter(RefNode::IncludeCompilerDirective(x)) if !skip && !ignore_include => {
+            NodeEvent::Enter(RefNode::IncludeCompilerDirective(x)) if !ignore_include => {
                 skip_nodes.push(x.into());
                 skip = true;
 
@@ -474,7 +504,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 defines = new_defines;
                 ret.merge(include);
             }
-            NodeEvent::Enter(RefNode::TextMacroUsage(x)) if !skip => {
+            NodeEvent::Enter(RefNode::TextMacroUsage(x)) => {
                 skip_nodes.push(x.into());
                 skip = true;
 
@@ -491,7 +521,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                     defines = new_defines;
                 }
             }
-            NodeEvent::Enter(RefNode::PositionCompilerDirective(x)) if !skip => {
+            NodeEvent::Enter(RefNode::PositionCompilerDirective(x)) => {
                 skip_nodes.push(x.into());
                 skip = true;
 
@@ -1018,6 +1048,27 @@ endmodule
             r##"
 interface foo #(WIDTH = 42  ) ();
 endinterface
+"##
+        );
+    }
+
+    #[test]
+    fn test14() {
+        let (ret, _) = preprocess(
+            get_testcase("test14.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            r##"module A;
+wire a = 1'b0;
+
+
+endmodule
 "##
         );
     }

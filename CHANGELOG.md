@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.8.1...Unreleased) - ReleaseDate
 
+* [Fixed] empty ifdef issue [#10](https://github.com/dalance/sv-parser/issues/10)
+
 ## [v0.8.1](https://github.com/dalance/sv-parser/compare/v0.8.0...v0.8.1) - 2020-08-28
 
 * [Fixed] text macro with single line comment [#12](https://github.com/dalance/sv-parser/issues/12)

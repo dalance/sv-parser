@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.7.0...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.8.0...Unreleased) - ReleaseDate
+
+## [v0.8.0](https://github.com/dalance/sv-parser/compare/v0.7.0...v0.8.0) - 2020-08-28
 
 * [Fixed] 'Declaraton' typo [#18](https://github.com/dalance/sv-parser/issues/18)
 

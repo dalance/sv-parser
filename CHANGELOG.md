@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.8.0...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.8.1...Unreleased) - ReleaseDate
+
+## [v0.8.1](https://github.com/dalance/sv-parser/compare/v0.8.0...v0.8.1) - 2020-08-28
 
 * [Fixed] text macro with single line comment [#12](https://github.com/dalance/sv-parser/issues/12)
 

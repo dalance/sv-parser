@@ -21,7 +21,7 @@ pub(crate) fn modport_item(s: Span) -> IResult<Span, ModportItem> {
 
 #[tracable_parser]
 #[packrat_parser]
-pub(crate) fn modport_ports_declaration(s: Span) -> IResult<Span, ModportPortsDeclaraton> {
+pub(crate) fn modport_ports_declaration(s: Span) -> IResult<Span, ModportPortsDeclaration> {
     alt((
         modport_ports_declaration_simple,
         modport_ports_declaration_tf,
@@ -31,34 +31,34 @@ pub(crate) fn modport_ports_declaration(s: Span) -> IResult<Span, ModportPortsDe
 
 #[tracable_parser]
 #[packrat_parser]
-pub(crate) fn modport_ports_declaration_simple(s: Span) -> IResult<Span, ModportPortsDeclaraton> {
+pub(crate) fn modport_ports_declaration_simple(s: Span) -> IResult<Span, ModportPortsDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = modport_simple_ports_declaration(s)?;
     Ok((
         s,
-        ModportPortsDeclaraton::Simple(Box::new(ModportPortsDeclaratonSimple { nodes: (a, b) })),
+        ModportPortsDeclaration::Simple(Box::new(ModportPortsDeclarationSimple { nodes: (a, b) })),
     ))
 }
 
 #[tracable_parser]
 #[packrat_parser]
-pub(crate) fn modport_ports_declaration_tf(s: Span) -> IResult<Span, ModportPortsDeclaraton> {
+pub(crate) fn modport_ports_declaration_tf(s: Span) -> IResult<Span, ModportPortsDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = modport_tf_ports_declaration(s)?;
     Ok((
         s,
-        ModportPortsDeclaraton::Tf(Box::new(ModportPortsDeclaratonTf { nodes: (a, b) })),
+        ModportPortsDeclaration::Tf(Box::new(ModportPortsDeclarationTf { nodes: (a, b) })),
     ))
 }
 
 #[tracable_parser]
 #[packrat_parser]
-pub(crate) fn modport_ports_declaration_clocking(s: Span) -> IResult<Span, ModportPortsDeclaraton> {
+pub(crate) fn modport_ports_declaration_clocking(s: Span) -> IResult<Span, ModportPortsDeclaration> {
     let (s, a) = many0(attribute_instance)(s)?;
     let (s, b) = modport_clocking_declaration(s)?;
     Ok((
         s,
-        ModportPortsDeclaraton::Clocking(Box::new(ModportPortsDeclaratonClocking {
+        ModportPortsDeclaration::Clocking(Box::new(ModportPortsDeclarationClocking {
             nodes: (a, b),
         })),
     ))

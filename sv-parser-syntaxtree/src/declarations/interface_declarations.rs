@@ -11,29 +11,29 @@ pub struct ModportDeclaration {
 pub struct ModportItem {
     pub nodes: (
         ModportIdentifier,
-        Paren<List<Symbol, ModportPortsDeclaraton>>,
+        Paren<List<Symbol, ModportPortsDeclaration>>,
     ),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]
-pub enum ModportPortsDeclaraton {
-    Simple(Box<ModportPortsDeclaratonSimple>),
-    Tf(Box<ModportPortsDeclaratonTf>),
-    Clocking(Box<ModportPortsDeclaratonClocking>),
+pub enum ModportPortsDeclaration {
+    Simple(Box<ModportPortsDeclarationSimple>),
+    Tf(Box<ModportPortsDeclarationTf>),
+    Clocking(Box<ModportPortsDeclarationClocking>),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]
-pub struct ModportPortsDeclaratonSimple {
+pub struct ModportPortsDeclarationSimple {
     pub nodes: (Vec<AttributeInstance>, ModportSimplePortsDeclaration),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]
-pub struct ModportPortsDeclaratonTf {
+pub struct ModportPortsDeclarationTf {
     pub nodes: (Vec<AttributeInstance>, ModportTfPortsDeclaration),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]
-pub struct ModportPortsDeclaratonClocking {
+pub struct ModportPortsDeclarationClocking {
     pub nodes: (Vec<AttributeInstance>, ModportClockingDeclaration),
 }
 

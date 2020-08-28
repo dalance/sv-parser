@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1598609429051,
+  "lastUpdate": 1598613826517,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -1979,6 +1979,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 26337692,
             "range": "± 1691727",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "9c935af3974f772d90260ef55320fce269720689",
+          "message": "Fix empty ifdef issue #10",
+          "timestamp": "2020-08-28T19:51:04+09:00",
+          "tree_id": "acd4fb832fb1140b0224f06c1ed037ad5cfbe7c4",
+          "url": "https://github.com/dalance/sv-parser/commit/9c935af3974f772d90260ef55320fce269720689"
+        },
+        "date": 1598613826000,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 27884447,
+            "range": "± 4310348",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 26931654,
+            "range": "± 4079702",
             "unit": "ns/iter"
           }
         ]

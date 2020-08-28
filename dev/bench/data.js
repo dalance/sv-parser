@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1598600154985,
+  "lastUpdate": 1598608758467,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -1907,6 +1907,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 26378412,
             "range": "± 2755593",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "b678874f4d7b45bcdd5e27d282c4a9c203565ffe",
+          "message": "Fix text macro with single line comment #12",
+          "timestamp": "2020-08-28T18:35:05+09:00",
+          "tree_id": "ee28671335818f0fe5cbf8feec526e5278b19cb5",
+          "url": "https://github.com/dalance/sv-parser/commit/b678874f4d7b45bcdd5e27d282c4a9c203565ffe"
+        },
+        "date": 1598608758126,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 25068558,
+            "range": "± 2367052",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 24801322,
+            "range": "± 3537302",
             "unit": "ns/iter"
           }
         ]

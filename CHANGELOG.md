@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.8.1...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.8.2...Unreleased) - ReleaseDate
+
+## [v0.8.2](https://github.com/dalance/sv-parser/compare/v0.8.1...v0.8.2) - 2020-08-28
 
 * [Fixed] empty ifdef issue [#10](https://github.com/dalance/sv-parser/issues/10)
 

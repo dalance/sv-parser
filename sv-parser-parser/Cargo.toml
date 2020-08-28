@@ -1,6 +1,6 @@
 [package]
 name = "sv-parser-parser"
-version = "0.8.1"
+version = "0.8.2"
 authors = ["dalance@gmail.com"]
 repository = "https://github.com/dalance/sv-parser"
 keywords = ["parser", "verilog", "systemverilog"]
@@ -25,5 +25,5 @@ nom-packrat          = "0.4"
 nom-recursive        = {version = "0.2", features = ["tracer128"]}
 nom-tracable         = "0.6"
 str-concat           = "0.2"
-sv-parser-macros     = {version = "^0.8.1", path = "../sv-parser-macros"}
-sv-parser-syntaxtree = {version = "^0.8.1", path = "../sv-parser-syntaxtree"}
+sv-parser-macros     = {version = "^0.8.2", path = "../sv-parser-macros"}
+sv-parser-syntaxtree = {version = "^0.8.2", path = "../sv-parser-syntaxtree"}

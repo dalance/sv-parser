@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1598614180854,
+  "lastUpdate": 1604635620063,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -2051,6 +2051,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 25763581,
             "range": "± 3339281",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "614530051385ce6c42a039dffc3f0bfbc6cbf138",
+          "message": "Fix textmacro without arguments #20",
+          "timestamp": "2020-11-06T12:43:22+09:00",
+          "tree_id": "8ea91fc0cc07cf30f34af7762d71857251e858aa",
+          "url": "https://github.com/dalance/sv-parser/commit/614530051385ce6c42a039dffc3f0bfbc6cbf138"
+        },
+        "date": 1604635617698,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 25498974,
+            "range": "± 3128600",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 25557394,
+            "range": "± 4270490",
             "unit": "ns/iter"
           }
         ]

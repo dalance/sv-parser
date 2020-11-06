@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.8.2...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.8.3...Unreleased) - ReleaseDate
+
+## [v0.8.3](https://github.com/dalance/sv-parser/compare/v0.8.2...v0.8.3) - 2020-11-06
 
 * [Fixed] textmacro without arguments issue [#20](https://github.com/dalance/sv-parser/issues/20)
 

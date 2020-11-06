@@ -564,6 +564,19 @@ fn identifier(node: RefNode, s: &str) -> Option<String> {
     None
 }
 
+fn get_str(node: RefNode, s: &str) -> String {
+    let mut ret = String::from("");
+    for x in node {
+        match x {
+            RefNode::Locate(x) => {
+                ret.push_str(x.str(s));
+            }
+            _ => (),
+        }
+    }
+    ret
+}
+
 fn split_text(s: &str) -> Vec<String> {
     let mut is_string = false;
     let mut is_ident = false;
@@ -625,9 +638,14 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
         return Err(Error::ExceedRecursiveLimit);
     }
 
+    let mut args_str = String::from("");
     let mut actual_args = Vec::new();
     let no_args = args.is_none();
     if let Some(args) = args {
+        args_str.push_str(&get_str((&args.nodes.0).into(), s));
+        args_str.push_str(&get_str((&args.nodes.1).into(), s));
+        args_str.push_str(&get_str((&args.nodes.2).into(), s));
+
         let (_, ref args, _) = args.nodes;
         let (ref args,) = args.nodes;
         for arg in args.contents() {
@@ -670,6 +688,13 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
             arg_map.insert(String::from(arg), value);
         }
 
+        // restore () for textmacro without arguments
+        let paren = if define.arguments.is_empty() {
+            Some(args_str)
+        } else {
+            None
+        };
+
         if let Some(ref text) = define.text {
             let mut replaced = String::from("");
             for text in split_text(&text.text) {
@@ -687,6 +712,11 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
                     );
                 }
             }
+
+            if let Some(paren) = paren {
+                replaced.push_str(&paren);
+            }
+
             // separator is required
             replaced.push_str(" ");
             // remove leading whitespace
@@ -1068,6 +1098,26 @@ endinterface
 wire a = 1'b0;
 
 
+endmodule
+"##
+        );
+    }
+
+    #[test]
+    fn test15() {
+        let (ret, _) = preprocess(
+            get_testcase("test15.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            r##"
+module mymod;
+mysubmod u_mysubmod() ;
 endmodule
 "##
         );

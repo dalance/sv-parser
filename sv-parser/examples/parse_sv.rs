@@ -5,7 +5,7 @@ use std::io::Read;
 use std::path::PathBuf;
 use std::{cmp, process};
 use structopt::StructOpt;
-use sv_parser::parse_sv;
+use sv_parser::{parse_sv, Define, DefineText};
 use sv_parser_error::Error;
 use sv_parser_pp::preprocess::preprocess;
 
@@ -29,6 +29,10 @@ struct Opt {
     #[structopt(long = "incomplete")]
     pub incomplete: bool,
 
+    /// Define
+    #[structopt(short = "d", long = "define", multiple = true, number_of_values = 1)]
+    pub defines: Vec<String>,
+
     /// Quiet
     #[structopt(short = "q", long = "quiet")]
     pub quiet: bool,
@@ -36,7 +40,21 @@ struct Opt {
 
 fn main() {
     let opt = Opt::from_args();
+
     let mut defines = HashMap::new();
+    for define in &opt.defines {
+        let mut define = define.splitn(2, '=');
+        let ident = String::from(define.next().unwrap());
+        let text = if let Some(x) = define.next() {
+            let x = enquote::unescape(x, None).unwrap();
+            Some(DefineText::new(x, None))
+        } else {
+            None
+        };
+        let define = Define::new(ident.clone(), vec![], text);
+        defines.insert(ident, Some(define));
+    }
+
     let mut exit = 0;
     for path in &opt.files {
         if opt.pp {

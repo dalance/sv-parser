@@ -2,6 +2,7 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.8.3...Unreleased) - ReleaseDate
 
+* [Added] define option to parse_sv
 * [Added] incomplete option [#19](https://github.com/dalance/sv-parser/issues/19)
 * [Changed] keep text_macro_definition after preprocess [#19](https://github.com/dalance/sv-parser/issues/19)
 

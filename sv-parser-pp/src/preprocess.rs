@@ -434,6 +434,11 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 };
 
                 defines.insert(id, Some(define));
+
+                // Keep TextMacroDefinition after preprocess
+                let locate: Locate = x.try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
             }
             NodeEvent::Enter(RefNode::IncludeCompilerDirective(x)) if !ignore_include => {
                 skip_nodes.push(x.into());
@@ -885,7 +890,9 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"
+            r##"`define connect(NAME, INDEX = 0) \
+  assign NAME``_``INDEX``__x = NAME[INDEX].x; \
+  assign NAME``_``INDEX``__y = NAME[INDEX].y;
 
 module a ();
 
@@ -908,7 +915,13 @@ module a ();
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"
+            r##"`define disp(clk, exp, msg) \
+    always @(posedge clk) begin \
+        if (!(exp)) begin \
+            $display msg; \
+        end \
+    end \
+
 module a ();
 
 always @(posedge clk) begin 
@@ -936,9 +949,9 @@ endmodule
         assert_eq!(
             ret.text(),
             r##"module a;
-
-
-
+`define HI Hello
+`define LO "`HI, world"
+`define H(x) "Hello, x"
 initial begin
 $display("`HI, world");
 $display("`HI, world"  );
@@ -961,7 +974,7 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"
+            r##"`define msg(x,y) `"x: `\`"y`\`"`"
 
 module a;
 initial begin
@@ -1075,7 +1088,7 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"
+            r##"`define NAME 42 // Comment
 interface foo #(WIDTH = 42  ) ();
 endinterface
 "##
@@ -1115,7 +1128,7 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"
+            r##"`define MOD_INST u_mysubmod
 module mymod;
 mysubmod u_mysubmod() ;
 endmodule

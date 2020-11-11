@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.9.0...Unreleased) - ReleaseDate
 
+* [Changed] update nom to 6.0.0
+
 ## [v0.9.0](https://github.com/dalance/sv-parser/compare/v0.8.3...v0.9.0) - 2020-11-11
 
 * [Added] define option to parse_sv

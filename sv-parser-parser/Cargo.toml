@@ -18,12 +18,12 @@ default = []
 trace   = ["nom-tracable/trace"]
 
 [dependencies]
-nom                  = "5"
-nom_locate           = "2"
-nom-greedyerror      = "0.2"
-nom-packrat          = "0.4"
-nom-recursive        = {version = "0.2", features = ["tracer128"]}
-nom-tracable         = "0.6"
+nom                  = "6"
+nom_locate           = "3"
+nom-greedyerror      = "0.3"
+nom-packrat          = "0.5"
+nom-recursive        = {version = "0.3", features = ["tracer128"]}
+nom-tracable         = "0.7"
 str-concat           = "0.2"
 sv-parser-macros     = {version = "^0.9.0", path = "../sv-parser-macros"}
 sv-parser-syntaxtree = {version = "^0.9.0", path = "../sv-parser-syntaxtree"}

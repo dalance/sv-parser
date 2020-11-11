@@ -2,9 +2,11 @@ use crate::*;
 
 // -----------------------------------------------------------------------------
 
-pub(crate) fn ws<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, (O, Vec<WhiteSpace>)>
+pub(crate) fn ws<'a, O, F>(
+    mut f: F,
+) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, (O, Vec<WhiteSpace>)>
 where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+    F: FnMut(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
         let (s, x) = f(s)?;
@@ -13,9 +15,11 @@ where
     }
 }
 
-pub(crate) fn no_ws<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, (O, Vec<WhiteSpace>)>
+pub(crate) fn no_ws<'a, O, F>(
+    mut f: F,
+) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, (O, Vec<WhiteSpace>)>
 where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+    F: FnMut(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
         let (s, x) = f(s)?;
@@ -24,7 +28,7 @@ where
 }
 
 #[cfg(not(feature = "trace"))]
-pub(crate) fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol> {
+pub(crate) fn symbol<'a>(t: &'a str) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, Symbol> {
     move |s: Span<'a>| {
         let (s, x) = map(ws(map(tag(t), into_locate)), |x| Symbol { nodes: x })(s)?;
         Ok((s, x))
@@ -32,7 +36,7 @@ pub(crate) fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, S
 }
 
 #[cfg(feature = "trace")]
-pub(crate) fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol> {
+pub(crate) fn symbol<'a>(t: &'a str) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, Symbol> {
     move |s: Span<'a>| {
         let (depth, s) = nom_tracable::forward_trace(s, &format!("symbol(\"{}\")", t));
         let body = || {
@@ -45,7 +49,7 @@ pub(crate) fn symbol<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, S
 }
 
 #[cfg(not(feature = "trace"))]
-pub(crate) fn symbol_exact<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol> {
+pub(crate) fn symbol_exact<'a>(t: &'a str) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, Symbol> {
     move |s: Span<'a>| {
         let (s, x) = map(no_ws(map(tag(t), into_locate)), |x| Symbol { nodes: x })(s)?;
         Ok((s, x))
@@ -53,7 +57,7 @@ pub(crate) fn symbol_exact<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<
 }
 
 #[cfg(feature = "trace")]
-pub(crate) fn symbol_exact<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Symbol> {
+pub(crate) fn symbol_exact<'a>(t: &'a str) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, Symbol> {
     move |s: Span<'a>| {
         let (depth, s) = nom_tracable::forward_trace(s, &format!("symbol(\"{}\")", t));
         let body = || {
@@ -66,7 +70,7 @@ pub(crate) fn symbol_exact<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<
 }
 
 #[cfg(not(feature = "trace"))]
-pub(crate) fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Keyword> {
+pub(crate) fn keyword<'a>(t: &'a str) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, Keyword> {
     move |s: Span<'a>| {
         let (s, x) = map(
             ws(alt((
@@ -80,7 +84,7 @@ pub(crate) fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, 
 }
 
 #[cfg(feature = "trace")]
-pub(crate) fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Keyword> {
+pub(crate) fn keyword<'a>(t: &'a str) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, Keyword> {
     move |s: Span<'a>| {
         let (depth, s) = nom_tracable::forward_trace(s, &format!("keyword(\"{}\")", t));
         let body = || {
@@ -99,9 +103,9 @@ pub(crate) fn keyword<'a>(t: &'a str) -> impl Fn(Span<'a>) -> IResult<Span<'a>, 
 }
 
 #[cfg(not(feature = "trace"))]
-pub(crate) fn paren<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Paren<O>>
+pub(crate) fn paren<'a, O, F>(mut f: F) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, Paren<O>>
 where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+    F: FnMut(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
         let (s, a) = symbol("(")(s)?;
@@ -112,13 +116,13 @@ where
 }
 
 #[cfg(feature = "trace")]
-pub(crate) fn paren<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Paren<O>>
+pub(crate) fn paren<'a, O, F>(mut f: F) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, Paren<O>>
 where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+    F: FnMut(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
         let (depth, s) = nom_tracable::forward_trace(s, "paren");
-        let body = || {
+        let mut body = || {
             let (s, a) = symbol("(")(s)?;
             let (s, b) = f(s)?;
             let (s, c) = symbol(")")(s)?;
@@ -130,9 +134,9 @@ where
 }
 
 #[cfg(not(feature = "trace"))]
-pub(crate) fn paren_exact<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Paren<O>>
+pub(crate) fn paren_exact<'a, O, F>(mut f: F) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, Paren<O>>
 where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+    F: FnMut(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
         let (s, a) = symbol("(")(s)?;
@@ -143,13 +147,13 @@ where
 }
 
 #[cfg(feature = "trace")]
-pub(crate) fn paren_exact<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Paren<O>>
+pub(crate) fn paren_exact<'a, O, F>(mut f: F) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, Paren<O>>
 where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+    F: FnMut(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
         let (depth, s) = nom_tracable::forward_trace(s, "paren");
-        let body = || {
+        let mut body = || {
             let (s, a) = symbol("(")(s)?;
             let (s, b) = f(s)?;
             let (s, c) = symbol_exact(")")(s)?;
@@ -161,9 +165,9 @@ where
 }
 
 #[cfg(not(feature = "trace"))]
-pub(crate) fn bracket<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Bracket<O>>
+pub(crate) fn bracket<'a, O, F>(mut f: F) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, Bracket<O>>
 where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+    F: FnMut(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
         let (s, a) = symbol("[")(s)?;
@@ -174,13 +178,13 @@ where
 }
 
 #[cfg(feature = "trace")]
-pub(crate) fn bracket<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Bracket<O>>
+pub(crate) fn bracket<'a, O, F>(mut f: F) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, Bracket<O>>
 where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+    F: FnMut(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
         let (depth, s) = nom_tracable::forward_trace(s, "bracket");
-        let body = || {
+        let mut body = || {
             let (s, a) = symbol("[")(s)?;
             let (s, b) = f(s)?;
             let (s, c) = symbol("]")(s)?;
@@ -192,9 +196,9 @@ where
 }
 
 #[cfg(not(feature = "trace"))]
-pub(crate) fn brace<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Brace<O>>
+pub(crate) fn brace<'a, O, F>(mut f: F) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, Brace<O>>
 where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+    F: FnMut(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
         let (s, a) = symbol("{")(s)?;
@@ -205,13 +209,13 @@ where
 }
 
 #[cfg(feature = "trace")]
-pub(crate) fn brace<'a, O, F>(f: F) -> impl Fn(Span<'a>) -> IResult<Span<'a>, Brace<O>>
+pub(crate) fn brace<'a, O, F>(mut f: F) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, Brace<O>>
 where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+    F: FnMut(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
         let (depth, s) = nom_tracable::forward_trace(s, "brace");
-        let body = || {
+        let mut body = || {
             let (s, a) = symbol("{")(s)?;
             let (s, b) = f(s)?;
             let (s, c) = symbol("}")(s)?;
@@ -224,10 +228,10 @@ where
 
 #[cfg(not(feature = "trace"))]
 pub(crate) fn apostrophe_brace<'a, O, F>(
-    f: F,
-) -> impl Fn(Span<'a>) -> IResult<Span<'a>, ApostropheBrace<O>>
+    mut f: F,
+) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, ApostropheBrace<O>>
 where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+    F: FnMut(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
         let (s, a) = symbol("'{")(s)?;
@@ -239,14 +243,14 @@ where
 
 #[cfg(feature = "trace")]
 pub(crate) fn apostrophe_brace<'a, O, F>(
-    f: F,
-) -> impl Fn(Span<'a>) -> IResult<Span<'a>, ApostropheBrace<O>>
+    mut f: F,
+) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, ApostropheBrace<O>>
 where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O>,
+    F: FnMut(Span<'a>) -> IResult<Span<'a>, O>,
 {
     move |s: Span<'a>| {
         let (depth, s) = nom_tracable::forward_trace(s, "apostrophe_brace");
-        let body = || {
+        let mut body = || {
             let (s, a) = symbol("'{")(s)?;
             let (s, b) = f(s)?;
             let (s, c) = symbol("}")(s)?;
@@ -258,12 +262,12 @@ where
 }
 
 pub(crate) fn list<'a, O1, O2, F, G>(
-    f: F,
-    g: G,
-) -> impl Fn(Span<'a>) -> IResult<Span<'a>, List<O1, O2>>
+    mut f: F,
+    mut g: G,
+) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, List<O1, O2>>
 where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O1>,
-    G: Fn(Span<'a>) -> IResult<Span<'a>, O2>,
+    F: FnMut(Span<'a>) -> IResult<Span<'a>, O1>,
+    G: FnMut(Span<'a>) -> IResult<Span<'a>, O2>,
 {
     move |s: Span<'a>| {
         let (s, a) = g(s)?;
@@ -282,14 +286,14 @@ where
 }
 
 pub(crate) fn triple<'a, O1, O2, O3, F, G, H>(
-    f: F,
-    g: G,
-    h: H,
-) -> impl Fn(Span<'a>) -> IResult<Span<'a>, (O1, O2, O3)>
+    mut f: F,
+    mut g: G,
+    mut h: H,
+) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, (O1, O2, O3)>
 where
-    F: Fn(Span<'a>) -> IResult<Span<'a>, O1>,
-    G: Fn(Span<'a>) -> IResult<Span<'a>, O2>,
-    H: Fn(Span<'a>) -> IResult<Span<'a>, O3>,
+    F: FnMut(Span<'a>) -> IResult<Span<'a>, O1>,
+    G: FnMut(Span<'a>) -> IResult<Span<'a>, O2>,
+    H: FnMut(Span<'a>) -> IResult<Span<'a>, O3>,
 {
     move |s: Span<'a>| {
         let (s, x) = f(s)?;

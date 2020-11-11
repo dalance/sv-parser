@@ -55,7 +55,7 @@ pub struct SpanInfo {
 }
 
 pub type Span<'a> = nom_locate::LocatedSpan<&'a str, SpanInfo>;
-pub type IResult<T, U> = nom::IResult<T, U, GreedyError<T>>;
+pub type IResult<T, U> = nom::IResult<T, U, GreedyError<T, ErrorKind>>;
 
 impl HasRecursiveInfo for SpanInfo {
     fn get_recursive_info(&self) -> RecursiveInfo {

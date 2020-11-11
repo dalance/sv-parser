@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.8.3...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.9.0...Unreleased) - ReleaseDate
+
+## [v0.9.0](https://github.com/dalance/sv-parser/compare/v0.8.3...v0.9.0) - 2020-11-11
 
 * [Added] define option to parse_sv
 * [Added] incomplete option [#19](https://github.com/dalance/sv-parser/issues/19)

@@ -25,6 +25,10 @@ struct Opt {
     #[structopt(short = "p", long = "pp")]
     pub pp: bool,
 
+    /// Allow incomplete source code
+    #[structopt(long = "incomplete")]
+    pub incomplete: bool,
+
     /// Quiet
     #[structopt(short = "q", long = "quiet")]
     pub quiet: bool,
@@ -44,7 +48,7 @@ fn main() {
                 _ => (),
             }
         } else {
-            match parse_sv(&path, &defines, &opt.includes, false) {
+            match parse_sv(&path, &defines, &opt.includes, false, opt.incomplete) {
                 Ok((syntax_tree, new_defines)) => {
                     if opt.tree {
                         println!("{}", syntax_tree);

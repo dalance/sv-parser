@@ -301,16 +301,6 @@ where
 
 // -----------------------------------------------------------------------------
 
-pub(crate) fn eof(s: Span) -> IResult<Span, Span> {
-    use nom::InputLength;
-
-    if s.input_len() == 0 {
-        Ok((s, s))
-    } else {
-        Err(Err::Error(make_error(s, ErrorKind::Eof)))
-    }
-}
-
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn white_space(s: Span) -> IResult<Span, WhiteSpace> {

@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1606456647831,
+  "lastUpdate": 1608551309179,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -2231,6 +2231,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 23513533,
             "range": "± 1993523",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "b26b56d6248e33113417d115a0024247d175d3a3",
+          "message": "Fix escaped macro identifier #28",
+          "timestamp": "2020-12-21T20:14:33+09:00",
+          "tree_id": "3f9ac993fb1da863c3821e19ece8fab75b1980cd",
+          "url": "https://github.com/dalance/sv-parser/commit/b26b56d6248e33113417d115a0024247d175d3a3"
+        },
+        "date": 1608551308724,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 23404732,
+            "range": "± 4324011",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 22671571,
+            "range": "± 4554595",
             "unit": "ns/iter"
           }
         ]

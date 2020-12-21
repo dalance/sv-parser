@@ -561,7 +561,9 @@ fn identifier(node: RefNode, s: &str) -> Option<String> {
             }
             RefNode::EscapedIdentifier(x) => {
                 let x: Locate = x.nodes.0.try_into().unwrap();
-                return Some(String::from(x.str(s)));
+                let x = x.str(s);
+                let x = &x[1..]; // remove \
+                return Some(String::from(x));
             }
             _ => (),
         }
@@ -1131,6 +1133,32 @@ endmodule
             r##"`define MOD_INST u_mysubmod
 module mymod;
 mysubmod u_mysubmod() ;
+endmodule
+"##
+        );
+    }
+
+    #[test]
+    fn test16() {
+        let (ret, _) = preprocess(
+            get_testcase("test16.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            r##"module a;
+`define HELLO0 "HELLO"
+`define \HELLO1 "HELLO"
+initial begin
+$display("HELLO"  );
+$display("HELLO"  );
+$display("HELLO"  );
+$display("HELLO"  );
+end
 endmodule
 "##
         );

@@ -2,6 +2,7 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.9.0...Unreleased) - ReleaseDate
 
+* [Fixed] begin_keywords "1364-2001-noconfig" failure [#28](https://github.com/dalance/sv-parser/issues/28)
 * [Changed] update nom to 6.0.0
 
 ## [v0.9.0](https://github.com/dalance/sv-parser/compare/v0.8.3...v0.9.0) - 2020-11-11

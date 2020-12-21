@@ -849,12 +849,12 @@ pub(crate) fn version_specifier(s: Span) -> IResult<Span, VersionSpecifier> {
             begin_keywords("1364-2005");
             x
         }),
-        map(keyword("1364-2001"), |x| {
-            begin_keywords("1364-2001");
-            x
-        }),
         map(keyword("1364-2001-noconfig"), |x| {
             begin_keywords("1364-2001-noconfig");
+            x
+        }),
+        map(keyword("1364-2001"), |x| {
+            begin_keywords("1364-2001");
             x
         }),
         map(keyword("1364-1995"), |x| {

@@ -428,6 +428,15 @@ mod unit {
             r##"module a; always begin a = b.c'(0); end endmodule"##,
             Ok((_, _))
         );
+        test!(
+            source_text,
+            r##"`begin_keywords "1364-2001-noconfig" // use IEEE Std 1364-2001 Verilog keywords
+                module m2;
+                  reg [63:0] logic; // OK: "logic" is not a keyword in 1364-2001
+                endmodule
+                `end_keywords"##,
+            Ok((_, _))
+        );
     }
 }
 

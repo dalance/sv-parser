@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.9.0...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.10.0...Unreleased) - ReleaseDate
+
+## [v0.10.0](https://github.com/dalance/sv-parser/compare/v0.9.0...v0.10.0) - 2020-12-24
 
 * [Fixed] wrong error position
 * [Fixed] escaped_ideitifier at macro name [#28](https://github.com/dalance/sv-parser/issues/28)

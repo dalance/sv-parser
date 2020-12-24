@@ -2,6 +2,7 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.9.0...Unreleased) - ReleaseDate
 
+* [Fixed] wrong error position
 * [Fixed] escaped_ideitifier at macro name [#28](https://github.com/dalance/sv-parser/issues/28)
 * [Fixed] begin_keywords "1364-2001-noconfig" failure [#28](https://github.com/dalance/sv-parser/issues/28)
 * [Changed] update nom to 6.0.0

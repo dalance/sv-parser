@@ -22,6 +22,26 @@ macro_rules! test {
     };
 }
 
+macro_rules! error_test {
+    ( $x:expr, $y:expr, $p:expr ) => {
+        nom_packrat::init!();
+        let info = SpanInfo::default();
+        #[cfg(feature = "trace")]
+        let info = info.set_tracable_info(
+            info.get_tracable_info()
+                //.fold("white_space")
+                .fold("number")
+                .fold("binary_operator")
+                .fold("unary_operator"),
+        );
+        let ret = all_consuming($x)(Span::new_extra($y, info));
+        match ret {
+            Err(Err::Error(e)) => assert_eq!(nom_greedyerror::error_position(&e), $p),
+            _ => (),
+        }
+    };
+}
+
 mod unit {
     use super::*;
 
@@ -15889,6 +15909,19 @@ mod spec {
                     @(posedge clk) $get_vector("test_vector.pat", input_bus);
                 end"##,
             Ok((_, _))
+        );
+    }
+}
+
+mod error {
+    use super::*;
+
+    #[test]
+    fn test1() {
+        error_test!(
+            source_text,
+            r##"module A(); parameter A = 1 endmodule"##,
+            Some(12)
         );
     }
 }

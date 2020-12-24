@@ -1,13 +1,14 @@
 #![recursion_limit = "256"]
 
-use nom::combinator::all_consuming;
 use nom_greedyerror::error_position;
 use std::collections::HashMap;
 use std::fmt;
 use std::hash::BuildHasher;
 use std::path::{Path, PathBuf};
 pub use sv_parser_error::Error;
-use sv_parser_parser::{lib_parser, sv_parser, Span, SpanInfo};
+use sv_parser_parser::{
+    lib_parser, lib_parser_incomplete, sv_parser, sv_parser_incomplete, Span, SpanInfo,
+};
 pub use sv_parser_pp::preprocess::{
     preprocess, preprocess_str, Define, DefineText, Defines, PreprocessedText,
 };
@@ -110,9 +111,9 @@ pub fn parse_sv_pp(
 ) -> Result<(SyntaxTree, Defines), Error> {
     let span = Span::new_extra(text.text(), SpanInfo::default());
     let result = if allow_incomplete {
-        sv_parser(span)
+        sv_parser_incomplete(span)
     } else {
-        all_consuming(sv_parser)(span)
+        sv_parser(span)
     };
     match result {
         Ok((_, x)) => Ok((
@@ -200,7 +201,7 @@ pub fn parse_lib_pp(
 ) -> Result<(SyntaxTree, Defines), Error> {
     let span = Span::new_extra(text.text(), SpanInfo::default());
     let result = if allow_incomplete {
-        all_consuming(lib_parser)(span)
+        lib_parser_incomplete(span)
     } else {
         lib_parser(span)
     };

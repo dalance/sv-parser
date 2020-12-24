@@ -95,9 +95,19 @@ pub fn sv_parser(s: Span) -> IResult<Span, SourceText> {
     source_text(s)
 }
 
+pub fn sv_parser_incomplete(s: Span) -> IResult<Span, SourceText> {
+    nom_packrat::init!();
+    source_text_incomplete(s)
+}
+
 pub fn lib_parser(s: Span) -> IResult<Span, LibraryText> {
     nom_packrat::init!();
     library_text(s)
+}
+
+pub fn lib_parser_incomplete(s: Span) -> IResult<Span, LibraryText> {
+    nom_packrat::init!();
+    library_text_incomplete(s)
 }
 
 pub fn pp_parser(s: Span) -> IResult<Span, PreprocessorText> {

@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1608801737257,
+  "lastUpdate": 1608883700810,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -2339,6 +2339,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 21095491,
             "range": "± 277398",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "b1c3f41dea77e15edc866514a9997776c5045b37",
+          "message": "Increase default stack size of parse_sv",
+          "timestamp": "2020-12-25T16:48:39+09:00",
+          "tree_id": "8b153903def1c8a17d5e07d31a6eecfebdb806eb",
+          "url": "https://github.com/dalance/sv-parser/commit/b1c3f41dea77e15edc866514a9997776c5045b37"
+        },
+        "date": 1608883700401,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 21863492,
+            "range": "± 182262",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 21645397,
+            "range": "± 106391",
             "unit": "ns/iter"
           }
         ]

@@ -55,48 +55,56 @@ fn main() {
         defines.insert(ident, Some(define));
     }
 
-    let mut exit = 0;
-    for path in &opt.files {
-        if opt.pp {
-            match preprocess(&path, &defines, &opt.includes, false, false) {
-                Ok((preprocessed_text, new_defines)) => {
-                    println!("{}", preprocessed_text.text());
-                    defines = new_defines;
-                }
-                _ => (),
-            }
-        } else {
-            match parse_sv(&path, &defines, &opt.includes, false, opt.incomplete) {
-                Ok((syntax_tree, new_defines)) => {
-                    if opt.tree {
-                        println!("{}", syntax_tree);
-                    }
-                    defines = new_defines;
-                    if !opt.quiet {
-                        println!("parse succeeded: {:?}", path);
-                    }
-                }
-                Err(x) => {
-                    match x {
-                        Error::Parse(Some((origin_path, origin_pos))) => {
-                            println!("parse failed: {:?}", path);
-                            print_parse_error(&origin_path, &origin_pos);
+    let builder = std::thread::Builder::new().stack_size(20 * 1024 * 1024);
+
+    let child = builder
+        .spawn(move || {
+            let mut exit = 0;
+            for path in &opt.files {
+                if opt.pp {
+                    match preprocess(&path, &defines, &opt.includes, false, false) {
+                        Ok((preprocessed_text, new_defines)) => {
+                            println!("{}", preprocessed_text.text());
+                            defines = new_defines;
                         }
-                        x => {
-                            println!("parse failed: {:?} ({})", path, x);
-                            let mut err = x.source();
-                            while let Some(x) = err {
-                                println!("  Caused by {}", x);
-                                err = x.source();
+                        _ => (),
+                    }
+                } else {
+                    match parse_sv(&path, &defines, &opt.includes, false, opt.incomplete) {
+                        Ok((syntax_tree, new_defines)) => {
+                            if opt.tree {
+                                println!("{}", syntax_tree);
+                            }
+                            defines = new_defines;
+                            if !opt.quiet {
+                                println!("parse succeeded: {:?}", path);
                             }
                         }
+                        Err(x) => {
+                            match x {
+                                Error::Parse(Some((origin_path, origin_pos))) => {
+                                    println!("parse failed: {:?}", path);
+                                    print_parse_error(&origin_path, &origin_pos);
+                                }
+                                x => {
+                                    println!("parse failed: {:?} ({})", path, x);
+                                    let mut err = x.source();
+                                    while let Some(x) = err {
+                                        println!("  Caused by {}", x);
+                                        err = x.source();
+                                    }
+                                }
+                            }
+                            exit = 1;
+                        }
                     }
-                    exit = 1;
                 }
             }
-        }
-    }
-    process::exit(exit);
+            process::exit(exit);
+        })
+        .expect("thread spawn failure");
+
+    let _ = child.join();
 }
 
 static CHAR_CR: u8 = 0x0d;

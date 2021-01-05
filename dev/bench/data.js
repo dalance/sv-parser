@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1609817677202,
+  "lastUpdate": 1609817966465,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -2411,6 +2411,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 22599507,
             "range": "± 4892253",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "c8f8e7e37fd4aec4cd31e33e66f8d6d5c91f960b",
+          "message": "Prepare to release",
+          "timestamp": "2021-01-05T12:13:13+09:00",
+          "tree_id": "7be8b87bfa3e29a53e49ff6de643dcb7af2aad79",
+          "url": "https://github.com/dalance/sv-parser/commit/c8f8e7e37fd4aec4cd31e33e66f8d6d5c91f960b"
+        },
+        "date": 1609817966018,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 23615864,
+            "range": "± 566471",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 22042885,
+            "range": "± 519234",
             "unit": "ns/iter"
           }
         ]

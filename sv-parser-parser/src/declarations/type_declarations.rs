@@ -263,8 +263,7 @@ pub(crate) fn type_declaration_data_type(s: Span) -> IResult<Span, TypeDeclarati
     let (s, a) = keyword("typedef")(s)?;
     let (s, b) = data_type(s)?;
     let (s, c) = type_identifier(s)?;
-    let (s, d) = many0(variable_dimension)(s)?;
-    let (s, e) = symbol(";")(s)?;
+    let (s, (d, e)) = many_till(variable_dimension, symbol(";"))(s)?;
     Ok((
         s,
         TypeDeclaration::DataType(Box::new(TypeDeclarationDataType {

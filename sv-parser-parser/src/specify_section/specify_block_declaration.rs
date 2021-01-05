@@ -6,8 +6,7 @@ use crate::*;
 #[packrat_parser]
 pub(crate) fn specify_block(s: Span) -> IResult<Span, SpecifyBlock> {
     let (s, a) = keyword("specify")(s)?;
-    let (s, b) = many0(specify_item)(s)?;
-    let (s, c) = keyword("endspecify")(s)?;
+    let (s, (b, c)) = many_till(specify_item, keyword("endspecify"))(s)?;
     Ok((s, SpecifyBlock { nodes: (a, b, c) }))
 }
 

@@ -79,8 +79,7 @@ pub(crate) fn description_bind_directive(s: Span) -> IResult<Span, Description> 
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn module_nonansi_header(s: Span) -> IResult<Span, ModuleNonansiHeader> {
-    let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = module_keyword(s)?;
+    let (s, (a, b)) = many_till(attribute_instance, module_keyword)(s)?;
     let (s, c) = opt(lifetime)(s)?;
     let (s, d) = module_identifier(s)?;
     let (s, e) = many0(package_import_declaration)(s)?;
@@ -98,8 +97,7 @@ pub(crate) fn module_nonansi_header(s: Span) -> IResult<Span, ModuleNonansiHeade
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn module_ansi_header(s: Span) -> IResult<Span, ModuleAnsiHeader> {
-    let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = module_keyword(s)?;
+    let (s, (a, b)) = many_till(attribute_instance, module_keyword)(s)?;
     let (s, c) = opt(lifetime)(s)?;
     let (s, d) = module_identifier(s)?;
     let (s, e) = many0(package_import_declaration)(s)?;
@@ -131,8 +129,7 @@ pub(crate) fn module_declaration(s: Span) -> IResult<Span, ModuleDeclaration> {
 pub(crate) fn module_declaration_nonansi(s: Span) -> IResult<Span, ModuleDeclaration> {
     let (s, a) = module_nonansi_header(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
-    let (s, c) = many0(module_item)(s)?;
-    let (s, d) = keyword("endmodule")(s)?;
+    let (s, (c, d)) = many_till(module_item, keyword("endmodule"))(s)?;
     let (s, e) = opt(pair(symbol(":"), module_identifier))(s)?;
     Ok((
         s,
@@ -147,8 +144,7 @@ pub(crate) fn module_declaration_nonansi(s: Span) -> IResult<Span, ModuleDeclara
 pub(crate) fn module_declaration_ansi(s: Span) -> IResult<Span, ModuleDeclaration> {
     let (s, a) = module_ansi_header(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
-    let (s, c) = many0(non_port_module_item)(s)?;
-    let (s, d) = keyword("endmodule")(s)?;
+    let (s, (c, d)) = many_till(non_port_module_item, keyword("endmodule"))(s)?;
     let (s, e) = opt(pair(symbol(":"), module_identifier))(s)?;
     Ok((
         s,
@@ -161,15 +157,13 @@ pub(crate) fn module_declaration_ansi(s: Span) -> IResult<Span, ModuleDeclaratio
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn module_declaration_wildcard(s: Span) -> IResult<Span, ModuleDeclaration> {
-    let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = module_keyword(s)?;
+    let (s, (a, b)) = many_till(attribute_instance, module_keyword)(s)?;
     let (s, c) = opt(lifetime)(s)?;
     let (s, d) = module_identifier(s)?;
     let (s, e) = paren(symbol(".*"))(s)?;
     let (s, f) = symbol(";")(s)?;
     let (s, g) = opt(timeunits_declaration)(s)?;
-    let (s, h) = many0(module_item)(s)?;
-    let (s, i) = keyword("endmodule")(s)?;
+    let (s, (h, i)) = many_till(module_item, keyword("endmodule"))(s)?;
     let (s, j) = opt(pair(symbol(":"), module_identifier))(s)?;
     Ok((
         s,
@@ -231,8 +225,7 @@ pub(crate) fn interface_declaration(s: Span) -> IResult<Span, InterfaceDeclarati
 pub(crate) fn interface_declaration_nonansi(s: Span) -> IResult<Span, InterfaceDeclaration> {
     let (s, a) = interface_nonansi_header(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
-    let (s, c) = many0(interface_item)(s)?;
-    let (s, d) = keyword("endinterface")(s)?;
+    let (s, (c, d)) = many_till(interface_item, keyword("endinterface"))(s)?;
     let (s, e) = opt(pair(symbol(":"), interface_identifier))(s)?;
     Ok((
         s,
@@ -247,8 +240,7 @@ pub(crate) fn interface_declaration_nonansi(s: Span) -> IResult<Span, InterfaceD
 pub(crate) fn interface_declaration_ansi(s: Span) -> IResult<Span, InterfaceDeclaration> {
     let (s, a) = interface_ansi_header(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
-    let (s, c) = many0(non_port_interface_item)(s)?;
-    let (s, d) = keyword("endinterface")(s)?;
+    let (s, (c, d)) = many_till(non_port_interface_item, keyword("endinterface"))(s)?;
     let (s, e) = opt(pair(symbol(":"), interface_identifier))(s)?;
     Ok((
         s,
@@ -261,15 +253,13 @@ pub(crate) fn interface_declaration_ansi(s: Span) -> IResult<Span, InterfaceDecl
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn interface_declaration_wildcard(s: Span) -> IResult<Span, InterfaceDeclaration> {
-    let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = keyword("interface")(s)?;
+    let (s, (a, b)) = many_till(attribute_instance, keyword("interface"))(s)?;
     let (s, c) = opt(lifetime)(s)?;
     let (s, d) = interface_identifier(s)?;
     let (s, e) = paren(symbol(".*"))(s)?;
     let (s, f) = symbol(";")(s)?;
     let (s, g) = opt(timeunits_declaration)(s)?;
-    let (s, h) = many0(interface_item)(s)?;
-    let (s, i) = keyword("endinterface")(s)?;
+    let (s, (h, i)) = many_till(interface_item, keyword("endinterface"))(s)?;
     let (s, j) = opt(pair(symbol(":"), interface_identifier))(s)?;
     Ok((
         s,
@@ -308,8 +298,7 @@ pub(crate) fn interface_declaration_extern_ansi(s: Span) -> IResult<Span, Interf
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn interface_nonansi_header(s: Span) -> IResult<Span, InterfaceNonansiHeader> {
-    let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = keyword("interface")(s)?;
+    let (s, (a, b)) = many_till(attribute_instance, keyword("interface"))(s)?;
     let (s, c) = opt(lifetime)(s)?;
     let (s, d) = interface_identifier(s)?;
     let (s, e) = many0(package_import_declaration)(s)?;
@@ -327,8 +316,7 @@ pub(crate) fn interface_nonansi_header(s: Span) -> IResult<Span, InterfaceNonans
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn interface_ansi_header(s: Span) -> IResult<Span, InterfaceAnsiHeader> {
-    let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = keyword("interface")(s)?;
+    let (s, (a, b)) = many_till(attribute_instance, keyword("interface"))(s)?;
     let (s, c) = opt(lifetime)(s)?;
     let (s, d) = interface_identifier(s)?;
     let (s, e) = many0(package_import_declaration)(s)?;
@@ -360,8 +348,7 @@ pub(crate) fn program_declaration(s: Span) -> IResult<Span, ProgramDeclaration> 
 pub(crate) fn program_declaration_nonansi(s: Span) -> IResult<Span, ProgramDeclaration> {
     let (s, a) = program_nonansi_header(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
-    let (s, c) = many0(program_item)(s)?;
-    let (s, d) = keyword("endprogram")(s)?;
+    let (s, (c, d)) = many_till(program_item, keyword("endprogram"))(s)?;
     let (s, e) = opt(pair(symbol(":"), program_identifier))(s)?;
     Ok((
         s,
@@ -376,8 +363,7 @@ pub(crate) fn program_declaration_nonansi(s: Span) -> IResult<Span, ProgramDecla
 pub(crate) fn program_declaration_ansi(s: Span) -> IResult<Span, ProgramDeclaration> {
     let (s, a) = program_ansi_header(s)?;
     let (s, b) = opt(timeunits_declaration)(s)?;
-    let (s, c) = many0(non_port_program_item)(s)?;
-    let (s, d) = keyword("endprogram")(s)?;
+    let (s, (c, d)) = many_till(non_port_program_item, keyword("endprogram"))(s)?;
     let (s, e) = opt(pair(symbol(":"), program_identifier))(s)?;
     Ok((
         s,
@@ -390,14 +376,12 @@ pub(crate) fn program_declaration_ansi(s: Span) -> IResult<Span, ProgramDeclarat
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn program_declaration_wildcard(s: Span) -> IResult<Span, ProgramDeclaration> {
-    let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = keyword("program")(s)?;
+    let (s, (a, b)) = many_till(attribute_instance, keyword("program"))(s)?;
     let (s, c) = program_identifier(s)?;
     let (s, d) = paren(symbol(".*"))(s)?;
     let (s, e) = symbol(";")(s)?;
     let (s, f) = opt(timeunits_declaration)(s)?;
-    let (s, g) = many0(program_item)(s)?;
-    let (s, h) = keyword("endprogram")(s)?;
+    let (s, (g, h)) = many_till(program_item, keyword("endprogram"))(s)?;
     let (s, i) = opt(pair(symbol(":"), program_identifier))(s)?;
     Ok((
         s,
@@ -434,8 +418,7 @@ pub(crate) fn program_declaration_extern_ansi(s: Span) -> IResult<Span, ProgramD
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn program_nonansi_header(s: Span) -> IResult<Span, ProgramNonansiHeader> {
-    let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = keyword("prgogram")(s)?;
+    let (s, (a, b)) = many_till(attribute_instance, keyword("prgogram"))(s)?;
     let (s, c) = opt(lifetime)(s)?;
     let (s, d) = program_identifier(s)?;
     let (s, e) = many0(package_import_declaration)(s)?;
@@ -453,8 +436,7 @@ pub(crate) fn program_nonansi_header(s: Span) -> IResult<Span, ProgramNonansiHea
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn program_ansi_header(s: Span) -> IResult<Span, ProgramAnsiHeader> {
-    let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = keyword("program")(s)?;
+    let (s, (a, b)) = many_till(attribute_instance, keyword("program"))(s)?;
     let (s, c) = opt(lifetime)(s)?;
     let (s, d) = program_identifier(s)?;
     let (s, e) = many0(package_import_declaration)(s)?;
@@ -476,8 +458,10 @@ pub(crate) fn checker_declaration(s: Span) -> IResult<Span, CheckerDeclaration> 
     let (s, b) = checker_identifier(s)?;
     let (s, c) = opt(paren(opt(checker_port_list)))(s)?;
     let (s, d) = symbol(";")(s)?;
-    let (s, e) = many0(pair(many0(attribute_instance), checker_or_generate_item))(s)?;
-    let (s, f) = keyword("endchecker")(s)?;
+    let (s, (e, f)) = many_till(
+        pair(many0(attribute_instance), checker_or_generate_item),
+        keyword("endchecker"),
+    )(s)?;
     let (s, g) = opt(pair(symbol(":"), checker_identifier))(s)?;
     Ok((
         s,
@@ -505,8 +489,7 @@ pub(crate) fn class_declaration(s: Span) -> IResult<Span, ClassDeclaration> {
         list(symbol(","), interface_class_type),
     ))(s)?;
     let (s, h) = symbol(";")(s)?;
-    let (s, i) = many0(class_item)(s)?;
-    let (s, j) = keyword("endclass")(s)?;
+    let (s, (i, j)) = many_till(class_item, keyword("endclass"))(s)?;
     let (s, k) = opt(pair(symbol(":"), class_identifier))(s)?;
     Ok((
         s,
@@ -536,8 +519,7 @@ pub(crate) fn interface_class_declaration(s: Span) -> IResult<Span, InterfaceCla
         list(symbol(","), interface_class_type),
     ))(s)?;
     let (s, f) = symbol(";")(s)?;
-    let (s, g) = many0(interface_class_item)(s)?;
-    let (s, h) = keyword("endclass")(s)?;
+    let (s, (g, h)) = many_till(interface_class_item, keyword("endclass"))(s)?;
     let (s, i) = opt(pair(symbol(":"), class_identifier))(s)?;
     Ok((
         s,
@@ -594,14 +576,15 @@ pub(crate) fn interface_class_method(s: Span) -> IResult<Span, InterfaceClassMet
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn package_declaration(s: Span) -> IResult<Span, PackageDeclaration> {
-    let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = keyword("package")(s)?;
+    let (s, (a, b)) = many_till(attribute_instance, keyword("package"))(s)?;
     let (s, c) = opt(lifetime)(s)?;
     let (s, d) = package_identifier(s)?;
     let (s, e) = symbol(";")(s)?;
     let (s, f) = opt(timeunits_declaration)(s)?;
-    let (s, g) = many0(pair(many0(attribute_instance), package_item))(s)?;
-    let (s, h) = keyword("endpackage")(s)?;
+    let (s, (g, h)) = many_till(
+        pair(many0(attribute_instance), package_item),
+        keyword("endpackage"),
+    )(s)?;
     let (s, i) = opt(pair(symbol(":"), package_identifier))(s)?;
     Ok((
         s,

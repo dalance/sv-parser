@@ -146,8 +146,7 @@ pub(crate) fn named_port_connection(s: Span) -> IResult<Span, NamedPortConnectio
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn named_port_connection_identifier(s: Span) -> IResult<Span, NamedPortConnection> {
-    let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = symbol(".")(s)?;
+    let (s, (a, b)) = many_till(attribute_instance, symbol("."))(s)?;
     let (s, c) = port_identifier(s)?;
     let (s, d) = opt(paren(opt(expression)))(s)?;
     Ok((
@@ -161,8 +160,7 @@ pub(crate) fn named_port_connection_identifier(s: Span) -> IResult<Span, NamedPo
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn named_port_connection_asterisk(s: Span) -> IResult<Span, NamedPortConnection> {
-    let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = symbol(".*")(s)?;
+    let (s, (a, b)) = many_till(attribute_instance, symbol(".*"))(s)?;
     Ok((
         s,
         NamedPortConnection::Asterisk(Box::new(NamedPortConnectionAsterisk { nodes: (a, b) })),

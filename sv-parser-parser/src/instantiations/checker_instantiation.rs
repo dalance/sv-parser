@@ -82,8 +82,7 @@ pub(crate) fn named_checker_port_connection(s: Span) -> IResult<Span, NamedCheck
 pub(crate) fn named_checker_port_connection_identifier(
     s: Span,
 ) -> IResult<Span, NamedCheckerPortConnection> {
-    let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = symbol(".")(s)?;
+    let (s, (a, b)) = many_till(attribute_instance, symbol("."))(s)?;
     let (s, c) = formal_port_identifier(s)?;
     let (s, d) = opt(paren(opt(property_actual_arg)))(s)?;
     Ok((
@@ -99,8 +98,7 @@ pub(crate) fn named_checker_port_connection_identifier(
 pub(crate) fn named_checker_port_connection_asterisk(
     s: Span,
 ) -> IResult<Span, NamedCheckerPortConnection> {
-    let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = symbol(".*")(s)?;
+    let (s, (a, b)) = many_till(attribute_instance, symbol(".*"))(s)?;
     Ok((
         s,
         NamedCheckerPortConnection::Asterisk(Box::new(NamedCheckerPortConnectionAsterisk {

@@ -6,8 +6,7 @@ use crate::*;
 #[packrat_parser]
 pub(crate) fn generate_region(s: Span) -> IResult<Span, GenerateRegion> {
     let (s, a) = keyword("generate")(s)?;
-    let (s, b) = many0(generate_item)(s)?;
-    let (s, c) = keyword("endgenerate")(s)?;
+    let (s, (b, c)) = many_till(generate_item, keyword("endgenerate"))(s)?;
     Ok((s, GenerateRegion { nodes: (a, b, c) }))
 }
 
@@ -176,8 +175,7 @@ pub(crate) fn generate_block_multiple(s: Span) -> IResult<Span, GenerateBlock> {
     let (s, a) = opt(pair(generate_block_identifier, symbol(":")))(s)?;
     let (s, b) = keyword("begin")(s)?;
     let (s, c) = opt(pair(symbol(":"), generate_block_identifier))(s)?;
-    let (s, d) = many0(generate_item)(s)?;
-    let (s, e) = keyword("end")(s)?;
+    let (s, (d, e)) = many_till(generate_item, keyword("end"))(s)?;
     let (s, f) = opt(pair(symbol(":"), generate_block_identifier))(s)?;
     Ok((
         s,

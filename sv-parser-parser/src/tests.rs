@@ -15921,7 +15921,7 @@ mod error {
         error_test!(
             source_text,
             r##"module A(); parameter A = 1 endmodule"##,
-            Some(12)
+            Some(28)
         );
     }
 }

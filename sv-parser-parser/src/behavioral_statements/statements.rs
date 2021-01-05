@@ -14,8 +14,7 @@ pub(crate) fn statement_or_null(s: Span) -> IResult<Span, StatementOrNull> {
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn statement_or_null_attribute(s: Span) -> IResult<Span, StatementOrNull> {
-    let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = symbol(";")(s)?;
+    let (s, (a, b)) = many_till(attribute_instance, symbol(";"))(s)?;
     Ok((
         s,
         StatementOrNull::Attribute(Box::new(StatementOrNullAttribute { nodes: (a, b) })),
@@ -119,8 +118,7 @@ pub(crate) fn function_statement_or_null(s: Span) -> IResult<Span, FunctionState
 pub(crate) fn function_statement_or_null_attribute(
     s: Span,
 ) -> IResult<Span, FunctionStatementOrNull> {
-    let (s, a) = many0(attribute_instance)(s)?;
-    let (s, b) = symbol(";")(s)?;
+    let (s, (a, b)) = many_till(attribute_instance, symbol(";"))(s)?;
     Ok((
         s,
         FunctionStatementOrNull::Attribute(Box::new(FunctionStatementOrNullAttribute {

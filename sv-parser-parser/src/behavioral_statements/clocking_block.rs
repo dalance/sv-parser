@@ -16,8 +16,7 @@ pub(crate) fn clocking_declaration_local(s: Span) -> IResult<Span, ClockingDecla
     let (s, c) = opt(clocking_identifier)(s)?;
     let (s, d) = clocking_event(s)?;
     let (s, e) = symbol(";")(s)?;
-    let (s, f) = many0(clocking_item)(s)?;
-    let (s, g) = keyword("endclocking")(s)?;
+    let (s, (f, g)) = many_till(clocking_item, keyword("endclocking"))(s)?;
     let (s, h) = opt(pair(symbol(":"), clocking_identifier))(s)?;
     Ok((
         s,

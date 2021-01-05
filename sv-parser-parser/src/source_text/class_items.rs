@@ -325,8 +325,7 @@ pub(crate) fn class_constructor_declaration(s: Span) -> IResult<Span, ClassConst
         opt(paren(list_of_arguments)),
         symbol(";"),
     )))(s)?;
-    let (s, h) = many0(function_statement_or_null)(s)?;
-    let (s, i) = keyword("endfunction")(s)?;
+    let (s, (h, i)) = many_till(function_statement_or_null, keyword("endfunction"))(s)?;
     let (s, j) = opt(pair(symbol(":"), new))(s)?;
     Ok((
         s,

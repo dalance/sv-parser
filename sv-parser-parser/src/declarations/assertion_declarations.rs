@@ -437,8 +437,7 @@ pub(crate) fn property_expr_case(s: Span) -> IResult<Span, PropertyExpr> {
     let (s, a) = keyword("case")(s)?;
     let (s, b) = paren(expression_or_dist)(s)?;
     let (s, c) = property_case_item(s)?;
-    let (s, d) = many0(property_case_item)(s)?;
-    let (s, e) = keyword("endcase")(s)?;
+    let (s, (d, e)) = many_till(property_case_item, keyword("endcase"))(s)?;
     Ok((
         s,
         PropertyExpr::Case(Box::new(PropertyExprCase {

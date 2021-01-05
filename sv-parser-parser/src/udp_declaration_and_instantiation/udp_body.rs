@@ -18,8 +18,7 @@ pub(crate) fn udp_body(s: Span) -> IResult<Span, UdpBody> {
 pub(crate) fn combinational_body(s: Span) -> IResult<Span, CombinationalBody> {
     let (s, a) = keyword("table")(s)?;
     let (s, b) = combinational_entry(s)?;
-    let (s, c) = many0(combinational_entry)(s)?;
-    let (s, d) = keyword("endtable")(s)?;
+    let (s, (c, d)) = many_till(combinational_entry, keyword("endtable"))(s)?;
     Ok((
         s,
         CombinationalBody {
@@ -49,8 +48,7 @@ pub(crate) fn sequential_body(s: Span) -> IResult<Span, SequentialBody> {
     let (s, a) = opt(udp_initial_statement)(s)?;
     let (s, b) = keyword("table")(s)?;
     let (s, c) = sequential_entry(s)?;
-    let (s, d) = many0(sequential_entry)(s)?;
-    let (s, e) = keyword("endtable")(s)?;
+    let (s, (d, e)) = many_till(sequential_entry, keyword("endtable"))(s)?;
     Ok((
         s,
         SequentialBody {

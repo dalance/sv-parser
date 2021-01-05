@@ -57,8 +57,7 @@ pub(crate) fn function_body_declaration_without_port(
     let (s, c) = function_identifier(s)?;
     let (s, d) = symbol(";")(s)?;
     let (s, e) = many0(tf_item_declaration)(s)?;
-    let (s, f) = many0(function_statement_or_null)(s)?;
-    let (s, g) = keyword("endfunction")(s)?;
+    let (s, (f, g)) = many_till(function_statement_or_null, keyword("endfunction"))(s)?;
     let (s, h) = opt(pair(symbol(":"), function_identifier))(s)?;
     Ok((
         s,
@@ -79,8 +78,7 @@ pub(crate) fn function_body_declaration_with_port(
     let (s, d) = paren(opt(tf_port_list))(s)?;
     let (s, e) = symbol(";")(s)?;
     let (s, f) = many0(block_item_declaration)(s)?;
-    let (s, g) = many0(function_statement_or_null)(s)?;
-    let (s, h) = keyword("endfunction")(s)?;
+    let (s, (g, h)) = many_till(function_statement_or_null, keyword("endfunction"))(s)?;
     let (s, i) = opt(pair(symbol(":"), function_identifier))(s)?;
     Ok((
         s,

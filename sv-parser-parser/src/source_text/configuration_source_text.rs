@@ -10,8 +10,7 @@ pub(crate) fn config_declaration(s: Span) -> IResult<Span, ConfigDeclaration> {
     let (s, c) = symbol(";")(s)?;
     let (s, d) = many0(pair(local_parameter_declaration, symbol(";")))(s)?;
     let (s, e) = design_statement(s)?;
-    let (s, f) = many0(config_rule_statement)(s)?;
-    let (s, g) = keyword("endconfig")(s)?;
+    let (s, (f, g)) = many_till(config_rule_statement, keyword("endconfig"))(s)?;
     let (s, h) = opt(pair(symbol(":"), config_identifier))(s)?;
     Ok((
         s,
@@ -25,11 +24,10 @@ pub(crate) fn config_declaration(s: Span) -> IResult<Span, ConfigDeclaration> {
 #[packrat_parser]
 pub(crate) fn design_statement(s: Span) -> IResult<Span, DesignStatement> {
     let (s, a) = keyword("design")(s)?;
-    let (s, b) = many0(pair(
-        opt(pair(library_identifier, symbol("."))),
-        cell_identifier,
-    ))(s)?;
-    let (s, c) = symbol(";")(s)?;
+    let (s, (b, c)) = many_till(
+        pair(opt(pair(library_identifier, symbol("."))), cell_identifier),
+        symbol(";"),
+    )(s)?;
     Ok((s, DesignStatement { nodes: (a, b, c) }))
 }
 

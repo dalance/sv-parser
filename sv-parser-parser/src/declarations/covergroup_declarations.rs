@@ -10,8 +10,7 @@ pub(crate) fn covergroup_declaration(s: Span) -> IResult<Span, CovergroupDeclara
     let (s, c) = opt(paren(opt(tf_port_list)))(s)?;
     let (s, d) = opt(coverage_event)(s)?;
     let (s, e) = symbol(";")(s)?;
-    let (s, f) = many0(coverage_spec_or_option)(s)?;
-    let (s, g) = keyword("endgroup")(s)?;
+    let (s, (f, g)) = many_till(coverage_spec_or_option, keyword("endgroup"))(s)?;
     let (s, h) = opt(pair(symbol(":"), covergroup_identifier))(s)?;
     Ok((
         s,

@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.10.0...Unreleased) - ReleaseDate
 
+* [Fixed] Use many_till instead of many0 for accurate error position
+
 ## [v0.10.0](https://github.com/dalance/sv-parser/compare/v0.9.0...v0.10.0) - 2020-12-24
 
 * [Fixed] wrong error position

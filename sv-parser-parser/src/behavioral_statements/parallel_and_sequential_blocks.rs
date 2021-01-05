@@ -31,8 +31,7 @@ pub(crate) fn seq_block(s: Span) -> IResult<Span, SeqBlock> {
     let (s, a) = keyword("begin")(s)?;
     let (s, b) = opt(pair(symbol(":"), block_identifier))(s)?;
     let (s, c) = many0(block_item_declaration)(s)?;
-    let (s, d) = many0(statement_or_null)(s)?;
-    let (s, e) = keyword("end")(s)?;
+    let (s, (d, e)) = many_till(statement_or_null, keyword("end"))(s)?;
     let (s, f) = opt(pair(symbol(":"), block_identifier))(s)?;
     Ok((
         s,
@@ -48,8 +47,7 @@ pub(crate) fn par_block(s: Span) -> IResult<Span, ParBlock> {
     let (s, a) = keyword("fork")(s)?;
     let (s, b) = opt(pair(symbol(":"), block_identifier))(s)?;
     let (s, c) = many0(block_item_declaration)(s)?;
-    let (s, d) = many0(statement_or_null)(s)?;
-    let (s, e) = join_keyword(s)?;
+    let (s, (d, e)) = many_till(statement_or_null, join_keyword)(s)?;
     let (s, f) = opt(pair(symbol(":"), block_identifier))(s)?;
     Ok((
         s,

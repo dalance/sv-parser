@@ -19,8 +19,7 @@ pub(crate) fn case_statement_normal(s: Span) -> IResult<Span, CaseStatement> {
     let (s, b) = case_keyword(s)?;
     let (s, c) = paren(case_expression)(s)?;
     let (s, d) = case_item(s)?;
-    let (s, e) = many0(case_item)(s)?;
-    let (s, f) = keyword("endcase")(s)?;
+    let (s, (e, f)) = many_till(case_item, keyword("endcase"))(s)?;
     Ok((
         s,
         CaseStatement::Normal(Box::new(CaseStatementNormal {
@@ -37,8 +36,7 @@ pub(crate) fn case_statement_matches(s: Span) -> IResult<Span, CaseStatement> {
     let (s, c) = paren(case_expression)(s)?;
     let (s, d) = keyword("matches")(s)?;
     let (s, e) = case_pattern_item(s)?;
-    let (s, f) = many0(case_pattern_item)(s)?;
-    let (s, g) = keyword("endcase")(s)?;
+    let (s, (f, g)) = many_till(case_pattern_item, keyword("endcase"))(s)?;
     Ok((
         s,
         CaseStatement::Matches(Box::new(CaseStatementMatches {
@@ -55,8 +53,7 @@ pub(crate) fn case_statement_inside(s: Span) -> IResult<Span, CaseStatement> {
     let (s, c) = paren(case_expression)(s)?;
     let (s, d) = keyword("inside")(s)?;
     let (s, e) = case_inside_item(s)?;
-    let (s, f) = many0(case_inside_item)(s)?;
-    let (s, g) = keyword("endcase")(s)?;
+    let (s, (f, g)) = many_till(case_inside_item, keyword("endcase"))(s)?;
     Ok((
         s,
         CaseStatement::Inside(Box::new(CaseStatementInside {
@@ -172,8 +169,7 @@ pub(crate) fn case_item_expression(s: Span) -> IResult<Span, CaseItemExpression>
 pub(crate) fn randcase_statement(s: Span) -> IResult<Span, RandcaseStatement> {
     let (s, a) = keyword("randcase")(s)?;
     let (s, b) = randcase_item(s)?;
-    let (s, c) = many0(randcase_item)(s)?;
-    let (s, d) = keyword("endcase")(s)?;
+    let (s, (c, d)) = many_till(randcase_item, keyword("endcase"))(s)?;
     Ok((
         s,
         RandcaseStatement {

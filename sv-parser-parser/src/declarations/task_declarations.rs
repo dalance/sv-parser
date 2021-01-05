@@ -27,8 +27,7 @@ pub(crate) fn task_body_declaration_without_port(s: Span) -> IResult<Span, TaskB
     let (s, b) = task_identifier(s)?;
     let (s, c) = symbol(";")(s)?;
     let (s, d) = many0(tf_item_declaration)(s)?;
-    let (s, e) = many0(statement_or_null)(s)?;
-    let (s, f) = keyword("endtask")(s)?;
+    let (s, (e, f)) = many_till(statement_or_null, keyword("endtask"))(s)?;
     let (s, g) = opt(pair(symbol(":"), task_identifier))(s)?;
     Ok((
         s,
@@ -46,8 +45,7 @@ pub(crate) fn task_body_declaration_with_port(s: Span) -> IResult<Span, TaskBody
     let (s, c) = paren(opt(tf_port_list))(s)?;
     let (s, d) = symbol(";")(s)?;
     let (s, e) = many0(block_item_declaration)(s)?;
-    let (s, f) = many0(statement_or_null)(s)?;
-    let (s, g) = keyword("endtask")(s)?;
+    let (s, (f, g)) = many_till(statement_or_null, keyword("endtask"))(s)?;
     let (s, h) = opt(pair(symbol(":"), task_identifier))(s)?;
     Ok((
         s,

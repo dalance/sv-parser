@@ -8,8 +8,7 @@ pub(crate) fn randsequence_statement(s: Span) -> IResult<Span, RandsequenceState
     let (s, a) = keyword("randsequence")(s)?;
     let (s, b) = paren(opt(production_identifier))(s)?;
     let (s, c) = production(s)?;
-    let (s, d) = many0(production)(s)?;
-    let (s, e) = keyword("endsequence")(s)?;
+    let (s, (d, e)) = many_till(production, keyword("endsequence"))(s)?;
     Ok((
         s,
         RandsequenceStatement {
@@ -162,8 +161,7 @@ pub(crate) fn rs_case(s: Span) -> IResult<Span, RsCase> {
     let (s, a) = keyword("case")(s)?;
     let (s, b) = paren(case_expression)(s)?;
     let (s, c) = rs_case_item(s)?;
-    let (s, d) = many0(rs_case_item)(s)?;
-    let (s, e) = keyword("endcase")(s)?;
+    let (s, (d, e)) = many_till(rs_case_item, keyword("endcase"))(s)?;
     Ok((
         s,
         RsCase {

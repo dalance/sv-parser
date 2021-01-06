@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1609817966465,
+  "lastUpdate": 1609903088165,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -2447,6 +2447,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 22042885,
             "range": "± 519234",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "0aaec7e7122c50f72c6c705ad2d5adf8cca0ea29",
+          "message": "Fix embedded single line comment in macro #28",
+          "timestamp": "2021-01-06T11:54:16+09:00",
+          "tree_id": "febc3b3a4c2533d92e5d40ede2a5473d91a84106",
+          "url": "https://github.com/dalance/sv-parser/commit/0aaec7e7122c50f72c6c705ad2d5adf8cca0ea29"
+        },
+        "date": 1609903087758,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 24630117,
+            "range": "± 2506536",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 22450025,
+            "range": "± 2166978",
             "unit": "ns/iter"
           }
         ]

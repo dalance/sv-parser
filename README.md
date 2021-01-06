@@ -16,7 +16,7 @@ SystemVerilog parser library fully compliant with [IEEE 1800-2017](https://stand
 
 ```Cargo.toml
 [dependencies]
-sv-parser = "0.10.1"
+sv-parser = "0.10.2"
 ```
 
 sv-parser provides [`parse_sv`](https://docs.rs/sv-parser/latest/sv_parser/fn.parse_sv.html) function which returns [`SyntaxTree`](https://docs.rs/sv-parser/latest/sv_parser/struct.SyntaxTree.html).

@@ -588,6 +588,7 @@ fn split_text(s: &str) -> Vec<String> {
     let mut is_string = false;
     let mut is_ident = false;
     let mut is_backquote_prev = false;
+    let mut is_comment = false;
     let mut is_ident_prev;
     let mut x = String::from("");
     let mut ret = vec![];
@@ -597,7 +598,12 @@ fn split_text(s: &str) -> Vec<String> {
         is_ident_prev = is_ident;
         is_ident = c.is_ascii_alphanumeric() | (c == '_');
 
-        if c == '"' && is_backquote_prev {
+        if c == '\n' && is_comment {
+            is_comment = false;
+            x.push(c);
+        } else if is_comment {
+            continue;
+        } else if c == '"' && is_backquote_prev {
             x.push(c);
             ret.push(x);
             x = String::from("");
@@ -612,7 +618,7 @@ fn split_text(s: &str) -> Vec<String> {
             x = String::from("");
             is_string = false;
         } else if c == '/' && iter.peek() == Some(&'/') && !is_string {
-            break;
+            is_comment = true;
         } else if !is_string {
             if is_ident != is_ident_prev {
                 ret.push(x);
@@ -1160,6 +1166,30 @@ $display("HELLO"  );
 $display("HELLO"  );
 end
 endmodule
+"##
+        );
+    }
+
+    #[test]
+    fn test17() {
+        let (ret, _) = preprocess(
+            get_testcase("test17.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            r##"`define A \
+  initial begin // comment \
+  end
+
+module test();
+
+initial begin 
+  end endmodule
 "##
         );
     }

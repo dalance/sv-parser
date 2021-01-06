@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.10.1...Unreleased) - ReleaseDate
 
+* [Fixed] embedded single line comment in macro [#28](https://github.com/dalance/sv-parser/issues/28)
+
 ## [v0.10.1](https://github.com/dalance/sv-parser/compare/v0.10.0...v0.10.1) - 2021-01-05
 
 * [Fixed] Use many_till instead of many0 for accurate error position

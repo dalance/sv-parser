@@ -116,11 +116,11 @@ pub(crate) fn module_ansi_header(s: Span) -> IResult<Span, ModuleAnsiHeader> {
 #[packrat_parser]
 pub(crate) fn module_declaration(s: Span) -> IResult<Span, ModuleDeclaration> {
     alt((
-        module_declaration_nonansi,
         module_declaration_ansi,
+        module_declaration_nonansi,
         module_declaration_wildcard,
-        module_declaration_extern_nonansi,
         module_declaration_extern_ansi,
+        module_declaration_extern_nonansi,
     ))(s)
 }
 
@@ -212,11 +212,11 @@ pub(crate) fn module_keyword(s: Span) -> IResult<Span, ModuleKeyword> {
 #[packrat_parser]
 pub(crate) fn interface_declaration(s: Span) -> IResult<Span, InterfaceDeclaration> {
     alt((
-        interface_declaration_nonansi,
         interface_declaration_ansi,
+        interface_declaration_nonansi,
         interface_declaration_wildcard,
-        interface_declaration_extern_nonansi,
         interface_declaration_extern_ansi,
+        interface_declaration_extern_nonansi,
     ))(s)
 }
 
@@ -335,11 +335,11 @@ pub(crate) fn interface_ansi_header(s: Span) -> IResult<Span, InterfaceAnsiHeade
 #[packrat_parser]
 pub(crate) fn program_declaration(s: Span) -> IResult<Span, ProgramDeclaration> {
     alt((
-        program_declaration_nonansi,
         program_declaration_ansi,
+        program_declaration_nonansi,
         program_declaration_wildcard,
-        program_declaration_extern_nonansi,
         program_declaration_extern_ansi,
+        program_declaration_extern_nonansi,
     ))(s)
 }
 

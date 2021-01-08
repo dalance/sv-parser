@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.10.2...Unreleased) - ReleaseDate
 
+* [Fixed] empty port list is parsed as non-ANSI style
+
 ## [v0.10.2](https://github.com/dalance/sv-parser/compare/v0.10.1...v0.10.2) - 2021-01-06
 
 * [Fixed] embedded single line comment in macro [#28](https://github.com/dalance/sv-parser/issues/28)

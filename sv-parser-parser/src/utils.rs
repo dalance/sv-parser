@@ -351,9 +351,13 @@ pub(crate) fn end_directive() {
     IN_DIRECTIVE.with(|x| x.borrow_mut().pop());
 }
 
+pub(crate) fn clear_directive() {
+    IN_DIRECTIVE.with(|x| x.borrow_mut().clear());
+}
+
 // -----------------------------------------------------------------------------
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub(crate) enum VersionSpecifier {
     Ieee1364_1995,
     Ieee1364_2001,
@@ -416,6 +420,12 @@ pub(crate) fn current_version() -> Option<VersionSpecifier> {
         Some(x) => Some(*x),
         None => None,
     })
+}
+
+pub(crate) fn clear_version() {
+    CURRENT_VERSION.with(|current_version| {
+        current_version.borrow_mut().clear();
+    });
 }
 
 // -----------------------------------------------------------------------------

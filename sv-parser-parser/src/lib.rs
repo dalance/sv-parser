@@ -91,26 +91,32 @@ impl HasExtraState<bool> for SpanInfo {
 nom_packrat::storage!(AnyNode, bool, 1024);
 
 pub fn sv_parser(s: Span) -> IResult<Span, SourceText> {
-    nom_packrat::init!();
+    init();
     source_text(s)
 }
 
 pub fn sv_parser_incomplete(s: Span) -> IResult<Span, SourceText> {
-    nom_packrat::init!();
+    init();
     source_text_incomplete(s)
 }
 
 pub fn lib_parser(s: Span) -> IResult<Span, LibraryText> {
-    nom_packrat::init!();
+    init();
     library_text(s)
 }
 
 pub fn lib_parser_incomplete(s: Span) -> IResult<Span, LibraryText> {
-    nom_packrat::init!();
+    init();
     library_text_incomplete(s)
 }
 
 pub fn pp_parser(s: Span) -> IResult<Span, PreprocessorText> {
-    nom_packrat::init!();
+    init();
     preprocessor_text(s)
+}
+
+fn init() {
+    nom_packrat::init!();
+    clear_directive();
+    clear_version();
 }

@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.10.3...Unreleased) - ReleaseDate
 
+* [Fixed] uncleared internal state
+
 ## [v0.10.3](https://github.com/dalance/sv-parser/compare/v0.10.2...v0.10.3) - 2021-01-08
 
 * [Fixed] empty port list is parsed as non-ANSI style

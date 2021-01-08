@@ -277,4 +277,46 @@ mod test {
         let comment = unwrap_node!(&syntax_tree, Comment);
         assert!(comment.is_some());
     }
+
+    #[test]
+    fn test_continuous() {
+        let src = r##"`ifdef A
+`endif
+
+module FetchStage();
+    always_comb begin
+        for (int j = i + 1; j < FETCH_WIDTH; j++) begin
+        end
+        break;
+    end
+
+    AddrPath fetchAddrOut;
+endmodule"##;
+
+        let src_broken = r##"`ifdef A
+endif
+
+module FetchStage();
+    always_comb begin
+        for (int j = i + 1; j < FETCH_WIDTH; j++) begin
+        end
+        break;
+    end
+
+    AddrPath fetchAddrOut;
+endmodule"##;
+
+        let path = PathBuf::from("");
+        let defines = HashMap::new();
+        let ret = parse_sv_str(src, &path, &defines, &[""], false, false);
+        assert!(ret.is_ok());
+        let ret = parse_sv_str(src_broken, &path, &defines, &[""], false, false);
+        assert!(ret.is_err());
+        let ret = parse_sv_str(src, &path, &defines, &[""], false, false);
+        assert!(ret.is_ok());
+        let ret = parse_sv_str(src_broken, &path, &defines, &[""], false, false);
+        assert!(ret.is_err());
+        let ret = parse_sv_str(src, &path, &defines, &[""], false, false);
+        assert!(ret.is_ok());
+    }
 }

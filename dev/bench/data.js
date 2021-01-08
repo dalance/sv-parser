@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1609903661205,
+  "lastUpdate": 1610076002967,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -2519,6 +2519,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 19324057,
             "range": "± 2544294",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "9232a15bc8ee2a968ad20fd8036e964801a6a250",
+          "message": "Change ansi/non-ansi priority",
+          "timestamp": "2021-01-08T11:52:39+09:00",
+          "tree_id": "037f72d452b9a8f3fc0f2157c7afcabd6c6e7b51",
+          "url": "https://github.com/dalance/sv-parser/commit/9232a15bc8ee2a968ad20fd8036e964801a6a250"
+        },
+        "date": 1610076002201,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 32468920,
+            "range": "± 4421461",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 29347969,
+            "range": "± 5590750",
             "unit": "ns/iter"
           }
         ]

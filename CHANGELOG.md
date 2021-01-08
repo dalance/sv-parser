@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.10.2...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.10.3...Unreleased) - ReleaseDate
+
+## [v0.10.3](https://github.com/dalance/sv-parser/compare/v0.10.2...v0.10.3) - 2021-01-08
 
 * [Fixed] empty port list is parsed as non-ANSI style
 

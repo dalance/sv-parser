@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.10.3...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.10.4...Unreleased) - ReleaseDate
+
+## [v0.10.4](https://github.com/dalance/sv-parser/compare/v0.10.3...v0.10.4) - 2021-01-08
 
 * [Fixed] uncleared internal state
 

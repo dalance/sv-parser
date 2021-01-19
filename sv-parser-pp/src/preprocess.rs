@@ -1193,4 +1193,25 @@ initial begin
 "##
         );
     }
+
+    #[test]
+    fn test18() {
+        let (ret, _) = preprocess(
+            get_testcase("test18.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            r##"// pragma translate_off
+module A;
+endmodule
+// pragma translate_on
+
+"##
+        );
+    }
 }

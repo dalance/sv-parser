@@ -309,14 +309,9 @@ where
 #[packrat_parser]
 pub(crate) fn white_space(s: Span) -> IResult<Span, WhiteSpace> {
     if in_directive() {
-        alt((
-            map(multispace1, |x: Span| {
-                WhiteSpace::Space(Box::new(into_locate(x)))
-            }),
-            map(preceded(peek(char('/')), comment), |x| {
-                WhiteSpace::Comment(Box::new(x))
-            }),
-        ))(s)
+        map(multispace1, |x: Span| {
+            WhiteSpace::Space(Box::new(into_locate(x)))
+        })(s)
     } else {
         alt((
             map(multispace1, |x: Span| {

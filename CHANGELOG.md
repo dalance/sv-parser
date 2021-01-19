@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.10.4...Unreleased) - ReleaseDate
 
+* [Fixed] missing comment after macro name [#29](https://github.com/dalance/sv-parser/issues/29)
+
 ## [v0.10.4](https://github.com/dalance/sv-parser/compare/v0.10.3...v0.10.4) - 2021-01-08
 
 * [Fixed] uncleared internal state

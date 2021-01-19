@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.10.4...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.10.5...Unreleased) - ReleaseDate
+
+## [v0.10.5](https://github.com/dalance/sv-parser/compare/v0.10.4...v0.10.5) - 2021-01-19
 
 * [Fixed] missing comment after macro name [#29](https://github.com/dalance/sv-parser/issues/29)
 

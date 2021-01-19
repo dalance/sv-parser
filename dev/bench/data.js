@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1610088600972,
+  "lastUpdate": 1611059478914,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -2663,6 +2663,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 23287192,
             "range": "± 1260973",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "9360cda58fa887e0856d4cc9ead4be51b92c66e2",
+          "message": "Fix missing comment after macro name #29",
+          "timestamp": "2021-01-19T21:10:56+09:00",
+          "tree_id": "b06feb5d6f51eb7c50ba1a48e97ee8ad12e8e5d8",
+          "url": "https://github.com/dalance/sv-parser/commit/9360cda58fa887e0856d4cc9ead4be51b92c66e2"
+        },
+        "date": 1611059478496,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 20574965,
+            "range": "± 226746",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 18615310,
+            "range": "± 149577",
             "unit": "ns/iter"
           }
         ]

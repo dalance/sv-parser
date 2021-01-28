@@ -78,8 +78,8 @@ pub(crate) fn expression_or_cond_pattern_ternary(
 #[packrat_parser]
 pub(crate) fn constant_expression(s: Span) -> IResult<Span, ConstantExpression> {
     alt((
-        constant_expression_binary,
         constant_expression_ternary,
+        constant_expression_binary,
         constant_expression_unary,
         map(constant_primary, |x| {
             ConstantExpression::ConstantPrimary(Box::new(x))

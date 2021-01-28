@@ -457,6 +457,11 @@ mod unit {
                 `end_keywords"##,
             Ok((_, _))
         );
+        test!(
+            source_text,
+            r##"module a; localparam a = (A == 1) ? 1 - 1 : (A == 1) ? 1 - 1 : 1 - 1; endmodule"##,
+            Ok((_, _))
+        );
     }
 }
 
@@ -15930,7 +15935,7 @@ mod error {
 fn debug() {
     test!(
         source_text,
-        r##"module a; always begin a = b.c'(0); end endmodule"##,
+        r##"module a; localparam a = (A == 1) ? 1 - 1 : (A == 1) ? 1 - 1 : 1 - 1; endmodule"##,
         Ok((_, _))
     );
     nom_tracable::cumulative_histogram();

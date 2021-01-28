@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.10.5...Unreleased) - ReleaseDate
 
+* [Fixed] constant_expression_ternary priority [#30](https://github.com/dalance/sv-parser/issues/30)
+
 ## [v0.10.5](https://github.com/dalance/sv-parser/compare/v0.10.4...v0.10.5) - 2021-01-19
 
 * [Fixed] missing comment after macro name [#29](https://github.com/dalance/sv-parser/issues/29)

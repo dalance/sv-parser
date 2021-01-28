@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.10.5...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.10.6...Unreleased) - ReleaseDate
+
+## [v0.10.6](https://github.com/dalance/sv-parser/compare/v0.10.5...v0.10.6) - 2021-01-28
 
 * [Fixed] constant_expression_ternary priority [#30](https://github.com/dalance/sv-parser/issues/30)
 

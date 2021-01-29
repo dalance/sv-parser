@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.10.7...Unreleased) - ReleaseDate
 
+* [Fixed] include with comment error
+
 ## [v0.10.7](https://github.com/dalance/sv-parser/compare/v0.10.6...v0.10.7) - 2021-01-29
 
 * [Added] get_str_trim to SyntaxTree

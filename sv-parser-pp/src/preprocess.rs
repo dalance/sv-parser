@@ -1214,4 +1214,44 @@ endmodule
 "##
         );
     }
+
+    #[test]
+    fn test19() {
+        let include_paths = [get_testcase("")];
+        let (ret, _) = preprocess(
+            get_testcase("test19.sv"),
+            &HashMap::new(),
+            &include_paths,
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            r##"module and_op (a, b, c);
+output a;
+input b, c;
+
+and a1 (a,b,c);
+
+ // comment
+endmodule
+"##
+        );
+        assert_eq!(
+            ret.origin(10).unwrap().0,
+            &PathBuf::from(get_testcase("test19.sv"))
+        );
+        assert_eq!(ret.origin(10).unwrap().1, 10);
+        assert_eq!(
+            ret.origin(50).unwrap().0,
+            &PathBuf::from(get_testcase("test2.svh"))
+        );
+        assert_eq!(ret.origin(50).unwrap().1, 73);
+        assert_eq!(
+            ret.origin(70).unwrap().0,
+            &PathBuf::from(get_testcase("test19.sv"))
+        );
+        assert_eq!(ret.origin(70).unwrap().1, 50);
+    }
 }

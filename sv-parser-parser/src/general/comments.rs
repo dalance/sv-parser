@@ -13,8 +13,14 @@ pub(crate) fn comment(s: Span) -> IResult<Span, Comment> {
 pub(crate) fn one_line_comment(s: Span) -> IResult<Span, Comment> {
     let (s, a) = tag("//")(s)?;
     let (s, b) = opt(is_not("\n"))(s)?;
+    let (s, c) = opt(tag("\n"))(s)?;
     let a = if let Some(b) = b {
         concat(a, b).unwrap()
+    } else {
+        a
+    };
+    let a = if let Some(c) = c {
+        concat(a, c).unwrap()
     } else {
         a
     };

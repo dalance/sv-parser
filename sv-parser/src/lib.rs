@@ -20,6 +20,7 @@ pub struct SyntaxTree {
 }
 
 impl SyntaxTree {
+    /// Get `&str` from the specified node
     pub fn get_str<'a, T: Into<RefNodes<'a>>>(&self, nodes: T) -> Option<&str> {
         let mut beg = None;
         let mut end = 0;
@@ -39,6 +40,37 @@ impl SyntaxTree {
         }
     }
 
+    /// Get `&str` without trailing `WhiteSpace` from the specified node
+    pub fn get_str_trim<'a, T: Into<RefNodes<'a>>>(&self, nodes: T) -> Option<&str> {
+        let mut beg = None;
+        let mut end = 0;
+        let mut skip = false;
+        for n in Iter::new(nodes.into()).event() {
+            match n {
+                NodeEvent::Enter(RefNode::WhiteSpace(_)) => {
+                    skip = true;
+                }
+                NodeEvent::Leave(RefNode::WhiteSpace(_)) => {
+                    skip = false;
+                }
+                NodeEvent::Enter(RefNode::Locate(x)) if !skip => {
+                    if beg.is_none() {
+                        beg = Some(x.offset);
+                    }
+                    end = x.offset + x.len;
+                }
+                _ => (),
+            }
+        }
+        if let Some(beg) = beg {
+            let ret = unsafe { self.text.text().get_unchecked(beg..end) };
+            Some(ret)
+        } else {
+            None
+        }
+    }
+
+    /// Get source code location of the specified `Locate`
     pub fn get_origin(&self, locate: &Locate) -> Option<(&PathBuf, usize)> {
         self.text.origin(locate.offset)
     }

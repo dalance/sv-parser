@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1611804289880,
+  "lastUpdate": 1611897785756,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -2807,6 +2807,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 18759189,
             "range": "± 218482",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "03684f4fe397a3903b3f716eb298412a21e7fe04",
+          "message": "Add get_str_trim to SyntaxTree",
+          "timestamp": "2021-01-29T14:00:31+09:00",
+          "tree_id": "538e35b23e369ba1ea868b74c7bd19e3fd7d7b01",
+          "url": "https://github.com/dalance/sv-parser/commit/03684f4fe397a3903b3f716eb298412a21e7fe04"
+        },
+        "date": 1611897785310,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 23298359,
+            "range": "± 3143700",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 20812829,
+            "range": "± 2967975",
             "unit": "ns/iter"
           }
         ]

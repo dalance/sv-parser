@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.10.6...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.10.7...Unreleased) - ReleaseDate
+
+## [v0.10.7](https://github.com/dalance/sv-parser/compare/v0.10.6...v0.10.7) - 2021-01-29
 
 * [Added] get_str_trim to SyntaxTree
 

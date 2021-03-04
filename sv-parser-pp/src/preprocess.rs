@@ -256,25 +256,6 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
             _ => (),
         }
         match n {
-            NodeEvent::Enter(RefNode::ResetallCompilerDirective(x)) => {
-                let locate: Locate = x.try_into().unwrap();
-                let range = Range::new(locate.offset, locate.offset + locate.len);
-                ret.push(locate.str(&s), Some((path.as_ref(), range)));
-            }
-            NodeEvent::Enter(RefNode::UndefineCompilerDirective(x)) => {
-                skip_nodes.push(x.into());
-                skip = true;
-
-                let (_, _, ref name) = x.nodes;
-                let id = identifier((&name.nodes.0).into(), &s).unwrap();
-                defines.remove(&id);
-            }
-            NodeEvent::Enter(RefNode::UndefineallCompilerDirective(x)) => {
-                skip_nodes.push(x.into());
-                skip = true;
-
-                defines.clear();
-            }
             NodeEvent::Enter(RefNode::SourceDescriptionNotDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
@@ -292,6 +273,51 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
             }
+            NodeEvent::Enter(RefNode::ResetallCompilerDirective(x)) => {
+                let locate: Locate = x.try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
+            }
+            NodeEvent::Enter(RefNode::TimescaleCompilerDirective(x)) => {
+                let locate: Locate = x.try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
+            }
+            NodeEvent::Enter(RefNode::DefaultNettypeCompilerDirective(x)) => {
+                let locate: Locate = x.try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
+            }
+            NodeEvent::Enter(RefNode::UnconnectedDriveCompilerDirective(x)) => {
+                let locate: Locate = x.try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
+            }
+            NodeEvent::Enter(RefNode::NounconnectedDriveCompilerDirective(x)) => {
+                let locate: Locate = x.try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
+            }
+            NodeEvent::Enter(RefNode::CelldefineDriveCompilerDirective(x)) => {
+                let locate: Locate = x.try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
+            }
+            NodeEvent::Enter(RefNode::EndcelldefineDriveCompilerDirective(x)) => {
+                let locate: Locate = x.try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
+            }
+            NodeEvent::Enter(RefNode::Pragma(x)) => {
+                let locate: Locate = x.try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
+            }
+            NodeEvent::Enter(RefNode::LineCompilerDirective(x)) => {
+                let locate: Locate = x.try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
+            }
             NodeEvent::Enter(RefNode::KeywordsDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
@@ -301,6 +327,20 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
+            }
+            NodeEvent::Enter(RefNode::UndefineCompilerDirective(x)) => {
+                skip_nodes.push(x.into());
+                skip = true;
+
+                let (_, _, ref name) = x.nodes;
+                let id = identifier((&name.nodes.0).into(), &s).unwrap();
+                defines.remove(&id);
+            }
+            NodeEvent::Enter(RefNode::UndefineallCompilerDirective(x)) => {
+                skip_nodes.push(x.into());
+                skip = true;
+
+                defines.clear();
             }
             NodeEvent::Enter(RefNode::IfdefDirective(x)) => {
                 let (_, ref keyword, ref ifid, ref ifbody, ref elsif, ref elsebody, _, _) = x.nodes;

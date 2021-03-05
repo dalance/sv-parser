@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.11.0...Unreleased) - ReleaseDate
 
+* [Fixed] include with comment error
+
 ## [v0.11.0](https://github.com/dalance/sv-parser/compare/v0.10.8...v0.11.0) - 2021-03-04
 
 * [Changed] keep directives after preprocess

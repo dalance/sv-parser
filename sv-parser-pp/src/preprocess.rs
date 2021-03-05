@@ -247,7 +247,10 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
             }
             NodeEvent::Leave(RefNode::SourceDescriptionNotDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
-                last_item_line = Some(locate.line);
+                // If the item is whitespace, last_item_line should not be updated
+                if !locate.str(s).trim().is_empty() {
+                    last_item_line = Some(locate.line);
+                }
             }
             NodeEvent::Leave(RefNode::CompilerDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
@@ -1293,5 +1296,46 @@ endmodule
             &PathBuf::from(get_testcase("test19.sv"))
         );
         assert_eq!(ret.origin(70).unwrap().1, 50);
+    }
+
+    #[test]
+    fn test20() {
+        let include_paths = [get_testcase("")];
+        let (ret, _) = preprocess(
+            get_testcase("test20.sv"),
+            &HashMap::new(),
+            &include_paths,
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            r##"module and_op (a, b, c);
+  // a
+  output a;
+input b, c;
+
+and a1 (a,b,c);
+
+
+endmodule
+"##
+        );
+        assert_eq!(
+            ret.origin(10).unwrap().0,
+            &PathBuf::from(get_testcase("test20.sv"))
+        );
+        assert_eq!(ret.origin(10).unwrap().1, 10);
+        assert_eq!(
+            ret.origin(60).unwrap().0,
+            &PathBuf::from(get_testcase("test2.svh"))
+        );
+        assert_eq!(ret.origin(60).unwrap().1, 74);
+        assert_eq!(
+            ret.origin(80).unwrap().0,
+            &PathBuf::from(get_testcase("test20.sv"))
+        );
+        assert_eq!(ret.origin(80).unwrap().1, 60);
     }
 }

@@ -10,6 +10,9 @@ readme = "../README.md"
 description = "SystemVerilog parser library fully complient with IEEE 1800-2017"
 edition = "2018"
 
+[lib]
+doctest = false
+
 [package.metadata.release]
 pre-release-replacements = [
     {file = "../README.md", search = "sv-parser = \"[a-z0-9\\.-]+\"", replace = "sv-parser = \"{{version}}\""},

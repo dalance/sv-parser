@@ -15,6 +15,7 @@ disable-tag = true
 
 [lib]
 proc-macro = true
+doctest = false
 
 [dependencies]
 quote = "1.0.0"

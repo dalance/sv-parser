@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1614926256245,
+  "lastUpdate": 1619745282907,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -3167,6 +3167,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 21760323,
             "range": "± 1205949",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "e4c30d82b7c0cf93090cf217ac8c44f378a577a7",
+          "message": "Merge pull request #34 from dalance/dependabot/add-v2-config-file\n\nUpgrade to GitHub-native Dependabot",
+          "timestamp": "2021-04-30T09:51:12+09:00",
+          "tree_id": "fb06d5e18ff743c9a1618ddfa03b08dd74af3939",
+          "url": "https://github.com/dalance/sv-parser/commit/e4c30d82b7c0cf93090cf217ac8c44f378a577a7"
+        },
+        "date": 1619745281398,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 23367566,
+            "range": "± 3351888",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 21385237,
+            "range": "± 2715525",
             "unit": "ns/iter"
           }
         ]

@@ -11,6 +11,9 @@ description = "Helper crate of sv-parser"
 edition = "2018"
 build = "build.rs"
 
+[lib]
+doctest = false
+
 [package.metadata.release]
 disable-tag = true
 

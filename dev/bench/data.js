@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1619745282907,
+  "lastUpdate": 1619747853552,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -3203,6 +3203,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 21385237,
             "range": "± 2715525",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "d3d810fb8e35898692843f887cc6363c60f25cc5",
+          "message": "Merge pull request #33 from SeanMcLoughlin/master\n\nDisable doctests in all sub-crates",
+          "timestamp": "2021-04-30T10:34:58+09:00",
+          "tree_id": "b3c6586b07f4f4fc2aa26c430b815ab820b7f908",
+          "url": "https://github.com/dalance/sv-parser/commit/d3d810fb8e35898692843f887cc6363c60f25cc5"
+        },
+        "date": 1619747851197,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 21542828,
+            "range": "± 2446234",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 19234663,
+            "range": "± 1369221",
             "unit": "ns/iter"
           }
         ]

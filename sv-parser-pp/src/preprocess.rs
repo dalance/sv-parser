@@ -13,6 +13,7 @@ use sv_parser_syntaxtree::{
     IncludeCompilerDirective, Locate, NodeEvent, RefNode, SourceDescription, TextMacroUsage,
     WhiteSpace,
 };
+use std::collections::hash_map::RandomState;
 
 const RECURSIVE_LIMIT: usize = 64;
 
@@ -114,11 +115,11 @@ impl DefineText {
     }
 }
 
-pub type Defines = HashMap<String, Option<Define>>;
+pub type Defines<V=RandomState> = HashMap<String, Option<Define>, V>;
 
 pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     path: T,
-    pre_defines: &HashMap<String, Option<Define>, V>,
+    pre_defines: &Defines<V>,
     include_paths: &[U],
     strip_comments: bool,
     ignore_include: bool,
@@ -173,7 +174,7 @@ impl<'a> SkipNodes<'a> {
 pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     s: &str,
     path: T,
-    pre_defines: &HashMap<String, Option<Define>, V>,
+    pre_defines: &Defines<V>,
     include_paths: &[U],
     ignore_include: bool,
     strip_comments: bool,

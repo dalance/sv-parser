@@ -21,7 +21,7 @@ default = []
 trace   = ["nom-tracable/trace"]
 
 [dependencies]
-nom                  = "6"
+nom                  = "7"
 nom_locate           = "3"
 nom-greedyerror      = "0.3"
 nom-packrat          = "0.5"

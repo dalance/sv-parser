@@ -24,7 +24,7 @@ trace   = ["nom-tracable/trace"]
 nom                  = "6"
 nom_locate           = "3"
 nom-greedyerror      = "0.3"
-nom-packrat          = "0.5"
+nom-packrat          = "0.6"
 nom-recursive        = {version = "0.3", features = ["tracer128"]}
 nom-tracable         = "0.7"
 str-concat           = "0.2"

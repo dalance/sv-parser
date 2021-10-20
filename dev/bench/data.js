@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1619747853552,
+  "lastUpdate": 1634691451480,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -3239,6 +3239,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 19234663,
             "range": "± 1369221",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "4e6a66b5d0613cdb5abba0bd6980f709590dd533",
+          "message": "Merge pull request #37 from SeanMcLoughlin/master\n\nRefactoring: Add Eq and PartialEq to Define, DefineText and template type alias for Defines",
+          "timestamp": "2021-10-20T09:39:23+09:00",
+          "tree_id": "c4ae6b30907e794150707c7f405859914aa7ed39",
+          "url": "https://github.com/dalance/sv-parser/commit/4e6a66b5d0613cdb5abba0bd6980f709590dd533"
+        },
+        "date": 1634691450864,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 19490349,
+            "range": "± 233153",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 17625685,
+            "range": "± 257440",
             "unit": "ns/iter"
           }
         ]

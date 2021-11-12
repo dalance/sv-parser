@@ -1,7 +1,6 @@
 #![recursion_limit = "256"]
 
 use nom_greedyerror::error_position;
-use std::collections::HashMap;
 use std::fmt;
 use std::hash::BuildHasher;
 use std::path::{Path, PathBuf};
@@ -127,7 +126,7 @@ impl<'a> IntoIterator for &'a SyntaxTree {
 
 pub fn parse_sv<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     path: T,
-    pre_defines: &HashMap<String, Option<Define>, V>,
+    pre_defines: &Defines<V>,
     include_paths: &[U],
     ignore_include: bool,
     allow_incomplete: bool,
@@ -178,7 +177,7 @@ pub fn parse_sv_pp(
 pub fn parse_sv_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     s: &str,
     path: T,
-    pre_defines: &HashMap<String, Option<Define>, V>,
+    pre_defines: &Defines<V>,
     include_paths: &[U],
     ignore_include: bool,
     allow_incomplete: bool,
@@ -197,7 +196,7 @@ pub fn parse_sv_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
 
 pub fn parse_lib<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     path: T,
-    pre_defines: &HashMap<String, Option<Define>, V>,
+    pre_defines: &Defines<V>,
     include_paths: &[U],
     ignore_include: bool,
     allow_incomplete: bool,
@@ -209,7 +208,7 @@ pub fn parse_lib<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
 pub fn parse_lib_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     s: &str,
     path: T,
-    pre_defines: &HashMap<String, Option<Define>, V>,
+    pre_defines: &Defines<V>,
     include_paths: &[U],
     ignore_include: bool,
     allow_incomplete: bool,
@@ -300,6 +299,7 @@ macro_rules! unwrap_locate {
 #[cfg(test)]
 mod test {
     use super::*;
+    use std::collections::HashMap;
 
     #[test]
     fn test() {

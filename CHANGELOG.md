@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.11.1...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.11.2...Unreleased) - ReleaseDate
+
+## [v0.11.2](https://github.com/dalance/sv-parser/compare/v0.11.1...v0.11.2) - 2021-11-12
 
 * [Changed] pub access to Define members
 

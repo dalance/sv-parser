@@ -83,15 +83,15 @@ impl PreprocessedText {
 
 #[derive(Clone, Debug)]
 pub struct Define {
-    identifier: String,
-    arguments: Vec<(String, Option<String>)>,
-    text: Option<DefineText>,
+    pub identifier: String,
+    pub arguments: Vec<(String, Option<String>)>,
+    pub text: Option<DefineText>,
 }
 
 #[derive(Clone, Debug)]
 pub struct DefineText {
-    text: String,
-    origin: Option<(PathBuf, Range)>,
+    pub text: String,
+    pub origin: Option<(PathBuf, Range)>,
 }
 
 impl Define {

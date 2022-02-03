@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1636688166614,
+  "lastUpdate": 1643855251790,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -3347,6 +3347,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 21724021,
             "range": "± 2024149",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "3d73e55a3e46f0e225389c7e7ed3ade7ce34f0db",
+          "message": "Merge pull request #46 from lovesegfault/fix-sv-parser-pp-docs\n\nfix(sv-parser-pp): increase recursion limit to allow docs to build",
+          "timestamp": "2022-02-03T10:29:27+09:00",
+          "tree_id": "483a40399ed99f32047dcf84ceb29b4026a51127",
+          "url": "https://github.com/dalance/sv-parser/commit/3d73e55a3e46f0e225389c7e7ed3ade7ce34f0db"
+        },
+        "date": 1643855251419,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 17384625,
+            "range": "± 714119",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 15594004,
+            "range": "± 476371",
             "unit": "ns/iter"
           }
         ]

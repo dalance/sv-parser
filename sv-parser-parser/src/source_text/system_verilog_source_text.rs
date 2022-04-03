@@ -50,6 +50,9 @@ pub(crate) fn description(s: Span) -> IResult<Span, Description> {
         map(config_declaration, |x| {
             Description::ConfigDeclaration(Box::new(x))
         }),
+        map(class_declaration, |x| {
+            Description::ClassDeclaration(Box::new(x))
+        }),
     ))(s)
 }
 

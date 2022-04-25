@@ -50,7 +50,7 @@ fn main() {
     let includes: Vec<PathBuf> = Vec::new();
 
     // Parse
-    let result = parse_sv(&path, &defines, &includes, false);
+    let result = parse_sv(&path, &defines, &includes, false, false);
 
     if let Ok((syntax_tree, _)) = result {
         // &SyntaxTree is iterable

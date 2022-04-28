@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1643857768719,
+  "lastUpdate": 1651157197700,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -3419,6 +3419,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 17689962,
             "range": "± 435512",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a5a0e3dda5866e83cafe61a70e90fed228b706e2",
+          "message": "Merge pull request #53 from minseongg/readme\n\nFix readme example",
+          "timestamp": "2022-04-28T23:28:48+09:00",
+          "tree_id": "e3688d59fc47a2691270b8aaa8c48760aa7b89e5",
+          "url": "https://github.com/dalance/sv-parser/commit/a5a0e3dda5866e83cafe61a70e90fed228b706e2"
+        },
+        "date": 1651157197140,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 22886155,
+            "range": "± 1028660",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 20459185,
+            "range": "± 1269559",
             "unit": "ns/iter"
           }
         ]

@@ -23,7 +23,6 @@ pub enum Description {
     PackageItem(Box<DescriptionPackageItem>),
     BindDirective(Box<DescriptionBindDirective>),
     ConfigDeclaration(Box<ConfigDeclaration>),
-    ClassDeclaration(Box<ClassDeclaration>),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]

@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1651157197700,
+  "lastUpdate": 1651281657712,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -3455,6 +3455,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 20459185,
             "range": "± 1269559",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "2a011c01db62a15d29d757c1867e6d9cf3ce6ca7",
+          "message": "Merge pull request #51 from erihsu/master\n\nFix issues #49 and #50",
+          "timestamp": "2022-04-30T10:05:25+09:00",
+          "tree_id": "4023181a02989e935b1df9bbd570052452d13b09",
+          "url": "https://github.com/dalance/sv-parser/commit/2a011c01db62a15d29d757c1867e6d9cf3ce6ca7"
+        },
+        "date": 1651281657434,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 19449879,
+            "range": "± 463156",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 17622645,
+            "range": "± 582198",
             "unit": "ns/iter"
           }
         ]

@@ -14,6 +14,7 @@ pub struct Keyword {
 
 #[derive(Clone, Debug, PartialEq, Node)]
 pub enum WhiteSpace {
+    Newline(Box<Locate>),
     Space(Box<Locate>),
     Comment(Box<Comment>),
     CompilerDirective(Box<CompilerDirective>),

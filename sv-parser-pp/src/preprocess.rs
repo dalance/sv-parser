@@ -1339,4 +1339,26 @@ endmodule
         );
         assert_eq!(ret.origin(80).unwrap().1, 60);
     }
+
+    #[test]
+    fn test21() {
+        let include_paths = [get_testcase("")];
+        let (ret, _) = preprocess(
+            get_testcase("test21.sv"),
+            &HashMap::new(),
+            &include_paths,
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            r##"// First comment
+`default_nettype none
+// Middle comment
+`resetall
+// Last comment
+"##
+        );
+    }
 }

@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1651281657712,
+  "lastUpdate": 1657018639795,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -3491,6 +3491,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 17622645,
             "range": "± 582198",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a9bda7f8d39de1bcfb78b04934c255a1c9535512",
+          "message": "Merge pull request #58 from DaveMcEwan/ppWhitespace\n\nRemove whitespace within/around compiler directives (bugfix).",
+          "timestamp": "2022-07-05T19:40:44+09:00",
+          "tree_id": "313be484335cab5c248cf65ab5974761ea7c5b21",
+          "url": "https://github.com/dalance/sv-parser/commit/a9bda7f8d39de1bcfb78b04934c255a1c9535512"
+        },
+        "date": 1657018639193,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 22961843,
+            "range": "± 1073593",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 19939180,
+            "range": "± 1966425",
             "unit": "ns/iter"
           }
         ]

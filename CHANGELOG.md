@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.11.3...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.12.0...Unreleased) - ReleaseDate
+
+## [v0.12.0](https://github.com/dalance/sv-parser/compare/v0.11.3...v0.12.0) - 2022-07-05
 
 * [Fixed] Fix issues #49 and #50 [#51](https://github.com/dalance/sv-parser/pull/51)
 * [Fixed] Remove whitespace within/around compiler directives (bugfix). [#58](https://github.com/dalance/sv-parser/pull/58)

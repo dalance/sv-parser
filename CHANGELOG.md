@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.11.3...Unreleased) - ReleaseDate
 
+* [Fixed] Remove whitespace within/around compiler directives (bugfix). [#58](https://github.com/dalance/sv-parser/pull/58)
+
 ## [v0.11.3](https://github.com/dalance/sv-parser/compare/v0.11.2...v0.11.3) - 2022-02-03
 
 ## [v0.11.2](https://github.com/dalance/sv-parser/compare/v0.11.1...v0.11.2) - 2021-11-12

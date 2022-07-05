@@ -181,6 +181,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     resolve_depth: usize,
 ) -> Result<(PreprocessedText, Defines), Error> {
     let mut skip = false;
+    let mut skip_whitespace = false;
     let mut skip_nodes = SkipNodes::new();
     let mut defines = HashMap::new();
 
@@ -281,56 +282,100 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
+                skip_whitespace = true;
+            }
+            NodeEvent::Leave(RefNode::ResetallCompilerDirective(_)) => {
+                skip_whitespace = false;
             }
             NodeEvent::Enter(RefNode::TimescaleCompilerDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
+                skip_whitespace = true;
+            }
+            NodeEvent::Leave(RefNode::TimescaleCompilerDirective(_)) => {
+                skip_whitespace = false;
             }
             NodeEvent::Enter(RefNode::DefaultNettypeCompilerDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
+                skip_whitespace = true;
+            }
+            NodeEvent::Leave(RefNode::DefaultNettypeCompilerDirective(_)) => {
+                skip_whitespace = false;
             }
             NodeEvent::Enter(RefNode::UnconnectedDriveCompilerDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
+                skip_whitespace = true;
+            }
+            NodeEvent::Leave(RefNode::UnconnectedDriveCompilerDirective(_)) => {
+                skip_whitespace = false;
             }
             NodeEvent::Enter(RefNode::NounconnectedDriveCompilerDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
+                skip_whitespace = true;
+            }
+            NodeEvent::Leave(RefNode::NounconnectedDriveCompilerDirective(_)) => {
+                skip_whitespace = false;
             }
             NodeEvent::Enter(RefNode::CelldefineDriveCompilerDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
+                skip_whitespace = true;
+            }
+            NodeEvent::Leave(RefNode::CelldefineDriveCompilerDirective(_)) => {
+                skip_whitespace = false;
             }
             NodeEvent::Enter(RefNode::EndcelldefineDriveCompilerDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
+                skip_whitespace = true;
+            }
+            NodeEvent::Leave(RefNode::EndcelldefineDriveCompilerDirective(_)) => {
+                skip_whitespace = false;
             }
             NodeEvent::Enter(RefNode::Pragma(x)) => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
+                skip_whitespace = true;
+            }
+            NodeEvent::Leave(RefNode::Pragma(_)) => {
+                skip_whitespace = false;
             }
             NodeEvent::Enter(RefNode::LineCompilerDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
+                skip_whitespace = true;
+            }
+            NodeEvent::Leave(RefNode::LineCompilerDirective(_)) => {
+                skip_whitespace = false;
             }
             NodeEvent::Enter(RefNode::KeywordsDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
+                skip_whitespace = true;
+            }
+            NodeEvent::Leave(RefNode::KeywordsDirective(_)) => {
+                skip_whitespace = false;
             }
             NodeEvent::Enter(RefNode::EndkeywordsDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
+                skip_whitespace = true;
+            }
+            NodeEvent::Leave(RefNode::EndkeywordsDirective(_)) => {
+                skip_whitespace = false;
             }
             NodeEvent::Enter(RefNode::UndefineCompilerDirective(x)) => {
                 skip_nodes.push(x.into());
@@ -382,7 +427,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                     }
                 }
             }
-            NodeEvent::Enter(RefNode::WhiteSpace(x)) if !strip_comments => {
+            NodeEvent::Enter(RefNode::WhiteSpace(x)) if !skip_whitespace && !strip_comments => {
                 if let WhiteSpace::Space(_) = x {
                     let locate: Locate = x.try_into().unwrap();
                     let range = Range::new(locate.offset + locate.len, locate.offset + locate.len);
@@ -1338,5 +1383,41 @@ endmodule
             &PathBuf::from(get_testcase("test20.sv"))
         );
         assert_eq!(ret.origin(80).unwrap().1, 60);
+    }
+
+    // Check that preprocess() doesn't introduce extra whitespace within and
+    // around compiler directives.
+    #[test]
+    fn test21() {
+        let include_paths = [get_testcase("")];
+        let (ret, _) = preprocess(
+            get_testcase("test21.sv"),
+            &HashMap::new(),
+            &include_paths,
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            r##"//top
+`resetall
+`timescale 10 us / 100 ns
+`default_nettype wire
+//first
+`default_nettype none//middle
+//last
+`unconnected_drive pull0
+`unconnected_drive pull1
+`nounconnected_drive
+`celldefine
+`endcelldefine
+`pragma foo
+`pragma foo bar
+`line 5 "foo" 0
+`begin_keywords "1800-2017"
+`end_keywords
+"##
+        );
     }
 }

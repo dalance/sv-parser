@@ -861,7 +861,7 @@ mod tests {
     }
 
     #[test]
-    fn test1() {
+    fn ifdef_undefined() {
         let (ret, _) = preprocess(
             get_testcase("test1.sv"),
             &HashMap::new(),
@@ -891,7 +891,7 @@ endmodule
     }
 
     #[test]
-    fn test1_predefine() {
+    fn ifdef_predefined() {
         let mut defines = HashMap::new();
         defines.insert(String::from("behavioral"), None);
         let (ret, _) = preprocess(
@@ -916,7 +916,7 @@ endmodule
     }
 
     #[test]
-    fn test2() {
+    fn include_origin() {
         let include_paths = [get_testcase("")];
         let (ret, _) = preprocess(
             get_testcase("test2.sv"),
@@ -956,7 +956,7 @@ endmodule
     }
 
     #[test]
-    fn test2_ignore_include() {
+    fn ignore_include() {
         let include_paths = [get_testcase("")];
         let (ret, _) = preprocess(
             get_testcase("test2.sv"),
@@ -976,7 +976,7 @@ endmodule
     }
 
     #[test]
-    fn test3() {
+    fn macro_parameters_defaultvalue() {
         let (ret, _) = preprocess(
             get_testcase("test3.sv"),
             &HashMap::new(),
@@ -1001,7 +1001,7 @@ module a ();
     }
 
     #[test]
-    fn test4() {
+    fn macro_parameters_multiline() {
         let (ret, _) = preprocess(
             get_testcase("test4.sv"),
             &HashMap::new(),
@@ -1034,7 +1034,7 @@ endmodule
     }
 
     #[test]
-    fn test5() {
+    fn macro_parameters_dependent() {
         let (ret, _) = preprocess(
             get_testcase("test5.sv"),
             &HashMap::new(),
@@ -1060,7 +1060,7 @@ endmodule
     }
 
     #[test]
-    fn test6() {
+    fn macro_string_literal() {
         let (ret, _) = preprocess(
             get_testcase("test6.sv"),
             &HashMap::new(),
@@ -1083,7 +1083,7 @@ endmodule
     }
 
     #[test]
-    fn test7() {
+    fn macro_direct_recursion() {
         let ret = preprocess(
             get_testcase("test7.sv"),
             &HashMap::new(),
@@ -1095,7 +1095,7 @@ endmodule
     }
 
     #[test]
-    fn test8() {
+    fn macro_indirect_recursion() {
         let ret = preprocess(
             get_testcase("test8.sv"),
             &HashMap::new(),
@@ -1107,7 +1107,7 @@ endmodule
     }
 
     #[test]
-    fn test9() {
+    fn include_sameline_include() {
         let include_paths = [get_testcase("")];
         let ret = preprocess(
             get_testcase("test9.sv"),
@@ -1120,7 +1120,7 @@ endmodule
     }
 
     #[test]
-    fn test10() {
+    fn include_sameline_keyword() {
         let include_paths = [get_testcase("")];
         let ret = preprocess(
             get_testcase("test10.sv"),
@@ -1133,7 +1133,8 @@ endmodule
     }
 
     #[test]
-    fn test11() {
+    #[allow(non_snake_case)]
+    fn macro_LINE() {
         let (ret, _) = preprocess(
             get_testcase("test11.sv"),
             &HashMap::new(),
@@ -1155,7 +1156,7 @@ endmodule
     }
 
     #[test]
-    fn test12() {
+    fn escaped_identifier() {
         let (ret, _) = preprocess(
             get_testcase("test12.sv"),
             &HashMap::new(),
@@ -1174,7 +1175,7 @@ endmodule
     }
 
     #[test]
-    fn test13() {
+    fn macro_with_comment() {
         let (ret, _) = preprocess(
             get_testcase("test13.sv"),
             &HashMap::new(),
@@ -1193,7 +1194,7 @@ endinterface
     }
 
     #[test]
-    fn test14() {
+    fn ifdef_nested() {
         let (ret, _) = preprocess(
             get_testcase("test14.sv"),
             &HashMap::new(),
@@ -1214,7 +1215,7 @@ endmodule
     }
 
     #[test]
-    fn test15() {
+    fn macro_usage_sameline() {
         let (ret, _) = preprocess(
             get_testcase("test15.sv"),
             &HashMap::new(),
@@ -1234,7 +1235,7 @@ endmodule
     }
 
     #[test]
-    fn test16() {
+    fn macro_backslash() {
         let (ret, _) = preprocess(
             get_testcase("test16.sv"),
             &HashMap::new(),
@@ -1260,7 +1261,7 @@ endmodule
     }
 
     #[test]
-    fn test17() {
+    fn macro_multiline() {
         let (ret, _) = preprocess(
             get_testcase("test17.sv"),
             &HashMap::new(),
@@ -1284,7 +1285,7 @@ initial begin
     }
 
     #[test]
-    fn test18() {
+    fn ifndef_undefined() {
         let (ret, _) = preprocess(
             get_testcase("test18.sv"),
             &HashMap::new(),
@@ -1305,7 +1306,7 @@ endmodule
     }
 
     #[test]
-    fn test19() {
+    fn whitespace_include_with_comment() {
         let include_paths = [get_testcase("")];
         let (ret, _) = preprocess(
             get_testcase("test19.sv"),
@@ -1345,7 +1346,7 @@ endmodule
     }
 
     #[test]
-    fn test20() {
+    fn whitespace_include() {
         let include_paths = [get_testcase("")];
         let (ret, _) = preprocess(
             get_testcase("test20.sv"),
@@ -1388,7 +1389,7 @@ endmodule
     // Check that preprocess() doesn't introduce extra whitespace within and
     // around compiler directives.
     #[test]
-    fn test21() {
+    fn whitespace_directives() {
         let include_paths = [get_testcase("")];
         let (ret, _) = preprocess(
             get_testcase("test21.sv"),

@@ -1,0 +1,8 @@
+`define A \
+  initial begin // comment \
+  end
+
+module test();
+
+initial begin 
+  end endmodule

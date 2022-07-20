@@ -860,6 +860,17 @@ mod tests {
         )
     }
 
+    fn testfile_contents(s: &str) -> String {
+        let path: String = testfile_path(s);
+
+        let file = File::open(path).unwrap();
+        let mut buf_reader = BufReader::new(file);
+        let mut contents = String::new();
+        buf_reader.read_to_string(&mut contents).unwrap();
+
+        contents
+    }
+
     #[test]
     fn ifdef_undefined() {
         let (ret, _) = preprocess(
@@ -872,14 +883,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"module and_op (a, b, c);
-output a;
-input b, c;
-
-and a1 (a,b,c);
-
-endmodule
-"##
+            testfile_contents("expected/ifdef_undefined")
         );
         assert_eq!(
             ret.origin(10).unwrap().0,
@@ -904,14 +908,7 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"module and_op (a, b, c);
-output a;
-input b, c;
-
-wire a = b & c;
-
-endmodule
-"##
+            testfile_contents("expected/ifdef_predefined")
         )
     }
 
@@ -928,15 +925,7 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"module and_op (a, b, c);
-output a;
-input b, c;
-
-and a1 (a,b,c);
-
-
-endmodule
-"##
+            testfile_contents("expected/include_origin")
         );
         assert_eq!(
             ret.origin(10).unwrap().0,
@@ -968,10 +957,7 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"module and_op (a, b, c);
- 
-endmodule
-"##
+            testfile_contents("expected/ignore_include")
         );
     }
 
@@ -987,16 +973,7 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"`define connect(NAME, INDEX = 0) \
-  assign NAME``_``INDEX``__x = NAME[INDEX].x; \
-  assign NAME``_``INDEX``__y = NAME[INDEX].y;
-
-module a ();
-
-  assign a_0__x = a[0].x; 
-  assign a_0__y = a[0].y; assign a_1__x = a[1].x; 
-  assign a_1__y = a[1].y; endmodule
-"##
+            testfile_contents("expected/macro_parameters_defaultvalue")
         );
     }
 
@@ -1012,24 +989,7 @@ module a ();
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"`define disp(clk, exp, msg) \
-    always @(posedge clk) begin \
-        if (!(exp)) begin \
-            $display msg; \
-        end \
-    end \
-
-module a ();
-
-always @(posedge clk) begin 
-        if (!(!(a[i].b && c[i]))) begin 
-            $display ("xxx(()[]]{}}}", a[i].b, c[i]); 
-        end 
-    end 
- ;
-
-endmodule
-"##
+            testfile_contents("expected/macro_parameters_multiline")
         );
     }
 
@@ -1045,17 +1005,7 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"module a;
-`define HI Hello
-`define LO "`HI, world"
-`define H(x) "Hello, x"
-initial begin
-$display("`HI, world");
-$display("`HI, world"  );
-$display("Hello, x"  );
-end
-endmodule
-"##
+            testfile_contents("expected/macro_parameters_dependent")
         );
     }
 
@@ -1071,14 +1021,7 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"`define msg(x,y) `"x: `\`"y`\`"`"
-
-module a;
-initial begin
-$display("left side: \"right side\""  );
-end
-endmodule
-"##
+            testfile_contents("expected/macro_string_literal")
         );
     }
 
@@ -1145,13 +1088,7 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"module a;
-initial begin
-    if (3 == 0) begin
-    end
-end
-endmodule
-"##
+            testfile_contents("expected/macro_LINE")
         );
     }
 
@@ -1167,10 +1104,7 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"module a;
-reg \`~!-_=+\|[]{};:'"",./<>?  ;
-endmodule
-"##
+            testfile_contents("expected/escaped_identifier")
         );
     }
 
@@ -1186,10 +1120,7 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"`define NAME 42 // Comment
-interface foo #(WIDTH = 42  ) ();
-endinterface
-"##
+            testfile_contents("expected/macro_with_comment")
         );
     }
 
@@ -1205,12 +1136,7 @@ endinterface
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"module A;
-wire a = 1'b0;
-
-
-endmodule
-"##
+            testfile_contents("expected/ifdef_nested")
         );
     }
 
@@ -1226,11 +1152,7 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"`define MOD_INST u_mysubmod
-module mymod;
-mysubmod u_mysubmod() ;
-endmodule
-"##
+            testfile_contents("expected/macro_usage_sameline")
         );
     }
 
@@ -1246,17 +1168,7 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"module a;
-`define HELLO0 "HELLO"
-`define \HELLO1 "HELLO"
-initial begin
-$display("HELLO"  );
-$display("HELLO"  );
-$display("HELLO"  );
-$display("HELLO"  );
-end
-endmodule
-"##
+            testfile_contents("expected/macro_backslash")
         );
     }
 
@@ -1272,15 +1184,7 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"`define A \
-  initial begin // comment \
-  end
-
-module test();
-
-initial begin 
-  end endmodule
-"##
+            testfile_contents("expected/macro_multiline")
         );
     }
 
@@ -1296,12 +1200,7 @@ initial begin
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"// pragma translate_off
-module A;
-endmodule
-// pragma translate_on
-
-"##
+            testfile_contents("expected/ifndef_undefined")
         );
     }
 
@@ -1318,15 +1217,7 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"module and_op (a, b, c);
-output a;
-input b, c;
-
-and a1 (a,b,c);
-
- // comment
-endmodule
-"##
+            testfile_contents("expected/whitespace_include_with_comment")
         );
         assert_eq!(
             ret.origin(10).unwrap().0,
@@ -1358,16 +1249,7 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"module and_op (a, b, c);
-  // a
-  output a;
-input b, c;
-
-and a1 (a,b,c);
-
-
-endmodule
-"##
+            testfile_contents("expected/whitespace_include")
         );
         assert_eq!(
             ret.origin(10).unwrap().0,
@@ -1401,24 +1283,7 @@ endmodule
         .unwrap();
         assert_eq!(
             ret.text(),
-            r##"//top
-`resetall
-`timescale 10 us / 100 ns
-`default_nettype wire
-//first
-`default_nettype none//middle
-//last
-`unconnected_drive pull0
-`unconnected_drive pull1
-`nounconnected_drive
-`celldefine
-`endcelldefine
-`pragma foo
-`pragma foo bar
-`line 5 "foo" 0
-`begin_keywords "1800-2017"
-`end_keywords
-"##
+            testfile_contents("expected/whitespace_directives")
         );
     }
 }

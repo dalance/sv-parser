@@ -852,7 +852,7 @@ mod tests {
     use super::*;
     use std::env;
 
-    fn get_testcase(s: &str) -> String {
+    fn testfile_path(s: &str) -> String {
         format!(
             "{}/testcases/{}",
             env::var("CARGO_MANIFEST_DIR").unwrap(),
@@ -863,7 +863,7 @@ mod tests {
     #[test]
     fn ifdef_undefined() {
         let (ret, _) = preprocess(
-            get_testcase("test1.sv"),
+            testfile_path("test1.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -883,7 +883,7 @@ endmodule
         );
         assert_eq!(
             ret.origin(10).unwrap().0,
-            &PathBuf::from(get_testcase("test1.sv"))
+            &PathBuf::from(testfile_path("test1.sv"))
         );
         assert_eq!(ret.origin(10).unwrap().1, 10);
         assert_eq!(ret.origin(50).unwrap().1, 98);
@@ -895,7 +895,7 @@ endmodule
         let mut defines = HashMap::new();
         defines.insert(String::from("behavioral"), None);
         let (ret, _) = preprocess(
-            get_testcase("test1.sv"),
+            testfile_path("test1.sv"),
             &defines,
             &[] as &[String],
             false,
@@ -917,9 +917,9 @@ endmodule
 
     #[test]
     fn include_origin() {
-        let include_paths = [get_testcase("")];
+        let include_paths = [testfile_path("")];
         let (ret, _) = preprocess(
-            get_testcase("test2.sv"),
+            testfile_path("test2.sv"),
             &HashMap::new(),
             &include_paths,
             false,
@@ -940,26 +940,26 @@ endmodule
         );
         assert_eq!(
             ret.origin(10).unwrap().0,
-            &PathBuf::from(get_testcase("test2.sv"))
+            &PathBuf::from(testfile_path("test2.sv"))
         );
         assert_eq!(ret.origin(10).unwrap().1, 10);
         assert_eq!(
             ret.origin(50).unwrap().0,
-            &PathBuf::from(get_testcase("test2.svh"))
+            &PathBuf::from(testfile_path("test2.svh"))
         );
         assert_eq!(ret.origin(50).unwrap().1, 73);
         assert_eq!(
             ret.origin(70).unwrap().0,
-            &PathBuf::from(get_testcase("test2.sv"))
+            &PathBuf::from(testfile_path("test2.sv"))
         );
         assert_eq!(ret.origin(70).unwrap().1, 50);
     }
 
     #[test]
     fn ignore_include() {
-        let include_paths = [get_testcase("")];
+        let include_paths = [testfile_path("")];
         let (ret, _) = preprocess(
-            get_testcase("test2.sv"),
+            testfile_path("test2.sv"),
             &HashMap::new(),
             &include_paths,
             false,
@@ -978,7 +978,7 @@ endmodule
     #[test]
     fn macro_parameters_defaultvalue() {
         let (ret, _) = preprocess(
-            get_testcase("test3.sv"),
+            testfile_path("test3.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1003,7 +1003,7 @@ module a ();
     #[test]
     fn macro_parameters_multiline() {
         let (ret, _) = preprocess(
-            get_testcase("test4.sv"),
+            testfile_path("test4.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1036,7 +1036,7 @@ endmodule
     #[test]
     fn macro_parameters_dependent() {
         let (ret, _) = preprocess(
-            get_testcase("test5.sv"),
+            testfile_path("test5.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1062,7 +1062,7 @@ endmodule
     #[test]
     fn macro_string_literal() {
         let (ret, _) = preprocess(
-            get_testcase("test6.sv"),
+            testfile_path("test6.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1085,7 +1085,7 @@ endmodule
     #[test]
     fn macro_direct_recursion() {
         let ret = preprocess(
-            get_testcase("test7.sv"),
+            testfile_path("test7.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1097,7 +1097,7 @@ endmodule
     #[test]
     fn macro_indirect_recursion() {
         let ret = preprocess(
-            get_testcase("test8.sv"),
+            testfile_path("test8.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1108,9 +1108,9 @@ endmodule
 
     #[test]
     fn include_sameline_include() {
-        let include_paths = [get_testcase("")];
+        let include_paths = [testfile_path("")];
         let ret = preprocess(
-            get_testcase("test9.sv"),
+            testfile_path("test9.sv"),
             &HashMap::new(),
             &include_paths,
             false,
@@ -1121,9 +1121,9 @@ endmodule
 
     #[test]
     fn include_sameline_keyword() {
-        let include_paths = [get_testcase("")];
+        let include_paths = [testfile_path("")];
         let ret = preprocess(
-            get_testcase("test10.sv"),
+            testfile_path("test10.sv"),
             &HashMap::new(),
             &include_paths,
             false,
@@ -1136,7 +1136,7 @@ endmodule
     #[allow(non_snake_case)]
     fn macro_LINE() {
         let (ret, _) = preprocess(
-            get_testcase("test11.sv"),
+            testfile_path("test11.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1158,7 +1158,7 @@ endmodule
     #[test]
     fn escaped_identifier() {
         let (ret, _) = preprocess(
-            get_testcase("test12.sv"),
+            testfile_path("test12.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1177,7 +1177,7 @@ endmodule
     #[test]
     fn macro_with_comment() {
         let (ret, _) = preprocess(
-            get_testcase("test13.sv"),
+            testfile_path("test13.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1196,7 +1196,7 @@ endinterface
     #[test]
     fn ifdef_nested() {
         let (ret, _) = preprocess(
-            get_testcase("test14.sv"),
+            testfile_path("test14.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1217,7 +1217,7 @@ endmodule
     #[test]
     fn macro_usage_sameline() {
         let (ret, _) = preprocess(
-            get_testcase("test15.sv"),
+            testfile_path("test15.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1237,7 +1237,7 @@ endmodule
     #[test]
     fn macro_backslash() {
         let (ret, _) = preprocess(
-            get_testcase("test16.sv"),
+            testfile_path("test16.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1263,7 +1263,7 @@ endmodule
     #[test]
     fn macro_multiline() {
         let (ret, _) = preprocess(
-            get_testcase("test17.sv"),
+            testfile_path("test17.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1287,7 +1287,7 @@ initial begin
     #[test]
     fn ifndef_undefined() {
         let (ret, _) = preprocess(
-            get_testcase("test18.sv"),
+            testfile_path("test18.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1307,9 +1307,9 @@ endmodule
 
     #[test]
     fn whitespace_include_with_comment() {
-        let include_paths = [get_testcase("")];
+        let include_paths = [testfile_path("")];
         let (ret, _) = preprocess(
-            get_testcase("test19.sv"),
+            testfile_path("test19.sv"),
             &HashMap::new(),
             &include_paths,
             false,
@@ -1330,26 +1330,26 @@ endmodule
         );
         assert_eq!(
             ret.origin(10).unwrap().0,
-            &PathBuf::from(get_testcase("test19.sv"))
+            &PathBuf::from(testfile_path("test19.sv"))
         );
         assert_eq!(ret.origin(10).unwrap().1, 10);
         assert_eq!(
             ret.origin(50).unwrap().0,
-            &PathBuf::from(get_testcase("test2.svh"))
+            &PathBuf::from(testfile_path("test2.svh"))
         );
         assert_eq!(ret.origin(50).unwrap().1, 73);
         assert_eq!(
             ret.origin(70).unwrap().0,
-            &PathBuf::from(get_testcase("test19.sv"))
+            &PathBuf::from(testfile_path("test19.sv"))
         );
         assert_eq!(ret.origin(70).unwrap().1, 50);
     }
 
     #[test]
     fn whitespace_include() {
-        let include_paths = [get_testcase("")];
+        let include_paths = [testfile_path("")];
         let (ret, _) = preprocess(
-            get_testcase("test20.sv"),
+            testfile_path("test20.sv"),
             &HashMap::new(),
             &include_paths,
             false,
@@ -1371,17 +1371,17 @@ endmodule
         );
         assert_eq!(
             ret.origin(10).unwrap().0,
-            &PathBuf::from(get_testcase("test20.sv"))
+            &PathBuf::from(testfile_path("test20.sv"))
         );
         assert_eq!(ret.origin(10).unwrap().1, 10);
         assert_eq!(
             ret.origin(60).unwrap().0,
-            &PathBuf::from(get_testcase("test2.svh"))
+            &PathBuf::from(testfile_path("test2.svh"))
         );
         assert_eq!(ret.origin(60).unwrap().1, 74);
         assert_eq!(
             ret.origin(80).unwrap().0,
-            &PathBuf::from(get_testcase("test20.sv"))
+            &PathBuf::from(testfile_path("test20.sv"))
         );
         assert_eq!(ret.origin(80).unwrap().1, 60);
     }
@@ -1390,9 +1390,9 @@ endmodule
     // around compiler directives.
     #[test]
     fn whitespace_directives() {
-        let include_paths = [get_testcase("")];
+        let include_paths = [testfile_path("")];
         let (ret, _) = preprocess(
-            get_testcase("test21.sv"),
+            testfile_path("test21.sv"),
             &HashMap::new(),
             &include_paths,
             false,

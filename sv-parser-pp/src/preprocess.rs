@@ -1191,7 +1191,7 @@ mod tests {
     #[test]
     fn ifndef_undefined() {
         let (ret, _) = preprocess(
-            testfile_path("test18.sv"),
+            testfile_path("ifndef_undefined.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1200,7 +1200,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/ifndef_undefined")
+            testfile_contents("expected/ifndef_undefined.sv")
         );
     }
 

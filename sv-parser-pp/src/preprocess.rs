@@ -1079,7 +1079,7 @@ mod tests {
     #[allow(non_snake_case)]
     fn macro_LINE() {
         let (ret, _) = preprocess(
-            testfile_path("test11.sv"),
+            testfile_path("macro_LINE.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1088,7 +1088,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/macro_LINE")
+            testfile_contents("expected/macro_LINE.sv")
         );
     }
 

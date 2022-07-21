@@ -900,6 +900,40 @@ mod tests {
 
     #[test]
     #[allow(non_snake_case)]
+    fn IEEE18002017_macro_argument_expansion() {
+        let (ret, _) = preprocess(
+            testfile_path("IEEE18002017_macro_argument_expansion.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("expected/IEEE18002017_macro_argument_expansion.sv")
+        );
+    }
+
+    #[test]
+    #[allow(non_snake_case)]
+    fn IEEE18002017_macro_delimit_tokens() {
+        let (ret, _) = preprocess(
+            testfile_path("IEEE18002017_macro_delimit_tokens.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("expected/IEEE18002017_macro_delimit_tokens.sv")
+        );
+    }
+
+    #[test]
+    #[allow(non_snake_case)]
     fn IEEE18002017_macro_mix_quotes() {
         let (ret, _) = preprocess(
             testfile_path("IEEE18002017_macro_mix_quotes.sv"),
@@ -929,6 +963,40 @@ mod tests {
         assert_eq!(
             ret.text(),
             testfile_contents("expected/IEEE18002017_macro_noexpand_string.sv")
+        );
+    }
+
+    #[test]
+    #[allow(non_snake_case)]
+    fn IEEE18002017_macro_with_defaults() {
+        let (ret, _) = preprocess(
+            testfile_path("IEEE18002017_macro_with_defaults.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("expected/IEEE18002017_macro_with_defaults.sv")
+        );
+    }
+
+    #[test]
+    #[allow(non_snake_case)]
+    fn IEEE18002017_macro_without_defaults() {
+        let (ret, _) = preprocess(
+            testfile_path("IEEE18002017_macro_without_defaults.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("expected/IEEE18002017_macro_without_defaults.sv")
         );
     }
 

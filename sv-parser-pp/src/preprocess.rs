@@ -1095,7 +1095,7 @@ mod tests {
     #[test]
     fn escaped_identifier() {
         let (ret, _) = preprocess(
-            testfile_path("test12.sv"),
+            testfile_path("escaped_identifier.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1104,7 +1104,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/escaped_identifier")
+            testfile_contents("expected/escaped_identifier.sv")
         );
     }
 

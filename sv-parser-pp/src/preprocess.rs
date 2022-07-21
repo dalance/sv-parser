@@ -1053,7 +1053,7 @@ mod tests {
     fn include_sameline_include() {
         let include_paths = [testfile_path("")];
         let ret = preprocess(
-            testfile_path("test9.sv"),
+            testfile_path("include_sameline_include.sv"),
             &HashMap::new(),
             &include_paths,
             false,

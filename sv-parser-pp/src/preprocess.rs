@@ -994,9 +994,10 @@ mod tests {
     }
 
     #[test]
-    fn macro_parameters_dependent() {
+    #[allow(non_snake_case)]
+    fn IEEE18002017_macro_noexpand_string() {
         let (ret, _) = preprocess(
-            testfile_path("test5.sv"),
+            testfile_path("IEEE18002017_macro_noexpand_string.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1005,7 +1006,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/macro_parameters_dependent")
+            testfile_contents("expected/IEEE18002017_macro_noexpand_string.sv")
         );
     }
 

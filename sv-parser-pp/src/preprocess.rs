@@ -1274,7 +1274,7 @@ mod tests {
     fn whitespace_directives() {
         let include_paths = [testfile_path("")];
         let (ret, _) = preprocess(
-            testfile_path("test21.sv"),
+            testfile_path("whitespace_directives.sv"),
             &HashMap::new(),
             &include_paths,
             false,
@@ -1283,7 +1283,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/whitespace_directives")
+            testfile_contents("expected/whitespace_directives.sv")
         );
     }
 }

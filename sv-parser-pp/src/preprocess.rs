@@ -874,7 +874,7 @@ mod tests {
     #[test]
     fn ifdef_undefined() {
         let (ret, _) = preprocess(
-            testfile_path("test1.sv"),
+            testfile_path("ifdef_undefined.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -883,11 +883,11 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/ifdef_undefined")
+            testfile_contents("expected/ifdef_undefined.sv")
         );
         assert_eq!(
             ret.origin(10).unwrap().0,
-            &PathBuf::from(testfile_path("test1.sv"))
+            &PathBuf::from(testfile_path("ifdef_undefined.sv"))
         );
         assert_eq!(ret.origin(10).unwrap().1, 10);
         assert_eq!(ret.origin(50).unwrap().1, 98);
@@ -899,7 +899,7 @@ mod tests {
         let mut defines = HashMap::new();
         defines.insert(String::from("behavioral"), None);
         let (ret, _) = preprocess(
-            testfile_path("test1.sv"),
+            testfile_path("ifdef_predefined.sv"),
             &defines,
             &[] as &[String],
             false,
@@ -908,7 +908,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/ifdef_predefined")
+            testfile_contents("expected/ifdef_predefined.sv")
         )
     }
 

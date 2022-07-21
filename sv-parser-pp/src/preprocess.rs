@@ -1173,9 +1173,9 @@ mod tests {
     }
 
     #[test]
-    fn macro_multiline() {
+    fn macro_multiline_comment() {
         let (ret, _) = preprocess(
-            testfile_path("test17.sv"),
+            testfile_path("macro_multiline_comment.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1184,7 +1184,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/macro_multiline")
+            testfile_contents("expected/macro_multiline_comment.sv")
         );
     }
 

@@ -4,5 +4,7 @@
 
 module test();
 
-initial begin 
-  end endmodule
+initial begin
+  end
+
+endmodule

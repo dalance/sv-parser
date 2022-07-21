@@ -1066,7 +1066,7 @@ mod tests {
     fn include_sameline_keyword() {
         let include_paths = [testfile_path("")];
         let ret = preprocess(
-            testfile_path("test10.sv"),
+            testfile_path("include_sameline_keyword.sv"),
             &HashMap::new(),
             &include_paths,
             false,

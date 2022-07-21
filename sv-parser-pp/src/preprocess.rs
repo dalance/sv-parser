@@ -1205,10 +1205,10 @@ mod tests {
     }
 
     #[test]
-    fn whitespace_include_with_comment() {
+    fn include_sameline_comment() {
         let include_paths = [testfile_path("")];
         let (ret, _) = preprocess(
-            testfile_path("test19.sv"),
+            testfile_path("include_sameline_comment.sv"),
             &HashMap::new(),
             &include_paths,
             false,
@@ -1217,11 +1217,11 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/whitespace_include_with_comment")
+            testfile_contents("expected/include_sameline_comment.sv")
         );
         assert_eq!(
             ret.origin(10).unwrap().0,
-            &PathBuf::from(testfile_path("test19.sv"))
+            &PathBuf::from(testfile_path("include_sameline_comment.sv"))
         );
         assert_eq!(ret.origin(10).unwrap().1, 10);
         assert_eq!(
@@ -1231,7 +1231,7 @@ mod tests {
         assert_eq!(ret.origin(50).unwrap().1, 73);
         assert_eq!(
             ret.origin(70).unwrap().0,
-            &PathBuf::from(testfile_path("test19.sv"))
+            &PathBuf::from(testfile_path("include_sameline_comment.sv"))
         );
         assert_eq!(ret.origin(70).unwrap().1, 50);
     }

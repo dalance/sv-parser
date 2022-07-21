@@ -676,11 +676,22 @@ fn get_str(node: RefNode, s: &str) -> String {
 fn split_text(s: &str) -> Vec<String> {
     let mut is_string = false;
     let mut is_ident = false;
-    let mut is_backquote_prev = false;
-    let mut is_comment = false;
     let mut is_ident_prev;
     let mut x = String::from("");
     let mut ret = vec![];
+
+    // IEEE1800-2017 Clause 22.5.1, page 676
+    // If a one-line comment (that is, a comment specified with the
+    // characters //) is included in the text, then the comment shall not
+    // become part of the substituted text.
+    let mut is_comment = false;
+
+    // IEEE1800-2017 Clause 22.5.1, page 680
+    // An `" overrides the usual lexical meaning of " and indicates that the
+    // expansion shall include the quotation mark, substitution of actual
+    // arguments, and expansions of embedded macros.
+    // This allows string literals to be constructed from macro arguments.
+    let mut is_backquote_prev = false;
 
     let mut iter = s.chars().peekable();
     while let Some(c) = iter.next() {

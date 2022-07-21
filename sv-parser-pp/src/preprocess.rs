@@ -1095,14 +1095,14 @@ mod tests {
         assert_eq!(ret.origin(10).unwrap().1, 10);
         assert_eq!(
             ret.origin(60).unwrap().0,
-            &PathBuf::from(testfile_path("test2.svh"))
+            &PathBuf::from(testfile_path("included.svh"))
         );
         assert_eq!(ret.origin(60).unwrap().1, 74);
         assert_eq!(
             ret.origin(80).unwrap().0,
             &PathBuf::from(testfile_path("include_basic.sv"))
         );
-        assert_eq!(ret.origin(80).unwrap().1, 60);
+        assert_eq!(ret.origin(80).unwrap().1, 63);
     }
 
     #[test]
@@ -1144,14 +1144,14 @@ mod tests {
         assert_eq!(ret.origin(10).unwrap().1, 10);
         assert_eq!(
             ret.origin(50).unwrap().0,
-            &PathBuf::from(testfile_path("test2.svh"))
+            &PathBuf::from(testfile_path("included.svh"))
         );
         assert_eq!(ret.origin(50).unwrap().1, 73);
         assert_eq!(
             ret.origin(70).unwrap().0,
             &PathBuf::from(testfile_path("include_origin.sv"))
         );
-        assert_eq!(ret.origin(70).unwrap().1, 50);
+        assert_eq!(ret.origin(70).unwrap().1, 53);
     }
 
     #[test]
@@ -1176,14 +1176,14 @@ mod tests {
         assert_eq!(ret.origin(10).unwrap().1, 10);
         assert_eq!(
             ret.origin(50).unwrap().0,
-            &PathBuf::from(testfile_path("test2.svh"))
+            &PathBuf::from(testfile_path("included.svh"))
         );
         assert_eq!(ret.origin(50).unwrap().1, 73);
         assert_eq!(
             ret.origin(70).unwrap().0,
             &PathBuf::from(testfile_path("include_sameline_comment.sv"))
         );
-        assert_eq!(ret.origin(70).unwrap().1, 50);
+        assert_eq!(ret.origin(70).unwrap().1, 53);
     }
 
     #[test]

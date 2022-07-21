@@ -1,4 +1,4 @@
 module and_op (a, b, c);
   // a
-  `include "test2.svh"
+  `include "included.svh"
 endmodule

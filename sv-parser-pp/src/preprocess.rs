@@ -260,6 +260,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
             }
             _ => (),
         }
+
         match n {
             NodeEvent::Enter(RefNode::SourceDescriptionNotDirective(x)) => {
                 let locate: Locate = x.try_into().unwrap();
@@ -614,6 +615,40 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                     ret.push(&text, origin);
                     defines = new_defines;
                 }
+
+                // Push the trailing whitespace attached to either
+                // TextMacroIdentifier or Option<Paren<ListOfActualArguments>>.
+                let (ref _symbol, ref id, ref args) = x.nodes;
+                match args {
+                    Some(p) => {
+                        // Arguments given to macro in parentheses.
+                        let (ref _opening, ref _args, ref closing) = p.nodes;
+                        for x in closing {
+                            match x {
+                                RefNode::WhiteSpace(x) => {
+                                    let locate: Locate = x.try_into().unwrap();
+                                    let range = Range::new(locate.offset, locate.offset + locate.len);
+                                    ret.push(locate.str(&s), Some((path.as_ref(), range)));
+                                }
+                                _ => {
+                                }
+                            }
+                        }
+                    }
+                    None => {
+                        // No arguments given to macro.
+                        for x in id {
+                            match x {
+                                RefNode::WhiteSpace(x) => {
+                                    let locate: Locate = x.try_into().unwrap();
+                                    let range = Range::new(locate.offset, locate.offset + locate.len);
+                                    ret.push(locate.str(&s), Some((path.as_ref(), range)));
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
+                }
             }
             NodeEvent::Enter(RefNode::PositionCompilerDirective(x)) => {
                 skip_nodes.push(x.into());
@@ -693,8 +728,30 @@ fn split_text(s: &str) -> Vec<String> {
     // This allows string literals to be constructed from macro arguments.
     let mut is_backquote_prev = false;
 
+    let mut is_leading_whitespace = true;
+    let mut is_backslash_prev = false;
+
     let mut iter = s.chars().peekable();
     while let Some(c) = iter.next() {
+
+        // IEEE1800-2017 Clause 22.5.1, page 676, Syntax 22-2.
+        // Ignore whitespace immediately after text_macro_name.
+        if is_leading_whitespace {
+            if c != '\\' && !c.is_ascii_whitespace() {
+                // Non-whitespace character, move onto main loop.
+                is_leading_whitespace = false;
+            } else if is_backslash_prev && c == '\n' {
+                // Drop the \n from leading continuation, then move onto main loop.
+                is_leading_whitespace = false;
+                continue;
+            } else {
+                // Still in leading whitespace or possible continuation.
+                // Detect possible continuation, then try next character.
+                is_backslash_prev = c == '\\';
+                continue;
+            }
+        }
+
         is_ident_prev = is_ident;
         is_ident = c.is_ascii_alphanumeric() | (c == '_');
 
@@ -830,10 +887,6 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
                 replaced.push_str(&paren);
             }
 
-            // separator is required
-            replaced.push_str(" ");
-            // remove leading whitespace
-            replaced = String::from(replaced.trim_start());
             let (replaced, new_defines) = preprocess_str(
                 &replaced,
                 path.as_ref(),

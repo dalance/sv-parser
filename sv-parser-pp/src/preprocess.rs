@@ -1011,9 +1011,10 @@ mod tests {
     }
 
     #[test]
-    fn macro_string_literal() {
+    #[allow(non_snake_case)]
+    fn IEEE18002017_macro_mix_quotes() {
         let (ret, _) = preprocess(
-            testfile_path("test6.sv"),
+            testfile_path("IEEE18002017_macro_mix_quotes.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1022,7 +1023,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/macro_string_literal")
+            testfile_contents("expected/IEEE18002017_macro_mix_quotes.sv")
         );
     }
 

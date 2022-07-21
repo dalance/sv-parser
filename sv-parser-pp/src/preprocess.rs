@@ -816,12 +816,12 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
                 } else {
                     replaced.push_str(
                         &text
-                            .replace("``", "")
-                            .replace("`\\`\"", "\\\"")
-                            .replace("`\"", "\"")
-                            .replace("\\\n", "\n")
-                            .replace("\\\r\n", "\r\n")
-                            .replace("\\\r", "\r"),
+                            .replace("``", "")          // Argument substitution.
+                            .replace("`\\`\"", "\\\"")  // Escaped backslash.
+                            .replace("`\"", "\"")       // Escaped quote.
+                            .replace("\\\n", "\n")      // Line continuation (Unix).
+                            .replace("\\\r\n", "\r\n")  // Line continuation (Windows).
+                            .replace("\\\r", "\r"),     // Line continuation (old Mac).
                     );
                 }
             }

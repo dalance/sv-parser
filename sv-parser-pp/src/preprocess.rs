@@ -916,7 +916,7 @@ mod tests {
     fn include_origin() {
         let include_paths = [testfile_path("")];
         let (ret, _) = preprocess(
-            testfile_path("test2.sv"),
+            testfile_path("include_origin.sv"),
             &HashMap::new(),
             &include_paths,
             false,
@@ -925,11 +925,11 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/include_origin")
+            testfile_contents("expected/include_origin.sv")
         );
         assert_eq!(
             ret.origin(10).unwrap().0,
-            &PathBuf::from(testfile_path("test2.sv"))
+            &PathBuf::from(testfile_path("include_origin.sv"))
         );
         assert_eq!(ret.origin(10).unwrap().1, 10);
         assert_eq!(
@@ -939,16 +939,16 @@ mod tests {
         assert_eq!(ret.origin(50).unwrap().1, 73);
         assert_eq!(
             ret.origin(70).unwrap().0,
-            &PathBuf::from(testfile_path("test2.sv"))
+            &PathBuf::from(testfile_path("include_origin.sv"))
         );
         assert_eq!(ret.origin(70).unwrap().1, 50);
     }
 
     #[test]
-    fn ignore_include() {
+    fn include_ignore() {
         let include_paths = [testfile_path("")];
         let (ret, _) = preprocess(
-            testfile_path("test2.sv"),
+            testfile_path("include_ignore.sv"),
             &HashMap::new(),
             &include_paths,
             false,
@@ -957,7 +957,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/ignore_include")
+            testfile_contents("expected/include_ignore.sv")
         );
     }
 

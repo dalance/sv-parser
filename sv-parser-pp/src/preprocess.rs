@@ -1213,6 +1213,22 @@ mod tests {
     } // }}}
 
     #[test]
+    fn macro_arguments() { // {{{
+        let (ret, _) = preprocess(
+            testfile_path("macro_arguments.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("expected/macro_arguments.sv")
+        );
+    } // }}}
+
+    #[test]
     fn macro_basic() { // {{{
         let (ret, _) = preprocess(
             testfile_path("macro_basic.sv"),
@@ -1241,6 +1257,22 @@ mod tests {
         assert_eq!(
             ret.text(),
             testfile_contents("expected/macro_comment.sv")
+        );
+    } // }}}
+
+    #[test]
+    fn macro_delimiters() { // {{{
+        let (ret, _) = preprocess(
+            testfile_path("macro_delimiters.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("expected/macro_delimiters.sv")
         );
     } // }}}
 
@@ -1290,38 +1322,6 @@ mod tests {
         assert_eq!(
             ret.text(),
             testfile_contents("expected/macro_multiline_comment.sv")
-        );
-    } // }}}
-
-    #[test]
-    fn macro_parameters_defaultvalue() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("macro_parameters_defaultvalue.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
-        assert_eq!(
-            ret.text(),
-            testfile_contents("expected/macro_parameters_defaultvalue.sv")
-        );
-    } // }}}
-
-    #[test]
-    fn macro_parameters_multiline() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("macro_parameters_multiline.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
-        assert_eq!(
-            ret.text(),
-            testfile_contents("expected/macro_parameters_multiline.sv")
         );
     } // }}}
 

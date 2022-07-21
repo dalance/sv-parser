@@ -1038,9 +1038,9 @@ mod tests {
     }
 
     #[test]
-    fn macro_indirect_recursion() {
+    fn macro_recursion_indirect() {
         let ret = preprocess(
-            testfile_path("test8.sv"),
+            testfile_path("macro_recursion_indirect.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,

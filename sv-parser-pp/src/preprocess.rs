@@ -1141,9 +1141,9 @@ mod tests {
     }
 
     #[test]
-    fn macro_usage_sameline() {
+    fn macro_basic() {
         let (ret, _) = preprocess(
-            testfile_path("test15.sv"),
+            testfile_path("macro_basic.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1152,7 +1152,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/macro_usage_sameline")
+            testfile_contents("expected/macro_basic.sv")
         );
     }
 

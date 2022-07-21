@@ -964,7 +964,7 @@ mod tests {
     #[test]
     fn macro_parameters_defaultvalue() {
         let (ret, _) = preprocess(
-            testfile_path("test3.sv"),
+            testfile_path("macro_parameters_defaultvalue.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -973,7 +973,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/macro_parameters_defaultvalue")
+            testfile_contents("expected/macro_parameters_defaultvalue.sv")
         );
     }
 

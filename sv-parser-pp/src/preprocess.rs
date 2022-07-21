@@ -1127,7 +1127,7 @@ mod tests {
     #[test]
     fn ifdef_nested() {
         let (ret, _) = preprocess(
-            testfile_path("test14.sv"),
+            testfile_path("ifdef_nested.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1136,7 +1136,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/ifdef_nested")
+            testfile_contents("expected/ifdef_nested.sv")
         );
     }
 

@@ -1237,10 +1237,10 @@ mod tests {
     }
 
     #[test]
-    fn whitespace_include() {
+    fn include_basic() {
         let include_paths = [testfile_path("")];
         let (ret, _) = preprocess(
-            testfile_path("test20.sv"),
+            testfile_path("include_basic.sv"),
             &HashMap::new(),
             &include_paths,
             false,
@@ -1249,11 +1249,11 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/whitespace_include")
+            testfile_contents("expected/include_basic.sv")
         );
         assert_eq!(
             ret.origin(10).unwrap().0,
-            &PathBuf::from(testfile_path("test20.sv"))
+            &PathBuf::from(testfile_path("include_basic.sv"))
         );
         assert_eq!(ret.origin(10).unwrap().1, 10);
         assert_eq!(
@@ -1263,7 +1263,7 @@ mod tests {
         assert_eq!(ret.origin(60).unwrap().1, 74);
         assert_eq!(
             ret.origin(80).unwrap().0,
-            &PathBuf::from(testfile_path("test20.sv"))
+            &PathBuf::from(testfile_path("include_basic.sv"))
         );
         assert_eq!(ret.origin(80).unwrap().1, 60);
     }

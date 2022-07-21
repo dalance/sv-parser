@@ -980,7 +980,7 @@ mod tests {
     #[test]
     fn macro_parameters_multiline() {
         let (ret, _) = preprocess(
-            testfile_path("test4.sv"),
+            testfile_path("macro_parameters_multiline.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -989,7 +989,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/macro_parameters_multiline")
+            testfile_contents("expected/macro_parameters_multiline.sv")
         );
     }
 

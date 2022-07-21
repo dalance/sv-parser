@@ -1111,9 +1111,9 @@ mod tests {
     }
 
     #[test]
-    fn macro_with_comment() {
+    fn macro_comment() {
         let (ret, _) = preprocess(
-            testfile_path("test13.sv"),
+            testfile_path("macro_comment.sv"),
             &HashMap::new(),
             &[] as &[String],
             false,
@@ -1122,7 +1122,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/macro_with_comment")
+            testfile_contents("expected/macro_comment.sv")
         );
     }
 

@@ -399,7 +399,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
 
                 let ifid = identifier(ifid.into(), &s).unwrap();
                 let mut hit = false;
-                if defines.contains_key(&ifid) {
+                if defines.contains_key(&ifid) || is_predefined_text_macro(&ifid) {
                     hit = true;
                 } else {
                     skip_nodes.push(ifbody.into());
@@ -413,7 +413,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                     let elsifid = identifier(elsifid.into(), &s).unwrap();
                     if hit {
                         skip_nodes.push(elsifbody.into());
-                    } else if defines.contains_key(&elsifid) {
+                    } else if defines.contains_key(&elsifid) || is_predefined_text_macro(&ifid) {
                         hit = true;
                     } else {
                         skip_nodes.push(elsifbody.into());
@@ -447,7 +447,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
 
                 let ifid = identifier(ifid.into(), &s).unwrap();
                 let mut hit = false;
-                if !defines.contains_key(&ifid) {
+                if !defines.contains_key(&ifid) && !is_predefined_text_macro(&ifid) {
                     hit = true;
                 } else {
                     skip_nodes.push(ifbody.into());
@@ -461,7 +461,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                     let elsifid = identifier(elsifid.into(), &s).unwrap();
                     if hit {
                         skip_nodes.push(elsifbody.into());
-                    } else if defines.contains_key(&elsifid) {
+                    } else if defines.contains_key(&elsifid) || is_predefined_text_macro(&ifid) {
                         hit = true;
                     } else {
                         skip_nodes.push(elsifbody.into());
@@ -484,46 +484,48 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 let (ref name, ref args) = proto.nodes;
                 let id = identifier(name.into(), &s).unwrap();
 
-                let mut define_args = Vec::new();
-                if let Some(args) = args {
-                    let (_, ref args, _) = args.nodes;
-                    let (ref args,) = args.nodes;
-                    for arg in args.contents() {
-                        let (ref arg, ref default) = arg.nodes;
-                        let (ref arg, _) = arg.nodes;
-                        let arg = String::from(arg.str(&s));
+                if !is_predefined_text_macro(id.as_str()) {
+                    let mut define_args = Vec::new();
+                    if let Some(args) = args {
+                        let (_, ref args, _) = args.nodes;
+                        let (ref args,) = args.nodes;
+                        for arg in args.contents() {
+                            let (ref arg, ref default) = arg.nodes;
+                            let (ref arg, _) = arg.nodes;
+                            let arg = String::from(arg.str(&s));
 
-                        let default = if let Some((_, x)) = default {
-                            let x: Locate = x.try_into().unwrap();
-                            let x = String::from(x.str(&s));
-                            Some(x)
-                        } else {
-                            None
-                        };
+                            let default = if let Some((_, x)) = default {
+                                let x: Locate = x.try_into().unwrap();
+                                let x = String::from(x.str(&s));
+                                Some(x)
+                            } else {
+                                None
+                            };
 
-                        define_args.push((arg, default));
+                            define_args.push((arg, default));
+                        }
                     }
+
+                    let define_text = if let Some(text) = text {
+                        let text: Locate = text.try_into().unwrap();
+                        let range = Range::new(text.offset, text.offset + text.len);
+                        let text = String::from(text.str(&s));
+                        Some(DefineText {
+                            text,
+                            origin: Some((PathBuf::from(path.as_ref()), range)),
+                        })
+                    } else {
+                        None
+                    };
+
+                    let define = Define {
+                        identifier: id.clone(),
+                        arguments: define_args,
+                        text: define_text,
+                    };
+
+                    defines.insert(id, Some(define));
                 }
-
-                let define_text = if let Some(text) = text {
-                    let text: Locate = text.try_into().unwrap();
-                    let range = Range::new(text.offset, text.offset + text.len);
-                    let text = String::from(text.str(&s));
-                    Some(DefineText {
-                        text,
-                        origin: Some((PathBuf::from(path.as_ref()), range)),
-                    })
-                } else {
-                    None
-                };
-
-                let define = Define {
-                    identifier: id.clone(),
-                    arguments: define_args,
-                    text: define_text,
-                };
-
-                defines.insert(id, Some(define));
 
                 // Keep TextMacroDefinition after preprocess
                 let locate: Locate = x.try_into().unwrap();
@@ -706,6 +708,17 @@ fn get_str(node: RefNode, s: &str) -> String {
         }
     }
     ret
+}
+
+fn is_predefined_text_macro(s: &str) -> bool {
+    match s {
+        "__LINE__" | "__FILE__" => {
+            true
+        }
+        _ => {
+            false
+        }
+    }
 }
 
 fn split_text(s: &str) -> Vec<String> {

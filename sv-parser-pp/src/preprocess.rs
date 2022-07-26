@@ -1118,6 +1118,23 @@ mod tests {
     } // }}}
 
     #[test]
+    fn celldefine() { // {{{
+        let include_paths = [testfile_path("")];
+        let (ret, _) = preprocess(
+            testfile_path("celldefine.sv"),
+            &HashMap::new(),
+            &include_paths,
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("celldefine.sv")
+        );
+    } // }}}
+
+    #[test]
     fn ifdef_nested() { // {{{
         let (ret, _) = preprocess(
             testfile_path("ifdef_nested.sv"),

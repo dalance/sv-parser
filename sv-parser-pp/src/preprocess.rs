@@ -1482,23 +1482,4 @@ mod tests {
         );
         assert_eq!(format!("{:?}", ret), "Err(ExceedRecursiveLimit)");
     } // }}}
-
-    // Check that preprocess() doesn't introduce extra whitespace within and
-    // around compiler directives.
-    #[test]
-    fn whitespace_directives() { // {{{
-        let include_paths = [testfile_path("")];
-        let (ret, _) = preprocess(
-            testfile_path("whitespace_directives.sv"),
-            &HashMap::new(),
-            &include_paths,
-            false,
-            false,
-        )
-        .unwrap();
-        assert_eq!(
-            ret.text(),
-            testfile_contents("expected/whitespace_directives.sv")
-        );
-    } // }}}
 }

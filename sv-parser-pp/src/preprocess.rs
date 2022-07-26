@@ -549,6 +549,9 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 let locate: Locate = x.try_into().unwrap();
                 last_include_line = Some(locate.line);
 
+                // IEEE1800-2017 Clause 22.4, page 675
+                // Only white space or a comment may appear on the same line as
+                // the `include compiler directive.
                 if let Some(last_item_line) = last_item_line {
                     if last_item_line == locate.line {
                         return Err(Error::IncludeLine);
@@ -593,6 +596,20 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                         }
                     }
                 };
+
+                // IEEE1800-2017 Clause 22.4, page 675
+                // The filename can be enclosed in either quotes or angle brackets,
+                // which affects how a tool searches for the file, as follows:
+                // - When the filename is enclosed in double quotes ("filename"), for
+                //   a relative path the compiler’s current working directory, and
+                //   optionally user-specified locations are searched.
+                // - When the filename is enclosed in angle brackets (<filename>), then
+                //   only an implementationdependent location containing files defined
+                //   by the language standard is searched. Relative path names are
+                //   interpreted relative to that location
+                //
+                // In this implementation, filenames enclosed in angle brackets are
+                // treated equivalently to those enclosed in double quotes.
                 if path.is_relative() && !path.exists() {
                     for include_path in include_paths {
                         let new_path = include_path.as_ref().join(&path);
@@ -602,6 +619,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                         }
                     }
                 }
+
                 let (include, new_defines) =
                     preprocess(path, &defines, include_paths, strip_comments, false).map_err(
                         |x| Error::Include {

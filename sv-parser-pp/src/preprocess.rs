@@ -1330,6 +1330,23 @@ mod tests {
     } // }}}
 
     #[test]
+    fn keywords() { // {{{
+        let include_paths = [testfile_path("")];
+        let (ret, _) = preprocess(
+            testfile_path("keywords.sv"),
+            &HashMap::new(),
+            &include_paths,
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("keywords.sv")
+        );
+    } // }}}
+
+    #[test]
     fn macro_arguments() { // {{{
         let (ret, _) = preprocess(
             testfile_path("macro_arguments.sv"),

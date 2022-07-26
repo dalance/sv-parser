@@ -1251,6 +1251,36 @@ mod tests {
     } // }}}
 
     #[test]
+    fn include_quoted_a() { // {{{
+        let ret = preprocess_usualargs("include_quoted_a.sv");
+        assert_eq!(format!("{:?}", ret), "Err(Include { source: File { source: Os { code: 2, kind: NotFound, message: \"No such file or directory\" }, path: \"`PATH\" } })");
+    } // }}}
+
+    #[test]
+    fn include_quoted_b() { // {{{
+        let ret = preprocess_usualargs("include_quoted_b.sv");
+        assert_eq!(format!("{:?}", ret), "Err(Include { source: File { source: Os { code: 2, kind: NotFound, message: \"No such file or directory\" }, path: \"`PATH\" } })");
+    } // }}}
+
+    #[test]
+    fn include_quoted_c() { // {{{
+        let (ret, _) = preprocess_usualargs("include_quoted_c.sv").unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("expected/include_quoted_c.sv")
+        );
+    } // }}}
+
+    #[test]
+    fn include_quoted_d() { // {{{
+        let (ret, _) = preprocess_usualargs("include_quoted_d.sv").unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("expected/include_quoted_d.sv")
+        );
+    } // }}}
+
+    #[test]
     fn include_recursive() { // {{{
         let ret = preprocess_usualargs("include_recursive.svh");
         let expected = format!(

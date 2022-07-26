@@ -139,7 +139,7 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
         include_paths,
         ignore_include,
         strip_comments,
-        0,
+        0, // resolve_depth
     )
 }
 
@@ -976,16 +976,21 @@ mod tests {
         contents
     }
 
+    // Most tests are called with the same arguments, so this is a convenience.
+    fn preprocess_usualargs(s: &str) -> Result<(PreprocessedText, Defines), Error> {
+        let include_paths = [testfile_path("")];
+        preprocess(
+            testfile_path(s),   // path
+            &HashMap::new(),    // pre_defines
+            &include_paths,      // include_paths
+            false,              // strip_comments
+            false,              // ignore_include
+        )
+    }
+
     #[test]
     fn escaped_identifier() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("escaped_identifier.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("escaped_identifier.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/escaped_identifier.sv")
@@ -995,14 +1000,7 @@ mod tests {
     #[test]
     #[allow(non_snake_case)]
     fn IEEE18002017_keywords_if2_13642005() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("IEEE18002017_keywords_if2_13642005.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("IEEE18002017_keywords_if2_13642005.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/IEEE18002017_keywords_if2_13642005.sv")
@@ -1012,14 +1010,7 @@ mod tests {
     #[test]
     #[allow(non_snake_case)]
     fn IEEE18002017_keywords_m2_13642001() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("IEEE18002017_keywords_m2_13642001.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("IEEE18002017_keywords_m2_13642001.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/IEEE18002017_keywords_m2_13642001.sv")
@@ -1029,14 +1020,7 @@ mod tests {
     #[test]
     #[allow(non_snake_case)]
     fn IEEE18002017_keywords_m2_18002005() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("IEEE18002017_keywords_m2_18002005.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("IEEE18002017_keywords_m2_18002005.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/IEEE18002017_keywords_m2_18002005.sv")
@@ -1046,14 +1030,7 @@ mod tests {
     #[test]
     #[allow(non_snake_case)]
     fn IEEE18002017_macro_argument_expansion() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("IEEE18002017_macro_argument_expansion.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("IEEE18002017_macro_argument_expansion.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/IEEE18002017_macro_argument_expansion.sv")
@@ -1063,14 +1040,7 @@ mod tests {
     #[test]
     #[allow(non_snake_case)]
     fn IEEE18002017_macro_delimit_tokens() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("IEEE18002017_macro_delimit_tokens.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("IEEE18002017_macro_delimit_tokens.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/IEEE18002017_macro_delimit_tokens.sv")
@@ -1080,14 +1050,7 @@ mod tests {
     #[test]
     #[allow(non_snake_case)]
     fn IEEE18002017_macro_mix_quotes() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("IEEE18002017_macro_mix_quotes.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("IEEE18002017_macro_mix_quotes.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/IEEE18002017_macro_mix_quotes.sv")
@@ -1097,14 +1060,7 @@ mod tests {
     #[test]
     #[allow(non_snake_case)]
     fn IEEE18002017_macro_noexpand_string() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("IEEE18002017_macro_noexpand_string.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("IEEE18002017_macro_noexpand_string.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/IEEE18002017_macro_noexpand_string.sv")
@@ -1114,14 +1070,7 @@ mod tests {
     #[test]
     #[allow(non_snake_case)]
     fn IEEE18002017_macro_with_defaults() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("IEEE18002017_macro_with_defaults.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("IEEE18002017_macro_with_defaults.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/IEEE18002017_macro_with_defaults.sv")
@@ -1131,14 +1080,7 @@ mod tests {
     #[test]
     #[allow(non_snake_case)]
     fn IEEE18002017_macro_without_defaults() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("IEEE18002017_macro_without_defaults.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("IEEE18002017_macro_without_defaults.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/IEEE18002017_macro_without_defaults.sv")
@@ -1147,15 +1089,7 @@ mod tests {
 
     #[test]
     fn celldefine() { // {{{
-        let include_paths = [testfile_path("")];
-        let (ret, _) = preprocess(
-            testfile_path("celldefine.sv"),
-            &HashMap::new(),
-            &include_paths,
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("celldefine.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("celldefine.sv")
@@ -1164,15 +1098,7 @@ mod tests {
 
     #[test]
     fn default_nettype() { // {{{
-        let include_paths = [testfile_path("")];
-        let (ret, _) = preprocess(
-            testfile_path("default_nettype.sv"),
-            &HashMap::new(),
-            &include_paths,
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("default_nettype.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("default_nettype.sv")
@@ -1181,14 +1107,7 @@ mod tests {
 
     #[test]
     fn ifdef_nested() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("ifdef_nested.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("ifdef_nested.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/ifdef_nested.sv")
@@ -1205,6 +1124,7 @@ mod tests {
             &[] as &[String],
             false,
             false,
+            0,
         )
         .unwrap();
         assert_eq!(
@@ -1215,14 +1135,7 @@ mod tests {
 
     #[test]
     fn ifdef_undefined() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("ifdef_undefined.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("ifdef_undefined.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/ifdef_undefined.sv")
@@ -1238,14 +1151,7 @@ mod tests {
 
     #[test]
     fn ifndef_undefined() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("ifndef_undefined.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("ifndef_undefined.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/ifndef_undefined.sv")
@@ -1261,6 +1167,7 @@ mod tests {
             &include_paths,
             false,
             true,
+            0,
         )
         .unwrap();
         assert_eq!(
@@ -1271,16 +1178,7 @@ mod tests {
 
     #[test]
     fn include_noindent() { // {{{
-        let include_paths = [testfile_path("")];
-        let (ret, _) = preprocess(
-            testfile_path("include_noindent.sv"),
-            &HashMap::new(),
-            &include_paths,
-            false,
-            false,
-        )
-        .unwrap();
-
+        let (ret, _) = preprocess_usualargs("include_noindent.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/include_noindent.sv")
@@ -1317,15 +1215,7 @@ mod tests {
 
     #[test]
     fn include_sameline_comment() { // {{{
-        let include_paths = [testfile_path("")];
-        let (ret, _) = preprocess(
-            testfile_path("include_sameline_comment.sv"),
-            &HashMap::new(),
-            &include_paths,
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("include_sameline_comment.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/include_sameline_comment.sv")
@@ -1349,42 +1239,19 @@ mod tests {
 
     #[test]
     fn include_sameline_include() { // {{{
-        let include_paths = [testfile_path("")];
-        let ret = preprocess(
-            testfile_path("include_sameline_include.sv"),
-            &HashMap::new(),
-            &include_paths,
-            false,
-            false,
-        );
+        let ret = preprocess_usualargs("include_sameline_include.sv");
         assert_eq!(format!("{:?}", ret), "Err(IncludeLine)");
     } // }}}
 
     #[test]
     fn include_sameline_keyword() { // {{{
-        let include_paths = [testfile_path("")];
-        let ret = preprocess(
-            testfile_path("include_sameline_keyword.sv"),
-            &HashMap::new(),
-            &include_paths,
-            false,
-            false,
-        );
+        let ret = preprocess_usualargs("include_sameline_keyword.sv");
         assert_eq!(format!("{:?}", ret), "Err(IncludeLine)");
     } // }}}
 
     #[test]
     fn include_withindent() { // {{{
-        let include_paths = [testfile_path("")];
-        let (ret, _) = preprocess(
-            testfile_path("include_withindent.sv"),
-            &HashMap::new(),
-            &include_paths,
-            false,
-            false,
-        )
-        .unwrap();
-
+        let (ret, _) = preprocess_usualargs("include_withindent.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/include_withindent.sv")
@@ -1421,15 +1288,7 @@ mod tests {
 
     #[test]
     fn keywords() { // {{{
-        let include_paths = [testfile_path("")];
-        let (ret, _) = preprocess(
-            testfile_path("keywords.sv"),
-            &HashMap::new(),
-            &include_paths,
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("keywords.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("keywords.sv")
@@ -1438,15 +1297,7 @@ mod tests {
 
     #[test]
     fn line() { // {{{
-        let include_paths = [testfile_path("")];
-        let (ret, _) = preprocess(
-            testfile_path("line.sv"),
-            &HashMap::new(),
-            &include_paths,
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("line.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("line.sv")
@@ -1455,14 +1306,7 @@ mod tests {
 
     #[test]
     fn macro_arguments() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("macro_arguments.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("macro_arguments.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/macro_arguments.sv")
@@ -1471,14 +1315,7 @@ mod tests {
 
     #[test]
     fn macro_basic() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("macro_basic.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("macro_basic.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/macro_basic.sv")
@@ -1487,14 +1324,7 @@ mod tests {
 
     #[test]
     fn macro_comment() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("macro_comment.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("macro_comment.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/macro_comment.sv")
@@ -1503,14 +1333,7 @@ mod tests {
 
     #[test]
     fn macro_delimiters() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("macro_delimiters.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("macro_delimiters.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/macro_delimiters.sv")
@@ -1520,14 +1343,7 @@ mod tests {
     #[test]
     #[allow(non_snake_case)]
     fn macro_FILE() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("macro_FILE.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("macro_FILE.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/macro_FILE.sv")
@@ -1536,14 +1352,7 @@ mod tests {
 
     #[test]
     fn macro_identifier() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("macro_identifier.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("macro_identifier.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/macro_identifier.sv")
@@ -1553,14 +1362,7 @@ mod tests {
     #[test]
     #[allow(non_snake_case)]
     fn macro_LINE() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("macro_LINE.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("macro_LINE.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/macro_LINE.sv")
@@ -1569,14 +1371,7 @@ mod tests {
 
     #[test]
     fn macro_multiline_comment() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("macro_multiline_comment.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("macro_multiline_comment.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/macro_multiline_comment.sv")
@@ -1585,39 +1380,19 @@ mod tests {
 
     #[test]
     fn macro_recursion_direct() { // {{{
-        let ret = preprocess(
-            testfile_path("macro_recursion_direct.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        );
+        let ret = preprocess_usualargs("macro_recursion_direct.sv");
         assert_eq!(format!("{:?}", ret), "Err(ExceedRecursiveLimit)");
     } // }}}
 
     #[test]
     fn macro_recursion_indirect() { // {{{
-        let ret = preprocess(
-            testfile_path("macro_recursion_indirect.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        );
+        let ret = preprocess_usualargs("macro_recursion_indirect.sv");
         assert_eq!(format!("{:?}", ret), "Err(ExceedRecursiveLimit)");
     } // }}}
 
     #[test]
     fn pragma() { // {{{
-        let include_paths = [testfile_path("")];
-        let (ret, _) = preprocess(
-            testfile_path("pragma.sv"),
-            &HashMap::new(),
-            &include_paths,
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("pragma.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("pragma.sv")
@@ -1626,15 +1401,7 @@ mod tests {
 
     #[test]
     fn resetall() { // {{{
-        let include_paths = [testfile_path("")];
-        let (ret, _) = preprocess(
-            testfile_path("resetall.sv"),
-            &HashMap::new(),
-            &include_paths,
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("resetall.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("resetall.sv")
@@ -1643,15 +1410,7 @@ mod tests {
 
     #[test]
     fn timescale() { // {{{
-        let include_paths = [testfile_path("")];
-        let (ret, _) = preprocess(
-            testfile_path("timescale.sv"),
-            &HashMap::new(),
-            &include_paths,
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("timescale.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("timescale.sv")
@@ -1660,15 +1419,7 @@ mod tests {
 
     #[test]
     fn unconnected_drive() { // {{{
-        let include_paths = [testfile_path("")];
-        let (ret, _) = preprocess(
-            testfile_path("unconnected_drive.sv"),
-            &HashMap::new(),
-            &include_paths,
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("unconnected_drive.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("unconnected_drive.sv")
@@ -1677,15 +1428,7 @@ mod tests {
 
     #[test]
     fn undef() { // {{{
-        let include_paths = [testfile_path("")];
-        let (ret, _) = preprocess(
-            testfile_path("undef.sv"),
-            &HashMap::new(),
-            &include_paths,
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("undef.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/undef.sv")
@@ -1694,15 +1437,7 @@ mod tests {
 
     #[test]
     fn undefineall() { // {{{
-        let include_paths = [testfile_path("")];
-        let (ret, _) = preprocess(
-            testfile_path("undefineall.sv"),
-            &HashMap::new(),
-            &include_paths,
-            false,
-            false,
-        )
-        .unwrap();
+        let (ret, _) = preprocess_usualargs("undefineall.sv").unwrap();
         assert_eq!(
             ret.text(),
             testfile_contents("expected/undefineall.sv")

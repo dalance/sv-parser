@@ -1,11 +1,11 @@
-// IEEE1800-2017 Clause 22.5.2
-// The directive `undef shall undefine the specified text macro if previously
-// defined by a `define compiler directive within the compilation unit. An
-// attempt to undefine a text macro that was not previously defined using a
-// `define compiler directive can issue a warning.
-`undef FOO
-`undef FOO// Comment
-`undef FOO // Comment
+// IEEE1800-2017 Clause 22.5.3
+// The directive `undefineall directive shall undefine all text macros
+// previously defined by `define compiler directives within the compilation
+// unit. This directive takes no argument and may appear anywhere in the source
+// description.
+`undefineall
+`undefineall// Comment
+`undefineall // Comment
 
 `define FOO foo
 `define BAR bar

@@ -1645,4 +1645,21 @@ mod tests {
             testfile_contents("expected/undef.sv")
         );
     } // }}}
+
+    #[test]
+    fn undefineall() { // {{{
+        let include_paths = [testfile_path("")];
+        let (ret, _) = preprocess(
+            testfile_path("undefineall.sv"),
+            &HashMap::new(),
+            &include_paths,
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("expected/undefineall.sv")
+        );
+    } // }}}
 }

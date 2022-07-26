@@ -1550,4 +1550,21 @@ mod tests {
             testfile_contents("timescale.sv")
         );
     } // }}}
+
+    #[test]
+    fn unconnected_drive() { // {{{
+        let include_paths = [testfile_path("")];
+        let (ret, _) = preprocess(
+            testfile_path("unconnected_drive.sv"),
+            &HashMap::new(),
+            &include_paths,
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("unconnected_drive.sv")
+        );
+    } // }}}
 }

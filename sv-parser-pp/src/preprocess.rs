@@ -966,6 +966,57 @@ mod tests {
 
     #[test]
     #[allow(non_snake_case)]
+    fn IEEE18002017_keywords_if2_13642005() { // {{{
+        let (ret, _) = preprocess(
+            testfile_path("IEEE18002017_keywords_if2_13642005.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("expected/IEEE18002017_keywords_if2_13642005.sv")
+        );
+    } // }}}
+
+    #[test]
+    #[allow(non_snake_case)]
+    fn IEEE18002017_keywords_m2_13642001() { // {{{
+        let (ret, _) = preprocess(
+            testfile_path("IEEE18002017_keywords_m2_13642001.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("expected/IEEE18002017_keywords_m2_13642001.sv")
+        );
+    } // }}}
+
+    #[test]
+    #[allow(non_snake_case)]
+    fn IEEE18002017_keywords_m2_18002005() { // {{{
+        let (ret, _) = preprocess(
+            testfile_path("IEEE18002017_keywords_m2_18002005.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("expected/IEEE18002017_keywords_m2_18002005.sv")
+        );
+    } // }}}
+
+    #[test]
+    #[allow(non_snake_case)]
     fn IEEE18002017_macro_argument_expansion() { // {{{
         let (ret, _) = preprocess(
             testfile_path("IEEE18002017_macro_argument_expansion.sv"),

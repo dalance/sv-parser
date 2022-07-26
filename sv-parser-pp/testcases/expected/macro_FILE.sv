@@ -10,4 +10,6 @@
 `define __FILE__ "FOO"
 
 // The following undef should have no effect.
+`undef __FILE__
+
 // NOTE: Comparison against expected value are destined to fail in testcase.

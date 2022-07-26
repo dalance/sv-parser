@@ -379,18 +379,28 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 skip_whitespace = false;
             }
             NodeEvent::Enter(RefNode::UndefineCompilerDirective(x)) => {
-                skip_nodes.push(x.into());
-                skip = true;
-
                 let (_, _, ref name) = x.nodes;
                 let id = identifier((&name.nodes.0).into(), &s).unwrap();
                 defines.remove(&id);
+
+                let locate: Locate = x.try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
+                skip_whitespace = true;
+            }
+            NodeEvent::Leave(RefNode::UndefineCompilerDirective(_)) => {
+                skip_whitespace = false;
             }
             NodeEvent::Enter(RefNode::UndefineallCompilerDirective(x)) => {
-                skip_nodes.push(x.into());
-                skip = true;
-
                 defines.clear();
+
+                let locate: Locate = x.try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
+                skip_whitespace = true;
+            }
+            NodeEvent::Leave(RefNode::UndefineallCompilerDirective(_)) => {
+                skip_whitespace = false;
             }
             NodeEvent::Enter(RefNode::IfdefDirective(x)) => {
                 let (_, ref keyword, ref ifid, ref ifbody, ref elsif, ref elsebody, _, _) = x.nodes;

@@ -10,6 +10,8 @@
 `define __LINE__ -2
 
 // The following undef should have no effect.
+`undef __LINE__
+
 module M;
   initial
     if (26 == 28)      // Should be "26 == 28".

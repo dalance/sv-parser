@@ -124,6 +124,25 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     strip_comments: bool,
     ignore_include: bool,
 ) -> Result<(PreprocessedText, Defines), Error> {
+    preprocess_inner(
+        path,
+        pre_defines,
+        include_paths,
+        strip_comments,
+        ignore_include,
+        0, // include_depth
+    )
+}
+
+fn preprocess_inner<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
+    path: T,
+    pre_defines: &Defines<V>,
+    include_paths: &[U],
+    strip_comments: bool,
+    ignore_include: bool,
+    include_depth: usize,
+) -> Result<(PreprocessedText, Defines), Error> {
+
     let f = File::open(path.as_ref()).map_err(|x| Error::File {
         source: x,
         path: PathBuf::from(path.as_ref()),
@@ -140,6 +159,7 @@ pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
         ignore_include,
         strip_comments,
         0, // resolve_depth
+        include_depth,
     )
 }
 
@@ -179,7 +199,19 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     ignore_include: bool,
     strip_comments: bool,
     resolve_depth: usize,
+    include_depth: usize,
 ) -> Result<(PreprocessedText, Defines), Error> {
+
+    // IEEE1800-2017 Clause 22.4, page 675
+    // A file included in the source using the `include compiler directive
+    // may contain other `include compiler directives.
+    // The number of nesting levels for include files shall be finite.
+    // Implementations may limit the maximum number of levels to which
+    // include files can be nested, but the limit shall be at least 15.
+    if include_depth > RECURSIVE_LIMIT {
+        return Err(Error::ExceedRecursiveLimit);
+    }
+
     let mut skip = false;
     let mut skip_whitespace = false;
     let mut skip_nodes = SkipNodes::new();
@@ -537,7 +569,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                     defines.insert(id, Some(define));
                 }
 
-                // Keep TextMacroDefinition after preprocess
+                // Keep TextMacroDefinition after preprocess_inner().
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
                 ret.push(locate.str(&s), Some((path.as_ref(), range)));
@@ -621,7 +653,13 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 }
 
                 let (include, new_defines) =
-                    preprocess(path, &defines, include_paths, strip_comments, false).map_err(
+                    preprocess_inner(
+                        path,
+                        &defines,
+                        include_paths,
+                        strip_comments,
+                        false, // ignore_include
+                        include_depth + 1).map_err(
                         |x| Error::Include {
                             source: Box::new(x),
                         },
@@ -936,6 +974,7 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
                 false,
                 strip_comments,
                 resolve_depth,
+                0, // include_depth
             )?;
             Ok(Some((
                 String::from(replaced.text()),
@@ -982,7 +1021,7 @@ mod tests {
         preprocess(
             testfile_path(s),   // path
             &HashMap::new(),    // pre_defines
-            &include_paths,      // include_paths
+            &include_paths,     // include_paths
             false,              // strip_comments
             false,              // ignore_include
         )
@@ -1122,9 +1161,8 @@ mod tests {
             testfile_path("ifdef_predefined.sv"),
             &defines,
             &[] as &[String],
-            false,
-            false,
-            0,
+            false, // strip_comments
+            false, // ignore_include
         )
         .unwrap();
         assert_eq!(
@@ -1165,9 +1203,8 @@ mod tests {
             testfile_path("include_ignore.sv"),
             &HashMap::new(),
             &include_paths,
-            false,
-            true,
-            0,
+            false, // strip_comments
+            true, // ignore_include
         )
         .unwrap();
         assert_eq!(
@@ -1214,10 +1251,14 @@ mod tests {
     } // }}}
 
     #[test]
-    #[ignore]
     fn include_recursive() { // {{{
         let ret = preprocess_usualargs("include_recursive.svh");
-        assert_eq!(format!("{:?}", ret), "Err(ExceedRecursiveLimit)");
+        let expected = format!(
+            "Err({}ExceedRecursiveLimit{})",
+            "Include { source: ".repeat(RECURSIVE_LIMIT+1),
+            " }".repeat(RECURSIVE_LIMIT+1),
+        );
+        assert_eq!(format!("{:?}", ret), expected);
     } // }}}
 
     #[test]

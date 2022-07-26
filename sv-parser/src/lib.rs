@@ -131,7 +131,13 @@ pub fn parse_sv<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     ignore_include: bool,
     allow_incomplete: bool,
 ) -> Result<(SyntaxTree, Defines), Error> {
-    let (text, defines) = preprocess(path, pre_defines, include_paths, false, ignore_include)?;
+    let (text, defines) = preprocess(
+        path,
+        pre_defines,
+        include_paths,
+        false, // strip_comments
+        ignore_include,
+    )?;
     parse_sv_pp(text, defines, allow_incomplete)
 }
 
@@ -188,8 +194,9 @@ pub fn parse_sv_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
         pre_defines,
         include_paths,
         ignore_include,
-        false,
-        0,
+        false, // strip_comments
+        0, // resolve_depth
+        0, // include_depth
     )?;
     parse_sv_pp(text, defines, allow_incomplete)
 }
@@ -201,7 +208,13 @@ pub fn parse_lib<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     ignore_include: bool,
     allow_incomplete: bool,
 ) -> Result<(SyntaxTree, Defines), Error> {
-    let (text, defines) = preprocess(path, pre_defines, include_paths, false, ignore_include)?;
+    let (text, defines) = preprocess(
+        path,
+        pre_defines,
+        include_paths,
+        false, // strip_comments
+        ignore_include,
+    )?;
     parse_lib_pp(text, defines, allow_incomplete)
 }
 
@@ -219,8 +232,9 @@ pub fn parse_lib_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
         pre_defines,
         include_paths,
         ignore_include,
-        false,
-        0,
+        false, // strip_comments
+        0, // resolve_depth
+        0, // include_depth
     )?;
     parse_lib_pp(text, defines, allow_incomplete)
 }

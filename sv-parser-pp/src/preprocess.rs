@@ -1235,38 +1235,6 @@ mod tests {
     } // }}}
 
     #[test]
-    fn include_basic() { // {{{
-        let include_paths = [testfile_path("")];
-        let (ret, _) = preprocess(
-            testfile_path("include_basic.sv"),
-            &HashMap::new(),
-            &include_paths,
-            false,
-            false,
-        )
-        .unwrap();
-        assert_eq!(
-            ret.text(),
-            testfile_contents("expected/include_basic.sv")
-        );
-        assert_eq!(
-            ret.origin(10).unwrap().0,
-            &PathBuf::from(testfile_path("include_basic.sv"))
-        );
-        assert_eq!(ret.origin(10).unwrap().1, 10);
-        assert_eq!(
-            ret.origin(60).unwrap().0,
-            &PathBuf::from(testfile_path("included.svh"))
-        );
-        assert_eq!(ret.origin(60).unwrap().1, 74);
-        assert_eq!(
-            ret.origin(80).unwrap().0,
-            &PathBuf::from(testfile_path("include_basic.sv"))
-        );
-        assert_eq!(ret.origin(80).unwrap().1, 63);
-    } // }}}
-
-    #[test]
     fn include_ignore() { // {{{
         let include_paths = [testfile_path("")];
         let (ret, _) = preprocess(
@@ -1284,35 +1252,49 @@ mod tests {
     } // }}}
 
     #[test]
-    fn include_origin() { // {{{
+    fn include_noindent() { // {{{
         let include_paths = [testfile_path("")];
         let (ret, _) = preprocess(
-            testfile_path("include_origin.sv"),
+            testfile_path("include_noindent.sv"),
             &HashMap::new(),
             &include_paths,
             false,
             false,
         )
         .unwrap();
+
         assert_eq!(
             ret.text(),
-            testfile_contents("expected/include_origin.sv")
+            testfile_contents("expected/include_noindent.sv")
         );
+
+        // 11th char of returned text is '_' in the module identifier
+        // "and_op", and originates from the parent file.
+        // Characters are zero-indexed.
+        let n = 10;
         assert_eq!(
-            ret.origin(10).unwrap().0,
-            &PathBuf::from(testfile_path("include_origin.sv"))
+            ret.origin(n).unwrap(),
+            (&PathBuf::from(testfile_path("include_noindent.sv")), n)
         );
-        assert_eq!(ret.origin(10).unwrap().1, 10);
+        assert_eq!(ret.text().chars().nth(n).unwrap(), '_');
+
+        // 51st char of returned text is 'd' in the primitive identifier
+        // "and", and originates from the child file at character index 72.
+        let n = 50;
         assert_eq!(
-            ret.origin(50).unwrap().0,
-            &PathBuf::from(testfile_path("included.svh"))
+            ret.origin(n).unwrap(),
+            (&PathBuf::from(testfile_path("included.svh")), 73)
         );
-        assert_eq!(ret.origin(50).unwrap().1, 73);
+        assert_eq!(ret.text().chars().nth(n).unwrap(), 'd');
+
+        // 71st char of returned text is 'o' in the keword "endmodule", and
+        // originates from the parent file.
+        let n = 70;
         assert_eq!(
-            ret.origin(70).unwrap().0,
-            &PathBuf::from(testfile_path("include_origin.sv"))
+            ret.origin(n).unwrap(),
+            (&PathBuf::from(testfile_path("include_noindent.sv")), 53)
         );
-        assert_eq!(ret.origin(70).unwrap().1, 53);
+        assert_eq!(ret.text().chars().nth(n).unwrap(), 'o');
     } // }}}
 
     #[test]
@@ -1371,6 +1353,52 @@ mod tests {
             false,
         );
         assert_eq!(format!("{:?}", ret), "Err(IncludeLine)");
+    } // }}}
+
+    #[test]
+    fn include_withindent() { // {{{
+        let include_paths = [testfile_path("")];
+        let (ret, _) = preprocess(
+            testfile_path("include_withindent.sv"),
+            &HashMap::new(),
+            &include_paths,
+            false,
+            false,
+        )
+        .unwrap();
+
+        assert_eq!(
+            ret.text(),
+            testfile_contents("expected/include_withindent.sv")
+        );
+
+        // 11th char of returned text is '_' in the module identifier
+        // "and_op", and originates from the parent file.
+        // Characters are zero-indexed.
+        let n = 10;
+        assert_eq!(
+            ret.origin(n).unwrap(),
+            (&PathBuf::from(testfile_path("include_withindent.sv")), n)
+        );
+        assert_eq!(ret.text().chars().nth(n).unwrap(), '_');
+
+        // 59th char of returned text is 'n' in the primitive identifier
+        // "and", and originates from the child file at character index 72.
+        let n = 58;
+        assert_eq!(
+            ret.origin(n).unwrap(),
+            (&PathBuf::from(testfile_path("included.svh")), 72)
+        );
+        assert_eq!(ret.text().chars().nth(n).unwrap(), 'n');
+
+        // 80th char of returned text is 'o' in the keyword "endmodule", and
+        // originates from the parent file.
+        let n = 79;
+        assert_eq!(
+            ret.origin(n).unwrap(),
+            (&PathBuf::from(testfile_path("include_withindent.sv")), 62)
+        );
+        assert_eq!(ret.text().chars().nth(n).unwrap(), 'o');
     } // }}}
 
     #[test]

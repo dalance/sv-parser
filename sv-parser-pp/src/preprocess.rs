@@ -1552,6 +1552,23 @@ mod tests {
     } // }}}
 
     #[test]
+    fn resetall() { // {{{
+        let include_paths = [testfile_path("")];
+        let (ret, _) = preprocess(
+            testfile_path("resetall.sv"),
+            &HashMap::new(),
+            &include_paths,
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("resetall.sv")
+        );
+    } // }}}
+
+    #[test]
     fn timescale() { // {{{
         let include_paths = [testfile_path("")];
         let (ret, _) = preprocess(

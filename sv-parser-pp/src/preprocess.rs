@@ -1214,6 +1214,13 @@ mod tests {
     } // }}}
 
     #[test]
+    #[ignore]
+    fn include_recursive() { // {{{
+        let ret = preprocess_usualargs("include_recursive.svh");
+        assert_eq!(format!("{:?}", ret), "Err(ExceedRecursiveLimit)");
+    } // }}}
+
+    #[test]
     fn include_sameline_comment() { // {{{
         let (ret, _) = preprocess_usualargs("include_sameline_comment.sv").unwrap();
         assert_eq!(

@@ -1535,6 +1535,23 @@ mod tests {
     } // }}}
 
     #[test]
+    fn pragma() { // {{{
+        let include_paths = [testfile_path("")];
+        let (ret, _) = preprocess(
+            testfile_path("pragma.sv"),
+            &HashMap::new(),
+            &include_paths,
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("pragma.sv")
+        );
+    } // }}}
+
+    #[test]
     fn timescale() { // {{{
         let include_paths = [testfile_path("")];
         let (ret, _) = preprocess(

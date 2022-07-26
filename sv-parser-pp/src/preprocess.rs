@@ -1618,4 +1618,21 @@ mod tests {
             testfile_contents("unconnected_drive.sv")
         );
     } // }}}
+
+    #[test]
+    fn undef() { // {{{
+        let include_paths = [testfile_path("")];
+        let (ret, _) = preprocess(
+            testfile_path("undef.sv"),
+            &HashMap::new(),
+            &include_paths,
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("expected/undef.sv")
+        );
+    } // }}}
 }

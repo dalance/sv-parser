@@ -1135,6 +1135,23 @@ mod tests {
     } // }}}
 
     #[test]
+    fn default_nettype() { // {{{
+        let include_paths = [testfile_path("")];
+        let (ret, _) = preprocess(
+            testfile_path("default_nettype.sv"),
+            &HashMap::new(),
+            &include_paths,
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("default_nettype.sv")
+        );
+    } // }}}
+
+    #[test]
     fn ifdef_nested() { // {{{
         let (ret, _) = preprocess(
             testfile_path("ifdef_nested.sv"),

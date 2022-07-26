@@ -1499,4 +1499,21 @@ mod tests {
         );
         assert_eq!(format!("{:?}", ret), "Err(ExceedRecursiveLimit)");
     } // }}}
+
+    #[test]
+    fn timescale() { // {{{
+        let include_paths = [testfile_path("")];
+        let (ret, _) = preprocess(
+            testfile_path("timescale.sv"),
+            &HashMap::new(),
+            &include_paths,
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("timescale.sv")
+        );
+    } // }}}
 }

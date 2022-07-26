@@ -1343,6 +1343,23 @@ mod tests {
     } // }}}
 
     #[test]
+    #[allow(non_snake_case)]
+    fn macro_FILE() { // {{{
+        let (ret, _) = preprocess(
+            testfile_path("macro_FILE.sv"),
+            &HashMap::new(),
+            &[] as &[String],
+            false,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("expected/macro_FILE.sv")
+        );
+    } // }}}
+
+    #[test]
     fn macro_identifier() { // {{{
         let (ret, _) = preprocess(
             testfile_path("macro_identifier.sv"),
@@ -1372,23 +1389,6 @@ mod tests {
         assert_eq!(
             ret.text(),
             testfile_contents("expected/macro_LINE.sv")
-        );
-    } // }}}
-
-    #[test]
-    #[allow(non_snake_case)]
-    fn macro_FILE() { // {{{
-        let (ret, _) = preprocess(
-            testfile_path("macro_FILE.sv"),
-            &HashMap::new(),
-            &[] as &[String],
-            false,
-            false,
-        )
-        .unwrap();
-        assert_eq!(
-            ret.text(),
-            testfile_contents("expected/macro_FILE.sv")
         );
     } // }}}
 

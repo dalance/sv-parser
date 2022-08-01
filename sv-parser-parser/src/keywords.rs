@@ -1446,8 +1446,6 @@ pub(crate) const KEYWORDS_1800_2017: &[&str] = &[
 ];
 
 pub(crate) const KEYWORDS_DIRECTIVE: &[&str] = &[
-    "__FILE__",
-    "__LINE__",
     "begin_keywords",
     "celldefine",
     "default_nettype",

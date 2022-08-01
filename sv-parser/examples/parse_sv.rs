@@ -62,7 +62,13 @@ fn main() {
             let mut exit = 0;
             for path in &opt.files {
                 if opt.pp {
-                    match preprocess(&path, &defines, &opt.includes, false, false) {
+                    match preprocess(
+                        &path,
+                        &defines,
+                        &opt.includes,
+                        false, // strip_comments
+                        false, // ignore_include
+                    ) {
                         Ok((preprocessed_text, new_defines)) => {
                             println!("{}", preprocessed_text.text());
                             defines = new_defines;

@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1657019820803,
+  "lastUpdate": 1659324324380,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -3635,6 +3635,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 16996601,
             "range": "± 152812",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "aabc9aa6461855d267d8f460c9632ead297a8a83",
+          "message": "Merge pull request #61 from DaveMcEwan/ppTests\n\nBugfixes for `preprocess()`, plus organise and extend tests.",
+          "timestamp": "2022-08-01T12:11:45+09:00",
+          "tree_id": "19caea9d21a21266fbd59391fec6a1e28204457e",
+          "url": "https://github.com/dalance/sv-parser/commit/aabc9aa6461855d267d8f460c9632ead297a8a83"
+        },
+        "date": 1659324324007,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 19414632,
+            "range": "± 266295",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 17694545,
+            "range": "± 390396",
             "unit": "ns/iter"
           }
         ]

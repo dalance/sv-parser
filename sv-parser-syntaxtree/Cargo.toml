@@ -15,7 +15,7 @@ build = "build.rs"
 doctest = false
 
 [package.metadata.release]
-disable-tag = true
+tag = false
 
 [dependencies]
 sv-parser-macros = {version = "^0.12.0", path = "../sv-parser-macros"}

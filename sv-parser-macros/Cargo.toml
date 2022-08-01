@@ -11,7 +11,7 @@ description = "Helper crate of sv-parser"
 edition = "2018"
 
 [package.metadata.release]
-disable-tag = true
+tag = false
 
 [lib]
 proc-macro = true

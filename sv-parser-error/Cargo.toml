@@ -14,7 +14,7 @@ edition = "2018"
 doctest = false
 
 [package.metadata.release]
-disable-tag = true
+tag = false
 
 [dependencies]
 thiserror = "1.0"

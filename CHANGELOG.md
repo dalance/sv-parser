@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.12.0...Unreleased) - ReleaseDate
 
+* [Fixed] Bugfixes for preprocess(), plus organise and extend tests. [#61](https://github.com/dalance/sv-parser/pull/61)
+
 ## [v0.12.0](https://github.com/dalance/sv-parser/compare/v0.11.3...v0.12.0) - 2022-07-05
 
 * [Fixed] Fix issues #49 and #50 [#51](https://github.com/dalance/sv-parser/pull/51)

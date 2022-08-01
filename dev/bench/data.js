@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1659324810470,
+  "lastUpdate": 1659325342842,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -3707,6 +3707,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 34447157,
             "range": "± 6535318",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "eef4bc59dbfc5fcb99609138024c246b72418c51",
+          "message": "Fix Cargo.toml",
+          "timestamp": "2022-08-01T12:28:32+09:00",
+          "tree_id": "ab191fdc39f365ba388f1a551249d0a06457e483",
+          "url": "https://github.com/dalance/sv-parser/commit/eef4bc59dbfc5fcb99609138024c246b72418c51"
+        },
+        "date": 1659325342149,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 18954239,
+            "range": "± 397603",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 17572654,
+            "range": "± 402912",
             "unit": "ns/iter"
           }
         ]

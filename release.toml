@@ -1,4 +1,4 @@
-no-dev-version             = true
+dev-version                = false
 consolidate-commits        = true
 pre-release-commit-message = "Prepare to release"
 tag-message                = "Bump version to v{{version}}"

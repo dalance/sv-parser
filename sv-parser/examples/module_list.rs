@@ -17,7 +17,7 @@ fn main() {
     let result = parse_sv(&path, &defines, &includes, false, false);
 
     if let Ok((syntax_tree, _)) = result {
-        // &SyntexTree is iterable
+        // &SyntaxTree is iterable
         for node in &syntax_tree {
             // The type of each node is RefNode
             match node {

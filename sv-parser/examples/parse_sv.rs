@@ -93,7 +93,7 @@ fn main() {
                                     print_parse_error(&origin_path, &origin_pos);
                                 }
                                 x => {
-                                    println!("parse failed: {:?} ({})", path, x);
+                                    println!("parse failed: {:?} ({:?})", path, x);
                                     let mut err = x.source();
                                     while let Some(x) = err {
                                         println!("  Caused by {}", x);

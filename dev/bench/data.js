@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1665966706964,
+  "lastUpdate": 1666166241829,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -3851,6 +3851,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 23220699,
             "range": "± 2988012",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "6c28a6157d7cfd43096031c30afac3dcbbf9ae24",
+          "message": "Merge pull request #65 from wendajiang/typo\n\nfix: typo",
+          "timestamp": "2022-10-19T16:41:15+09:00",
+          "tree_id": "99c6a09cf05279c0316b3b51e9cf9bd9c875ba62",
+          "url": "https://github.com/dalance/sv-parser/commit/6c28a6157d7cfd43096031c30afac3dcbbf9ae24"
+        },
+        "date": 1666166240442,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 25761464,
+            "range": "± 2274784",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 23160161,
+            "range": "± 2711626",
             "unit": "ns/iter"
           }
         ]

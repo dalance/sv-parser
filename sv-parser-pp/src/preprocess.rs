@@ -226,19 +226,19 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
 
     let span = Span::new_extra(&s, SpanInfo::default());
     let (_, pp_text) = all_consuming(pp_parser)(span).map_err(|x| match x {
-        nom::Err::Incomplete(_) => Error::Parse(None),
+        nom::Err::Incomplete(_) => Error::Preprocess(None),
         nom::Err::Error(e) => {
             if let Some(pos) = error_position(&e) {
-                Error::Parse(Some((PathBuf::from(path.as_ref()), pos)))
+                Error::Preprocess(Some((PathBuf::from(path.as_ref()), pos)))
             } else {
-                Error::Parse(None)
+                Error::Preprocess(None)
             }
         }
         nom::Err::Failure(e) => {
             if let Some(pos) = error_position(&e) {
-                Error::Parse(Some((PathBuf::from(path.as_ref()), pos)))
+                Error::Preprocess(Some((PathBuf::from(path.as_ref()), pos)))
             } else {
-                Error::Parse(None)
+                Error::Preprocess(None)
             }
         }
     })?;

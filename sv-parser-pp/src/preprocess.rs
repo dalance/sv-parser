@@ -1410,6 +1410,16 @@ mod tests {
     } // }}}
 
     #[test]
+    #[ignore = "Exposes unfixed PP parser bug."]
+    fn macro_comment_embedded() { // {{{
+        let (ret, _) = preprocess_usualargs("macro_comment_embedded.sv").unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("expected/macro_comment_embedded.sv")
+        );
+    } // }}}
+
+    #[test]
     fn macro_delimiters() { // {{{
         let (ret, _) = preprocess_usualargs("macro_delimiters.sv").unwrap();
         assert_eq!(

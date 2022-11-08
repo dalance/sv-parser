@@ -1136,6 +1136,16 @@ mod tests {
     } // }}}
 
     #[test]
+    #[ignore = "Coverage constants not implemented, yet."]
+    fn coverage_constants() { // {{{
+        let (ret, _) = preprocess_usualargs("coverage_constants.sv").unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("expected/coverage_constants.sv")
+        );
+    } // }}}
+
+    #[test]
     fn default_nettype() { // {{{
         let (ret, _) = preprocess_usualargs("default_nettype.sv").unwrap();
         assert_eq!(

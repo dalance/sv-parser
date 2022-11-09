@@ -114,6 +114,63 @@ impl fmt::Display for SyntaxTree {
     }
 }
 
+impl fmt::Debug for SyntaxTree {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        enum WS {
+            NotWhitespace,
+            Newline,
+            Space,
+            Comment,
+            CompilerDirective,
+        }
+
+        let mut ws: WS = WS::NotWhitespace;
+        let mut depth = 0;
+        let mut ret = String::from("");
+        for node in self.into_iter().event() {
+            match node {
+                NodeEvent::Enter(RefNode::Locate(locate)) => {
+                    let (pre, t, post) = match ws {
+                        WS::Newline => ("<<<<<", "NewlineToken", ">>>>>"),
+                        WS::Space => ("<<<<<", "SpaceToken", ">>>>>"),
+                        WS::Comment => ("<<<<<", "CommentToken", ">>>>>"),
+                        _ => ("", "Token", ""),
+                    };
+                    ret.push_str(&format!(
+                        "{}{} @line:{}: {}{}{}\n",
+                        " ".repeat(depth),
+                        t,
+                        locate.line,
+                        pre,
+                        self.get_str(locate).unwrap(),
+                        post,
+                    ));
+                    depth += 1;
+                }
+                NodeEvent::Enter(x) => {
+                    match x {
+                        RefNode::WhiteSpace(WhiteSpace::Newline(_)) => { ws = WS::Newline; }
+                        RefNode::WhiteSpace(WhiteSpace::Space(_)) => { ws = WS::Space; }
+                        RefNode::WhiteSpace(WhiteSpace::Comment(_)) => { ws = WS::Comment; }
+                        RefNode::WhiteSpace(WhiteSpace::CompilerDirective(_)) => { ws = WS::CompilerDirective; }
+                        _ => {}
+                    }
+                    ret.push_str(&format!("{}{}\n", " ".repeat(depth), x));
+                    depth += 1;
+                }
+                NodeEvent::Leave(x) => {
+                    match x {
+                        RefNode::WhiteSpace(_) => {}
+                        _ => { ws = WS::NotWhitespace; }
+                    }
+                    depth -= 1;
+                }
+            }
+        }
+        write!(f, "{}", ret)
+    }
+}
+
 impl<'a> IntoIterator for &'a SyntaxTree {
     type Item = RefNode<'a>;
     type IntoIter = Iter<'a>;

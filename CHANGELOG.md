@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.12.1...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.12.2...Unreleased) - ReleaseDate
+
+## [v0.12.2](https://github.com/dalance/sv-parser/compare/v0.12.1...v0.12.2) - 2022-11-09
 
 * [Fixed] fix: typo [#65](https://github.com/dalance/sv-parser/pull/65)
 * [Added] Implement the std::fmt::Debug trait. [#70](https://github.com/dalance/sv-parser/pull/70)

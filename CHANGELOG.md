@@ -2,6 +2,11 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.12.1...Unreleased) - ReleaseDate
 
+* [Fixed] fix: typo [#65](https://github.com/dalance/sv-parser/pull/65)
+* [Added] Implement the std::fmt::Debug trait. [#70](https://github.com/dalance/sv-parser/pull/70)
+* [Changed] Predefine SV_COV_* constants required by clause 40.3.1 [#71](https://github.com/dalance/sv-parser/pull/71)
+* [Changed] Use Error::Preprocess on pp parsing error, instead of Error::Parse. [#69](https://github.com/dalance/sv-parser/pull/69)
+
 ## [v0.12.1](https://github.com/dalance/sv-parser/compare/v0.12.0...v0.12.1) - 2022-08-01
 
 * [Fixed] Bugfixes for preprocess(), plus organise and extend tests. [#61](https://github.com/dalance/sv-parser/pull/61)

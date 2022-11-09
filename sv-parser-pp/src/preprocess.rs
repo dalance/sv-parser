@@ -220,6 +220,35 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     let mut last_item_line = None;
     let mut last_include_line = None;
 
+    // IEEE1800-2017 Clause 40.3.1, page 1121
+    // The following predefined `define macros represent basic real-time
+    // coverage capabilities accessible directly from SystemVerilog:
+    let sv_cov_pre_defines = [
+        ("SV_COV_START",        "0"),
+        ("SV_COV_STOP",         "1"),
+        ("SV_COV_RESET",        "2"),
+        ("SV_COV_CHECK",        "3"),
+        ("SV_COV_MODULE",       "10"),
+        ("SV_COV_HIER",         "11"),
+        ("SV_COV_ASSERTION",    "20"),
+        ("SV_COV_FSM_STATE",    "21"),
+        ("SV_COV_STATEMENT",    "22"),
+        ("SV_COV_TOGGLE",       "23"),
+        ("SV_COV_OVERFLOW",     "-2"),
+        ("SV_COV_ERROR",        "-1"),
+        ("SV_COV_NOCOV",        "0"),
+        ("SV_COV_OK",           "1"),
+        ("SV_COV_PARTIAL",      "2"),
+    ];
+    for (k, v) in sv_cov_pre_defines {
+        let define = Define {
+            identifier: k.to_string(),
+            arguments: Vec::new(),
+            text: Some(DefineText {text: v.to_string(), origin: None}),
+        };
+        defines.insert(k.to_string(), Some(define));
+    }
+
     for (k, v) in pre_defines {
         defines.insert(k.clone(), (*v).clone());
     }
@@ -1132,6 +1161,15 @@ mod tests {
         assert_eq!(
             ret.text(),
             testfile_contents("celldefine.sv")
+        );
+    } // }}}
+
+    #[test]
+    fn coverage_constants() { // {{{
+        let (ret, _) = preprocess_usualargs("coverage_constants.sv").unwrap();
+        assert_eq!(
+            ret.text(),
+            testfile_contents("expected/coverage_constants.sv")
         );
     } // }}}
 

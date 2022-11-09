@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1667978897799,
+  "lastUpdate": 1667978960516,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -3959,6 +3959,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 12838188,
             "range": "± 167577",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "9bfc1768c0f61dff757834519f2fc380c80da821",
+          "message": "Merge pull request #69 from DaveMcEwan/ppErrorPreprocess\n\nUse `Error::Preprocess` on pp parsing error, instead of `Error::Parse`.",
+          "timestamp": "2022-11-09T16:16:28+09:00",
+          "tree_id": "0187e90dee21e7a715c8021c8faa13df0bc22ae6",
+          "url": "https://github.com/dalance/sv-parser/commit/9bfc1768c0f61dff757834519f2fc380c80da821"
+        },
+        "date": 1667978959999,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 18624688,
+            "range": "± 211990",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 16989119,
+            "range": "± 84403",
             "unit": "ns/iter"
           }
         ]

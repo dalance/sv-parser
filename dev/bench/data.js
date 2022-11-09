@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1667978960516,
+  "lastUpdate": 1667979078749,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -3995,6 +3995,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 16989119,
             "range": "± 84403",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a9ae3c2e698dee5225652b47e52111dd3de35f1c",
+          "message": "Merge pull request #71 from DaveMcEwan/predefineSvCov\n\nPredefine `SV_COV_*` constants required by clause 40.3.1",
+          "timestamp": "2022-11-09T16:14:31+09:00",
+          "tree_id": "c0e1859efdf595ea60252ce8201b6cc21041de8a",
+          "url": "https://github.com/dalance/sv-parser/commit/a9ae3c2e698dee5225652b47e52111dd3de35f1c"
+        },
+        "date": 1667979077931,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 27654085,
+            "range": "± 2643229",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 24098462,
+            "range": "± 1394067",
             "unit": "ns/iter"
           }
         ]

@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1666166241829,
+  "lastUpdate": 1667978686222,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -3887,6 +3887,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 23160161,
             "range": "± 2711626",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "f6fd124601bda5ab700f7da3f805712bda8ee95e",
+          "message": "Merge pull request #70 from DaveMcEwan/traitDebug\n\nImplement the std::fmt::Debug trait.",
+          "timestamp": "2022-11-09T16:11:21+09:00",
+          "tree_id": "aca2d5b44936a0a0587dbb7ba7764b781a553d5c",
+          "url": "https://github.com/dalance/sv-parser/commit/f6fd124601bda5ab700f7da3f805712bda8ee95e"
+        },
+        "date": 1667978685699,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 20024590,
+            "range": "± 1500712",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 17790751,
+            "range": "± 578839",
             "unit": "ns/iter"
           }
         ]

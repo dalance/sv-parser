@@ -5,11 +5,11 @@ use crate::*;
 #[derive(Clone, Debug, PartialEq, Node)]
 pub enum AssertionItem {
     Concurrent(Box<ConcurrentAssertionItem>),
-    Immediate(Box<DeferredImmediateAssetionItem>),
+    Immediate(Box<DeferredImmediateAssertionItem>),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]
-pub struct DeferredImmediateAssetionItem {
+pub struct DeferredImmediateAssertionItem {
     pub nodes: (
         Option<(BlockIdentifier, Symbol)>,
         DeferredImmediateAssertionStatement,
@@ -19,12 +19,12 @@ pub struct DeferredImmediateAssetionItem {
 #[derive(Clone, Debug, PartialEq, Node)]
 pub enum ProceduralAssertionStatement {
     Concurrent(Box<ConcurrentAssertionStatement>),
-    Immediate(Box<ImmediateAssetionStatement>),
+    Immediate(Box<ImmediateAssertionStatement>),
     Checker(Box<CheckerInstantiation>),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]
-pub enum ImmediateAssetionStatement {
+pub enum ImmediateAssertionStatement {
     Simple(Box<SimpleImmediateAssertionStatement>),
     Deferred(Box<DeferredImmediateAssertionStatement>),
 }

@@ -19,10 +19,10 @@ pub(crate) fn assertion_item(s: Span) -> IResult<Span, AssertionItem> {
 #[packrat_parser]
 pub(crate) fn deferred_immediate_assertion_item(
     s: Span,
-) -> IResult<Span, DeferredImmediateAssetionItem> {
+) -> IResult<Span, DeferredImmediateAssertionItem> {
     let (s, a) = opt(pair(block_identifier, symbol(":")))(s)?;
     let (s, b) = deferred_immediate_assertion_statement(s)?;
-    Ok((s, DeferredImmediateAssetionItem { nodes: (a, b) }))
+    Ok((s, DeferredImmediateAssertionItem { nodes: (a, b) }))
 }
 
 #[tracable_parser]
@@ -45,13 +45,13 @@ pub(crate) fn procedural_assertion_statement(
 
 #[tracable_parser]
 #[packrat_parser]
-pub(crate) fn immediate_assertion_statement(s: Span) -> IResult<Span, ImmediateAssetionStatement> {
+pub(crate) fn immediate_assertion_statement(s: Span) -> IResult<Span, ImmediateAssertionStatement> {
     alt((
         map(simple_immediate_assertion_statement, |x| {
-            ImmediateAssetionStatement::Simple(Box::new(x))
+            ImmediateAssertionStatement::Simple(Box::new(x))
         }),
         map(deferred_immediate_assertion_statement, |x| {
-            ImmediateAssetionStatement::Deferred(Box::new(x))
+            ImmediateAssertionStatement::Deferred(Box::new(x))
         }),
     ))(s)
 }

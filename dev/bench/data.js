@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1667980582316,
+  "lastUpdate": 1669972754493,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -4139,6 +4139,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 17375340,
             "range": "± 593024",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "81003fe27663ebe503872c024e44918360046c20",
+          "message": "Merge pull request #74 from DaveMcEwan/bugfix73\n\nbugfix73 Spelling-only `Assetion` -> `Assertion`",
+          "timestamp": "2022-12-02T18:01:56+09:00",
+          "tree_id": "91608a1fc851b77064717f4566cbea05d4fb41fb",
+          "url": "https://github.com/dalance/sv-parser/commit/81003fe27663ebe503872c024e44918360046c20"
+        },
+        "date": 1669972753685,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 19962565,
+            "range": "± 2797333",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 17855128,
+            "range": "± 443262",
             "unit": "ns/iter"
           }
         ]

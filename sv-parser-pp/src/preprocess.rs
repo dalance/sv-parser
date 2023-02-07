@@ -1099,6 +1099,22 @@ mod tests {
 
     #[test]
     #[allow(non_snake_case)]
+    fn err_DefineArgNotFound() { // {{{
+        match preprocess_usualargs("err_DefineArgNotFound.sv").unwrap_err() {
+            Error::DefineArgNotFound(identifier) => {
+                assert_eq!(
+                    identifier,
+                    String::from("c")
+                );
+            }
+            _ => {
+                panic!("Error::DefineArgNotFound not raised.");
+            }
+        };
+    } // }}}
+
+    #[test]
+    #[allow(non_snake_case)]
     fn IEEE18002017_keywords_if2_13642005() { // {{{
         let (ret, _) = preprocess_usualargs("IEEE18002017_keywords_if2_13642005.sv").unwrap();
         assert_eq!(

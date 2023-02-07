@@ -34,7 +34,7 @@ pub enum Error {
     DefineNotFound(String),
 
     #[error("Define must have argument")]
-    DefineNoArgs,
+    DefineNoArgs(String), // String is the macro identifier.
 
     #[error("Exceed recursive limit")]
     ExceedRecursiveLimit,

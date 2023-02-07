@@ -942,7 +942,7 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
         let mut arg_map = HashMap::new();
 
         if !define.arguments.is_empty() && no_args {
-            return Err(Error::DefineNoArgs);
+            return Err(Error::DefineNoArgs(define.identifier.clone()));
         }
 
         for (i, (arg, default)) in define.arguments.iter().enumerate() {
@@ -1063,6 +1063,22 @@ mod tests {
             ret.text(),
             testfile_contents("expected/escaped_identifier.sv")
         );
+    } // }}}
+
+    #[test]
+    #[allow(non_snake_case)]
+    fn err_DefineNoArgs() { // {{{
+        match preprocess_usualargs("err_DefineNoArgs.sv").unwrap_err() {
+            Error::DefineNoArgs(identifier) => {
+                assert_eq!(
+                    identifier,
+                    String::from("A")
+                );
+            }
+            _ => {
+                panic!("Error::DefineNoArgs not raised.");
+            }
+        };
     } // }}}
 
     #[test]

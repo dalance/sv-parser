@@ -149,18 +149,21 @@ fn preprocess_inner<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     })?;
     let mut reader = BufReader::new(f);
     let mut s = String::new();
-    reader.read_to_string(&mut s)?;
 
-    preprocess_str(
-        &s,
-        path,
-        pre_defines,
-        include_paths,
-        ignore_include,
-        strip_comments,
-        0, // resolve_depth
-        include_depth,
-    )
+    if let Err(_) = reader.read_to_string(&mut s) {
+        Err(Error::ReadUtf8(Some(PathBuf::from(path.as_ref()))))
+    } else {
+        preprocess_str(
+            &s,
+            path,
+            pre_defines,
+            include_paths,
+            ignore_include,
+            strip_comments,
+            0, // resolve_depth
+            include_depth,
+        )
+    }
 }
 
 struct SkipNodes<'a> {
@@ -1109,6 +1112,25 @@ mod tests {
             }
             _ => {
                 panic!("Error::DefineArgNotFound not raised.");
+            }
+        };
+    } // }}}
+
+    #[test]
+    #[allow(non_snake_case)]
+    fn err_ReadUtf8() { // {{{
+        match preprocess_usualargs("err_ReadUtf8.sv").unwrap_err() {
+            Error::ReadUtf8(path) => {
+                assert_eq!(
+                    path,
+                    Some(PathBuf::from(format!(
+                        "{}/testcases/err_ReadUtf8.sv",
+                        env::var("CARGO_MANIFEST_DIR").unwrap(),
+                    )))
+                );
+            }
+            _ => {
+                panic!("Error::ReadUtf8 not raised.");
             }
         };
     } // }}}

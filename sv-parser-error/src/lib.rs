@@ -15,6 +15,9 @@ pub enum Error {
         path: PathBuf,
     },
 
+    #[error("File could not be read as UTF8: {0:?}")]
+    ReadUtf8(Option<PathBuf>),
+
     #[error("Include error")]
     Include {
         #[from]

@@ -151,7 +151,7 @@ fn preprocess_inner<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     let mut s = String::new();
 
     if let Err(_) = reader.read_to_string(&mut s) {
-        Err(Error::ReadUtf8(Some(PathBuf::from(path.as_ref()))))
+        Err(Error::ReadUtf8(PathBuf::from(path.as_ref())))
     } else {
         preprocess_str(
             &s,
@@ -1123,10 +1123,10 @@ mod tests {
             Error::ReadUtf8(path) => {
                 assert_eq!(
                     path,
-                    Some(PathBuf::from(format!(
+                    PathBuf::from(format!(
                         "{}/testcases/err_ReadUtf8.sv",
                         env::var("CARGO_MANIFEST_DIR").unwrap(),
-                    )))
+                    ))
                 );
             }
             _ => {

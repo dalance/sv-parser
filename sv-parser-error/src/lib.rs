@@ -15,6 +15,9 @@ pub enum Error {
         path: PathBuf,
     },
 
+    #[error("File could not be read as UTF8: {0:?}")]
+    ReadUtf8(PathBuf),
+
     #[error("Include error")]
     Include {
         #[from]
@@ -34,7 +37,7 @@ pub enum Error {
     DefineNotFound(String),
 
     #[error("Define must have argument")]
-    DefineNoArgs,
+    DefineNoArgs(String), // String is the macro identifier.
 
     #[error("Exceed recursive limit")]
     ExceedRecursiveLimit,

@@ -149,18 +149,21 @@ fn preprocess_inner<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     })?;
     let mut reader = BufReader::new(f);
     let mut s = String::new();
-    reader.read_to_string(&mut s)?;
 
-    preprocess_str(
-        &s,
-        path,
-        pre_defines,
-        include_paths,
-        ignore_include,
-        strip_comments,
-        0, // resolve_depth
-        include_depth,
-    )
+    if let Err(_) = reader.read_to_string(&mut s) {
+        Err(Error::ReadUtf8(PathBuf::from(path.as_ref())))
+    } else {
+        preprocess_str(
+            &s,
+            path,
+            pre_defines,
+            include_paths,
+            ignore_include,
+            strip_comments,
+            0, // resolve_depth
+            include_depth,
+        )
+    }
 }
 
 struct SkipNodes<'a> {
@@ -942,7 +945,7 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
         let mut arg_map = HashMap::new();
 
         if !define.arguments.is_empty() && no_args {
-            return Err(Error::DefineNoArgs);
+            return Err(Error::DefineNoArgs(define.identifier.clone()));
         }
 
         for (i, (arg, default)) in define.arguments.iter().enumerate() {
@@ -1063,6 +1066,73 @@ mod tests {
             ret.text(),
             testfile_contents("expected/escaped_identifier.sv")
         );
+    } // }}}
+
+    #[test]
+    #[allow(non_snake_case)]
+    fn err_DefineNoArgs() { // {{{
+        match preprocess_usualargs("err_DefineNoArgs.sv").unwrap_err() {
+            Error::DefineNoArgs(identifier) => {
+                assert_eq!(
+                    identifier,
+                    String::from("A")
+                );
+            }
+            _ => {
+                panic!("Error::DefineNoArgs not raised.");
+            }
+        };
+    } // }}}
+
+    #[test]
+    #[allow(non_snake_case)]
+    fn err_DefineNotFound() { // {{{
+        match preprocess_usualargs("err_DefineNotFound.sv").unwrap_err() {
+            Error::DefineNotFound(identifier) => {
+                assert_eq!(
+                    identifier,
+                    String::from("A")
+                );
+            }
+            _ => {
+                panic!("Error::DefineNotFound not raised.");
+            }
+        };
+    } // }}}
+
+    #[test]
+    #[allow(non_snake_case)]
+    fn err_DefineArgNotFound() { // {{{
+        match preprocess_usualargs("err_DefineArgNotFound.sv").unwrap_err() {
+            Error::DefineArgNotFound(identifier) => {
+                assert_eq!(
+                    identifier,
+                    String::from("c")
+                );
+            }
+            _ => {
+                panic!("Error::DefineArgNotFound not raised.");
+            }
+        };
+    } // }}}
+
+    #[test]
+    #[allow(non_snake_case)]
+    fn err_ReadUtf8() { // {{{
+        match preprocess_usualargs("err_ReadUtf8.sv").unwrap_err() {
+            Error::ReadUtf8(path) => {
+                assert_eq!(
+                    path,
+                    PathBuf::from(format!(
+                        "{}/testcases/err_ReadUtf8.sv",
+                        env::var("CARGO_MANIFEST_DIR").unwrap(),
+                    ))
+                );
+            }
+            _ => {
+                panic!("Error::ReadUtf8 not raised.");
+            }
+        };
     } // }}}
 
     #[test]

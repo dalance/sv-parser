@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1675816084082,
+  "lastUpdate": 1675816120119,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -4211,6 +4211,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 19121197,
             "range": "± 1758213",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "83f850f79e3fe090b61db9f3fc92ea6294f69838",
+          "message": "Merge pull request #79 from DaveMcEwan/improvement78\n\nImprovement: Handle non-UTF8 files",
+          "timestamp": "2023-02-08T09:13:31+09:00",
+          "tree_id": "6016763ec2f31c7c448521a1cd4eeaea0100858e",
+          "url": "https://github.com/dalance/sv-parser/commit/83f850f79e3fe090b61db9f3fc92ea6294f69838"
+        },
+        "date": 1675816119337,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 23528760,
+            "range": "± 1220677",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 21278189,
+            "range": "± 965656",
             "unit": "ns/iter"
           }
         ]

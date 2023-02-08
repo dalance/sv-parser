@@ -2,8 +2,6 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.12.3...Unreleased) - ReleaseDate
 
-## [v0.12.3](https://github.com/dalance/sv-parser/compare/v0.12.2...v0.12.3) - 2023-02-08
-
 * [Added] Improvement: Handle non-UTF8 files [#79](https://github.com/dalance/sv-parser/pull/79)
 
 ## [v0.12.2](https://github.com/dalance/sv-parser/compare/v0.12.1...v0.12.2) - 2022-11-09

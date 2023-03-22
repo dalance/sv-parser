@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1675860548626,
+  "lastUpdate": 1679528068164,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -4355,6 +4355,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 17209144,
             "range": "± 546906",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ef10916587bd4b2f981ac080fbd533841075f408",
+          "message": "Merge pull request #84 from dalance/dependabot/cargo/syn-2.0.6\n\nUpdate syn requirement from 1.0.0 to 2.0.6",
+          "timestamp": "2023-03-23T08:22:50+09:00",
+          "tree_id": "8b7457992cab2d569d172f86274272df3be5ab70",
+          "url": "https://github.com/dalance/sv-parser/commit/ef10916587bd4b2f981ac080fbd533841075f408"
+        },
+        "date": 1679528067851,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 19135791,
+            "range": "± 620639",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 17169324,
+            "range": "± 357246",
             "unit": "ns/iter"
           }
         ]

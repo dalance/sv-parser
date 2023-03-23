@@ -136,9 +136,11 @@ pub(crate) fn non_zero_unsigned_number(s: Span) -> IResult<Span, NonZeroUnsigned
 #[tracable_parser]
 pub(crate) fn non_zero_unsigned_number_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = is_a("123456789")(s)?;
-    let (s, a) = fold_many0(alt((tag("_"), digit1)), a, |acc, item| {
-        concat(acc, item).unwrap()
-    })(s)?;
+    let (s, a) = fold_many0(
+        alt((tag("_"), digit1)),
+        || a,
+        |acc, item| concat(acc, item).unwrap(),
+    )(s)?;
     Ok((s, into_locate(a)))
 }
 
@@ -234,9 +236,11 @@ pub(crate) fn unsigned_number_exact(s: Span) -> IResult<Span, UnsignedNumber> {
 #[tracable_parser]
 pub(crate) fn unsigned_number_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = digit1(s)?;
-    let (s, a) = fold_many0(alt((tag("_"), digit1)), a, |acc, item| {
-        concat(acc, item).unwrap()
-    })(s)?;
+    let (s, a) = fold_many0(
+        alt((tag("_"), digit1)),
+        || a,
+        |acc, item| concat(acc, item).unwrap(),
+    )(s)?;
     Ok((s, into_locate(a)))
 }
 
@@ -250,9 +254,11 @@ pub(crate) fn binary_value(s: Span) -> IResult<Span, BinaryValue> {
 #[tracable_parser]
 pub(crate) fn binary_value_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = is_a("01xXzZ?")(s)?;
-    let (s, a) = fold_many0(alt((tag("_"), is_a("01xXzZ?"))), a, |acc, item| {
-        concat(acc, item).unwrap()
-    })(s)?;
+    let (s, a) = fold_many0(
+        alt((tag("_"), is_a("01xXzZ?"))),
+        || a,
+        |acc, item| concat(acc, item).unwrap(),
+    )(s)?;
     Ok((s, into_locate(a)))
 }
 
@@ -266,9 +272,11 @@ pub(crate) fn octal_value(s: Span) -> IResult<Span, OctalValue> {
 #[tracable_parser]
 pub(crate) fn octal_value_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = is_a("01234567xXzZ?")(s)?;
-    let (s, a) = fold_many0(alt((tag("_"), is_a("01234567xXzZ?"))), a, |acc, item| {
-        concat(acc, item).unwrap()
-    })(s)?;
+    let (s, a) = fold_many0(
+        alt((tag("_"), is_a("01234567xXzZ?"))),
+        || a,
+        |acc, item| concat(acc, item).unwrap(),
+    )(s)?;
     Ok((s, into_locate(a)))
 }
 
@@ -284,7 +292,7 @@ pub(crate) fn hex_value_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = is_a("0123456789abcdefABCDEFxXzZ?")(s)?;
     let (s, a) = fold_many0(
         alt((tag("_"), is_a("0123456789abcdefABCDEFxXzZ?"))),
-        a,
+        || a,
         |acc, item| concat(acc, item).unwrap(),
     )(s)?;
     Ok((s, into_locate(a)))
@@ -352,9 +360,11 @@ pub(crate) fn x_number(s: Span) -> IResult<Span, XNumber> {
 #[tracable_parser]
 pub(crate) fn x_number_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = tag_no_case("x")(s)?;
-    let (s, a) = fold_many0(alt((tag("_"), is_a("_"))), a, |acc, item| {
-        concat(acc, item).unwrap()
-    })(s)?;
+    let (s, a) = fold_many0(
+        alt((tag("_"), is_a("_"))),
+        || a,
+        |acc, item| concat(acc, item).unwrap(),
+    )(s)?;
     Ok((s, into_locate(a)))
 }
 
@@ -368,9 +378,11 @@ pub(crate) fn z_number(s: Span) -> IResult<Span, ZNumber> {
 #[tracable_parser]
 pub(crate) fn z_number_impl(s: Span) -> IResult<Span, Locate> {
     let (s, a) = alt((tag_no_case("z"), tag("?")))(s)?;
-    let (s, a) = fold_many0(alt((tag("_"), is_a("_"))), a, |acc, item| {
-        concat(acc, item).unwrap()
-    })(s)?;
+    let (s, a) = fold_many0(
+        alt((tag("_"), is_a("_"))),
+        || a,
+        |acc, item| concat(acc, item).unwrap(),
+    )(s)?;
     Ok((s, into_locate(a)))
 }
 

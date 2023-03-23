@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.13.0...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.13.1...Unreleased) - ReleaseDate
+
+## [v0.13.1](https://github.com/dalance/sv-parser/compare/v0.13.0...v0.13.1) - 2023-03-23
 
 * [Changed] update nom to 7
 

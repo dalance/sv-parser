@@ -65,7 +65,7 @@ fn main() {
 
     for entry in WalkDir::new("src") {
         let entry = entry.unwrap();
-        if entry.file_type().is_file() {
+        if entry.path().is_file() {
             let f = File::open(entry.path()).unwrap();
             let f = BufReader::new(f);
             let mut hit_node = false;

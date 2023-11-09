@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.13.1...Unreleased) - ReleaseDate
 
+* [Changed] Modify to handle symplink as well as file [#87](https://github.com/dalance/sv-parser/pull/87)
+
 ## [v0.13.1](https://github.com/dalance/sv-parser/compare/v0.13.0...v0.13.1) - 2023-03-23
 
 * [Changed] update nom to 7

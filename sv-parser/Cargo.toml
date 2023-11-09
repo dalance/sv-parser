@@ -35,7 +35,7 @@ sv-parser-syntaxtree = {version = "^0.13.1", path = "../sv-parser-syntaxtree"}
 
 [dev-dependencies]
 structopt = "0.3.2"
-criterion = "0.4"
+criterion = "0.5"
 enquote   = "1.0"
 
 [[bench]]

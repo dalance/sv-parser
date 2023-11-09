@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1699498950065,
+  "lastUpdate": 1699499152512,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -4571,6 +4571,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 11613600,
             "range": "± 178938",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "2e2590b836153eb807cb4842e30c85f6ce15771c",
+          "message": "Merge pull request #85 from dalance/dependabot/cargo/criterion-0.5\n\nUpdate criterion requirement from 0.4 to 0.5",
+          "timestamp": "2023-11-09T11:48:53+09:00",
+          "tree_id": "7b57facff58ef8b8739e6f8a74d916f1c61e8321",
+          "url": "https://github.com/dalance/sv-parser/commit/2e2590b836153eb807cb4842e30c85f6ce15771c"
+        },
+        "date": 1699499152178,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 18208597,
+            "range": "± 480120",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 16404990,
+            "range": "± 271934",
             "unit": "ns/iter"
           }
         ]

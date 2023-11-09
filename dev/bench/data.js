@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1679533795363,
+  "lastUpdate": 1699495505960,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -4499,6 +4499,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 20233016,
             "range": "± 1449434",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "3255b910b4b43f525c236b828573c8eabda63a3e",
+          "message": "Merge pull request #87 from Graian/symlink_issue\n\nModify to handle symplink as well as file",
+          "timestamp": "2023-11-09T10:47:56+09:00",
+          "tree_id": "c027c23da86f766d2d3d6cf7182734d6cc7e1911",
+          "url": "https://github.com/dalance/sv-parser/commit/3255b910b4b43f525c236b828573c8eabda63a3e"
+        },
+        "date": 1699495505465,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 18612550,
+            "range": "± 879504",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 16696511,
+            "range": "± 644153",
             "unit": "ns/iter"
           }
         ]

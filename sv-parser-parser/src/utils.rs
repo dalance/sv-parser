@@ -356,7 +356,7 @@ pub(crate) fn clear_directive() {
 // -----------------------------------------------------------------------------
 
 #[derive(Clone, Copy, Debug)]
-pub(crate) enum VersionSpecifier {
+pub(crate) enum Version {
     Ieee1364_1995,
     Ieee1364_2001,
     Ieee1364_2001Noconfig,
@@ -369,40 +369,24 @@ pub(crate) enum VersionSpecifier {
 }
 
 thread_local!(
-    static CURRENT_VERSION: core::cell::RefCell<Vec<VersionSpecifier>> = {
+    static CURRENT_VERSION: core::cell::RefCell<Vec<Version>> = {
         core::cell::RefCell::new(Vec::new())
     }
 );
 
 pub(crate) fn begin_keywords(version: &str) {
     CURRENT_VERSION.with(|current_version| match version {
-        "1364-1995" => current_version
-            .borrow_mut()
-            .push(VersionSpecifier::Ieee1364_1995),
-        "1364-2001" => current_version
-            .borrow_mut()
-            .push(VersionSpecifier::Ieee1364_2001),
+        "1364-1995" => current_version.borrow_mut().push(Version::Ieee1364_1995),
+        "1364-2001" => current_version.borrow_mut().push(Version::Ieee1364_2001),
         "1364-2001-noconfig" => current_version
             .borrow_mut()
-            .push(VersionSpecifier::Ieee1364_2001Noconfig),
-        "1364-2005" => current_version
-            .borrow_mut()
-            .push(VersionSpecifier::Ieee1364_2005),
-        "1800-2005" => current_version
-            .borrow_mut()
-            .push(VersionSpecifier::Ieee1800_2005),
-        "1800-2009" => current_version
-            .borrow_mut()
-            .push(VersionSpecifier::Ieee1800_2009),
-        "1800-2012" => current_version
-            .borrow_mut()
-            .push(VersionSpecifier::Ieee1800_2012),
-        "1800-2017" => current_version
-            .borrow_mut()
-            .push(VersionSpecifier::Ieee1800_2017),
-        "directive" => current_version
-            .borrow_mut()
-            .push(VersionSpecifier::Directive),
+            .push(Version::Ieee1364_2001Noconfig),
+        "1364-2005" => current_version.borrow_mut().push(Version::Ieee1364_2005),
+        "1800-2005" => current_version.borrow_mut().push(Version::Ieee1800_2005),
+        "1800-2009" => current_version.borrow_mut().push(Version::Ieee1800_2009),
+        "1800-2012" => current_version.borrow_mut().push(Version::Ieee1800_2012),
+        "1800-2017" => current_version.borrow_mut().push(Version::Ieee1800_2017),
+        "directive" => current_version.borrow_mut().push(Version::Directive),
         _ => (),
     });
 }
@@ -413,7 +397,7 @@ pub(crate) fn end_keywords() {
     });
 }
 
-pub(crate) fn current_version() -> Option<VersionSpecifier> {
+pub(crate) fn current_version() -> Option<Version> {
     CURRENT_VERSION.with(|current_version| match current_version.borrow().last() {
         Some(x) => Some(*x),
         None => None,
@@ -442,15 +426,15 @@ pub(crate) fn concat<'a>(a: Span<'a>, b: Span<'a>) -> Option<Span<'a>> {
 
 pub(crate) fn is_keyword(s: &Span) -> bool {
     let keywords = match current_version() {
-        Some(VersionSpecifier::Ieee1364_1995) => KEYWORDS_1364_1995,
-        Some(VersionSpecifier::Ieee1364_2001) => KEYWORDS_1364_2001,
-        Some(VersionSpecifier::Ieee1364_2001Noconfig) => KEYWORDS_1364_2001_NOCONFIG,
-        Some(VersionSpecifier::Ieee1364_2005) => KEYWORDS_1364_2005,
-        Some(VersionSpecifier::Ieee1800_2005) => KEYWORDS_1800_2005,
-        Some(VersionSpecifier::Ieee1800_2009) => KEYWORDS_1800_2009,
-        Some(VersionSpecifier::Ieee1800_2012) => KEYWORDS_1800_2012,
-        Some(VersionSpecifier::Ieee1800_2017) => KEYWORDS_1800_2017,
-        Some(VersionSpecifier::Directive) => KEYWORDS_DIRECTIVE,
+        Some(Version::Ieee1364_1995) => KEYWORDS_1364_1995,
+        Some(Version::Ieee1364_2001) => KEYWORDS_1364_2001,
+        Some(Version::Ieee1364_2001Noconfig) => KEYWORDS_1364_2001_NOCONFIG,
+        Some(Version::Ieee1364_2005) => KEYWORDS_1364_2005,
+        Some(Version::Ieee1800_2005) => KEYWORDS_1800_2005,
+        Some(Version::Ieee1800_2009) => KEYWORDS_1800_2009,
+        Some(Version::Ieee1800_2012) => KEYWORDS_1800_2012,
+        Some(Version::Ieee1800_2017) => KEYWORDS_1800_2017,
+        Some(Version::Directive) => KEYWORDS_DIRECTIVE,
         None => KEYWORDS_1800_2017,
     };
     for k in keywords {

@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.13.1...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.13.2...Unreleased) - ReleaseDate
+
+## [v0.13.2](https://github.com/dalance/sv-parser/compare/v0.13.1...v0.13.2) - 2023-11-09
 
 * [Changed] Modify to handle symplink as well as file [#87](https://github.com/dalance/sv-parser/pull/87)
 

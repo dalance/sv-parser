@@ -152,7 +152,7 @@ pub(crate) fn method_call(s: Span) -> IResult<Span, MethodCall> {
     let (s, c) = method_call_body(s)?;
     let mut init_method_call = MethodCall { nodes: (a, b, c) };
 
-    //check for chained method method
+    // check for chained method
     let (s, sub_calls) = many0(pair(symbol("."), method_call_body))(s)?;
     for (dot, body) in sub_calls {
         let fun_sub_call = Primary::FunctionSubroutineCall(Box::new(FunctionSubroutineCall {

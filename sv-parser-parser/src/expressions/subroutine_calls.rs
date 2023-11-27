@@ -150,8 +150,20 @@ pub(crate) fn method_call(s: Span) -> IResult<Span, MethodCall> {
     let (s, a) = method_call_root(s)?;
     let (s, b) = symbol(".")(s)?;
     let (s, c) = method_call_body(s)?;
+    let mut init_method_call = MethodCall { nodes: (a, b, c) };
 
-    Ok((s, MethodCall { nodes: (a, b, c) }))
+    //check for chained method method
+    let (s, sub_calls) = many0(pair(symbol("."), method_call_body))(s)?;
+    for (dot, body) in sub_calls {
+        let fun_sub_call = Primary::FunctionSubroutineCall(Box::new(FunctionSubroutineCall {
+            nodes: (SubroutineCall::MethodCall(Box::new(init_method_call)),),
+        }));
+        init_method_call = MethodCall {
+            nodes: (MethodCallRoot::Primary(Box::new(fun_sub_call)), dot, body),
+        };
+    }
+
+    Ok((s, init_method_call))
 }
 
 #[tracable_parser]

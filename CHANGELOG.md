@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.13.2...Unreleased) - ReleaseDate
 
+* [Fixed] Fix chained method [#93](https://github.com/dalance/sv-parser/pull/93)
+
 ## [v0.13.2](https://github.com/dalance/sv-parser/compare/v0.13.1...v0.13.2) - 2023-11-09
 
 * [Changed] Modify to handle symplink as well as file [#87](https://github.com/dalance/sv-parser/pull/87)

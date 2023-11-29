@@ -46,6 +46,13 @@ mod unit {
     use super::*;
 
     #[test]
+    fn test_chained_method_call() {
+        test!(method_call, "variable.method1().method2()", Ok((_, _)));
+        test!(method_call, "variable.member.method2()", Ok((_, _)));
+        test!(method_call, "variable.method1().member", Ok((_, _)));
+    }
+
+    #[test]
     fn test_pulldown_strength() {
         test!(pulldown_strength, "(supply0, strong1)", Ok((_, _)));
         test!(pulldown_strength, "(pull1, weak0)", Ok((_, _)));

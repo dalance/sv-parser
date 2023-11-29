@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.13.2...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.13.3...Unreleased) - ReleaseDate
+
+## [v0.13.3](https://github.com/dalance/sv-parser/compare/v0.13.2...v0.13.3) - 2023-11-29
 
 * [Fixed] Fix chained method [#93](https://github.com/dalance/sv-parser/pull/93)
 

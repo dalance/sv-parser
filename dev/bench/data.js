@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1699499668314,
+  "lastUpdate": 1727920830886,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -4679,6 +4679,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 11424111,
             "range": "± 81242",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "dalance@gmail.com",
+            "name": "dalance",
+            "username": "dalance"
+          },
+          "distinct": true,
+          "id": "948045641b14cd8e3a0590cf886bb756f1fa1cee",
+          "message": "Fix compile error by recursion limit",
+          "timestamp": "2024-10-03T10:51:14+09:00",
+          "tree_id": "7cff5209702a271de1102fb9e9936b578d0417e2",
+          "url": "https://github.com/dalance/sv-parser/commit/948045641b14cd8e3a0590cf886bb756f1fa1cee"
+        },
+        "date": 1727920830663,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 13387325,
+            "range": "± 263340.48",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 11967701.3,
+            "range": "± 305349.04",
             "unit": "ns/iter"
           }
         ]

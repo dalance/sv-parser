@@ -1,3 +1,4 @@
+#![recursion_limit = "256"]
 #![allow(clippy::many_single_char_names, clippy::module_inception)]
 
 pub mod keywords;

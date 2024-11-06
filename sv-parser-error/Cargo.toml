@@ -17,4 +17,4 @@ doctest = false
 tag = false
 
 [dependencies]
-thiserror = "1.0"
+thiserror = "2.0"

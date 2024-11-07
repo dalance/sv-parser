@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1727920830886,
+  "lastUpdate": 1730942315111,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -4715,6 +4715,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 11967701.3,
             "range": "± 305349.04",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "Naoya Hatta",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "de6136fe7cc4498d73c59c863906fabbe53e5cb5",
+          "message": "Merge pull request #103 from dalance/dependabot/cargo/thiserror-2.0\n\nUpdate thiserror requirement from 1.0 to 2.0",
+          "timestamp": "2024-11-07T10:09:36+09:00",
+          "tree_id": "08cbab82871c9d02213c42b1b1188c8d671a9136",
+          "url": "https://github.com/dalance/sv-parser/commit/de6136fe7cc4498d73c59c863906fabbe53e5cb5"
+        },
+        "date": 1730942314510,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 13076098.6,
+            "range": "± 299512.60",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 11740620,
+            "range": "± 152710.19",
             "unit": "ns/iter"
           }
         ]

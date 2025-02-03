@@ -22,7 +22,7 @@ trace   = ["nom-tracable/trace"]
 
 [dependencies]
 nom                  = "7"
-nom_locate           = "4"
+nom_locate           = "5"
 nom-greedyerror      = "0.5"
 nom-packrat          = "0.7"
 nom-recursive        = {version = "0.5", features = ["tracer128"]}

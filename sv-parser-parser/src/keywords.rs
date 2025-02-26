@@ -1466,4 +1466,8 @@ pub(crate) const KEYWORDS_DIRECTIVE: &[&str] = &[
     "unconnected_drive",
     "undef",
     "undefineall",
+    "delay_mode_distributed",
+    "delay_mode_path",
+    // "delay_mode_unit",
+    // "delay_mode_zero"
 ];

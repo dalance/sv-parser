@@ -22,6 +22,10 @@ pub enum CompilerDirective {
     PositionCompilerDirective(Box<PositionCompilerDirective>),
     KeywordsDirective(Box<KeywordsDirective>),
     EndkeywordsDirective(Box<EndkeywordsDirective>),
+    DelayModeDistributedDirective(Box<DelayModeDistributedDirective>),
+    DelayModePathDirective(Box<DelayModePathDirective>),
+    // DelayModeUnitDirective(Box<DelayModeUnitDirective>),
+    // DelayModeZeroDirective(Box<DelayModeZeroDirective>)
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]
@@ -303,5 +307,26 @@ pub struct VersionSpecifier {
 
 #[derive(Clone, Debug, PartialEq, Node)]
 pub struct EndkeywordsDirective {
+    pub nodes: (Symbol, Keyword),
+}
+
+
+#[derive(Clone, Debug, PartialEq, Node)]
+pub struct DelayModeDistributedDirective {
+    pub nodes: (Symbol, Keyword),
+}
+
+#[derive(Clone, Debug, PartialEq, Node)]
+pub struct DelayModePathDirective {
+    pub nodes: (Symbol, Keyword),
+}
+
+#[derive(Clone, Debug, PartialEq, Node)]
+pub struct DelayModeUnitDirective {
+    pub nodes: (Symbol, Keyword),
+}
+
+#[derive(Clone, Debug, PartialEq, Node)]
+pub struct DelayModeZeroDirective {
     pub nodes: (Symbol, Keyword),
 }

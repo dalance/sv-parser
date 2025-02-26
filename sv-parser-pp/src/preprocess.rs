@@ -406,6 +406,42 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
             NodeEvent::Leave(RefNode::EndcelldefineDriveCompilerDirective(_)) => {
                 skip_whitespace = false;
             }
+            NodeEvent::Enter(RefNode::DelayModeDistributedDirective(x)) => {
+                let locate: Locate = x.try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
+                skip_whitespace = true;
+            }
+            NodeEvent::Leave(RefNode::DelayModeDistributedDirective(_)) => {
+                skip_whitespace = false;
+            }
+            NodeEvent::Enter(RefNode::DelayModePathDirective(x)) => {
+                let locate: Locate = x.try_into().unwrap();
+                let range = Range::new(locate.offset, locate.offset + locate.len);
+                ret.push(locate.str(&s), Some((path.as_ref(), range)));
+                skip_whitespace = true;
+            }
+            NodeEvent::Leave(RefNode::DelayModePathDirective(_)) => {
+                skip_whitespace = false;
+            }
+            // NodeEvent::Enter(RefNode::DelayModeUnitDirective(x)) => {
+            //     let locate: Locate = x.try_into().unwrap();
+            //     let range = Range::new(locate.offset, locate.offset + locate.len);
+            //     ret.push(locate.str(&s), Some((path.as_ref(), range)));
+            //     skip_whitespace = true;
+            // }
+            // NodeEvent::Leave(RefNode::DelayModeUnitDirective(_)) => {
+            //     skip_whitespace = false;
+            // }
+            // NodeEvent::Enter(RefNode::DelayModeZeroDirective(x)) => {
+            //     let locate: Locate = x.try_into().unwrap();
+            //     let range = Range::new(locate.offset, locate.offset + locate.len);
+            //     ret.push(locate.str(&s), Some((path.as_ref(), range)));
+            //     skip_whitespace = true;
+            // }
+            // NodeEvent::Leave(RefNode::DelayModeZeroDirective(_)) => {
+            //     skip_whitespace = false;
+            // }
             NodeEvent::Enter(RefNode::Pragma(x)) => {
                 let locate: Locate = x.try_into().unwrap();
                 let range = Range::new(locate.offset, locate.offset + locate.len);
@@ -1639,4 +1675,12 @@ mod tests {
             testfile_contents("expected/undefineall.sv")
         );
     } // }}}
+
+    #[test]
+    fn annex_e(){
+        match preprocess_usualargs("IEEE18002017_AnnexE_delaydirectives.sv"){
+            Ok(_x) => (),
+            Err(x) => panic!("failed with {}",x)
+        }
+    }
 }

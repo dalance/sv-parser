@@ -1468,6 +1468,6 @@ pub(crate) const KEYWORDS_DIRECTIVE: &[&str] = &[
     "undefineall",
     "delay_mode_distributed",
     "delay_mode_path",
-    // "delay_mode_unit",
-    // "delay_mode_zero"
+    "delay_mode_unit",
+    "delay_mode_zero"
 ];

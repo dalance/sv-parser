@@ -24,8 +24,8 @@ pub enum CompilerDirective {
     EndkeywordsDirective(Box<EndkeywordsDirective>),
     DelayModeDistributedDirective(Box<DelayModeDistributedDirective>),
     DelayModePathDirective(Box<DelayModePathDirective>),
-    // DelayModeUnitDirective(Box<DelayModeUnitDirective>),
-    // DelayModeZeroDirective(Box<DelayModeZeroDirective>)
+    DelayModeUnitDirective(Box<DelayModeUnitDirective>),
+    DelayModeZeroDirective(Box<DelayModeZeroDirective>)
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]

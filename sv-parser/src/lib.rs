@@ -335,6 +335,21 @@ pub fn parse_lib_pp(
     }
 }
 
+/// Extracts the first matching variant from an iterator of `RefNode` values.
+///
+/// This macro takes an iterator (`$n`) and a list of `RefNode` variant types (`$ty`),
+/// returning the first occurrence of any specified variant as `Some(RefNode::<$ty>)`.
+/// If no matching variant is found, it returns `None`.
+///
+/// # Arguments
+///
+/// - `$n`: An iterator over `RefNode` values.
+/// - `$ty`: One or more `RefNode` variant names to search for.
+///
+/// # Returns
+///
+/// - `Some(RefNode::<$ty>)` if a matching variant is found.
+/// - `None` if no matching variant is found.
 #[macro_export]
 macro_rules! unwrap_node {
     ($n:expr, $( $ty:tt ),+) => {{
@@ -351,6 +366,20 @@ macro_rules! unwrap_node {
     }};
 }
 
+/// Extracts the first `Locate` variant from an iterator of `RefNode`.
+///
+/// This macro takes an expression that evaluates to an iterable collection
+/// of `RefNode` elements and returns the first `Locate` variant found,
+/// if any. If no `Locate` variant is found, it returns `None`.
+///
+/// # Arguments
+///
+/// * `$n:expr` - An expression yielding an iterator over `RefNode` values.
+///
+/// # Returns
+///
+/// * `Option<Locate>` - The first `Locate` variant found in the iterator, or `None` if none exist.
+///
 #[macro_export]
 macro_rules! unwrap_locate {
     ($n:expr) => {{

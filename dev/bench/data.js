@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1730942315111,
+  "lastUpdate": 1741048870570,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -4751,6 +4751,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 11740620,
             "range": "± 152710.19",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "Naoya Hatta",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "dcbb4a234a862f426ba7d5eca53c999782c4d48f",
+          "message": "Merge pull request #111 from parker-research/macro-docs\n\nAdd docstrings to `unwrap_node` and `unwrap_locate` macros",
+          "timestamp": "2025-03-04T09:33:44+09:00",
+          "tree_id": "826d88f1043cb0e5f51bc64357c67f1b79b3275f",
+          "url": "https://github.com/dalance/sv-parser/commit/dcbb4a234a862f426ba7d5eca53c999782c4d48f"
+        },
+        "date": 1741048869917,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 13727658.5,
+            "range": "± 738553.05",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 12256696.4,
+            "range": "± 455282.89",
             "unit": "ns/iter"
           }
         ]

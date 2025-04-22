@@ -1,3 +1,5 @@
+use nom::Parser;
+
 use crate::*;
 
 // -----------------------------------------------------------------------------
@@ -14,6 +16,7 @@ pub(crate) fn pattern(s: Span) -> IResult<Span, Pattern> {
         pattern_tagged,
         pattern_list,
         pattern_identifier_list,
+        paren(pattern).map(|p| p.nodes.1),
     ))(s)
 }
 

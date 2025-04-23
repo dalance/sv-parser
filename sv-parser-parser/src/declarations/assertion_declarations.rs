@@ -724,8 +724,10 @@ pub(crate) fn sequence_expr(s: Span) -> IResult<Span, SequenceExpr> {
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn sequence_expr_cycle_delay_expr(s: Span) -> IResult<Span, SequenceExpr> {
-    let (s, a) = cycle_delay_range(s)?;
-    let (s, b) = sequence_expr(s)?;
+    let (s, (a, b)) = alt((
+        pair(cycle_delay_range, sequence_expr),
+        pair(cycle_delay_range_2, sequence_expr),
+    ))(s)?;
     let (s, c) = many0(pair(cycle_delay_range, sequence_expr))(s)?;
     Ok((
         s,
@@ -738,8 +740,10 @@ pub(crate) fn sequence_expr_cycle_delay_expr(s: Span) -> IResult<Span, SequenceE
 #[packrat_parser]
 pub(crate) fn sequence_expr_expr_cycle_delay_expr(s: Span) -> IResult<Span, SequenceExpr> {
     let (s, a) = sequence_expr(s)?;
-    let (s, b) = cycle_delay_range(s)?;
-    let (s, c) = sequence_expr(s)?;
+    let (s, (b, c)) = alt((
+        pair(cycle_delay_range, sequence_expr),
+        pair(cycle_delay_range_2, sequence_expr),
+    ))(s)?;
     let (s, d) = many0(pair(cycle_delay_range, sequence_expr))(s)?;
     Ok((
         s,
@@ -855,9 +859,31 @@ pub(crate) fn cycle_delay_range(s: Span) -> IResult<Span, CycleDelayRange> {
 
 #[tracable_parser]
 #[packrat_parser]
+pub(crate) fn cycle_delay_range_2(s: Span) -> IResult<Span, CycleDelayRange> {
+    alt((
+        cycle_delay_range_primary_no_function,
+        cycle_delay_range_expression,
+        cycle_delay_range_asterisk,
+        cycle_delay_range_plus,
+    ))(s)
+}
+
+#[tracable_parser]
+#[packrat_parser]
 pub(crate) fn cycle_delay_range_primary(s: Span) -> IResult<Span, CycleDelayRange> {
     let (s, a) = symbol("##")(s)?;
     let (s, b) = constant_primary(s)?;
+    Ok((
+        s,
+        CycleDelayRange::Primary(Box::new(CycleDelayRangePrimary { nodes: (a, b) })),
+    ))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn cycle_delay_range_primary_no_function(s: Span) -> IResult<Span, CycleDelayRange> {
+    let (s, a) = symbol("##")(s)?;
+    let (s, b) = constant_primary_no_function(s)?;
     Ok((
         s,
         CycleDelayRange::Primary(Box::new(CycleDelayRangePrimary { nodes: (a, b) })),

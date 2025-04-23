@@ -15906,6 +15906,11 @@ mod spec {
     }
 
     #[test]
+    fn test_sequence_constant_primary_param() {
+        test!(sequence_expr, "##MY_PARAM (in2 == in3)", Ok((_, _)));
+    }
+
+    #[test]
     fn clause36() {
         test!(
             many1(module_item),

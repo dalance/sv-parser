@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1741048870570,
+  "lastUpdate": 1762007802312,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -4787,6 +4787,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 12256696.4,
             "range": "± 455282.89",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "Naoya Hatta",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "c7cff425fb78e1f45ff23803fc145698c5ac1b0b",
+          "message": "Merge pull request #117 from ds54e/feature/parser-accept-empty-default-in-macro\n\nFix: allow empty default argument in macro definition",
+          "timestamp": "2025-11-01T23:29:33+09:00",
+          "tree_id": "c84adf9389a1a72d91d5b125e9c5c8940b952c16",
+          "url": "https://github.com/dalance/sv-parser/commit/c7cff425fb78e1f45ff23803fc145698c5ac1b0b"
+        },
+        "date": 1762007801861,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 13371318.7,
+            "range": "± 90487.29",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 12011777.8,
+            "range": "± 74225.81",
             "unit": "ns/iter"
           }
         ]

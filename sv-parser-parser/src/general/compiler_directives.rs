@@ -293,7 +293,7 @@ pub(crate) fn macro_text(s: Span) -> IResult<Span, MacroText> {
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn default_text(s: Span) -> IResult<Span, DefaultText> {
-    let (s, a) = define_argument(s)?;
+    let (s, a) = alt((define_argument, map(tag(""), |x| x)))(s)?;
     Ok((
         s,
         DefaultText {

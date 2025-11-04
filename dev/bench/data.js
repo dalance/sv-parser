@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1762007802312,
+  "lastUpdate": 1762218840619,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -4823,6 +4823,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 12011777.8,
             "range": "± 74225.81",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "Naoya Hatta",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "e3ac78ccb3b64f8cfc2de91ea600890cead0ec1f",
+          "message": "Merge pull request #113 from bryceberger/bryce/push-qtwplrlyqurk\n\nadd `pattern ::= '(' pattern ')'` production",
+          "timestamp": "2025-11-04T10:06:31+09:00",
+          "tree_id": "4175cb77efe710313d38dc166b56682fb46c9432",
+          "url": "https://github.com/dalance/sv-parser/commit/e3ac78ccb3b64f8cfc2de91ea600890cead0ec1f"
+        },
+        "date": 1762218839900,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 14922404.9,
+            "range": "± 1075044.02",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 12919771.7,
+            "range": "± 897207.68",
             "unit": "ns/iter"
           }
         ]

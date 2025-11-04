@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1762218840619,
+  "lastUpdate": 1762218903700,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -4859,6 +4859,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 12919771.7,
             "range": "± 897207.68",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "Naoya Hatta",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8898c1ba011645ae483cbef556e13774f434d357",
+          "message": "Merge pull request #114 from yousifBilal/constant-primary-in-cycle-delay-sequence\n\nFix sequence with parameter as cycle delay",
+          "timestamp": "2025-11-04T10:07:55+09:00",
+          "tree_id": "63e2119f4ade58083e225d844d9ec6380eae91bb",
+          "url": "https://github.com/dalance/sv-parser/commit/8898c1ba011645ae483cbef556e13774f434d357"
+        },
+        "date": 1762218903000,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 13297338.1,
+            "range": "± 175102.46",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 11985063.1,
+            "range": "± 183642",
             "unit": "ns/iter"
           }
         ]

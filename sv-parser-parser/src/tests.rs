@@ -317,6 +317,13 @@ mod unit {
     }
 
     #[test]
+    fn test_event_control_asterisk() {
+        test!(event_control_asterisk, "@*", Ok((_, _)));
+        test!(event_control_asterisk, "@ *", Ok((_, _)));
+        test!(event_control_asterisk, "@      *", Ok((_, _)));
+    }
+
+    #[test]
     fn test_expression() {
         test!(expression, "(!a ? 0 : !b : 1 : c ? 0 : 1)", Ok((_, _)));
     }

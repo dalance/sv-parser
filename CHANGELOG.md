@@ -2,6 +2,11 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.13.3...Unreleased) - ReleaseDate
 
+* [Added] Add docstrings to unwrap_node and unwrap_locate macros [#111](https://github.com/dalance/sv-parser/pull/111)
+* [Fixed] add pattern ::= '(' pattern ')' production [#113](https://github.com/dalance/sv-parser/pull/113)
+* [Fixed] Fix sequence with parameter as cycle delay [#114](https://github.com/dalance/sv-parser/pull/114)
+* [Fixed] Fix: allow empty default argument in macro definition [#117](https://github.com/dalance/sv-parser/pull/117)
+
 ## [v0.13.3](https://github.com/dalance/sv-parser/compare/v0.13.2...v0.13.3) - 2023-11-29
 
 * [Fixed] Fix chained method [#93](https://github.com/dalance/sv-parser/pull/93)

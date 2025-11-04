@@ -5987,71 +5987,61 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        // TODO
-        // tagged can't have paren.
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          case (instr) matches
-        //            tagged Add '{.r1, .r2, .rd} &&& (rd != 0) : rf[rd] = rf[r1] + rf[r2];
-        //            tagged Jmp (tagged JmpU .a) : pc = pc + a;
-        //            tagged Jmp (tagged JmpC '{.c, .a}) : if (rf[c]) pc = a;
-        //          endcase
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        // TODO
-        // tagged can't have paren.
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          case (instr) matches
-        //            tagged Add '{reg2:.r2,regd:.rd,reg1:.r1} &&& (rd != 0):
-        //                                                     rf[rd] = rf[r1] + rf[r2];
-        //            tagged Jmp (tagged JmpU .a) : pc = pc + a;
-        //            tagged Jmp (tagged JmpC '{addr:.a,cc:.c}) : if (rf[c]) pc = a;
-        //          endcase
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        // TODO
-        // tagged can't have paren.
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          if (e matches (tagged Jmp (tagged JmpC '{cc:.c,addr:.a})))
-        //            ; // c and a can be used here
-        //          else
-        //            ;
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        // TODO
-        // tagged can't have paren.
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          if (e matches (tagged Jmp .j) &&&
-        //              j matches (tagged JmpC '{cc:.c,addr:.a}))
-        //            ; // c and a can be used here
-        //          else
-        //            ;
-        //        end"##,
-        //    Ok((_, _))
-        //);
-        // TODO
-        // tagged can't have paren.
-        //test!(
-        //    many1(module_item),
-        //    r##"initial begin
-        //          if (e matches (tagged Jmp (tagged JmpC '{cc:.c,addr:.a}))
-        //            &&& (rf[c] != 0))
-        //            ; // c and a can be used here
-        //          else
-        //            ;
-        //        end"##,
-        //    Ok((_, _))
-        //);
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  case (instr) matches
+                    tagged Add '{.r1, .r2, .rd} &&& (rd != 0) : rf[rd] = rf[r1] + rf[r2];
+                    tagged Jmp (tagged JmpU .a) : pc = pc + a;
+                    tagged Jmp (tagged JmpC '{.c, .a}) : if (rf[c]) pc = a;
+                  endcase
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  case (instr) matches
+                    tagged Add '{reg2:.r2,regd:.rd,reg1:.r1} &&& (rd != 0):
+                                                             rf[rd] = rf[r1] + rf[r2];
+                    tagged Jmp (tagged JmpU .a) : pc = pc + a;
+                    tagged Jmp (tagged JmpC '{addr:.a,cc:.c}) : if (rf[c]) pc = a;
+                  endcase
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  if (e matches (tagged Jmp (tagged JmpC '{cc:.c,addr:.a})))
+                    ; // c and a can be used here
+                  else
+                    ;
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  if (e matches (tagged Jmp .j) &&&
+                      j matches (tagged JmpC '{cc:.c,addr:.a}))
+                    ; // c and a can be used here
+                  else
+                    ;
+                end"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(module_item),
+            r##"initial begin
+                  if (e matches (tagged Jmp (tagged JmpC '{cc:.c,addr:.a}))
+                    &&& (rf[c] != 0))
+                    ; // c and a can be used here
+                  else
+                    ;
+                end"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"module m;

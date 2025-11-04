@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.13.3...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.13.4...Unreleased) - ReleaseDate
+
+## [v0.13.4](https://github.com/dalance/sv-parser/compare/v0.13.3...v0.13.4) - 2025-11-04
 
 * [Added] Add docstrings to unwrap_node and unwrap_locate macros [#111](https://github.com/dalance/sv-parser/pull/111)
 * [Fixed] add pattern ::= '(' pattern ')' production [#113](https://github.com/dalance/sv-parser/pull/113)

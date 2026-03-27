@@ -78,9 +78,15 @@ pub(crate) fn expression_or_cond_pattern_ternary(
 #[packrat_parser]
 pub(crate) fn constant_expression(s: Span) -> IResult<Span, ConstantExpression> {
     alt((
+        map(terminated(constant_primary, peek(one_of(",();}:"))), |x| {
+            ConstantExpression::ConstantPrimary(Box::new(x))
+        }),
         constant_expression_ternary,
         constant_expression_binary,
         constant_expression_unary,
+        map(constant_inside_expression, |x| {
+            ConstantExpression::Inside(Box::new(x))
+        }),
         map(constant_primary, |x| {
             ConstantExpression::ConstantPrimary(Box::new(x))
         }),
@@ -131,6 +137,16 @@ pub(crate) fn constant_expression_ternary(s: Span) -> IResult<Span, ConstantExpr
             nodes: (a, b, c, d, e, f),
         })),
     ))
+}
+
+#[recursive_parser]
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn constant_inside_expression(s: Span) -> IResult<Span, ConstantInsideExpression> {
+    let (s, a) = constant_expression(s)?;
+    let (s, b) = keyword("inside")(s)?;
+    let (s, c) = brace(open_range_list)(s)?;
+    Ok((s, ConstantInsideExpression { nodes: (a, b, c) }))
 }
 
 #[tracable_parser]

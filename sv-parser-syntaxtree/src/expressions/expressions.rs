@@ -36,6 +36,7 @@ pub enum ConstantExpression {
     Unary(Box<ConstantExpressionUnary>),
     Binary(Box<ConstantExpressionBinary>),
     Ternary(Box<ConstantExpressionTernary>),
+    Inside(Box<ConstantInsideExpression>),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]
@@ -63,6 +64,11 @@ pub struct ConstantExpressionTernary {
         Symbol,
         ConstantExpression,
     ),
+}
+
+#[derive(Clone, Debug, PartialEq, Node)]
+pub struct ConstantInsideExpression {
+    pub nodes: (ConstantExpression, Keyword, Brace<OpenRangeList>),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]

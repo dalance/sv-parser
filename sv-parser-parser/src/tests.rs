@@ -5071,6 +5071,21 @@ mod spec {
                 assign r=3'bz11 inside {3'b1?1, 3'b011}; // r = 1'bx"##,
             Ok((_, _))
         );
+        // Bug trigger: inside expression in module-level if statement (without generate keyword)
+        // Fails at "inside" keyword - parser cannot handle "if (x inside {a, b}) begin" at module level
+        test!(
+            many1(module_item),
+            r##"module a;
+                  typedef enum logic {
+                    SwAccessRW  = 0,
+                    SwAccessRO  = 1
+                  } sw_access_e;
+                  parameter sw_access_e SwAccess = SwAccessRW;
+                  wire x;
+                  if (SwAccess inside {SwAccessRW, SwAccessRO});
+                endmodule"##,
+            Ok((_, _))
+        );
         test!(
             many1(module_item),
             r##"initial begin

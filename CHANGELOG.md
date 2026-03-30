@@ -1,6 +1,8 @@
 # Change Log
 
-## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.13.4...Unreleased) - ReleaseDate
+## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.13.5...Unreleased) - ReleaseDate
+
+## [v0.13.5](https://github.com/dalance/sv-parser/compare/v0.13.4...v0.13.5) - 2026-03-30
 
 * [Fixed] Fix parser failure for inside expression in module-level if generate construct [#123](https://github.com/dalance/sv-parser/pull/123)
 * [Fixed] Fix: reject implicit data types in data_declaration [#119](https://github.com/dalance/sv-parser/pull/119)

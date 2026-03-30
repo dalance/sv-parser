@@ -2,6 +2,9 @@
 
 ## [Unreleased](https://github.com/dalance/sv-parser/compare/v0.13.4...Unreleased) - ReleaseDate
 
+* [Fixed] Fix parser failure for inside expression in module-level if generate construct [#123](https://github.com/dalance/sv-parser/pull/123)
+* [Fixed] Fix: reject implicit data types in data_declaration [#119](https://github.com/dalance/sv-parser/pull/119)
+
 ## [v0.13.4](https://github.com/dalance/sv-parser/compare/v0.13.3...v0.13.4) - 2025-11-04
 
 * [Added] Add docstrings to unwrap_node and unwrap_locate macros [#111](https://github.com/dalance/sv-parser/pull/111)

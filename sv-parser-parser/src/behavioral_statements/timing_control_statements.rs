@@ -99,10 +99,11 @@ pub(crate) fn event_control_event_expression(s: Span) -> IResult<Span, EventCont
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn event_control_asterisk(s: Span) -> IResult<Span, EventControl> {
-    let (s, a) = symbol("@*")(s)?;
+    let (s, a) = symbol("@")(s)?;
+    let (s, b) = symbol("*")(s)?;
     Ok((
         s,
-        EventControl::Asterisk(Box::new(EventControlAsterisk { nodes: (a,) })),
+        EventControl::Asterisk(Box::new(EventControlAsterisk { nodes: (a, b) })),
     ))
 }
 

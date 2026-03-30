@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1762219622216,
+  "lastUpdate": 1774839065236,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -4967,6 +4967,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 12693563.4,
             "range": "± 1253160.99",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "Naoya Hatta",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "9a329a520aa96f1182d5aa303b0c539f59e88bab",
+          "message": "Merge pull request #119 from 0ncorhynchus/fix_data_declaration\n\nFix: reject implicit data types in data_declaration",
+          "timestamp": "2026-03-30T11:43:39+09:00",
+          "tree_id": "5e3006f6c09515093896508d3933a47c1b761004",
+          "url": "https://github.com/dalance/sv-parser/commit/9a329a520aa96f1182d5aa303b0c539f59e88bab"
+        },
+        "date": 1774839064996,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 14178586.6,
+            "range": "± 741295.55",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 12679716.2,
+            "range": "± 743951.84",
             "unit": "ns/iter"
           }
         ]

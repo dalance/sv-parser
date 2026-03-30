@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1774839065236,
+  "lastUpdate": 1774839134185,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -5003,6 +5003,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 12679716.2,
             "range": "± 743951.84",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "Naoya Hatta",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "323589cbbdf32f3dab64a373334901ada28d8416",
+          "message": "Merge pull request #123 from pointerliu/fix-gen-inside\n\n Fix parser failure for `inside` expression in module-level if generate construct",
+          "timestamp": "2026-03-30T11:44:34+09:00",
+          "tree_id": "ea5d3284474fb8743ca977f76a48a13fe2078147",
+          "url": "https://github.com/dalance/sv-parser/commit/323589cbbdf32f3dab64a373334901ada28d8416"
+        },
+        "date": 1774839133622,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 13786263.6,
+            "range": "± 895341.41",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 12851200.4,
+            "range": "± 1275901.96",
             "unit": "ns/iter"
           }
         ]

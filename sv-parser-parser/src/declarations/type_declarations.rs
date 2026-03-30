@@ -25,7 +25,13 @@ pub(crate) fn data_declaration_variable(s: Span) -> IResult<Span, DataDeclaratio
     let (s, a) = opt(r#const)(s)?;
     let (s, b) = opt(var)(s)?;
     let (s, c) = opt(lifetime)(s)?;
-    let (s, d) = data_type_or_implicit_data_declaration_variable(s)?;
+    let (s, d) = (verify(
+        data_type_or_implicit_data_declaration_variable,
+        |d| match d {
+            DataTypeOrImplicit::DataType(_) => true,
+            DataTypeOrImplicit::ImplicitDataType(_) => b.is_some(),
+        },
+    ))(s)?;
     let (s, e) = list_of_variable_decl_assignments(s)?;
     let (s, f) = symbol(";")(s)?;
     Ok((

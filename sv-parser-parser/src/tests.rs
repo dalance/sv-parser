@@ -53,6 +53,17 @@ mod unit {
     }
 
     #[test]
+    fn test_data_declaration() {
+      // Implicit data_type is not allowed unless the `var` keyword is used.
+      test!(data_declaration, "logic x = 0;", Ok((_, _)));
+      test!(data_declaration, "      x = 0;", Err(_));
+      test!(data_declaration, "var logic x = 0;", Ok((_, _)));
+      test!(data_declaration, "var       x = 0;", Ok((_, _)));
+      test!(data_declaration, "const logic x = 0;", Ok((_, _)));
+      test!(data_declaration, "const       x = 0;", Err(_));
+    }
+
+    #[test]
     fn test_pulldown_strength() {
         test!(pulldown_strength, "(supply0, strong1)", Ok((_, _)));
         test!(pulldown_strength, "(pull1, weak0)", Ok((_, _)));
@@ -711,7 +722,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), statement),
             r##"typedef struct {int a; shortreal b;} ab;
                 ab c;
                 c = '{0, 0.0}; // structure literal type determined from
@@ -724,7 +735,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            many1(statement),
             r##"c = '{a:0, b:0.0};             // member name and value for that member
                 c = '{default:0};              // all elements of structure c are set to 0
                 d = ab'{int:1, shortreal:1.0}; // data type and default value for all
@@ -737,7 +748,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), statement),
             r##"struct {int X,Y,Z;} XYZ = '{3{1}};
                 typedef struct {int a,b[4];} ab_t;
                 int a,b,c;
@@ -788,18 +799,18 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            module_item,
+            statement,
             r##"a = b + (* mode = "cla" *) c; // sets the value for the attribute mode
                                               // to be the string cla."##,
             Ok((_, _))
         );
         test!(
-            module_item,
+            statement,
             r##"a = add (* mode = "cla" *) (b, c);"##,
             Ok((_, _))
         );
         test!(
-            module_item,
+            statement,
             r##"a = b ? (* no_glitch *) c : d;"##,
             Ok((_, _))
         );
@@ -1180,7 +1191,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), many1(statement)),
             r##"typedef logic [15:0] r_t;
                 r_t r;
                 integer i = 1;
@@ -1204,7 +1215,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(statement, data_declaration),
             r##"str = "123";
                 int i = str.atoi(); // assigns 123 to i."##,
             Ok((_, _))
@@ -1328,7 +1339,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), many1(statement)),
             r##"typedef enum { red, green, blue, yellow, white, black } Colors;
 
                 Colors col;
@@ -1340,7 +1351,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), many1(statement)),
             r##"typedef enum {Red, Green, Blue} Colors;
                 typedef enum {Mo,Tu,We,Th,Fr,Sa,Su} Week;
                 Colors C;
@@ -1707,7 +1718,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(data_declaration, statement),
             r##"var type(a+b) c, d;
                 c = type(i+3)'(v[15:0]);"##,
             Ok((_, _))
@@ -1732,12 +1743,12 @@ mod spec {
         //    Ok((_, _))
         //);
         test!(
-            many1(module_item),
+            many1(statement),
             r##"A = cast_t1'(expr_1) + cast_t2'(expr_2);"##,
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), many1(statement)),
             r##"cast_t1 temp1;
                 cast_t2 temp2;
 
@@ -1747,7 +1758,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), many1(statement)),
             r##"logic [7:0] regA;
                 logic signed [7:0] regS;
 
@@ -1756,7 +1767,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), many1(statement)),
             r##"typedef struct {
                   bit isfloat;
                   union { int i; shortreal f; } n; // anonymous type
@@ -1787,8 +1798,8 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        test!(many1(module_item), r##"col = Colors'(2 + 3);"##, Ok((_, _)));
-        test!(many1(module_item), r##"B = dest_t'(A);"##, Ok((_, _)));
+        test!(statement, r##"col = Colors'(2 + 3);"##, Ok((_, _)));
+        test!(statement, r##"B = dest_t'(A);"##, Ok((_, _)));
         test!(
             many1(module_item),
             r##"struct {bit[7:0] a; shortint b;} a;
@@ -1855,7 +1866,7 @@ mod spec {
         //    Ok((_, _))
         //);
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), statement),
             r##"typedef byte channel_type[$];
                 channel_type channel;
                 channel = {channel, channel_type'(genPkt())};"##,
@@ -1983,7 +1994,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), many1(statement)),
             r##"typedef union packed { // default unsigned
                   s_atmcell acell;
                   bit [423:0] bit_slice;
@@ -2040,7 +2051,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(data_declaration, many1(statement)),
             r##"logic [7:0] mema [0:255]; // declares a memory array of 256 8-bit
                                           // elements. The array indices are 0 to 255
 
@@ -2056,7 +2067,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            many1(statement),
             r##"joe[9] = joe[8] + 1; // 4 byte add
                 joe[7][3:2] = joe[6][1:0]; // 2 byte copy"##,
             Ok((_, _))
@@ -2086,7 +2097,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), many1(statement)),
             r##"int A[2][3][4], B[2][3][4], C[5][4];
                 A[0][2] = B[1][1]; // assign a subarray composed of four ints
                 A[1] = B[0];       // assign a subarray composed of three arrays of
@@ -2101,28 +2112,28 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), statement),
             r##"logic [63:0] data;
                 logic [7:0] byte2;
                 byte2 = data[23:16]; // an 8-bit part-select from data"##,
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), statement),
             r##"bit [3:0] [7:0] j; // j is a packed array
                 byte k;
                 k = j[2]; // select a single 8-bit element from j"##,
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), statement),
             r##"bit signed [31:0] busA [7:0] ; // unpacked array of 8 32-bit vectors
                 int busB [1:0];                // unpacked array of 2 integers
                 busB = busA[7:6];              // select a 2-vector slice from busA"##,
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), statement),
             r##"int i = bitvec[j +: k]; // k must be constant.
                 int a[x:y], b[y:z], e;
                 a = {b[c -: d], e};     // d must be constant"##,
@@ -2209,7 +2220,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), many1(statement)),
             r##"int A[10:1]; // fixed-size array of 10 elements
                 int B[0:9];  // fixed-size array of 10 elements
                 int C[24:1]; // fixed-size array of 24 elements
@@ -2262,7 +2273,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), statement),
             r##"string d[1:5] = '{ "a", "b", "c", "d", "e" };
                 string p[];
                 p = { d[1:3], "hello", d[4:5] };"##,
@@ -2624,7 +2635,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(data_declaration, statement),
             r##"Packet p; // declare a variable of class Packet
                 p = new;  // initialize variable to a new allocated object
                           // of the class Packet"##,
@@ -2669,13 +2680,13 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(data_declaration, statement),
             r##"Packet p = new;
                 status = p.current_status();"##,
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            statement,
             r##"status = current_status(p);"##,
             Ok((_, _))
         );
@@ -2766,7 +2777,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(data_declaration, statement),
             r##"Packet p;
                 c = $fgetc( p.fileID );"##,
             Ok((_, _))
@@ -2804,15 +2815,15 @@ mod spec {
             Ok((_, _))
         );
         test!(many1(module_item), r##"Packet p1;"##, Ok((_, _)));
-        test!(many1(module_item), r##"p1 = new;"##, Ok((_, _)));
+        test!(statement, r##"p1 = new;"##, Ok((_, _)));
         test!(
-            many1(module_item),
+            pair(data_declaration, statement),
             r##"Packet p2;
                 p2 = p1;"##,
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), many1(statement)),
             r##"Packet p1;
                 Packet p2;
                 p1 = new;
@@ -3062,7 +3073,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            pair(many1(data_declaration), many1(statement)),
             r##"EtherPacket ep = new; // extends BasePacket
                 TokenPacket tp = new; // extends BasePacket
                 GPSPacket gp = new;   // extends EtherPacket
@@ -3502,7 +3513,7 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
+            statement,
             r##"put_ref = new(); // illegal"##,
             Ok((_, _))
         );
@@ -4599,11 +4610,9 @@ mod spec {
             Ok((_, _))
         );
         test!(
-            many1(module_item),
-            r##"initial begin
-                  unpackedbits = '{2 {y}} ;        // same as '{y, y}
-                  int n[1:2][1:3] = '{2{'{3{y}}}}; // same as '{'{y,y,y},'{y,y,y}}
-                end"##,
+            pair(statement, data_declaration),
+            r##"unpackedbits = '{2 {y}} ;        // same as '{y, y}
+                int n[1:2][1:3] = '{2{'{3{y}}}}; // same as '{'{y,y,y},'{y,y,y}}"##,
             Ok((_, _))
         );
         test!(

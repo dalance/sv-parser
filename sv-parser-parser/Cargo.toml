@@ -19,6 +19,8 @@ tag = false
 [features]
 default = []
 trace   = ["nom-tracable/trace"]
+nested-gen-block-begin = []
+vendor-extensions = ["nested-gen-block-begin"]
 
 [dependencies]
 nom                  = "7"

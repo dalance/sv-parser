@@ -175,6 +175,9 @@ pub(crate) fn generate_block_multiple(s: Span) -> IResult<Span, GenerateBlock> {
     let (s, a) = opt(pair(generate_block_identifier, symbol(":")))(s)?;
     let (s, b) = keyword("begin")(s)?;
     let (s, c) = opt(pair(symbol(":"), generate_block_identifier))(s)?;
+    #[cfg(feature = "nested-gen-block-begin")]
+    let (s, (d, e)) = many_till(generate_block, keyword("end"))(s)?;
+    #[cfg(not(feature = "nested-gen-block-begin"))]
     let (s, (d, e)) = many_till(generate_item, keyword("end"))(s)?;
     let (s, f) = opt(pair(symbol(":"), generate_block_identifier))(s)?;
     Ok((

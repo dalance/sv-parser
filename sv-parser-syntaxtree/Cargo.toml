@@ -9,7 +9,6 @@ license = "MIT OR Apache-2.0"
 readme = "../README.md"
 description = "Helper crate of sv-parser"
 edition = "2018"
-build = "build.rs"
 
 [lib]
 doctest = false
@@ -23,3 +22,7 @@ sv-parser-macros = {version = "^0.13.5", path = "../sv-parser-macros"}
 [build-dependencies]
 regex   = "1"
 walkdir = "2"
+
+[features]
+nested-gen-block-begin = []
+vendor-extensions = ["nested-gen-block-begin"]

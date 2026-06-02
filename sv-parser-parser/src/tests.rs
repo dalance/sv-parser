@@ -54,13 +54,13 @@ mod unit {
 
     #[test]
     fn test_data_declaration() {
-      // Implicit data_type is not allowed unless the `var` keyword is used.
-      test!(data_declaration, "logic x = 0;", Ok((_, _)));
-      test!(data_declaration, "      x = 0;", Err(_));
-      test!(data_declaration, "var logic x = 0;", Ok((_, _)));
-      test!(data_declaration, "var       x = 0;", Ok((_, _)));
-      test!(data_declaration, "const logic x = 0;", Ok((_, _)));
-      test!(data_declaration, "const       x = 0;", Err(_));
+        // Implicit data_type is not allowed unless the `var` keyword is used.
+        test!(data_declaration, "logic x = 0;", Ok((_, _)));
+        test!(data_declaration, "      x = 0;", Err(_));
+        test!(data_declaration, "var logic x = 0;", Ok((_, _)));
+        test!(data_declaration, "var       x = 0;", Ok((_, _)));
+        test!(data_declaration, "const logic x = 0;", Ok((_, _)));
+        test!(data_declaration, "const       x = 0;", Err(_));
     }
 
     #[test]
@@ -330,6 +330,14 @@ mod unit {
     #[test]
     fn test_expression() {
         test!(expression, "(!a ? 0 : !b : 1 : c ? 0 : 1)", Ok((_, _)));
+    }
+
+    #[test]
+    fn test_bin_op_expression() {
+        test!(expression, "type(logic) == type(logic)", Ok((_, _)));
+        test!(expression, "type(logic) != type(logic)", Ok((_, _)));
+        test!(expression, "type(logic) + type(logic)", Err(_));
+        test!(expression, "type(logic) == a", Err(_));
     }
 
     #[test]

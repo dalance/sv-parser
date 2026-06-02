@@ -56,7 +56,13 @@ pub enum CaseKeyword {
 
 #[derive(Clone, Debug, PartialEq, Node)]
 pub struct CaseExpression {
-    pub nodes: (Expression,),
+    pub nodes: (CaseExpressionExpression,),
+}
+
+#[derive(Clone, Debug, PartialEq, Node)]
+pub enum CaseExpressionExpression {
+    Expression(Box<Expression>),
+    TypeReference(Box<TypeReference>),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]
@@ -104,7 +110,7 @@ pub struct CaseInsideItemNondefault {
 
 #[derive(Clone, Debug, PartialEq, Node)]
 pub struct CaseItemExpression {
-    pub nodes: (Expression,),
+    pub nodes: (CaseExpressionExpression,),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]

@@ -75,7 +75,14 @@ pub(crate) fn case_keyword(s: Span) -> IResult<Span, CaseKeyword> {
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn case_expression(s: Span) -> IResult<Span, CaseExpression> {
-    let (s, a) = expression(s)?;
+    let (s, a) = alt((
+        map(expression, |x| {
+            CaseExpressionExpression::Expression(Box::new(x))
+        }),
+        map(type_reference, |x| {
+            CaseExpressionExpression::TypeReference(Box::new(x))
+        }),
+    ))(s)?;
     Ok((s, CaseExpression { nodes: (a,) }))
 }
 
@@ -160,7 +167,14 @@ pub(crate) fn case_inside_item_nondefault(s: Span) -> IResult<Span, CaseInsideIt
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn case_item_expression(s: Span) -> IResult<Span, CaseItemExpression> {
-    let (s, a) = expression(s)?;
+    let (s, a) = alt((
+        map(expression, |x| {
+            CaseExpressionExpression::Expression(Box::new(x))
+        }),
+        map(type_reference, |x| {
+            CaseExpressionExpression::TypeReference(Box::new(x))
+        }),
+    ))(s)?;
     Ok((s, CaseItemExpression { nodes: (a,) }))
 }
 

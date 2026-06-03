@@ -18,14 +18,40 @@ pub(crate) fn case_statement_normal(s: Span) -> IResult<Span, CaseStatement> {
     let (s, a) = opt(unique_priority)(s)?;
     let (s, b) = case_keyword(s)?;
     let (s, c) = paren(case_expression)(s)?;
-    let (s, d) = case_item(s)?;
-    let (s, (e, f)) = many_till(case_item, keyword("endcase"))(s)?;
-    Ok((
-        s,
-        CaseStatement::Normal(Box::new(CaseStatementNormal {
-            nodes: (a, b, c, d, e, f),
-        })),
-    ))
+    if !matches!(
+        c.nodes.1.nodes.0,
+        CaseExpressionExpression::TypeReference(_)
+    ) {
+        let (s, d) = case_item(s)?;
+        let (s, (e, f)) = many_till(case_item, keyword("endcase"))(s)?;
+        Ok((
+            s,
+            CaseStatement::Normal(Box::new(CaseStatementNormal {
+                nodes: (a, b, c, d, e, f),
+            })),
+        ))
+    } else {
+        let verify_case_item = |d: &CaseItem| {
+            if let CaseItem::NonDefault(non_def_item) = d {
+                matches!(
+                    non_def_item.nodes.0.nodes.0.nodes.0,
+                    CaseExpressionExpression::TypeReference(_)
+                ) && non_def_item.nodes.0.nodes.1.iter().all(|(_, cie)| {
+                    matches!(cie.nodes.0, CaseExpressionExpression::TypeReference(_))
+                })
+            } else {
+                true
+            }
+        };
+        let (s, d) = verify(case_item, verify_case_item)(s)?;
+        let (s, (e, f)) = many_till(verify(case_item, verify_case_item), keyword("endcase"))(s)?;
+        Ok((
+            s,
+            CaseStatement::Normal(Box::new(CaseStatementNormal {
+                nodes: (a, b, c, d, e, f),
+            })),
+        ))
+    }
 }
 
 #[tracable_parser]

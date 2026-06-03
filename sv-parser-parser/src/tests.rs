@@ -817,11 +817,7 @@ mod spec {
             r##"a = add (* mode = "cla" *) (b, c);"##,
             Ok((_, _))
         );
-        test!(
-            statement,
-            r##"a = b ? (* no_glitch *) c : d;"##,
-            Ok((_, _))
-        );
+        test!(statement, r##"a = b ? (* no_glitch *) c : d;"##, Ok((_, _)));
     }
 
     #[test]
@@ -2693,11 +2689,7 @@ mod spec {
                 status = p.current_status();"##,
             Ok((_, _))
         );
-        test!(
-            statement,
-            r##"status = current_status(p);"##,
-            Ok((_, _))
-        );
+        test!(statement, r##"status = current_status(p);"##, Ok((_, _)));
         test!(many1(module_item), r##"Packet p = new;"##, Ok((_, _)));
         test!(
             many1(module_item),
@@ -3520,11 +3512,7 @@ mod spec {
                 end"##,
             Ok((_, _))
         );
-        test!(
-            statement,
-            r##"put_ref = new(); // illegal"##,
-            Ok((_, _))
-        );
+        test!(statement, r##"put_ref = new(); // illegal"##, Ok((_, _)));
         test!(
             many1(module_item),
             r##"interface class IntfBase1;
@@ -15948,6 +15936,35 @@ mod spec {
                     @(posedge clk) $get_vector("test_vector.pat", input_bus);
                 end"##,
             Ok((_, _))
+        );
+    }
+
+    #[test]
+    fn test_case_statement_comparison() {
+        test!(
+            many1(case_statement),
+            r##"case (type(logic))
+              type(logic[11:0]) : ;
+              type(logic)       : ;
+              default           : ;
+            endcase"##,
+            Ok((_, _))
+        );
+        test!(
+            many1(case_statement),
+            r##"case (type(logic))
+              1 : ;
+              default           : ;
+            endcase"##,
+            Err(_)
+        );
+        test!(
+            many1(case_statement),
+            r##"case (type(logic))
+              x : ;
+              default           : ;
+            endcase"##,
+            Err(_)
         );
     }
 }

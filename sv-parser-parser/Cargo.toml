@@ -20,7 +20,8 @@ tag = false
 default = []
 trace   = ["nom-tracable/trace"]
 nested-gen-block-begin = []
-vendor-extensions = ["nested-gen-block-begin"]
+empty-queue-syntax = []
+vendor-extensions = ["nested-gen-block-begin", "empty-queue-syntax"]
 
 [dependencies]
 nom                  = "7"

@@ -282,13 +282,23 @@ pub(crate) fn expression(s: Span) -> IResult<Span, Expression> {
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn expression_unary(s: Span) -> IResult<Span, Expression> {
-    let (s, x) = unary_operator(s)?;
+    let (s, w) = unary_operator(s)?;
+    #[cfg(feature = "consecutive-unary-operators")]
+    let (s, x) = many0(unary_operator)(s)?;
     let (s, y) = many0(attribute_instance)(s)?;
     let (s, z) = primary(s)?;
-    Ok((
+    #[cfg(not(feature = "consecutive-unary-operators"))]
+    return Ok((
         s,
-        Expression::Unary(Box::new(ExpressionUnary { nodes: (x, y, z) })),
-    ))
+        Expression::Unary(Box::new(ExpressionUnary { nodes: (w, y, z) })),
+    ));
+    #[cfg(feature = "consecutive-unary-operators")]
+    return Ok((
+        s,
+        Expression::Unary(Box::new(ExpressionUnary {
+            nodes: (w, x, y, z),
+        })),
+    ));
 }
 
 #[tracable_parser]

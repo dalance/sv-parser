@@ -21,7 +21,8 @@ default = []
 trace   = ["nom-tracable/trace"]
 nested-gen-block-begin = []
 empty-queue-syntax = []
-vendor-extensions = ["nested-gen-block-begin", "empty-queue-syntax"]
+consecutive-unary-operators = []
+vendor-extensions = ["nested-gen-block-begin", "empty-queue-syntax", "consecutive-unary-operators"]
 
 [dependencies]
 nom                  = "7"

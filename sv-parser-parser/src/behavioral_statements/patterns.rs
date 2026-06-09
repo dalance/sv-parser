@@ -100,10 +100,29 @@ pub(crate) fn assignment_pattern_structure(s: Span) -> IResult<Span, AssignmentP
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn assignment_pattern_array(s: Span) -> IResult<Span, AssignmentPattern> {
+    #[cfg(not(feature = "allow-no-apostrophe"))]
     let (s, a) = apostrophe_brace(list(
         symbol(","),
         triple(array_pattern_key, symbol(":"), expression),
     ))(s)?;
+    #[cfg(feature = "allow-no-apostrophe")]
+    let (s, a) = alt((
+        map(
+            apostrophe_brace(list(
+                symbol(","),
+                triple(array_pattern_key, symbol(":"), expression),
+            )),
+            |ab| BraceOrApostropheBraceArray::ApostropheBrace(ab),
+        ),
+        map(
+            brace(list(
+                symbol(","),
+                triple(array_pattern_key, symbol(":"), expression),
+            )),
+            |b| BraceOrApostropheBraceArray::Brace(b),
+        ),
+    ))(s)?;
+
     Ok((
         s,
         AssignmentPattern::Array(Box::new(AssignmentPatternArray { nodes: (a,) })),

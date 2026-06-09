@@ -1131,6 +1131,8 @@ pub enum RefNode<'a> {
     AssignmentPatternList(&'a AssignmentPatternList),
     AssignmentPatternStructure(&'a AssignmentPatternStructure),
     AssignmentPatternArray(&'a AssignmentPatternArray),
+    #[cfg(feature = "allow-no-apostrophe")]
+    BraceOrApostropheBraceArray(&'a BraceOrApostropheBraceArray),
     AssignmentPatternRepeat(&'a AssignmentPatternRepeat),
     StructurePatternKey(&'a StructurePatternKey),
     ArrayPatternKey(&'a ArrayPatternKey),
@@ -2383,6 +2385,8 @@ pub enum AnyNode {
     AssignmentPatternList(AssignmentPatternList),
     AssignmentPatternStructure(AssignmentPatternStructure),
     AssignmentPatternArray(AssignmentPatternArray),
+    #[cfg(feature = "allow-no-apostrophe")]
+    BraceOrApostropheBraceArray(BraceOrApostropheBraceArray),
     AssignmentPatternRepeat(AssignmentPatternRepeat),
     StructurePatternKey(StructurePatternKey),
     ArrayPatternKey(ArrayPatternKey),
@@ -3846,6 +3850,8 @@ impl<'a> std::fmt::Display for RefNode<'a> {
             RefNode::AssignmentPatternList(_) => write!(f, "AssignmentPatternList"),
             RefNode::AssignmentPatternStructure(_) => write!(f, "AssignmentPatternStructure"),
             RefNode::AssignmentPatternArray(_) => write!(f, "AssignmentPatternArray"),
+            #[cfg(feature = "allow-no-apostrophe")]
+            RefNode::BraceOrApostropheBraceArray(_) => write!(f, "BraceOrApostropheBraceArray"),
             RefNode::AssignmentPatternRepeat(_) => write!(f, "AssignmentPatternRepeat"),
             RefNode::StructurePatternKey(_) => write!(f, "StructurePatternKey"),
             RefNode::ArrayPatternKey(_) => write!(f, "ArrayPatternKey"),
@@ -5339,6 +5345,8 @@ impl std::fmt::Display for AnyNode {
             AnyNode::AssignmentPatternList(_) => write!(f, "AssignmentPatternList"),
             AnyNode::AssignmentPatternStructure(_) => write!(f, "AssignmentPatternStructure"),
             AnyNode::AssignmentPatternArray(_) => write!(f, "AssignmentPatternArray"),
+            #[cfg(feature = "allow-no-apostrophe")]
+            AnyNode::BraceOrApostropheBraceArray(_) => write!(f, "BraceOrApostropheBraceArray"),
             AnyNode::AssignmentPatternRepeat(_) => write!(f, "AssignmentPatternRepeat"),
             AnyNode::StructurePatternKey(_) => write!(f, "StructurePatternKey"),
             AnyNode::ArrayPatternKey(_) => write!(f, "ArrayPatternKey"),

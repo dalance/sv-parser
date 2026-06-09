@@ -17,13 +17,18 @@ doctest = false
 tag = false
 
 [dependencies]
-sv-parser-macros = {version = "^0.13.5", path = "../sv-parser-macros"}
+sv-parser-macros = { version = "^0.13.5", path = "../sv-parser-macros" }
 
 [build-dependencies]
-regex   = "1"
+regex = "1"
 walkdir = "2"
 
 [features]
 nested-gen-block-begin = []
 consecutive-unary-operators = []
-vendor-extensions = ["nested-gen-block-begin", "consecutive-unary-operators"]
+allow-no-apostrophe = []
+vendor-extensions = [
+    "nested-gen-block-begin",
+    "consecutive-unary-operators",
+    "allow-no-apostrophe",
+]

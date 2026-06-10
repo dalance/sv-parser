@@ -451,4 +451,27 @@ endmodule"##;
         let ret = parse_sv_str(src, &path, &defines, &[""], false, false);
         assert!(ret.is_ok());
     }
+
+    #[test]
+    fn test_type_equality() {
+        let src = r##"module top #( parameter type T = type(logic[11:0]) )
+           ();
+           initial begin
+              case (type(T))
+                type(logic[11:0]) :  ;
+                default           : $stop;
+              endcase
+              if (type(T) == type(logic[12:0])) $stop;
+              if (type(T) != type(logic[11:0])) $stop;
+              if (type(T) === type(logic[12:0])) $stop;
+              if (type(T) !== type(logic[11:0])) $stop;
+              $finish;
+           end
+        endmodule"##;
+
+        let path = PathBuf::from("");
+        let defines = HashMap::new();
+        let ret = parse_sv_str(src, &path, &defines, &[""], false, false);
+        assert!(ret.is_ok());
+    }
 }

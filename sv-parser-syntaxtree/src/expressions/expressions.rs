@@ -149,11 +149,17 @@ pub struct ExpressionOperatorAssignment {
 #[derive(Clone, Debug, PartialEq, Node)]
 pub struct ExpressionBinary {
     pub nodes: (
-        Expression,
+        ExpressionBinaryOperand,
         BinaryOperator,
         Vec<AttributeInstance>,
-        Expression,
+        ExpressionBinaryOperand,
     ),
+}
+
+#[derive(Clone, Debug, PartialEq, Node)]
+pub enum ExpressionBinaryOperand {
+    Expression(Box<Expression>),
+    TypeReference(Box<TypeReference>),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]

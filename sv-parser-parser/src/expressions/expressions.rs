@@ -305,16 +305,40 @@ pub(crate) fn expression_operator_assignment(s: Span) -> IResult<Span, Expressio
 #[tracable_parser]
 #[packrat_parser]
 pub(crate) fn expression_binary(s: Span) -> IResult<Span, Expression> {
-    let (s, a) = expression(s)?;
+    let (s, a) = alt((
+        map(expression, |x| {
+            ExpressionBinaryOperand::Expression(Box::new(x))
+        }),
+        map(type_reference, |x| {
+            ExpressionBinaryOperand::TypeReference(Box::new(x))
+        }),
+    ))(s)?;
+    let is_equality = peek(alt((symbol("=="), symbol("!="))))(s).is_ok();
     let (s, b) = binary_operator(s)?;
     let (s, c) = many0(attribute_instance)(s)?;
-    let (s, d) = expression(s)?;
-    Ok((
-        s,
-        Expression::Binary(Box::new(ExpressionBinary {
-            nodes: (a, b, c, d),
-        })),
-    ))
+    let (s, d) = alt((
+        map(expression, |x| {
+            ExpressionBinaryOperand::Expression(Box::new(x))
+        }),
+        map(type_reference, |x| {
+            ExpressionBinaryOperand::TypeReference(Box::new(x))
+        }),
+    ))(s)?;
+
+    // Enforces Footnote (40) in IEEE STD 1800 - 2017
+    let op1_is_type_ref = matches!(a, ExpressionBinaryOperand::TypeReference(_));
+    let op2_is_type_ref = matches!(d, ExpressionBinaryOperand::TypeReference(_));
+    if !(op1_is_type_ref || op2_is_type_ref) || (is_equality && op1_is_type_ref && op2_is_type_ref)
+    {
+        Ok((
+            s,
+            Expression::Binary(Box::new(ExpressionBinary {
+                nodes: (a, b, c, d),
+            })),
+        ))
+    } else {
+        Err(Err::Error(make_error(s, ErrorKind::Fail)))
+    }
 }
 
 #[tracable_parser]

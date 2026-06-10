@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1774839524830,
+  "lastUpdate": 1781053558816,
   "repoUrl": "https://github.com/dalance/sv-parser",
   "entries": {
     "Rust Benchmark": [
@@ -5111,6 +5111,42 @@ window.BENCHMARK_DATA = {
             "name": "test2",
             "value": 12360175,
             "range": "± 295049.74",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "dalance@gmail.com",
+            "name": "Naoya Hatta",
+            "username": "dalance"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "48ac02e5976f867a94de84827a003e18d7e7cc15",
+          "message": "Merge pull request #125 from yousifBilal/type-equality\n\nFix type equality and inequality parsing",
+          "timestamp": "2026-06-10T09:58:46+09:00",
+          "tree_id": "9bde7a534d480ff05a55f24cf3addb499af3aec7",
+          "url": "https://github.com/dalance/sv-parser/commit/48ac02e5976f867a94de84827a003e18d7e7cc15"
+        },
+        "date": 1781053558594,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "test1",
+            "value": 13880645.4,
+            "range": "± 139268.28",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "test2",
+            "value": 12745720.6,
+            "range": "± 76657.57",
             "unit": "ns/iter"
           }
         ]

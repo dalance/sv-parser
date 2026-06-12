@@ -25,7 +25,7 @@ pre-release-replacements = [
 default = []
 trace   = ["sv-parser-parser/trace"]
 nested-gen-block-begin = ["sv-parser-parser/nested-gen-block-begin", "sv-parser-syntaxtree/nested-gen-block-begin"]
-vendor-extensions = ["sv-parser-parser/vendor-extensions", "sv-parser-syntaxtree/vendor-extensions"]
+vendor-extensions = ["nested-gen-block-begin"]
 
 [dependencies]
 nom                  = "7"

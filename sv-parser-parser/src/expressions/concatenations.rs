@@ -156,6 +156,8 @@ pub(crate) fn array_range_expression_minus_colon(s: Span) -> IResult<Span, Array
 pub(crate) fn empty_unpacked_array_concatenation(
     s: Span,
 ) -> IResult<Span, EmptyUnpackedArrayConcatenation> {
+    #[cfg(feature = "empty-queue-syntax")]
+    let (s, _) = opt(symbol("'"))(s)?;
     let (s, a) = symbol("{")(s)?;
     let (s, b) = symbol("}")(s)?;
     Ok((s, EmptyUnpackedArrayConcatenation { nodes: (a, b) }))

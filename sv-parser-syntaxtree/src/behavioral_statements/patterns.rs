@@ -50,9 +50,23 @@ pub struct AssignmentPatternStructure {
     pub nodes: (ApostropheBrace<List<Symbol, (StructurePatternKey, Symbol, Expression)>>,),
 }
 
+#[cfg(not(feature = "allow-no-apostrophe"))]
 #[derive(Clone, Debug, PartialEq, Node)]
 pub struct AssignmentPatternArray {
     pub nodes: (ApostropheBrace<List<Symbol, (ArrayPatternKey, Symbol, Expression)>>,),
+}
+
+#[cfg(feature = "allow-no-apostrophe")]
+#[derive(Clone, Debug, PartialEq, Node)]
+pub struct AssignmentPatternArray {
+    pub nodes: (BraceOrApostropheBraceArray,),
+}
+
+#[cfg(feature = "allow-no-apostrophe")]
+#[derive(Clone, Debug, PartialEq, Node)]
+pub enum BraceOrApostropheBraceArray {
+    Brace(Brace<List<Symbol, (ArrayPatternKey, Symbol, Expression)>>),
+    ApostropheBrace(ApostropheBrace<List<Symbol, (ArrayPatternKey, Symbol, Expression)>>),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]

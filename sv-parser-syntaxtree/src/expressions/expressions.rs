@@ -136,9 +136,21 @@ pub enum Expression {
     TaggedUnionExpression(Box<TaggedUnionExpression>),
 }
 
+#[cfg(not(feature = "consecutive-unary-operators"))]
 #[derive(Clone, Debug, PartialEq, Node)]
 pub struct ExpressionUnary {
     pub nodes: (UnaryOperator, Vec<AttributeInstance>, Primary),
+}
+
+#[cfg(feature = "consecutive-unary-operators")]
+#[derive(Clone, Debug, PartialEq, Node)]
+pub struct ExpressionUnary {
+    pub nodes: (
+        UnaryOperator,
+        Vec<UnaryOperator>,
+        Vec<AttributeInstance>,
+        Primary,
+    ),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]

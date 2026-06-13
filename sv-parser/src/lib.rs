@@ -149,10 +149,18 @@ impl fmt::Debug for SyntaxTree {
                 }
                 NodeEvent::Enter(x) => {
                     match x {
-                        RefNode::WhiteSpace(WhiteSpace::Newline(_)) => { ws = WS::Newline; }
-                        RefNode::WhiteSpace(WhiteSpace::Space(_)) => { ws = WS::Space; }
-                        RefNode::WhiteSpace(WhiteSpace::Comment(_)) => { ws = WS::Comment; }
-                        RefNode::WhiteSpace(WhiteSpace::CompilerDirective(_)) => { ws = WS::CompilerDirective; }
+                        RefNode::WhiteSpace(WhiteSpace::Newline(_)) => {
+                            ws = WS::Newline;
+                        }
+                        RefNode::WhiteSpace(WhiteSpace::Space(_)) => {
+                            ws = WS::Space;
+                        }
+                        RefNode::WhiteSpace(WhiteSpace::Comment(_)) => {
+                            ws = WS::Comment;
+                        }
+                        RefNode::WhiteSpace(WhiteSpace::CompilerDirective(_)) => {
+                            ws = WS::CompilerDirective;
+                        }
                         _ => {}
                     }
                     ret.push_str(&format!("{}{}\n", " ".repeat(depth), x));
@@ -161,7 +169,9 @@ impl fmt::Debug for SyntaxTree {
                 NodeEvent::Leave(x) => {
                     match x {
                         RefNode::WhiteSpace(_) => {}
-                        _ => { ws = WS::NotWhitespace; }
+                        _ => {
+                            ws = WS::NotWhitespace;
+                        }
                     }
                     depth -= 1;
                 }
@@ -252,8 +262,8 @@ pub fn parse_sv_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
         include_paths,
         ignore_include,
         false, // strip_comments
-        0, // resolve_depth
-        0, // include_depth
+        0,     // resolve_depth
+        0,     // include_depth
     )?;
     parse_sv_pp(text, defines, allow_incomplete)
 }
@@ -290,8 +300,8 @@ pub fn parse_lib_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
         include_paths,
         ignore_include,
         false, // strip_comments
-        0, // resolve_depth
-        0, // include_depth
+        0,     // resolve_depth
+        0,     // include_depth
     )?;
     parse_lib_pp(text, defines, allow_incomplete)
 }
@@ -472,6 +482,28 @@ endmodule"##;
         let path = PathBuf::from("");
         let defines = HashMap::new();
         let ret = parse_sv_str(src, &path, &defines, &[""], false, false);
+        assert!(ret.is_ok());
+    }
+
+    #[test]
+    fn test_nested_begins() {
+        let src = r##"module my_top;
+        for (genvar i = 0; i < 7; i++) begin begin: something
+        begin: another
+        begin
+            logic c;
+        end
+        end
+        end
+        end
+        endmodule
+"##;
+        let path = PathBuf::from("");
+        let defines = HashMap::new();
+        let ret = parse_sv_str(src, &path, &defines, &[""], false, false);
+        #[cfg(not(feature = "nested-gen-block-begin"))]
+        assert!(ret.is_err());
+        #[cfg(feature = "nested-gen-block-begin")]
         assert!(ret.is_ok());
     }
 }

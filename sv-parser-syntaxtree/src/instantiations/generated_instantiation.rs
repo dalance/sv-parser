@@ -102,6 +102,7 @@ pub enum GenerateBlock {
     Multiple(Box<GenerateBlockMultiple>),
 }
 
+#[cfg(not(feature = "nested-gen-block-begin"))]
 #[derive(Clone, Debug, PartialEq, Node)]
 pub struct GenerateBlockMultiple {
     pub nodes: (
@@ -109,6 +110,18 @@ pub struct GenerateBlockMultiple {
         Keyword,
         Option<(Symbol, GenerateBlockIdentifier)>,
         Vec<GenerateItem>,
+        Keyword,
+        Option<(Symbol, GenerateBlockIdentifier)>,
+    ),
+}
+#[cfg(feature = "nested-gen-block-begin")]
+#[derive(Clone, Debug, PartialEq, Node)]
+pub struct GenerateBlockMultiple {
+    pub nodes: (
+        Option<(GenerateBlockIdentifier, Symbol)>,
+        Keyword,
+        Option<(Symbol, GenerateBlockIdentifier)>,
+        Vec<GenerateBlock>,
         Keyword,
         Option<(Symbol, GenerateBlockIdentifier)>,
     ),

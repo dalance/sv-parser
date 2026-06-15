@@ -59,6 +59,20 @@ pub(crate) fn compiler_directive(s: Span) -> IResult<Span, CompilerDirective> {
         map(text_macro_usage, |x| {
             CompilerDirective::TextMacroUsage(Box::new(x))
         }),
+        alt((
+            map(delay_mode_distributed_compiler_directive, |x| {
+                CompilerDirective::DelayModeDistributedDirective(Box::new(x))
+            }),
+            map(delay_mode_path_compiler_directive, |x| {
+                CompilerDirective::DelayModePathDirective(Box::new(x))
+            }),
+            map(delay_mode_unit_compiler_directive, |x| {
+                CompilerDirective::DelayModeUnitDirective(Box::new(x))
+            }),
+            map(delay_mode_zero_compiler_directive, |x| {
+                CompilerDirective::DelayModeZeroDirective(Box::new(x))
+            }),
+        ))
     ))(s);
     end_directive();
     ret
@@ -118,6 +132,23 @@ pub(crate) fn compiler_directive_without_resetall(s: Span) -> IResult<Span, Comp
         map(text_macro_usage, |x| {
             CompilerDirective::TextMacroUsage(Box::new(x))
         }),
+
+        alt((
+
+        
+            map(delay_mode_distributed_compiler_directive, |x| {
+                CompilerDirective::DelayModeDistributedDirective(Box::new(x))
+            }),
+            map(delay_mode_path_compiler_directive, |x| {
+                CompilerDirective::DelayModePathDirective(Box::new(x))
+            }),
+            map(delay_mode_unit_compiler_directive, |x| {
+                CompilerDirective::DelayModeUnitDirective(Box::new(x))
+            }),
+            map(delay_mode_zero_compiler_directive, |x| {
+                CompilerDirective::DelayModeZeroDirective(Box::new(x))
+            }),
+        ))
     ))(s);
     end_directive();
     ret
@@ -872,4 +903,44 @@ pub(crate) fn endkeywords_directive(s: Span) -> IResult<Span, EndkeywordsDirecti
     let (s, b) = keyword("end_keywords")(s)?;
     end_keywords();
     Ok((s, EndkeywordsDirective { nodes: (a, b) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn delay_mode_distributed_compiler_directive(
+    s: Span,
+) -> IResult<Span, DelayModeDistributedDirective> {
+    let (s, a) = symbol("`")(s)?;
+    let (s, b) = keyword("delay_mode_distributed")(s)?;
+    Ok((s, DelayModeDistributedDirective { nodes: (a, b) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn delay_mode_path_compiler_directive(
+    s: Span,
+) -> IResult<Span, DelayModePathDirective> {
+    let (s, a) = symbol("`")(s)?;
+    let (s, b) = keyword("delay_mode_path")(s)?;
+    Ok((s, DelayModePathDirective { nodes: (a, b) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn delay_mode_unit_compiler_directive(
+    s: Span,
+) -> IResult<Span, DelayModeUnitDirective> {
+    let (s, a) = symbol("`")(s)?;
+    let (s, b) = keyword("delay_mode_unit")(s)?;
+    Ok((s, DelayModeUnitDirective { nodes: (a, b) }))
+}
+
+#[tracable_parser]
+#[packrat_parser]
+pub(crate) fn delay_mode_zero_compiler_directive(
+    s: Span,
+) -> IResult<Span, DelayModeZeroDirective> {
+    let (s, a) = symbol("`")(s)?;
+    let (s, b) = keyword("delay_mode_zero")(s)?;
+    Ok((s, DelayModeZeroDirective { nodes: (a, b) }))
 }

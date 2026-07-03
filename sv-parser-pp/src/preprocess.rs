@@ -1,6 +1,7 @@
 use crate::range::Range;
 use nom::combinator::all_consuming;
 use nom_greedyerror::error_position;
+use std::collections::hash_map::RandomState;
 use std::collections::{BTreeMap, HashMap};
 use std::convert::TryInto;
 use std::fs::File;
@@ -13,7 +14,6 @@ use sv_parser_syntaxtree::{
     IncludeCompilerDirective, Locate, NodeEvent, RefNode, SourceDescription, TextMacroUsage,
     WhiteSpace,
 };
-use std::collections::hash_map::RandomState;
 
 const RECURSIVE_LIMIT: usize = 64;
 
@@ -115,7 +115,7 @@ impl DefineText {
     }
 }
 
-pub type Defines<V=RandomState> = HashMap<String, Option<Define>, V>;
+pub type Defines<V = RandomState> = HashMap<String, Option<Define>, V>;
 
 pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     path: T,
@@ -142,7 +142,26 @@ fn preprocess_inner<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     ignore_include: bool,
     include_depth: usize,
 ) -> Result<(PreprocessedText, Defines), Error> {
+    let mut defines = new_working_defines(pre_defines);
+    let ret = preprocess_file_inner(
+        path,
+        &mut defines,
+        include_paths,
+        strip_comments,
+        ignore_include,
+        include_depth,
+    )?;
+    Ok((ret, defines))
+}
 
+fn preprocess_file_inner<T: AsRef<Path>, U: AsRef<Path>>(
+    path: T,
+    defines: &mut Defines,
+    include_paths: &[U],
+    strip_comments: bool,
+    ignore_include: bool,
+    include_depth: usize,
+) -> Result<PreprocessedText, Error> {
     let f = File::open(path.as_ref()).map_err(|x| Error::File {
         source: x,
         path: PathBuf::from(path.as_ref()),
@@ -153,10 +172,10 @@ fn preprocess_inner<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     if let Err(_) = reader.read_to_string(&mut s) {
         Err(Error::ReadUtf8(PathBuf::from(path.as_ref())))
     } else {
-        preprocess_str(
+        preprocess_str_inner(
             &s,
             path,
-            pre_defines,
+            defines,
             include_paths,
             ignore_include,
             strip_comments,
@@ -164,6 +183,47 @@ fn preprocess_inner<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
             include_depth,
         )
     }
+}
+
+fn new_working_defines<V: BuildHasher>(pre_defines: &Defines<V>) -> Defines {
+    let mut defines: Defines = HashMap::new();
+    // IEEE1800-2017 Clause 40.3.1, page 1121
+    // The following predefined `define macros represent basic real-time
+    // coverage capabilities accessible directly from SystemVerilog:
+    let sv_cov_pre_defines = [
+        ("SV_COV_START", "0"),
+        ("SV_COV_STOP", "1"),
+        ("SV_COV_RESET", "2"),
+        ("SV_COV_CHECK", "3"),
+        ("SV_COV_MODULE", "10"),
+        ("SV_COV_HIER", "11"),
+        ("SV_COV_ASSERTION", "20"),
+        ("SV_COV_FSM_STATE", "21"),
+        ("SV_COV_STATEMENT", "22"),
+        ("SV_COV_TOGGLE", "23"),
+        ("SV_COV_OVERFLOW", "-2"),
+        ("SV_COV_ERROR", "-1"),
+        ("SV_COV_NOCOV", "0"),
+        ("SV_COV_OK", "1"),
+        ("SV_COV_PARTIAL", "2"),
+    ];
+    for (k, v) in sv_cov_pre_defines {
+        let define = Define {
+            identifier: k.to_string(),
+            arguments: Vec::new(),
+            text: Some(DefineText {
+                text: v.to_string(),
+                origin: None,
+            }),
+        };
+        defines.insert(k.to_string(), Some(define));
+    }
+
+    for (k, v) in pre_defines {
+        defines.insert(k.clone(), (*v).clone());
+    }
+
+    defines
 }
 
 struct SkipNodes<'a> {
@@ -178,19 +238,25 @@ impl<'a> SkipNodes<'a> {
     fn push(&mut self, node: RefNode<'a>) {
         // if a node doesn't have locate, the node should be ignored
         // because the node can be identified in tree.
-        let mut have_locate = false;
         for x in node.clone() {
             if let RefNode::Locate(_) = x {
-                have_locate = true;
+                self.nodes.push(node);
+                return;
             }
-        }
-        if have_locate {
-            self.nodes.push(node);
         }
     }
 
     fn contains(&self, node: &RefNode<'a>) -> bool {
         self.nodes.contains(node)
+    }
+
+    fn remove(&mut self, node: &RefNode<'a>) -> bool {
+        if let Some(pos) = self.nodes.iter().position(|x| x == node) {
+            self.nodes.remove(pos);
+            true
+        } else {
+            false
+        }
     }
 }
 
@@ -204,7 +270,30 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     resolve_depth: usize,
     include_depth: usize,
 ) -> Result<(PreprocessedText, Defines), Error> {
+    let mut defines = new_working_defines(pre_defines);
+    let ret = preprocess_str_inner(
+        s,
+        path,
+        &mut defines,
+        include_paths,
+        ignore_include,
+        strip_comments,
+        resolve_depth,
+        include_depth,
+    )?;
+    Ok((ret, defines))
+}
 
+fn preprocess_str_inner<T: AsRef<Path>, U: AsRef<Path>>(
+    s: &str,
+    path: T,
+    defines: &mut Defines,
+    include_paths: &[U],
+    ignore_include: bool,
+    strip_comments: bool,
+    resolve_depth: usize,
+    include_depth: usize,
+) -> Result<PreprocessedText, Error> {
     // IEEE1800-2017 Clause 22.4, page 675
     // A file included in the source using the `include compiler directive
     // may contain other `include compiler directives.
@@ -218,43 +307,9 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     let mut skip = false;
     let mut skip_whitespace = false;
     let mut skip_nodes = SkipNodes::new();
-    let mut defines = HashMap::new();
 
     let mut last_item_line = None;
     let mut last_include_line = None;
-
-    // IEEE1800-2017 Clause 40.3.1, page 1121
-    // The following predefined `define macros represent basic real-time
-    // coverage capabilities accessible directly from SystemVerilog:
-    let sv_cov_pre_defines = [
-        ("SV_COV_START",        "0"),
-        ("SV_COV_STOP",         "1"),
-        ("SV_COV_RESET",        "2"),
-        ("SV_COV_CHECK",        "3"),
-        ("SV_COV_MODULE",       "10"),
-        ("SV_COV_HIER",         "11"),
-        ("SV_COV_ASSERTION",    "20"),
-        ("SV_COV_FSM_STATE",    "21"),
-        ("SV_COV_STATEMENT",    "22"),
-        ("SV_COV_TOGGLE",       "23"),
-        ("SV_COV_OVERFLOW",     "-2"),
-        ("SV_COV_ERROR",        "-1"),
-        ("SV_COV_NOCOV",        "0"),
-        ("SV_COV_OK",           "1"),
-        ("SV_COV_PARTIAL",      "2"),
-    ];
-    for (k, v) in sv_cov_pre_defines {
-        let define = Define {
-            identifier: k.to_string(),
-            arguments: Vec::new(),
-            text: Some(DefineText {text: v.to_string(), origin: None}),
-        };
-        defines.insert(k.to_string(), Some(define));
-    }
-
-    for (k, v) in pre_defines {
-        defines.insert(k.clone(), (*v).clone());
-    }
 
     let span = Span::new_extra(&s, SpanInfo::default());
     let (_, pp_text) = all_consuming(pp_parser)(span).map_err(|x| match x {
@@ -285,7 +340,9 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                 }
             }
             NodeEvent::Leave(x) => {
-                if skip_nodes.contains(&x) {
+                // Drop a node once its subtree has been fully traversed (i.e. on its Leave
+                // event). 
+                if skip_nodes.remove(&x) {
                     skip = false;
                 }
             }
@@ -644,11 +701,11 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                         skip_nodes.push(keyword.into());
                         skip_nodes.push(x.into());
 
-                        if let Some((p, _, _)) = resolve_text_macro_usage(
+                        if let Some((p, _)) = resolve_text_macro_usage(
                             x,
                             s,
                             path.as_ref(),
-                            &defines,
+                            defines,
                             include_paths,
                             strip_comments,
                             resolve_depth + 1,
@@ -684,36 +741,33 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                     }
                 }
 
-                let (include, new_defines) =
-                    preprocess_inner(
-                        path,
-                        &defines,
-                        include_paths,
-                        strip_comments,
-                        false, // ignore_include
-                        include_depth + 1).map_err(
-                        |x| Error::Include {
-                            source: Box::new(x),
-                        },
-                    )?;
-                defines = new_defines;
+                let include = preprocess_file_inner(
+                    path,
+                    defines,
+                    include_paths,
+                    strip_comments,
+                    false, // ignore_include
+                    include_depth + 1,
+                )
+                .map_err(|x| Error::Include {
+                    source: Box::new(x),
+                })?;
                 ret.merge(include);
             }
             NodeEvent::Enter(RefNode::TextMacroUsage(x)) => {
                 skip_nodes.push(x.into());
                 skip = true;
 
-                if let Some((text, origin, new_defines)) = resolve_text_macro_usage(
+                if let Some((text, origin)) = resolve_text_macro_usage(
                     x,
                     s,
                     path.as_ref(),
-                    &defines,
+                    defines,
                     include_paths,
                     strip_comments,
                     resolve_depth + 1,
                 )? {
                     ret.push(&text, origin);
-                    defines = new_defines;
                 }
 
                 // Push the trailing whitespace attached to either
@@ -727,11 +781,11 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                             match x {
                                 RefNode::WhiteSpace(x) => {
                                     let locate: Locate = x.try_into().unwrap();
-                                    let range = Range::new(locate.offset, locate.offset + locate.len);
+                                    let range =
+                                        Range::new(locate.offset, locate.offset + locate.len);
                                     ret.push(locate.str(&s), Some((path.as_ref(), range)));
                                 }
-                                _ => {
-                                }
+                                _ => {}
                             }
                         }
                     }
@@ -741,7 +795,8 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                             match x {
                                 RefNode::WhiteSpace(x) => {
                                     let locate: Locate = x.try_into().unwrap();
-                                    let range = Range::new(locate.offset, locate.offset + locate.len);
+                                    let range =
+                                        Range::new(locate.offset, locate.offset + locate.len);
                                     ret.push(locate.str(&s), Some((path.as_ref(), range)));
                                 }
                                 _ => {}
@@ -773,7 +828,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
         }
     }
 
-    Ok((ret, defines))
+    Ok(ret)
 }
 
 fn identifier(node: RefNode, s: &str) -> Option<String> {
@@ -810,12 +865,8 @@ fn get_str(node: RefNode, s: &str) -> String {
 
 fn is_predefined_text_macro(s: &str) -> bool {
     match s {
-        "__LINE__" | "__FILE__" => {
-            true
-        }
-        _ => {
-            false
-        }
+        "__LINE__" | "__FILE__" => true,
+        _ => false,
     }
 }
 
@@ -844,7 +895,6 @@ fn split_text(s: &str) -> Vec<String> {
 
     let mut iter = s.chars().peekable();
     while let Some(c) = iter.next() {
-
         // IEEE1800-2017 Clause 22.5.1, page 676, Syntax 22-2.
         // Ignore whitespace immediately after text_macro_name.
         if is_leading_whitespace {
@@ -907,11 +957,11 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
     x: &TextMacroUsage,
     s: &str,
     path: T,
-    defines: &Defines,
+    defines: &mut Defines,
     include_paths: &[U],
     strip_comments: bool,
     resolve_depth: usize,
-) -> Result<Option<(String, Option<(PathBuf, Range)>, Defines)>, Error> {
+) -> Result<Option<(String, Option<(PathBuf, Range)>)>, Error> {
     let (_, ref name, ref args) = x.nodes;
     let id = identifier((&name.nodes.0).into(), &s).unwrap();
 
@@ -940,87 +990,88 @@ fn resolve_text_macro_usage<T: AsRef<Path>, U: AsRef<Path>>(
         }
     }
 
-    let define = defines.get(&id);
-    if let Some(Some(define)) = define {
-        let mut arg_map = HashMap::new();
+    let (replaced, origin) = {
+        let define = defines.get(&id);
+        match define {
+            Some(Some(define)) => {
+                let mut arg_map = HashMap::new();
 
-        if !define.arguments.is_empty() && no_args {
-            return Err(Error::DefineNoArgs(define.identifier.clone()));
-        }
-
-        for (i, (arg, default)) in define.arguments.iter().enumerate() {
-            let value = match actual_args.get(i) {
-                Some(Some(actual_arg)) => *actual_arg,
-                Some(None) => {
-                    if let Some(default) = default {
-                        default
-                    } else {
-                        ""
-                    }
+                if !define.arguments.is_empty() && no_args {
+                    return Err(Error::DefineNoArgs(define.identifier.clone()));
                 }
-                None => {
-                    if let Some(default) = default {
-                        default
-                    } else {
-                        return Err(Error::DefineArgNotFound(String::from(arg)));
-                    }
+
+                for (i, (arg, default)) in define.arguments.iter().enumerate() {
+                    let value = match actual_args.get(i) {
+                        Some(Some(actual_arg)) => *actual_arg,
+                        Some(None) => {
+                            if let Some(default) = default {
+                                default
+                            } else {
+                                ""
+                            }
+                        }
+                        None => {
+                            if let Some(default) = default {
+                                default
+                            } else {
+                                return Err(Error::DefineArgNotFound(String::from(arg)));
+                            }
+                        }
+                    };
+                    arg_map.insert(String::from(arg), value);
                 }
-            };
-            arg_map.insert(String::from(arg), value);
-        }
 
-        // restore () for textmacro without arguments
-        let paren = if define.arguments.is_empty() {
-            Some(args_str)
-        } else {
-            None
-        };
-
-        if let Some(ref text) = define.text {
-            let mut replaced = String::from("");
-            for text in split_text(&text.text) {
-                if let Some(value) = arg_map.get(&text) {
-                    replaced.push_str(*value);
+                // restore () for textmacro without arguments
+                let paren = if define.arguments.is_empty() {
+                    Some(args_str)
                 } else {
-                    replaced.push_str(
-                        &text
-                            .replace("``", "")          // Argument substitution.
-                            .replace("`\\`\"", "\\\"")  // Escaped backslash.
-                            .replace("`\"", "\"")       // Escaped quote.
-                            .replace("\\\n", "\n")      // Line continuation (Unix).
-                            .replace("\\\r\n", "\r\n")  // Line continuation (Windows).
-                            .replace("\\\r", "\r"),     // Line continuation (old Mac).
-                    );
+                    None
+                };
+
+                if let Some(ref text) = define.text {
+                    let mut replaced = String::from("");
+                    for text in split_text(&text.text) {
+                        if let Some(value) = arg_map.get(&text) {
+                            replaced.push_str(*value);
+                        } else {
+                            replaced.push_str(
+                                &text
+                                    .replace("``", "") // Argument substitution.
+                                    .replace("`\\`\"", "\\\"") // Escaped backslash.
+                                    .replace("`\"", "\"") // Escaped quote.
+                                    .replace("\\\n", "\n") // Line continuation (Unix).
+                                    .replace("\\\r\n", "\r\n") // Line continuation (Windows).
+                                    .replace("\\\r", "\r"), // Line continuation (old Mac).
+                            );
+                        }
+                    }
+
+                    if let Some(paren) = paren {
+                        replaced.push_str(&paren);
+                    }
+
+                    (replaced, text.origin.clone())
+                } else {
+                    return Ok(None);
                 }
             }
-
-            if let Some(paren) = paren {
-                replaced.push_str(&paren);
-            }
-
-            let (replaced, new_defines) = preprocess_str(
-                &replaced,
-                path.as_ref(),
-                &defines,
-                include_paths,
-                false,
-                strip_comments,
-                resolve_depth,
-                0, // include_depth
-            )?;
-            Ok(Some((
-                String::from(replaced.text()),
-                text.origin.clone(),
-                new_defines,
-            )))
-        } else {
-            Ok(None)
+            // Defined without replacement text: nothing to substitute.
+            Some(None) => return Ok(None),
+            None => return Err(Error::DefineNotFound(id)),
         }
-    } else if define.is_some() {
-        Ok(None)
-    } else {
-        Err(Error::DefineNotFound(id))
-    }
+    };
+
+    let replaced = preprocess_str_inner(
+        &replaced,
+        path.as_ref(),
+        defines,
+        include_paths,
+        false,
+        strip_comments,
+        resolve_depth,
+        0, // include_depth
+    )?;
+    Ok(Some((String::from(replaced.text()), origin)))
 }
 
 #[cfg(test)]

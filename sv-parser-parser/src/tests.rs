@@ -46,6 +46,17 @@ mod unit {
     use super::*;
 
     #[test]
+    fn test_resetall_then_multi_param_module() {
+        clear_version();
+        clear_directive();
+        test!(
+            source_text,
+            "`resetall\nmodule test #(parameter A = 1, parameter B = 2) (o); output o; endmodule\n",
+            Ok((_, _))
+        );
+    }
+
+    #[test]
     fn test_chained_method_call() {
         test!(method_call, "variable.method1().method2()", Ok((_, _)));
         test!(method_call, "variable.member.method2()", Ok((_, _)));

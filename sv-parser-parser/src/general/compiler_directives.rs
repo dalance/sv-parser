@@ -214,8 +214,9 @@ pub(crate) fn text_macro_definition(s: Span) -> IResult<Span, TextMacroDefinitio
     let (s, a) = symbol("`")(s)?;
     let (s, b) = keyword("define")(s)?;
     begin_keywords("directive");
-    let (s, c) = text_macro_name(s)?;
+    let ret = text_macro_name(s);
     end_keywords();
+    let (s, c) = ret?;
     let (s, d) = opt(macro_text)(s)?;
     Ok((
         s,
@@ -307,8 +308,9 @@ pub(crate) fn default_text(s: Span) -> IResult<Span, DefaultText> {
 pub(crate) fn text_macro_usage(s: Span) -> IResult<Span, TextMacroUsage> {
     let (s, a) = symbol("`")(s)?;
     begin_keywords("directive");
-    let (s, b) = text_macro_identifier(s)?;
+    let ret = text_macro_identifier(s);
     end_keywords();
+    let (s, b) = ret?;
     let (s, c) = opt(paren(list_of_actual_arguments))(s)?;
     Ok((s, TextMacroUsage { nodes: (a, b, c) }))
 }

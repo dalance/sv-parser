@@ -56,7 +56,7 @@ pub struct EventControlEventExpression {
 
 #[derive(Clone, Debug, PartialEq, Node)]
 pub struct EventControlAsterisk {
-    pub nodes: (Symbol,),
+    pub nodes: (Symbol, Symbol),
 }
 
 #[derive(Clone, Debug, PartialEq, Node)]

@@ -1,3 +1,9 @@
+//! SystemVerilog source text preprocessor implementation.
+//!
+//! Handles macro definitions (`` `define ``), macro expansion, file inclusion (`` `include ``),
+//! conditional compilation (`` `ifdef ``, `` `ifndef ``, `` `elsif ``, `` `else ``, `` `endif ``),
+//! and tracks origin spans across all transformations.
+
 use crate::range::Range;
 use nom::combinator::all_consuming;
 use nom_greedyerror::error_position;
@@ -17,12 +23,20 @@ use std::collections::hash_map::RandomState;
 
 const RECURSIVE_LIMIT: usize = 64;
 
+/// Preprocessed source text along with origin mappings back to original source files.
+///
+/// Preprocessing modifies the original text by expanding macros, inserting included
+/// files, and skipping conditional compilation branches. `PreprocessedText` retains
+/// a collection of [`Range`] segments mapped to original file paths and offsets, allowing
+/// any token or error location in the preprocessed string to be accurately mapped back
+/// to its original file and line.
 #[derive(Debug)]
 pub struct PreprocessedText {
     text: String,
     origins: BTreeMap<Range, Origin>,
 }
 
+/// Source location mapping for a contiguous preprocessed text slice.
 #[derive(Debug)]
 pub struct Origin {
     range: Range,
@@ -63,10 +77,16 @@ impl PreprocessedText {
         }
     }
 
+    /// Returns the preprocessed source text as a string slice.
     pub fn text(&self) -> &str {
         &self.text
     }
 
+    /// Maps a byte offset `pos` in the preprocessed text back to its original file path
+    /// and byte offset within that file.
+    ///
+    /// Returns `None` if the position originated from synthetic tokens or if
+    /// origin information is unavailable.
     pub fn origin(&self, pos: usize) -> Option<(&PathBuf, usize)> {
         let origin = self.origins.get(&Range::new(pos, pos + 1));
         if let Some(origin) = origin {
@@ -82,16 +102,23 @@ impl PreprocessedText {
     }
 }
 
+/// Represents a parsed SystemVerilog macro definition (`` `define ``).
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Define {
+    /// The macro identifier.
     pub identifier: String,
+    /// Formal arguments as `(name, optional_default_value)`.
     pub arguments: Vec<(String, Option<String>)>,
+    /// The replacement body text, if any.
     pub text: Option<DefineText>,
 }
 
+/// The replacement text of a macro definition, with its definition site origin.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DefineText {
+    /// The replacement text.
     pub text: String,
+    /// Original file and range where this macro text was defined.
     pub origin: Option<(PathBuf, Range)>,
 }
 
@@ -115,8 +142,25 @@ impl DefineText {
     }
 }
 
+/// A map of macro names to their definitions.
+///
+/// A value of `Some(Define)` indicates a defined macro; `None` indicates an undefined
+/// macro (e.g. after `` `undef ``).
 pub type Defines<V=RandomState> = HashMap<String, Option<Define>, V>;
 
+/// Preprocesses a SystemVerilog source file on disk.
+///
+/// # Arguments
+///
+/// * `path` - Path to the SystemVerilog file.
+/// * `pre_defines` - Initial macro definitions (e.g., passed from compiler flags like `-D`).
+/// * `include_paths` - Search directories for `` `include `` directives.
+/// * `strip_comments` - If `true`, strips comments from the preprocessed output.
+/// * `ignore_include` - If `true`, skips reading included files.
+///
+/// # Returns
+///
+/// Returns a tuple of `(PreprocessedText, Defines)` on success, or an [`Error`] on failure.
 pub fn preprocess<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     path: T,
     pre_defines: &Defines<V>,
@@ -194,6 +238,22 @@ impl<'a> SkipNodes<'a> {
     }
 }
 
+/// Preprocesses an in-memory SystemVerilog source string.
+///
+/// # Arguments
+///
+/// * `s` - Source string to preprocess.
+/// * `path` - Logical path to associate with this source text for diagnostics.
+/// * `pre_defines` - Initial macro definitions.
+/// * `include_paths` - Search directories for `` `include `` directives.
+/// * `ignore_include` - If `true`, skips reading included files.
+/// * `strip_comments` - If `true`, strips comments from the output text.
+/// * `resolve_depth` - Current recursion depth for macro resolution.
+/// * `include_depth` - Current recursion depth for file inclusions.
+///
+/// # Returns
+///
+/// Returns a tuple of `(PreprocessedText, Defines)` on success, or an [`Error`] on failure.
 pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
     s: &str,
     path: T,

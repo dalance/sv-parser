@@ -1,3 +1,9 @@
+//! Generic CST node containers, dynamic dispatch enums, and tree iterators.
+//!
+//! This module includes the build-script generated `RefNode` and `AnyNode` enums
+//! (covering every syntax production in the IEEE 1800-2017 grammar), as well as
+//! depth-first iterators ([`Iter`] and [`EventIter`]).
+
 use crate::*;
 use core::convert::TryFrom;
 
@@ -7,18 +13,26 @@ include!(concat!(env!("OUT_DIR"), "/any_node.rs"));
 
 // -----------------------------------------------------------------------------
 
+/// A collection of borrowed CST nodes used during tree traversal.
 pub struct RefNodes<'a>(pub Vec<RefNode<'a>>);
 
+/// Depth-first pre-order iterator over syntax tree nodes.
+///
+/// Yields each [`RefNode`] visited in pre-order. Can be converted into an
+/// [`EventIter`] via [`Iter::event`] to track both entering and leaving nodes.
 pub struct Iter<'a> {
     pub(crate) next: RefNodes<'a>,
 }
 
 impl<'a> Iter<'a> {
+    /// Creates a new `Iter` from a collection of root nodes.
     pub fn new(mut next: RefNodes<'a>) -> Self {
         next.0.reverse();
         Iter { next }
     }
 
+    /// Converts this iterator into an [`EventIter`] yielding [`NodeEvent::Enter`]
+    /// and [`NodeEvent::Leave`] events.
     pub fn event(self) -> EventIter<'a> {
         let next: NodeEvents = self.next.into();
         EventIter { next }
@@ -41,14 +55,23 @@ impl<'a> Iterator for Iter<'a> {
 
 // -----------------------------------------------------------------------------
 
+/// Traversal event yielded by [`EventIter`].
 #[derive(Debug, Clone)]
 pub enum NodeEvent<'a> {
+    /// Descending into a node.
     Enter(RefNode<'a>),
+    /// Ascending out of a node after traversing all its descendants.
     Leave(RefNode<'a>),
 }
 
+/// A collection of traversal events used by [`EventIter`].
 pub struct NodeEvents<'a>(pub Vec<NodeEvent<'a>>);
 
+/// Depth-first hierarchical event iterator over syntax tree nodes.
+///
+/// Emits [`NodeEvent::Enter`] when descending into a node and [`NodeEvent::Leave`]
+/// when ascending out of it, enabling scoped analysis (such as tracking current module,
+/// block, or function boundaries).
 pub struct EventIter<'a> {
     pub(crate) next: NodeEvents<'a>,
 }

@@ -1,7 +1,16 @@
+//! Helper combinators, token matchers, and parser state management.
+//!
+//! Provides utilities for:
+//! - Consuming whitespace, newlines, comments, and compiler directives via [`ws`] and [`white_space`].
+//! - Matching keywords ([`keyword`]) with word-boundary checks and IEEE version sensitivity.
+//! - Matching symbols and operators ([`symbol`], [`symbol_exact`]).
+//! - Managing thread-local parsing state for compiler directives and IEEE keyword versions.
+
 use crate::*;
 
 // -----------------------------------------------------------------------------
 
+/// Combinator that executes parser `f` and consumes any trailing whitespace, comments, or directives.
 pub(crate) fn ws<'a, O, F>(
     mut f: F,
 ) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, (O, Vec<WhiteSpace>)>
@@ -15,6 +24,7 @@ where
     }
 }
 
+/// Combinator that executes parser `f` without consuming trailing whitespace.
 pub(crate) fn no_ws<'a, O, F>(
     mut f: F,
 ) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, (O, Vec<WhiteSpace>)>
@@ -27,6 +37,7 @@ where
     }
 }
 
+/// Matches a literal symbol string `t` followed by optional trailing whitespace.
 #[cfg(not(feature = "trace"))]
 pub(crate) fn symbol<'a>(t: &'a str) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, Symbol> {
     move |s: Span<'a>| {
@@ -337,24 +348,29 @@ thread_local!(
     }
 );
 
+/// Returns `true` if the parser is currently within a compiler directive scope.
 pub(crate) fn in_directive() -> bool {
     IN_DIRECTIVE.with(|x| x.borrow().last().is_some())
 }
 
+/// Enters a compiler directive parsing scope.
 pub(crate) fn begin_directive() {
     IN_DIRECTIVE.with(|x| x.borrow_mut().push(()));
 }
 
+/// Exits a compiler directive parsing scope.
 pub(crate) fn end_directive() {
     IN_DIRECTIVE.with(|x| x.borrow_mut().pop());
 }
 
+/// Clears all compiler directive scopes.
 pub(crate) fn clear_directive() {
     IN_DIRECTIVE.with(|x| x.borrow_mut().clear());
 }
 
 // -----------------------------------------------------------------------------
 
+/// Supported IEEE standard versions for keyword disambiguation.
 #[derive(Clone, Copy, Debug)]
 pub(crate) enum Version {
     Ieee1364_1995,
@@ -374,6 +390,7 @@ thread_local!(
     }
 );
 
+/// Pushes a new active IEEE keyword version matching the `` `begin_keywords `` directive.
 pub(crate) fn begin_keywords(version: &str) {
     CURRENT_VERSION.with(|current_version| match version {
         "1364-1995" => current_version.borrow_mut().push(Version::Ieee1364_1995),
@@ -391,12 +408,14 @@ pub(crate) fn begin_keywords(version: &str) {
     });
 }
 
+/// Pops the top IEEE keyword version matching the `` `end_keywords `` directive.
 pub(crate) fn end_keywords() {
     CURRENT_VERSION.with(|current_version| {
         current_version.borrow_mut().pop();
     });
 }
 
+/// Returns the currently active IEEE keyword version, if any.
 pub(crate) fn current_version() -> Option<Version> {
     CURRENT_VERSION.with(|current_version| match current_version.borrow().last() {
         Some(x) => Some(*x),
@@ -404,6 +423,7 @@ pub(crate) fn current_version() -> Option<Version> {
     })
 }
 
+/// Clears all active keyword versions from the version stack.
 pub(crate) fn clear_version() {
     CURRENT_VERSION.with(|current_version| {
         current_version.borrow_mut().clear();
@@ -424,6 +444,7 @@ pub(crate) fn concat<'a>(a: Span<'a>, b: Span<'a>) -> Option<Span<'a>> {
     }
 }
 
+/// Checks whether `s` matches a reserved keyword under the currently active IEEE version.
 pub(crate) fn is_keyword(s: &Span) -> bool {
     let keywords = match current_version() {
         Some(Version::Ieee1364_1995) => KEYWORDS_1364_1995,
@@ -445,6 +466,7 @@ pub(crate) fn is_keyword(s: &Span) -> bool {
     false
 }
 
+/// Converts a nom [`Span`] into a [`Locate`] token position.
 pub(crate) fn into_locate(s: Span) -> Locate {
     Locate {
         offset: s.location_offset(),

@@ -1,3 +1,12 @@
+//! Procedural macros for generating CST navigation and conversion code in `sv-parser`.
+//!
+//! Provides custom derive macros:
+//! - `#[derive(Node)]`: Implements `Node`, conversions to `RefNodes`, `RefNode`, `AnyNode`,
+//!   `TryFrom` for `Locate`, and `IntoIterator`.
+//! - `#[derive(AnyNode)]`: Implements downcasting `TryFrom<AnyNode>` for each syntax node variant,
+//!   and reference conversion `From<&AnyNode> for RefNode`.
+//! - `#[derive(RefNode)]`: Implements `next()` and `IntoIterator` on the umbrella `RefNode` enum.
+
 #![recursion_limit = "128"]
 
 extern crate proc_macro;
@@ -7,6 +16,10 @@ use quote::quote;
 use syn::Data::{Enum, Struct};
 use syn::{self, DeriveInput};
 
+/// Derives the `Node` trait, conversion traits (`From`, `Into`), and `IntoIterator` for a CST node.
+///
+/// For structs, child nodes are extracted from `self.nodes`.
+/// For enums, calls are delegated to the active variant.
 #[proc_macro_derive(Node)]
 pub fn node_derive(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).unwrap();
@@ -113,6 +126,7 @@ fn impl_node(ast: &DeriveInput) -> TokenStream {
     gen.into()
 }
 
+/// Derives downcasting `TryFrom<AnyNode>` and conversion to `RefNode` for the `AnyNode` umbrella enum.
 #[proc_macro_derive(AnyNode)]
 pub fn any_node_derive(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).unwrap();
@@ -163,6 +177,7 @@ fn impl_any_node(ast: &DeriveInput) -> TokenStream {
     gen.into()
 }
 
+/// Derives `next()` child navigation and `IntoIterator` for the `RefNode` umbrella enum.
 #[proc_macro_derive(RefNode)]
 pub fn ref_node_derive(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).unwrap();

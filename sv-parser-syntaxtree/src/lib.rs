@@ -1,3 +1,20 @@
+//! Concrete Syntax Tree (CST) definitions for SystemVerilog compliant with IEEE 1800-2017.
+//!
+//! Unlike an Abstract Syntax Tree (AST), this crate models a **Concrete Syntax Tree (CST)**
+//! corresponding directly to the formal grammar specifications in **IEEE 1800-2017 Annex A**.
+//! All syntax tokens, keywords, symbols, whitespace, comments, and compiler directives
+//! are preserved in the tree hierarchy. This makes it ideal for lossless reconstruction,
+//! linters, formatters, and language servers.
+//!
+//! # Core Concepts
+//!
+//! - [`Locate`]: Terminal token position recording byte offset, line number, and length.
+//! - [`Node`]: Trait implemented by every CST node providing access to child nodes via `next()`.
+//! - [`RefNode`]: Unified borrowed enum over any CST node variant, enabling zero-copy tree walking.
+//! - [`AnyNode`]: Unified owned enum over any CST node variant.
+//! - [`Iter`]: Iterator performing pre-order depth-first traversal over any syntax node.
+//! - [`EventIter`]: Event iterator producing [`NodeEvent::Enter`] and [`NodeEvent::Leave`] events.
+
 #![recursion_limit = "256"]
 #![allow(
     clippy::module_inception,
@@ -34,14 +51,22 @@ pub(crate) use sv_parser_macros::*;
 
 // -----------------------------------------------------------------------------
 
+/// Position and span of a terminal token in the preprocessed source text.
+///
+/// Every leaf node in the concrete syntax tree contains or is a `Locate`.
+/// `Locate` records the byte offset, 1-indexed line number, and byte length of the token.
 #[derive(Copy, Clone, Default, Debug, PartialEq)]
 pub struct Locate {
+    /// Byte offset in the preprocessed text.
     pub offset: usize,
+    /// 1-indexed line number in the source file.
     pub line: u32,
+    /// Byte length of the token.
     pub len: usize,
 }
 
 impl Locate {
+    /// Extracts the token string slice corresponding to this `Locate` from the given source string.
     pub fn str<'a, 'b>(&'a self, s: &'b str) -> &'b str {
         &s[self.offset..self.offset + self.len]
     }
@@ -49,7 +74,11 @@ impl Locate {
 
 // -----------------------------------------------------------------------------
 
+/// Trait implemented by all CST nodes for hierarchical traversal.
+///
+/// Enables navigating down into child nodes via [`Node::next`].
 pub trait Node<'a> {
+    /// Returns the immediate child nodes of this node wrapped in [`RefNodes`].
     fn next(&'a self) -> RefNodes<'a>;
 }
 

@@ -487,7 +487,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                     let elsifid = identifier(elsifid.into(), &s).unwrap();
                     if hit {
                         skip_nodes.push(elsifbody.into());
-                    } else if defines.contains_key(&elsifid) || is_predefined_text_macro(&ifid) {
+                    } else if defines.contains_key(&elsifid) || is_predefined_text_macro(&elsifid) {
                         hit = true;
                     } else {
                         skip_nodes.push(elsifbody.into());
@@ -535,7 +535,7 @@ pub fn preprocess_str<T: AsRef<Path>, U: AsRef<Path>, V: BuildHasher>(
                     let elsifid = identifier(elsifid.into(), &s).unwrap();
                     if hit {
                         skip_nodes.push(elsifbody.into());
-                    } else if defines.contains_key(&elsifid) || is_predefined_text_macro(&ifid) {
+                    } else if defines.contains_key(&elsifid) || is_predefined_text_macro(&elsifid) {
                         hit = true;
                     } else {
                         skip_nodes.push(elsifbody.into());

@@ -3,7 +3,6 @@
 // This block SHOULD be emitted from the preprocessor.
 
 
-// Emitted instead.
 
 
 // The following define should have no effect.

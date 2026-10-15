@@ -453,6 +453,50 @@ endmodule"##;
     }
 
     #[test]
+    fn test_elsif_predefined_macro() {
+        for directive in &["ifdef UNDEFINED", "ifndef __FILE__", "ifndef __LINE__"] {
+            for predefined in &["__FILE__", "__LINE__"] {
+                let src = format!(
+                    "`{}\nmodule first; endmodule\n`elsif {}\nmodule selected; endmodule\n\
+                     `else\nmodule fallback; endmodule\n`endif\n",
+                    directive, predefined,
+                );
+                let (tree, _) =
+                    parse_sv_str(&src, "", &HashMap::new(), &[""], false, false).unwrap();
+                let modules: Vec<_> = (&tree)
+                    .into_iter()
+                    .filter_map(|node| match node {
+                        RefNode::ModuleIdentifier(id) => tree.get_str_trim(id),
+                        _ => None,
+                    })
+                    .collect();
+                assert_eq!(modules, ["selected"], "{} / {}", directive, predefined);
+            }
+        }
+    }
+
+    #[test]
+    fn test_elsif_undefined_after_predefined() {
+        for predefined in &["__FILE__", "__LINE__"] {
+            let src = format!(
+                "`ifndef {}\nmodule first; endmodule\n`elsif UNDEFINED\nmodule second; endmodule\n\
+                 `else\nmodule fallback; endmodule\n`endif\n",
+                predefined,
+            );
+            let (tree, _) =
+                parse_sv_str(&src, "", &HashMap::new(), &[""], false, false).unwrap();
+            let modules: Vec<_> = (&tree)
+                .into_iter()
+                .filter_map(|node| match node {
+                    RefNode::ModuleIdentifier(id) => tree.get_str_trim(id),
+                    _ => None,
+                })
+                .collect();
+            assert_eq!(modules, ["fallback"], "{}", predefined);
+        }
+    }
+
+    #[test]
     fn test_type_equality() {
         let src = r##"module top #( parameter type T = type(logic[11:0]) )
            ();

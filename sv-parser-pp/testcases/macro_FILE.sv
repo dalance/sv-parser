@@ -12,7 +12,7 @@
 // preprocessor parsing stage without error.
 `define __FILE__ "(null)"
 `elsif UNDEFINED
-// Emitted instead.
+// NOT emitted: UNDEFINED is not defined.
 `endif
 
 // The following define should have no effect.

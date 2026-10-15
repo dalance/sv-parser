@@ -12,7 +12,7 @@
 // preprocessor parsing stage without error.
 `define __LINE__ -1
 `elsif UNDEFINED
-// Emitted instead.
+// NOT emitted: UNDEFINED is not defined.
 `endif
 
 // The following define should have no effect.
